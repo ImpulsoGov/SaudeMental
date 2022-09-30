@@ -4,7 +4,7 @@ import App from 'next/app';
 import { useRouter } from 'next/router';
 import '../styles/globals.css';
 import { municipios } from '../utils/municipios';
-import { NavBar } from '@impulsogov/design-system';
+import { Footer, NavBar } from '@impulsogov/design-system';
 
 
 function MyApp({ Component, pageProps }) {
@@ -24,22 +24,66 @@ function MyApp({ Component, pageProps }) {
         setMunicipio={setState}
         data={municipios}
         theme={{
-          logoProjeto: "https://media.graphassets.com/0q9BBD4xRCivV24aSg80",
+          logoProjeto: "https://media.graphassets.com/Xvh8jUvxTiaimkk4AD75",
           cor: path === "/" ? "ColorSM" : "White"
         }}
-         menu={
+        menu={
           [
             { label: "Home", url: "/" },
-            { label: "Sobre", url: "#sobre" },
+            { label: "Sobre", url:path === "/" ? "#sobre" : "/"  },
             { label: "Painéis de indicadores", url: "/paineis" },
             { label: "Glossário", url: "/glossario" }
           ]
-      }
-     
-      NavBarIconBranco = "https://raw.githubusercontent.com/ImpulsoGov/ImpulsoPrevine/main/public/hamburgerIconBranco.svg"
-      NavBarIconDark = "https://raw.githubusercontent.com/ImpulsoGov/ImpulsoPrevine/main/public/hamburgerIconDark.svg"
+        }
+
+        NavBarIconBranco="https://raw.githubusercontent.com/ImpulsoGov/ImpulsoPrevine/main/public/hamburgerIconBranco.svg"
+        NavBarIconDark="https://raw.githubusercontent.com/ImpulsoGov/ImpulsoPrevine/main/public/hamburgerIconDark.svg"
       />
       <Component {...pageProps} />
+
+      <Footer
+        contactCopyright={{
+          email: "contato@impulsogov.org",
+          copyright: "© 2021 Impulso"
+        }}
+        theme={{
+          logoProjeto: "https://media.graphassets.com/Kal4aulRmYkqd0L6RBAd",
+          cor: "Black"
+        }}
+        menu={
+          [
+            { label: "A Impulso Gov", url: "/impulsogov" },
+            { label: "O Previne Brasil", url: "/previnebrasil" },
+            { label: "Análise", url: "" },
+            { label: "Consultoria", url: "/consultoria" }
+          ]
+        }
+        subtitles={[
+          { label: "Indicadores de Desempenho", url: "/indicadores" },
+          { label: "Capitação Ponderada", url: "/capitacao" },
+          { label: "Ações Estratégicas", url: "/acoes-estrategicas" },
+        ]}
+        links={[
+          {
+            label: "Sobre", url: "/sobre"
+          },
+          {
+            label: "Competências e Soluções", url: "/competencias"
+          }
+        ]}
+
+        address={{
+          first: "Rua Aracaju 100 - Vila Madalena,",
+          second: "São Paulo - SP, 01010-100"
+        }}
+
+        socialMediaURLs={[
+          {
+            url: "http://instagran.com",
+            logo: ""
+          }
+        ]}
+      />
     </>
   )
 }
