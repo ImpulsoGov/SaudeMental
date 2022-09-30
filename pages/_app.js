@@ -10,7 +10,7 @@ import { NavBar } from '@impulsogov/design-system';
 function MyApp({ Component, pageProps }) {
   const [state, setState] = useState("Santo André - SP");
   const router = useRouter();
-  let path = useRouter().pathname;
+  let path = router.pathname;
 
   return (
     <>
@@ -25,21 +25,17 @@ function MyApp({ Component, pageProps }) {
         data={municipios}
         theme={{
           logoProjeto: "https://media.graphassets.com/0q9BBD4xRCivV24aSg80",
-          cor: "ColorAGP"
+          cor: path === "/" ? "ColorSM" : "White"
         }}
          menu={
           [
-            { label: "A Impulso Gov", url: "/impulsogov" },
-            { label: "O Previne Brasil", url: "/previnebrasil" },
-            { label: "Análise", url: "analise" },
-            { label: "Consultoria", url: "/consultoria" }
+            { label: "Home", url: "/" },
+            { label: "Sobre", url: "#sobre" },
+            { label: "Painéis de indicadores", url: "/paineis" },
+            { label: "Glossário", url: "/glossario" }
           ]
       }
-      subtitles = {[
-        { label: "Indicadores de Desempenho", url:"/indicadores" },
-        { label: "Capitação Ponderada", url:"/capitacao" },
-        { label: "Ações Estratégicas", url: "/acoes-estrategicas" },
-      ]}
+     
       NavBarIconBranco = "https://raw.githubusercontent.com/ImpulsoGov/ImpulsoPrevine/main/public/hamburgerIconBranco.svg"
       NavBarIconDark = "https://raw.githubusercontent.com/ImpulsoGov/ImpulsoPrevine/main/public/hamburgerIconDark.svg"
       />
