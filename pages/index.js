@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Content3Col, Footer, HomeBanner, Parcerias, TextCol } from "@impulsogov/design-system";
+import { Content3Col, HomeBanner, Parcerias, TextCol } from "@impulsogov/design-system";
 import { InfoTab } from "../components/InfoTab";
 
 const homeBannerProps = {
@@ -36,11 +36,10 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div style={{ backgroundColor: "#1B2D82" }}>
-
-
         <HomeBanner
           titulo={homeBannerProps.title} texto={homeBannerProps.text} theme="ColorSM"
         />
+
         <Content3Col
           titulo="Por que devo fazer?"
           child1={
@@ -62,60 +61,17 @@ export default function Home() {
             />
           }
         />
+
         <section id="sobre">
           <InfoTab contentList={infoTabprops} />
         </section>
-
-
 
         <Parcerias
           parceiros={parceiros}
           theme="ColorAGP"
         />
       </div>
-      <Footer
-        contactCopyright={{
-          email: "contato@impulsogov.org",
-          copyright: "© 2021 Impulso"
-        }}
-        theme={{
-          logoProjeto: "https://media.graphassets.com/Kal4aulRmYkqd0L6RBAd",
-          cor: "Black"
-        }}
-        menu={
-          [
-            { label: "A Impulso Gov", url: "/impulsogov" },
-            { label: "O Previne Brasil", url: "/previnebrasil" },
-            { label: "Análise", url: "" },
-            { label: "Consultoria", url: "/consultoria" }
-          ]
-        }
-        subtitles={[
-          { label: "Indicadores de Desempenho", url: "/indicadores" },
-          { label: "Capitação Ponderada", url: "/capitacao" },
-          { label: "Ações Estratégicas", url: "/acoes-estrategicas" },
-        ]}
-        links={[
-          {
-            label: "Sobre", url: "/sobre"
-          },
-          {
-            label: "Competências e Soluções", url: "/competencias"
-          }
-        ]}
 
-        address={{
-          first: "Rua Aracaju 100 - Vila Madalena,",
-          second: "São Paulo - SP, 01010-100"
-        }}
-
-        socialMediaURLs={[
-          {
-            url: "http://instagran.com",
-            logo: ""
-          }
-        ]}
-      />
     </>
   )
 }
