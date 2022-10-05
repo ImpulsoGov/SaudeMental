@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Content3Col, HomeBanner, Parcerias, TextCol } from "@impulsogov/design-system";
+import { ImagemFundo, HomeBanner, Parcerias, TextCol } from "@impulsogov/design-system";
 import { InfoTab } from "../components/InfoTab";
 
 const homeBannerProps = {
@@ -40,25 +40,30 @@ export default function Home() {
           titulo={homeBannerProps.title} texto={homeBannerProps.text} theme="ColorSM"
         />
 
-        <Content3Col
-          titulo="Por que devo fazer?"
-          child1={
-            <TextCol
-              titulo="Descomplicada"
-              corpo="Você preenche um formulário, nós entramos em contato em até três dias úteis e já marcamos a primeira conversa. Não precisa assinar nada, é sem burocracia."
-            />
-          }
-          child2={
-            <TextCol
-              titulo="Gratuita"
-              corpo="A consultoria é 100% gratuita. Você poderá marcar até três encontros totalmente gratuitos e ter acesso a análises e materiais criados por nossos especialistas."
-            />
-          }
-          child3={
-            <TextCol
-              titulo="Personalizada"
-              corpo="Trazemos análises e recomendações personalizadas para seu município melhorar nos indicadores e na capitação ponderada, sempre adequando à realidade local."
-            />
+        <ImagemFundo
+          imagem = "https://www.impulsoprevine.org/imagem-fundo.png"
+          chamada = "Painéis de indicadores da plataforma"
+          chamadacolor = ""
+          subtexto = "A plataforma está dividida em três blocos que reúnem dados e indicadores para acompanhamento da RAPS."
+          cards = {[
+              {
+                  title : "Acompanhamento dos serviços CAPS",
+                  body : "Resumo, Perfil do Usuário, novos Usuários, taxa de Abandono, atendimentos individuais, Procedimento por usuário, Produção"
+              },
+              {
+                  title : "Outros serviços RAPS",
+                  body : "Resumo, Ambulatório de saúde mental, Consultório na rua, redução de danos"
+              },
+              {
+                  title : "Cuidado compartilhado de saúde mental",
+                  body : "Perfil do Usuário, Cuidado compartilhado entre APS e CAPS, Cuidado compartilhado entre APS e Ambulatório, Cuidado compartilhado de saúde mental com a rede de Urgência e emergência"
+              }
+          ]}
+          botao = {
+                      {
+                          label : "",
+                          url : ""
+                      }
           }
         />
 
