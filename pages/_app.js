@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps }) {
         menu={
           [
             { label: "Home", url: "/" },
-            { label: "Sobre", url:path === "/" ? "#sobre" : "/"  },
+            { label: "Sobre", url: "/sobre" },
             { label: "Painéis de indicadores", url: "/paineis" },
             { label: "Glossário", url: "/glossario" }
           ]
