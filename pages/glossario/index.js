@@ -1,6 +1,34 @@
-import { ToggleList, ToggleText } from "@impulsogov/design-system";
+import { ToggleList } from "@impulsogov/design-system";
+import { ToggleText } from "../../components/ToggleText";
 
-export default function Glossario(){
+export default function Glossario() {
+
+  const listSigla = [
+    {
+      initials: "AIH",
+      label: "Autorização de Internação Hospitalar"
+    },
+    {
+      initials: "AIH",
+      label: "Autorização de Internação Hospitalar"
+    },
+    {
+      initials: "AIH",
+      label: "Autorização de Internação Hospitalar"
+    },
+    {
+      initials: "AIH",
+      label: "Autorização de Internação Hospitalar"
+    },
+    {
+      initials: "AIH",
+      label: "Autorização de Internação Hospitalar"
+    },
+    {
+      initials: "AIH",
+      label: "Autorização de Internação Hospitalar"
+    },
+  ]
 
   const list = [
     {
@@ -47,9 +75,15 @@ export default function Glossario(){
     },
   ]
 
-  return(
+  return (
     <>
-      <ToggleText text="Entenda como interpretar os indicadores Impulso" />
+      <ToggleText 
+        title="Entenda como interpretar os indicadores Impulso" 
+        list={listSigla} 
+        rightSubtitle="Siglas" 
+        leftSubtitle="Glossário" 
+        imgLink={"https://media.graphassets.com/WRihknmuQGKEPw9xmMOy"}
+      />
       <ToggleList list={list} />
     </>
   )
