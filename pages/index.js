@@ -45,7 +45,7 @@ export default function Home() {
         />
 
         <ImagemFundo
-          imagem="https://www.impulsoprevine.org/imagem-fundo.png"
+          imagem="https://media.graphassets.com/uaIrXFwzSa2rb3gcIDwV"
           chamada="Painéis de indicadores da plataforma"
           chamadacolor=""
           subtexto="A plataforma está dividida em três blocos que reúnem dados e indicadores para acompanhamento da RAPS."
