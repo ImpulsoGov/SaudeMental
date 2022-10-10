@@ -43,6 +43,11 @@ function MyApp({ Component, pageProps }) {
             { label: "Glossário", url: "/glossario" }
           ]
         }
+        subtitles = {[
+          { label: "Acompanhamento dos serviços CAPS", url:"/caps" },
+          { label: "Outros serviços RAPS", url:"/outros-raps" },
+          { label: "Cuidado compartilhado de saúde mental", url:"/cuidado-compartilhado" }
+        ]}
 
         NavBarIconBranco="https://raw.githubusercontent.com/ImpulsoGov/ImpulsoPrevine/main/public/hamburgerIconBranco.svg"
         NavBarIconDark="https://raw.githubusercontent.com/ImpulsoGov/ImpulsoPrevine/main/public/hamburgerIconDark.svg"
