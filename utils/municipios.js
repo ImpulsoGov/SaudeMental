@@ -1,14 +1,14 @@
 export const municipios = [
   {
-    "nome": "Maraã",
-    "uf": "AM"
+    "nome": "Aracaju",
+    "uf": "SE"
   },
   {
-    "nome": "Icó",
-    "uf": "CE"
+    "nome": "Aparecida de Goiânia",
+    "uf": "GO"
   },
   {
-    "nome": "São Felipe D'Oeste",
-    "uf": "RO"
+    "nome": "Recife",
+    "uf": "PE"
   },
 ]
