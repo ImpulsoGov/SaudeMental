@@ -113,12 +113,7 @@ const NavBar = (props) => {
           )
         }
 
-        style={{
-          backgroundColor:
-            props.theme.cor === "White"
-              ? themeColorSelector(props.pageTheme)
-              : themeColorSelector()
-        }}>
+        style={{ backgroundColor: themeColorSelector(props.pageTheme) }}>
         {props.menu.map((link, index) => {
           return (
             <div key={index} className={style.link_navbar}>
