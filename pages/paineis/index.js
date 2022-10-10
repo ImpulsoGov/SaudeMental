@@ -35,7 +35,7 @@ export default function Paineis() {
   ]
 
   return (
-    <div style={{paddingTop: "140px", fontFamily: "Inter"}}>
+    <div style={{paddingTop: "40px", fontFamily: "Inter"}}>
       <PanelSelector
         links={dsLink}
         list={labels}
