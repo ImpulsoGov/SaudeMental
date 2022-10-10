@@ -6,7 +6,7 @@ export const themeColorSelector = (theme) => {
     ColorAGP: "#F4CCAB",
   };
   if (theme === undefined) {
-    colors = "#2EB380";
+    colors = "#5367C9";
   } else {
     colors = allColorsAvaliable?.[theme];
     
