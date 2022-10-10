@@ -25,6 +25,7 @@ function MyApp({ Component, pageProps }) {
         />
       </Head>
       <NavBar
+        pageTheme="ColorSM"
         municipio={state}
         setMunicipio={setState}
         data={municipios}
