@@ -9,7 +9,7 @@ import { NavBar } from '../components/NavBar';
 
 
 function MyApp({ Component, pageProps }) {
-  const [state, setState] = useState("Santo André - SP");
+  const [state, setState] = useState("Aracaju - SE");
   const router = useRouter();
   let path = router.pathname;
 
