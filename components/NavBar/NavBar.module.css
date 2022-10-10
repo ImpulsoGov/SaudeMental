@@ -341,12 +341,16 @@
   }
 
   .linksNavBarMoblie {
-    background-color: #2EB380;
+  
     width: 100%;
     padding-top: 25px;
     padding-bottom: 25px;
     text-align: left;
     display: none;
+  }
+
+  .linksNavBarMoblieColorIP {
+    background-color: #2EB380;
   }
 
   .linksNavBarMoblieColorSM {
