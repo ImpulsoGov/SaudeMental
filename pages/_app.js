@@ -4,7 +4,8 @@ import App from 'next/app';
 import { useRouter } from 'next/router';
 import '../styles/globals.css';
 import { municipios } from '../utils/municipios';
-import { Footer, NavBar } from '@impulsogov/design-system';
+import { Footer } from '@impulsogov/design-system';
+import { NavBar } from '../components/NavBar';
 
 
 function MyApp({ Component, pageProps }) {
