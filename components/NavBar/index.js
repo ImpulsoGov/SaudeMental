@@ -65,23 +65,21 @@ const NavBar = (props) => {
             return (
               <div key={index} className={style.link_navbar}>
                 {DropdownMenu({ index, link, props })}
-                {props.submenu && (
-                  <div className={style.NavBarSubMenuContainer}>
-                    <a href={props.submenu[index].url} className={style.NavBarSubMenu}>
-                      {props.submenu[index].label}
-                    </a>
+                {link.sub && (
+                  <div className={style.NavBarSubMapContainer}>
                     {
-                      props.submenu[index].sub && (
-                        <a href={props.submenu[index].sub.url} className={style.NavBarSecondSubMenu}>
-                          {props.submenu[index].sub.label}
-                        </a>
-                      )
+                      link.sub.map((subContent, index) => (
+                        <div className={style.NavBarSubMenuContainer} key={index}>
+                          <a href={subContent.url} className={style.NavBarSubMenuAnchor}>{subContent.label} </a>
+                        </div>
+                      ))
                     }
                   </div>
                 )}
               </div>
             );
           })}
+
           <div className={style.NavBarSearchConteiner}>
             <SearchBar
               data={props.data}

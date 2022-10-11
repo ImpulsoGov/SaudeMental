@@ -69,7 +69,11 @@
 
 
 .themeColorSM a:hover {
-  color: #5367C9;
+  color: #CACCFE;
+}
+
+.themeColorSM a:hover .NavBarSubMenuAnchor {
+  color: white;
 }
 
 .themeColorWhite a:hover {
@@ -133,6 +137,7 @@
 }
 
 .links_navbar {
+  position: relative;
   display: flex;
   list-style: none;
   margin: 0;
@@ -151,72 +156,44 @@
   position: relative;
 }
 
-.link_navbar .NavBarSubMenu {
+.NavBarSubMapContainer{
   position: absolute;
-  padding: 10px;
-  width: 80px;
-  height: fit-content;
-  top: 38px;
-  left: 25%;
+  top: 120%;
   visibility: hidden;
-  background-color: #a07061;
-  color: #FFFFFF;
-  transition: all 0.25s
+  
+  transition: .3s;
+  color: white;
 }
 
-.NavBarSubMenu:after {
-  /*Triangulo*/
-  content: "";
-  width: 0;
-  height: 0;
-  position: absolute;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  /*Faz seta "apontar para baixo. Definir o valor como 'top' fará ela "apontar para cima" */
-  /*Aqui entra a cor da "aba" do balão */
-  border-bottom: 10px solid #a07061;
-  top: -10px;
-  /*localização. Experimente alterar para 'bottom'*/
-  left: 20%;
-}
-
-.link_navbar:hover .NavBarSubMenu {
+.link_navbar:hover .NavBarSubMapContainer{
   visibility: visible;
+  
 }
 
-.NavBarSubMenuContainer .NavBarSecondSubMenu {
-  position: absolute;
-  padding: 10px;
-  width: fit-content;
-  height: fit-content;
-  top: 38px;
-  left: calc(25% + 110px);
-  padding-left: 15px;
-  background-color: #a07061;
-  color: #FFFFFF;
-  visibility: hidden;
+.NavBarSubMenuContainer {
+  background-color: #5367C9;
+  padding: 5px;
+ 
+}
+.NavBarSubMenuContainer:hover {
+  color: white;
+ 
 }
 
-.NavBarSecondSubMenu:after {
-  content: "";
-  width: 0;
-  height: 0;
-  position: absolute;
-  /* Right com valor negativo para ele ficar para fora do balão de dialogo */
-  left: -10px;
-  bottom: -5px;
-  /* É aqui o truque com as bordas */
-  /* usar metade da altura do elemento, assim temos uma seta da mesma altura que nosso elemento */
-  border-top: 25px solid transparent;
-  border-bottom: 25px solid transparent;
-  border-right: 25px solid #a07061;
-  /* Defina 'right' e a seta apontará para a esquerda */
-  /* Borda de fora do elemento */
-  border-radius: 50%;
+.NavBarSubMenuAnchor {
+  color: white;
+  font-size: 14px;
+  text-decoration: none;
 }
 
-.NavBarSubMenuContainer:hover .NavBarSecondSubMenu {
-  visibility: visible;
+.NavBarSubMenuAnchor:hover {
+  color: white;
+}
+
+
+.NavBarSubMenuContainer:hover {
+  opacity: .8;
+  
 }
 
 .containerCidadeLogin_navbar {
@@ -341,7 +318,7 @@
   }
 
   .linksNavBarMoblie {
-  
+
     width: 100%;
     padding-top: 25px;
     padding-bottom: 25px;

@@ -13,6 +13,45 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
   let path = router.pathname;
 
+  const subMenus = [
+    {
+      label: "Home",
+      url: "/",
+      sub: [
+      ]
+    },
+    {
+      label: "Sobre",
+      url: "/sobre",
+      sub: [
+      ]
+    },
+    {
+      label: "Painéis de indicadores",
+      url: "/paineis",
+      sub: [
+        {
+          label: "Acompanhamento dos serviços CAPS",
+          url: "/caps",
+        },
+        {
+          label: "Outros serviços RAPS",
+          url: "/outros-raps",
+        },
+        {
+          label: "Cuidado compartilhado de saúde mental",
+          url: "/cuidado-compartilhado",
+        },
+      ]
+    },
+    {
+      label: "Glossário",
+      url: "/glossario",
+      sub: [
+      ]
+    },
+  ]
+
   return (
     <>
       <Head>
@@ -37,16 +76,46 @@ function MyApp({ Component, pageProps }) {
         }}
         menu={
           [
-            { label: "Home", url: "/" },
-            { label: "Sobre", url: "/sobre" },
-            { label: "Painéis de indicadores", url: "/paineis" },
-            { label: "Glossário", url: "/glossario" }
+            {
+              label: "Home",
+              url: "/",
+              sub: []
+            },
+            {
+              label: "Sobre",
+              url: "/sobre",
+              sub: [],
+            },
+            {
+              label: "Painéis de indicadores",
+              url: "/paineis",
+              sub: [
+                {
+                  label: "Acompanhamento dos serviços CAPS",
+                  url: "/caps",
+                },
+                {
+                  label: "Outros serviços RAPS",
+                  url: "/outros-raps",
+                },
+                {
+                  label: "Cuidado compartilhado de saúde mental",
+                  url: "/cuidado-compartilhado",
+                },
+              ]
+            },
+            {
+              label: "Glossário",
+              url: "/glossario",
+              sub: []
+            }
           ]
         }
-        subtitles = {[
-          { label: "Acompanhamento dos serviços CAPS", url:"/caps" },
-          { label: "Outros serviços RAPS", url:"/outros-raps" },
-          { label: "Cuidado compartilhado de saúde mental", url:"/cuidado-compartilhado" }
+        submenu={subMenus}
+        subtitles={[
+          { label: "Acompanhamento dos serviços CAPS", url: "/caps" },
+          { label: "Outros serviços RAPS", url: "/outros-raps" },
+          { label: "Cuidado compartilhado de saúde mental", url: "/cuidado-compartilhado" }
         ]}
 
         NavBarIconBranco="https://raw.githubusercontent.com/ImpulsoGov/ImpulsoPrevine/main/public/hamburgerIconBranco.svg"
