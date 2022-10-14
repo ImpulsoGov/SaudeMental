@@ -79,12 +79,10 @@ function MyApp({ Component, pageProps }) {
             {
               label: "Home",
               url: "/",
-              sub: []
             },
             {
               label: "Sobre",
               url: "/sobre",
-              sub: [],
             },
             {
               label: "Painéis de indicadores",
@@ -107,11 +105,10 @@ function MyApp({ Component, pageProps }) {
             {
               label: "Glossário",
               url: "/glossario",
-              sub: []
             }
           ]
         }
-        submenu={subMenus}
+        // submenu={subMenus}
         subtitles={[
           { label: "Acompanhamento dos serviços CAPS", url: "/caps" },
           { label: "Outros serviços RAPS", url: "/outros-raps" },
