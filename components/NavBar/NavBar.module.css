@@ -40,6 +40,16 @@
   text-decoration: none;
 }
 
+.DropDownMenuMobileButton {
+  border: none;
+  outline: none;
+  background: none;
+  color: white;
+  font-family: "Inter";
+  font-size: 18px;
+  padding-right: 20px;
+}
+
 .container_navbar {
   display: flex;
   padding: 28px 40px;
@@ -196,6 +206,22 @@
   
 }
 
+.NavBarSubMapMobileContainer{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  right: 100%;
+  padding: 1px;
+  top: 4px;
+  background-color: #7579EA;
+}
+
+.NavBarSubMenuMobileContainer a{
+  font-size: 12px;
+  width: 100%;
+}
+
 .containerCidadeLogin_navbar {
   align-items: center;
   display: flex;
@@ -318,12 +344,13 @@
   }
 
   .linksNavBarMoblie {
-
-    width: 100%;
+    width: 50%;
     padding-top: 25px;
     padding-bottom: 25px;
     text-align: left;
     display: none;
+    position: absolute;
+    right: 0;
   }
 
   .linksNavBarMoblieColorIP {

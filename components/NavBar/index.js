@@ -20,18 +20,31 @@ const DropdownMenu = (attr) => {
 
 const DropdownMenuMoblie = (attr) => {
   const [active, setMode] = useState(false)
+
   const menuVisible = () => {
     setMode(!active)
     return active
   }
   return (
-    <a href={attr.link.url}>
-      {attr.link.label}
-    </a>
+    <>
+      {
+        attr.sub ? (
+          <button onClick={attr.onClick} className={style.DropDownMenuMobileButton}>
+            {attr.link.label}
+          </button>
+        ) : (
+          <a href={attr.link.url} >
+            {attr.link.label}
+          </a>
+        )
+      }
+    </>
+
   )
 }
 
 const NavBar = (props) => {
+  const [subMenuIsVisible, setSubMenuIsVisible] = useState(false);
   const [active, setMode] = useState(true)
   const menuVisible = () => {
     setMode(!active)
@@ -68,6 +81,7 @@ const NavBar = (props) => {
                 {link.sub && (
                   <div className={style.NavBarSubMapContainer}>
                     {
+
                       link.sub.map((subContent, index) => (
                         <div className={style.NavBarSubMenuContainer} key={index}>
                           <a href={subContent.url} className={style.NavBarSubMenuAnchor}>{subContent.label} </a>
@@ -115,7 +129,18 @@ const NavBar = (props) => {
         {props.menu.map((link, index) => {
           return (
             <div key={index} className={style.link_navbar}>
-              {DropdownMenuMoblie({ index, link, props })}
+              {DropdownMenuMoblie({ index, link, props, onClick: () => setSubMenuIsVisible(!subMenuIsVisible), sub: link.sub })}
+              {link.sub && subMenuIsVisible && (
+                <div className={style.NavBarSubMapMobileContainer}>
+                  {
+                    link.sub.map((subContent, index) => (
+                      <div className={style.NavBarSubMenuMobileContainer} key={index}>
+                        <a href={subContent.url} className={style.NavBarSubMenuAnchor}>{subContent.label} </a>
+                      </div>
+                    ))
+                  }
+                </div>
+              )}
             </div>
           );
         })}
