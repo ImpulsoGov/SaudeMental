@@ -1,16 +1,29 @@
 import { TituloTexto } from "@impulsogov/design-system";
-import Head from "next/head";
+import { ABOUT } from "../../querys/ABOUT";
+import { getData } from "../../services/getData";
 
-const args = {
-  imagem: {
-    posicao: null,
-    url: ''
-  },
-  titulo: "A Impulso Gov",
-  texto: "Impulso Gov, uma organização sem fins lucrativos e suprapartidária que apoia profissionais do SUS no aprimoramento das políticas públicas por meio do uso de dados e tecnologia, para que todas as pessoas no Brasil tenham acesso a serviços de saúde de qualidade.<br/><br/><b>Quer saber mais sobre a Impulso Gov Acesse o nosso <a style='text-decoration: none' href='impulsogov.org'>site.</a> </b> Impulso Gov, uma organização sem fins lucrativos e suprapartidária que apoia profissionais do SUS no aprimoramento das políticas públicas por meio do uso de dados e tecnologia, para que todas as pessoas no Brasil tenham acesso a serviços de saúde de qualidade.<br/><br/><b>Quer saber mais sobre a Impulso Gov Acesse o nosso <a style='text-decoration: none' href='impulsogov.org'>site.</a> </b> Impulso Gov, uma organização sem fins lucrativos e suprapartidária que apoia profissionais do SUS no aprimoramento das políticas públicas por meio do uso de dados e tecnologia, para que todas as pessoas no Brasil tenham acesso a serviços de saúde de qualidade.<br/><br/><b>Quer saber mais sobre a Impulso Gov Acesse o nosso <a style='text-decoration: none' href='impulsogov.org'>site.</a> </b> Impulso Gov, uma organização sem fins lucrativos e suprapartidária que apoia profissionais do SUS no aprimoramento das políticas públicas por meio do uso de dados e tecnologia, para que todas as pessoas no Brasil tenham acesso a serviços de saúde de qualidade.<br/><br/><b>Quer saber mais sobre a Impulso Gov Acesse o nosso <a style='text-decoration: none' href='impulsogov.org'>site.</a> </b>"
-};
+export async function getStaticProps() {
+  const res = [
+    await getData(ABOUT)
+  ];
 
-export default function Sobre() {
+  return {
+    props: {
+      res: res
+    }
+  }
+}
+
+
+export default function Sobre({res}) {
+  const args = {
+    imagem: {
+      posicao: null,
+      url: ''
+    },
+    titulo: res[0].homeBanners[2].title,
+    texto: res[0].homeBanners[2].text
+  };
   return (
     <div>
       <TituloTexto {...args} />
