@@ -2,36 +2,23 @@ import Head from "next/head";
 import { ImagemFundo, HomeBanner, Parcerias, TextCol } from "@impulsogov/design-system";
 import { InfoTab } from "../components/InfoTab";
 
-const homeBannerProps = {
-  title: 'Indicadores de Saúde Mental',
-  text: 'Aqui você pode acompanhar de forma descomplicada a situação da RAPS e demais serviços de saúde mental de Aracaju (SE). Por meio de dados e indicadores, monitore a qualidade do cuidado prestado e aprofunde seu diagnóstico sobre o território e a população atendida.'
+import { HOME } from "../querys/HOME";
+import { getData } from "../services/getData";
+
+export async function getStaticProps() {
+  const res = [
+    await getData(HOME)
+  ];
+
+  return {
+    props: {
+      res: res
+    }
+  }
 }
 
-const infoTabprops = [
-  {
-    leftTitle: "Saúde Mental",
-    rightTitle: "O que é a plataforma de indicadores de Saúde Mental?",
-    rightContent: "Uma plataforma gratuita, que utiliza bases de dados públicas para auxiliar na gestão dos serviços de saúde mental do município. Conheça mais sobre o trabalho realizado pela Impulso em parceria com o Instituto Cactus e o município de Aracaju (SE).",
-    buttonTitle: "SOBRE SAÚDE MENTAL",
-    onClick: () => console.log("primeiro botão")
-  },
-  {
-    leftTitle: "Glossário",
-    rightTitle: "Entenda como interpretar os indicadores",
-    rightContent: "Acesse um siglário e a ficha técnica de nossos indicadores para compreender como eles são calculados, quais são as bases de dados que os alimentam, com qual periodicidade eles são atualizados e muito mais",
-    buttonTitle: "entenda",
-    onClick: () => console.log("segundo botão")
-  },
-];
+export default function Home({res}) {
 
-const parceiros = [
-  { alt: "parceiros", src: "https://media.graphassets.com/cCTNMOrTISFadTYxkD9x" },
-  { alt: "parceiros", src: "https://media.graphassets.com/IxM8ehfROeq8GxwVtwfA" },
-  { alt: "parceiros", src: "https://media.graphassets.com/ZMxaGH6zR86IjUgdLio5" }
-]
-
-
-export default function Home() {
   return (
     <>
       <Head>
@@ -41,28 +28,15 @@ export default function Home() {
       </Head>
       <div style={{ backgroundColor: "#1B2D82" }}>
         <HomeBanner
-          titulo={homeBannerProps.title} texto={homeBannerProps.text} theme="ColorSM"
+          titulo={res[0].homeBanners[0].title} texto={res[0].homeBanners[0].text} theme="ColorSM"
         />
 
         <ImagemFundo
-          imagem="https://media.graphassets.com/uaIrXFwzSa2rb3gcIDwV"
-          chamada="Painéis de indicadores da plataforma"
+          imagem={res[0].assets[6].url}
+          chamada={res[0].homeBanners[1].title}
           chamadacolor=""
-          subtexto="A plataforma está dividida em três blocos que reúnem dados e indicadores para acompanhamento da RAPS."
-          cards={[
-            {
-              title: "Acompanhamento dos serviços CAPS",
-              body: "Resumo, Perfil do Usuário, novos Usuários, taxa de Abandono, atendimentos individuais, Procedimento por usuário, Produção"
-            },
-            {
-              title: "Outros serviços RAPS",
-              body: "Resumo, Ambulatório de saúde mental, Consultório na rua, redução de danos"
-            },
-            {
-              title: "Cuidado compartilhado de saúde mental",
-              body: "Perfil do Usuário, Cuidado compartilhado entre APS e CAPS, Cuidado compartilhado entre APS e Ambulatório, Cuidado compartilhado de saúde mental com a rede de Urgência e emergência"
-            }
-          ]}
+          subtexto={res[0].homeBanners[1].text}
+          cards={res[0].cards}
           botao={
             {
               label: "",
@@ -72,11 +46,30 @@ export default function Home() {
         />
         
         <section id="sobre">
-          <InfoTab contentList={infoTabprops} />
+          <InfoTab contentList={[
+            {
+              leftTitle: res[0].infoTabs[0].leftTitle,
+              rightTitle: res[0].infoTabs[0].rigthTitle,
+              rightContent: res[0].infoTabs[0].content,
+              buttonTitle: res[0].infoTabs[0].buttonTitle,
+              onClick: () => console.log(res[0].infoTabs[0].link)
+            },
+            {
+              leftTitle: res[0].infoTabs[1].leftTitle,
+              rightTitle: res[0].infoTabs[1].rigthTitle,
+              rightContent: res[0].infoTabs[1].content,
+              buttonTitle: res[0].infoTabs[1].buttonTitle,
+              onClick: () => console.log(res[0].infoTabs[1].link)
+            },
+          ]} />
         </section>
 
         <Parcerias
-          parceiros={parceiros}
+          parceiros={[
+            { alt: "parceiros", src:  res[0].logos[2].logo.url },
+            { alt: "parceiros", src: res[0].logos[3].logo.url },
+            { alt: "parceiros", src: res[0].logos[4].logo.url }
+          ]}
           theme="ColorAGP"
         />
       </div>
