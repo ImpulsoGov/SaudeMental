@@ -11,6 +11,5 @@ export const themeColorSelector = (theme) => {
     colors = allColorsAvaliable?.[theme];
     
   }
-  console.log(theme)
   return colors ;
 };
