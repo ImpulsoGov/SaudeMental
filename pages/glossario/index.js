@@ -1,34 +1,22 @@
 import { ToggleList } from "@impulsogov/design-system";
 import { ToggleText } from "../../components/ToggleText";
+import { GLOSSARIO } from "../../querys/GLOSSARIO";
+import { getData } from "../../services/getData";
 
-export default function Glossario() {
+export async function getStaticProps() {
+  const res = [
+    await getData(GLOSSARIO)
+  ];
 
-  const listSigla = [
-    {
-      initials: "AIH",
-      label: "Autorização de Internação Hospitalar"
-    },
-    {
-      initials: "AIH",
-      label: "Autorização de Internação Hospitalar"
-    },
-    {
-      initials: "AIH",
-      label: "Autorização de Internação Hospitalar"
-    },
-    {
-      initials: "AIH",
-      label: "Autorização de Internação Hospitalar"
-    },
-    {
-      initials: "AIH",
-      label: "Autorização de Internação Hospitalar"
-    },
-    {
-      initials: "AIH",
-      label: "Autorização de Internação Hospitalar"
-    },
-  ]
+  return {
+    props: {
+      res: res
+    }
+  }
+}
+
+export default function Glossario({res}) {
+  console.log('gloss', res[0].buttonImages[0].image.url)
 
   const list = [
     {
@@ -78,11 +66,11 @@ export default function Glossario() {
   return (
     <>
       <ToggleText 
-        title="Entenda como interpretar os indicadores Impulso" 
-        list={listSigla} 
-        rightSubtitle="Siglas" 
-        leftSubtitle="Glossário" 
-        imgLink={"https://media.graphassets.com/WRihknmuQGKEPw9xmMOy"}
+        title={res[0].homeBanners[3].title} 
+        list={res[0].toggleTexts} 
+        rightSubtitle={res[0].homeBanners[4].title} 
+        leftSubtitle={res[0].homeBanners[5].title}
+        imgLink={res[0].buttonImages[0].image.url}
       />
       <ToggleList list={list} />
     </>
