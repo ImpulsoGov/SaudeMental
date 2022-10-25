@@ -1,9 +1,9 @@
 import { PanelSelector } from "@impulsogov/design-system";
 import { useContext, useEffect, useState } from "react";
-import { CitiesContext } from "../../contexts/CitiesContext";
+import { Context } from "../../contexts/Context";
 
 export default function Paineis() {
-  const [city] = useContext(CitiesContext);
+  const [city] = useContext(Context);
   const [panelLinks, setPanelLink] = useState([]);
 
   useEffect(()=> {
