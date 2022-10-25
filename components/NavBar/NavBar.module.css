@@ -260,6 +260,16 @@
   font-weight: 40;
 }
 
+.citySelect_navbarColorSM {
+  background-color: #5367C9;
+  color: #FFFFFF;
+  border: none;
+  text-align: center;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 40;
+}
+
 .citySelect_navbarWhite {
   background-color: #FFF;
   color: #1F1F1F;
