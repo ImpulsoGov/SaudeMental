@@ -14,12 +14,21 @@ export const LAYOUT = `
   menus {
     label
     url
+    sub {
+      ... on SubMenu {
+        label
+        url
+        item {
+          ... on SubMenuItem {
+            label
+            url
+          }
+        }
+
+      }
+    }
   }
 
-  submenus {
-    label
-    url
-  }
 
   buttonImages {
     image {

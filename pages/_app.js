@@ -4,7 +4,7 @@ import App from 'next/app';
 import { useRouter } from 'next/router';
 
 import { Footer } from '@impulsogov/design-system';
-import { NavBar } from '../components/NavBar';
+import { NavBar } from '@impulsogov/design-system';
 import '../styles/globals.css';
 
 
@@ -18,7 +18,7 @@ function MyApp(props) {
   const [city, setCity] = useState("Aracaju - SE")
   const router = useRouter();
   let path = router.pathname;
-
+  console.log(props.res)
   return (
     <>
       <Head>
@@ -28,7 +28,7 @@ function MyApp(props) {
       </Head>
       <Context.Provider value={[city, setCity]}>
         <NavBar
-          pageTheme="ColorSM"
+          user={null}
           municipio={city}
           setMunicipio={setCity}
           data={props.res[0].municipios}
@@ -38,18 +38,7 @@ function MyApp(props) {
               : props.res[0].logos[1].logo.url,
             cor: path === "/" ? "ColorSM" : "White"
           }}
-          menu={
-            [
-              props.res[0].menus[0],
-              props.res[0].menus[1],
-              {
-                label: props.res[0].menus[2].label,
-                url: props.res[0].menus[2].url,
-                sub: props.res[0].submenus
-              },
-              props.res[0].menus[3]
-            ]
-          }
+          menu={props.res[0].menus}
           NavBarIconBranco={props.res[0].buttonImages[2].image.url}
           NavBarIconDark={props.res[0].buttonImages[1].image.url}
         />
@@ -63,7 +52,7 @@ function MyApp(props) {
           theme={{
             logoProjeto: props.res[0].logos[0].logo.url,
             logoImpulso: props.res[0].logos[3].logo.url,
-            cor: "Black"
+            cor: "SM"
           }}
           menu={props.res[0].menus}
 

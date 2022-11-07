@@ -1,5 +1,5 @@
 import { ToggleList } from "@impulsogov/design-system";
-import { ToggleText } from "../../components/ToggleText";
+import { ToggleText } from "@impulsogov/design-system";
 import { GLOSSARIO } from "../../querys/GLOSSARIO";
 import { getData } from "../../services/getData";
 
@@ -16,53 +16,6 @@ export async function getStaticProps() {
 }
 
 export default function Glossario({res}) {
-  console.log('gloss', res[0].buttonImages[0].image.url)
-
-  const list = [
-    {
-      title: "Serviços do CAPS",
-      subTitle: "Número de usuários ativos",
-      description: "Definição: que tiveram pelo menos um registro em ficha de ações psicossociais no mês de referência ou em um dos dois meses anteriores.",
-      source: "Fonte: RAAS/SIASUS"
-    },
-    {
-      title: "Serviços do CAPS",
-      subTitle: "Número de usuários ativos",
-      description: "Definição: que tiveram pelo menos um registro em ficha de ações psicossociais no mês de referência ou em um dos dois meses anteriores.",
-      source: "Fonte: RAAS/SIASUS"
-    },
-    {
-      title: "Serviços do CAPS",
-      subTitle: "Número de usuários ativos",
-      description: "Definição: que tiveram pelo menos um registro em ficha de ações psicossociais no mês de referência ou em um dos dois meses anteriores.",
-      source: "Fonte: RAAS/SIASUS"
-    },
-    {
-      title: "Serviços do CAPS",
-      subTitle: "Número de usuários ativos",
-      description: "Definição: que tiveram pelo menos um registro em ficha de ações psicossociais no mês de referência ou em um dos dois meses anteriores.",
-      source: "Fonte: RAAS/SIASUS"
-    },
-    {
-      title: "Serviços do CAPS",
-      subTitle: "Número de usuários ativos",
-      description: "Definição: que tiveram pelo menos um registro em ficha de ações psicossociais no mês de referência ou em um dos dois meses anteriores.",
-      source: "Fonte: RAAS/SIASUS"
-    },
-    {
-      title: "Serviços do CAPS",
-      subTitle: "Número de usuários ativos",
-      description: "Definição: que tiveram pelo menos um registro em ficha de ações psicossociais no mês de referência ou em um dos dois meses anteriores.",
-      source: "Fonte: RAAS/SIASUS"
-    },
-    {
-      title: "Serviços do CAPS",
-      subTitle: "Número de usuários ativos",
-      description: "Definição: que tiveram pelo menos um registro em ficha de ações psicossociais no mês de referência ou em um dos dois meses anteriores.",
-      source: "Fonte: RAAS/SIASUS"
-    },
-  ]
-
   return (
     <>
       <ToggleText 
@@ -72,7 +25,7 @@ export default function Glossario({res}) {
         leftSubtitle={res[0].homeBanners[5].title}
         imgLink={res[0].buttonImages[0].image.url}
       />
-      <ToggleList list={list} />
+      <ToggleList list={res[0].toggleLists} />
     </>
   )
 }

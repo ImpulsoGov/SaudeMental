@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { ImagemFundo, HomeBanner, Parcerias, TextCol } from "@impulsogov/design-system";
-import { InfoTab } from "../components/InfoTab";
+import { InfoTab } from "@impulsogov/design-system";
 
 import { HOME } from "../querys/HOME";
 import { getData } from "../services/getData";
@@ -67,7 +67,7 @@ export default function Home({res}) {
         <Parcerias
           parceiros={[
             { alt: "parceiros", src:  res[0].logos[2].logo.url },
-            { alt: "parceiros", src: res[0].logos[3].logo.url },
+            { alt: "parceiros", src: res[0].logos[5].logo.url },
             { alt: "parceiros", src: res[0].logos[4].logo.url }
           ]}
           theme="ColorAGP"
