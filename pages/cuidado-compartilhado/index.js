@@ -1,6 +1,7 @@
 import { PanelSelector } from "@impulsogov/design-system";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../contexts/Context";
+import { useRouter } from 'next/router'
 
 export default function Paineis() {
   const [city] = useContext(Context);
@@ -47,13 +48,15 @@ export default function Paineis() {
       label: "RAPS E ATENÇÃO HOSPITALAR",
     },
   ]
-
+  const router = useRouter()
+  const panel = router.query?.painel
   return (
     <div style={{paddingTop: "40px", fontFamily: "Inter"}}>
       <PanelSelector
-        links={panelLinks}
-        list={labels}
-        title="Cuidado compartilhado de Saúde Mental entre as redes de saúde"
+        panel={Number(panel)}
+        links={[panelLinks]}
+        list={[labels]}
+        titles={[{label:"Cuidado compartilhado de Saúde Mental entre as redes de saúde"}]}
       />
     </div>
   )

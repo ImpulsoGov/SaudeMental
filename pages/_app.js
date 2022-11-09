@@ -18,7 +18,6 @@ function MyApp(props) {
   const [city, setCity] = useState("Aracaju - SE")
   const router = useRouter();
   let path = router.pathname;
-  console.log(props.res)
   return (
     <>
       <Head>
