@@ -70,7 +70,7 @@ export default function Paineis() {
   const router = useRouter()
   const panel = router.query?.painel
   return (
-    <div style={{paddingTop: "40px", fontFamily: "Inter"}}>
+    <div style={{paddingTop: "20px", fontFamily: "Inter"}}>
       <PanelSelector
         panel={Number(panel)}
         links={[panelLinks]}
