@@ -22,7 +22,7 @@ export default function Sobre({res}) {
       url: ''
     },
     titulo: res[0].homeBanners[2].title,
-    texto: res[0].homeBanners[2].text
+    texto: res[0].homeBanners[2].text.html
   };
   return (
     <div>
