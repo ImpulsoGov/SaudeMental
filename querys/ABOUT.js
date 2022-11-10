@@ -2,7 +2,9 @@ export const ABOUT = `
 {
   homeBanners {
     title
-    text
+    text {
+      html
+    }
   }
 }
 `
