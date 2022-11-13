@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { ImagemFundo, HomeBanner, Parcerias, TextCol } from "@impulsogov/design-system";
+import { ImagemFundo, HomeBanner, Parcerias } from "@impulsogov/design-system";
 import { InfoTab } from "@impulsogov/design-system";
 
 import { HOME } from "../querys/HOME";
@@ -52,14 +52,14 @@ export default function Home({res}) {
               rightTitle: res[0].infoTabs[0].rigthTitle,
               rightContent: res[0].infoTabs[0].content,
               buttonTitle: res[0].infoTabs[0].buttonTitle,
-              onClick: () => console.log(res[0].infoTabs[0].link)
+              buttonLink: res[0].infoTabs[0].link
             },
             {
               leftTitle: res[0].infoTabs[1].leftTitle,
               rightTitle: res[0].infoTabs[1].rigthTitle,
               rightContent: res[0].infoTabs[1].content,
               buttonTitle: res[0].infoTabs[1].buttonTitle,
-              onClick: () => console.log(res[0].infoTabs[1].link)
+              buttonLink:res[0].infoTabs[1].link
             },
           ]} />
         </section>

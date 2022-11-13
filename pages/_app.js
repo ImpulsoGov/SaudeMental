@@ -35,9 +35,10 @@ function MyApp(props) {
             logoProjeto: path === "/"
               ? props.res[0].logos[0].logo.url
               : props.res[0].logos[1].logo.url,
-            cor: path === "/" ? "ColorSM" : "White"
+            cor: path === "/" ? "ColorSM" : "WhiteSM"
           }}
           menu={props.res[0].menus}
+          SeletorTipo={1}
           NavBarIconBranco={props.res[0].buttonImages[2].image.url}
           NavBarIconDark={props.res[0].buttonImages[1].image.url}
         />
