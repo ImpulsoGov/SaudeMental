@@ -4,9 +4,11 @@ import { Context } from "../../contexts/Context"
 import { useRouter } from 'next/router'
 
 export default function Paineis() {
+  const router = useRouter()
   const [city] = useContext(Context);
   const [panelLinks, setPanelLink] = useState([]);
-
+  const [panel, setPanel] = useState(Number(router.query?.painel));
+  console.log(city,panel)
   useEffect(()=> {
     if(city === "Aracaju - SE"){
       setPanelLink([
@@ -67,15 +69,13 @@ export default function Paineis() {
       label: "PRODUÇÃO",
     },
   ]
-  const router = useRouter()
-  const panel = router.query?.painel
   return (
     <div style={{fontFamily: "Inter"}}>
       <PanelSelector
-        panel={Number(panel)}
+        panel={3}
         links={[panelLinks]}
         list={[labels]}
-        titles={[{label:"Acompanhamento dos serviços CAPS"}]}
+        titles={[{label:"Acompanhamento dos serviços CAPS"+panel}]}
       />
     </div>
   )

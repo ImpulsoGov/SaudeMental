@@ -51,7 +51,7 @@ export default function Paineis() {
   const router = useRouter()
   const panel = router.query?.painel
   return (
-    <div style={{paddingTop: "20px", fontFamily: "Inter"}}>
+    <div style={{fontFamily: "Inter"}}>
       <PanelSelector
         panel={Number(panel)}
         links={[panelLinks]}

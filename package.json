@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@impulsogov/design-system": "^0.0.154",
+    "@impulsogov/design-system": "^0.0.157",
     "core-js": "^3.25.3",
     "dompurify": "^2.4.0",
     "graphql": "^16.6.0",
