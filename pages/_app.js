@@ -22,8 +22,6 @@ function MyApp(props) {
     <>
       <Head>
         <title>Saúde Mental</title>
-        <meta name="robots" content="noindex,nofollow" />
-        <meta name="googlebot" content="noindex,nofollow" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Context.Provider value={[city, setCity]}>
