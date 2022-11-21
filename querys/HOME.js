@@ -25,7 +25,11 @@ export const HOME = `
 
   cards {
     title
-    body
-  }
-}
+    body {
+      ... on Link {
+        label
+        url
+      }
+    }
+  }}
 `
