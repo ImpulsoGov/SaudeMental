@@ -1,34 +1,47 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Impulso Saúde Mental
 
-## Getting Started
 
-First, run the development server:
+## Introdução
+
+A plataforma de indicadores de Impulso Saúde Mental é uma solução gratuita, voltada a apoiar a gestão dos serviços de saúde mental municipal. A partir de dados abertos, apresentamos um panorama sobre o cuidado oferecido pela Rede da Atenção Psicossocial (RAPS) e sobre a relação desta com as demais redes de saúde que atendem demandas de saúde mental no município.
+
+Para a realização da plataforma, desenvolvemos um conjunto de indicadores de acesso, produção, qualidade e perfil dos usuários atendidos na RAPS. Deste modo, proporcionamos uma ferramenta descomplicada para gestoras e gestores municipais realizarem diagnósticos do território e da população que atendem e monitorarem a qualidade dos serviços que estão sendo prestados.
+
+A partir da coleta de dados do SIASUS, do SISAB e de demais bases abertas do Ministério da Saúde, os indicadores Impulso produzem informação visando responder às necessidades do gestor municipal para a tomada de decisões acertadas e consequente aprimoramento contínuo da prestação de serviços públicos
+
+## Tecnologias 
+
+A plataforma de indicadores de Impulso Saúde Mental é implementada com [Next.js](https://nextjs.org/) como principal tecnologia e utilizando SSR para melhor performance no lado do cliente.
+
+Essa aplicação é construida com a biblioteca de componentes do [Design System](https://designsystem.impulsogov.org/) da ImpulsoGov
+
+## Execução local
 
 ```bash
-npm run dev
-# or
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+## Execução produção
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+```bash
+yarn start
+```
 
-## Learn More
+## Instalação de dependencias
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+yarn
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Build
 
-## Deploy on Vercel
+```bash
+yarn build
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
