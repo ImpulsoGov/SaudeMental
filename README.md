@@ -24,8 +24,6 @@ A partir da coleta de dados do SIASUS, do SISAB e de demais bases abertas do Min
 
  ## :milky_way: Estrutura do repositório
 
-Esse repositório foi criado com [Create React App](https://github.com/facebook/create-react-app). Saiba mais em [Create React App documentação](https://facebook.github.io/create-react-app/docs/getting-started).
-
 
 ```plain
 root
@@ -48,8 +46,8 @@ root
 - pages: páginas da aplicação
 - public: imagens para utilização na aplicação.
 - querys: arquivos com as querys de consulta ao graphCMS
-- services: funções com requisições as serviços externos
-- styles: css do estilo das aplicações.
+- services: funções com requisições de serviços externos
+- styles: folhas de estilo da aplicação.
 - utils: codigos auxiliares
 
 ## Tecnologias 
@@ -64,16 +62,15 @@ Essa aplicação é construida com a biblioteca de componentes do [Design System
 
 As nossas aplicações são rodadas na [vercel](https://vercel.com/).
 
-## Execução local
+<div id='instalacao'/> 
+
+ ## 🛠️ Instruções para instalação e acesso ao projeto
+ 
+Execução local
 
 ```bash
 yarn dev
 ```
-
-```bash
-npm run dev
-```
-
 
 ## Execução produção
 
@@ -87,10 +84,19 @@ yarn start
 yarn
 ```
 
-
 ## Build
 
 ```bash
 yarn build
 ```
 
+<div id='contribua'/>  
+
+## :left_speech_bubble: Contribua
+Sinta-se à vontade para contribuir em nosso projeto! Abra uma issue ou envie PRs.
+
+*******
+<div id='licenca'/>  
+
+## :registered: Licença
+MIT (c) 2020, 2022 Impulso Gov <contato@impulsogov.org>
