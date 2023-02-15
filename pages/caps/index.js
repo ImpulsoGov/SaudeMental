@@ -3,9 +3,13 @@ import { useContext, useEffect, useState, useCallback } from "react";
 import { Context } from "../../contexts/Context";
 import { useRouter } from 'next/router'
 
+const BASE_ENDPOINT = 'https://impulsoapi.herokuapp.com/suporte/municipios/';
+
 export default function Paineis() {
   const [city] = useContext(Context);
   const [panelLinks, setPanelLink] = useState([]);
+  const [citySusId, setCitySusId] = useState('');
+
   const getNormalizedCityData = useCallback(() => {
     const lowerCity = city.toLowerCase();
     const cityWithoutSpaces = lowerCity.replace(/\s/g, '');
@@ -15,6 +19,23 @@ export default function Paineis() {
   }, [city]);
 
   useEffect(()=> {
+    const getCitySusId = async () => {
+      try {
+        const [cityName, cityState] = getNormalizedCityData();
+        console.log(cityName);
+        const endpoint = `${BASE_ENDPOINT}?municipio_nome=${cityName}&sigla_uf=${cityState}`;
+        const response = await fetch(endpoint);
+        const [{ municipio_id_sus: susId }] = await response.json();
+
+        console.log('city: ', city, ' sus_id: ', susId);
+        setCitySusId(susId);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    getCitySusId();
+
     if(city === "Aracaju - SE"){
       setPanelLink([
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_gzdcpaaxpc",
@@ -49,8 +70,8 @@ export default function Paineis() {
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_f72gfc12pc"
       ])
     }
-  }, [city]);
-  
+  }, [city, getNormalizedCityData]);
+
   const labels = [
     {
       label: "RESUMO",
