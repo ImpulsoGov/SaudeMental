@@ -1,11 +1,18 @@
 import { PanelSelector } from "@impulsogov/design-system";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { Context } from "../../contexts/Context";
 import { useRouter } from 'next/router'
 
 export default function Paineis() {
   const [city] = useContext(Context);
   const [panelLinks, setPanelLink] = useState([]);
+  const getNormalizedCityData = useCallback(() => {
+    const lowerCity = city.toLowerCase();
+    const cityWithoutSpaces = lowerCity.replace(/\s/g, '');
+    const normalizedData = cityWithoutSpaces.split('-');
+
+    return normalizedData;
+  }, [city]);
 
   useEffect(()=> {
     if(city === "Aracaju - SE"){
