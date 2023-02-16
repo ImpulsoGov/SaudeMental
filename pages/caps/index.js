@@ -1,20 +1,24 @@
 import { PanelSelector } from "@impulsogov/design-system";
+import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../contexts/Context";
+import { getCityData } from "../../services/getCityData";
 import { getNormalizedCity } from "../../utils/getNormalizedCity";
 
 export default function Paineis() {
   const [city] = useContext(Context);
   const [panelLinks, setPanelLink] = useState([]);
-  const [citySusId, setCitySusId] = useState('');
+  const [citySusId, setCitySusId] = useState('280030');
 
-  useEffect(()=> {
+  useEffect(() => {
     const { cityName, cityState } = getNormalizedCity(city);
 
-    getCitySusId(cityName, cityState)
-      .then((susId) => setCitySusId(susId));
+    getCityData(cityName, cityState)
+      .then(({ municipio_id_sus: susId }) => setCitySusId(susId));
 
-    if(city === "Aracaju - SE"){
+    console.log(citySusId);
+
+    if (city === "Aracaju - SE") {
       setPanelLink([
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_gzdcpaaxpc",
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_565p7422pc",
@@ -25,7 +29,7 @@ export default function Paineis() {
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_f72gfc12pc"
       ]);
     }
-    if(city === "Recife - PE"){
+    if (city === "Recife - PE") {
       setPanelLink([
         "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_gzdcpaaxpc",
         "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_565p7422pc",
@@ -37,7 +41,7 @@ export default function Paineis() {
       ]);
     }
 
-    if(city === "Aparecida de Goiânia - GO"){
+    if (city === "Aparecida de Goiânia - GO") {
       setPanelLink([
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_gzdcpaaxpc",
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_565p7422pc",
@@ -48,7 +52,7 @@ export default function Paineis() {
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_f72gfc12pc"
       ]);
     }
-  }, [city]);
+  }, [city, citySusId]);
 
   const labels = [
     {
@@ -76,13 +80,13 @@ export default function Paineis() {
   const router = useRouter();
   const panel = router.query?.painel;
   return (
-    <div style={{fontFamily: "Inter"}}>
+    <div style={ { fontFamily: "Inter" } }>
       <PanelSelector
-        panel={Number(panel)}
-        links={[panelLinks]}
-        list={[labels]}
-        titles={[{label:"Acompanhamento dos serviços CAPS"}]}
+        panel={ Number(panel) }
+        links={ [panelLinks] }
+        list={ [labels] }
+        titles={ [{ label: "Acompanhamento dos serviços CAPS" }] }
       />
     </div>
-  )
+  );
 }
