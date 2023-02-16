@@ -1,48 +1,20 @@
 import { PanelSelector } from "@impulsogov/design-system";
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Context } from "../../contexts/Context";
 import { useRouter } from 'next/router';
-
-const BASE_ENDPOINT = 'https://impulsoapi.herokuapp.com/suporte/municipios/';
-const COMBINING_CHARS_REGEX = /\p{Diacritic}/gu;
-const BLANK_SPACES_REGEX = /\s/g;
+import { getNormalizedCityData } from "../../utils/getNormalizedCityData";
+import { getCitySusId } from "../../services/getCitySusId";
 
 export default function Paineis() {
   const [city] = useContext(Context);
   const [panelLinks, setPanelLink] = useState([]);
   const [citySusId, setCitySusId] = useState('');
 
-  const getNormalizedCityData = useCallback(() => {
-    const lowerCity = city.toLowerCase();
-    let [cityName, cityState] = lowerCity.split(' - ');
-
-    if (BLANK_SPACES_REGEX.test(cityName)) {
-      cityName = cityName.replace(BLANK_SPACES_REGEX, '-');
-    }
-
-    const normalizedCityName = cityName.normalize('NFD').replace(COMBINING_CHARS_REGEX, '');
-
-    return {
-      cityName: normalizedCityName,
-      cityState,
-    };
-  }, [city]);
-
   useEffect(()=> {
-    const getCitySusId = async () => {
-      try {
-        const { cityName, cityState } = getNormalizedCityData();
-        const endpoint = `${BASE_ENDPOINT}?municipio_nome=${cityName}&sigla_uf=${cityState}`;
-        const response = await fetch(endpoint);
-        const [{ municipio_id_sus: susId }] = await response.json();
+    const { cityName, cityState } = getNormalizedCityData(city);
 
-        setCitySusId(susId);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    getCitySusId();
+    getCitySusId(cityName, cityState)
+      .then((susId) => setCitySusId(susId));
 
     if(city === "Aracaju - SE"){
       setPanelLink([
@@ -78,7 +50,7 @@ export default function Paineis() {
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_f72gfc12pc"
       ]);
     }
-  }, [city, getNormalizedCityData]);
+  }, [city]);
 
   const labels = [
     {
