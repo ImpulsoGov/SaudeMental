@@ -5,10 +5,13 @@ import { Context } from "../../contexts/Context";
 import { getCityData } from "../../services/getCityData";
 import { getNormalizedCity } from "../../utils/getNormalizedCity";
 
+const DEFAULT_CITY = 'Aracaju - SE';
+const DEFAULT_CITY_SUS_ID = '280030';
+
 export default function Paineis() {
   const [city] = useContext(Context);
   const [panelLinks, setPanelLink] = useState([]);
-  const [citySusId, setCitySusId] = useState('280030');
+  const [citySusId, setCitySusId] = useState(city === DEFAULT_CITY ? DEFAULT_CITY_SUS_ID : '');
 
   useEffect(() => {
     const { cityName, cityState } = getNormalizedCity(city);
