@@ -1,9 +1,7 @@
 import { PanelSelector } from "@impulsogov/design-system";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../contexts/Context";
-import { useRouter } from 'next/router';
-import { getNormalizedCityData } from "../../utils/getNormalizedCityData";
-import { getCitySusId } from "../../services/getCitySusId";
+import { getNormalizedCity } from "../../utils/getNormalizedCity";
 
 export default function Paineis() {
   const [city] = useContext(Context);
@@ -11,7 +9,7 @@ export default function Paineis() {
   const [citySusId, setCitySusId] = useState('');
 
   useEffect(()=> {
-    const { cityName, cityState } = getNormalizedCityData(city);
+    const { cityName, cityState } = getNormalizedCity(city);
 
     getCitySusId(cityName, cityState)
       .then((susId) => setCitySusId(susId));
