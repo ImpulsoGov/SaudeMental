@@ -1,9 +1,11 @@
 import { PanelSelector } from "@impulsogov/design-system";
 import { useContext, useEffect, useState, useCallback } from "react";
 import { Context } from "../../contexts/Context";
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
 
 const BASE_ENDPOINT = 'https://impulsoapi.herokuapp.com/suporte/municipios/';
+const COMBINING_CHARS_REGEX = /\p{Diacritic}/gu;
+const BLANK_SPACES_REGEX = /\s/g;
 
 export default function Paineis() {
   const [city] = useContext(Context);
@@ -12,22 +14,28 @@ export default function Paineis() {
 
   const getNormalizedCityData = useCallback(() => {
     const lowerCity = city.toLowerCase();
-    const cityWithoutSpaces = lowerCity.replace(/\s/g, '');
-    const normalizedData = cityWithoutSpaces.split('-');
+    let [cityName, cityState] = lowerCity.split(' - ');
 
-    return normalizedData;
+    if (BLANK_SPACES_REGEX.test(cityName)) {
+      cityName = cityName.replace(BLANK_SPACES_REGEX, '-');
+    }
+
+    const normalizedCityName = cityName.normalize('NFD').replace(COMBINING_CHARS_REGEX, '');
+
+    return {
+      cityName: normalizedCityName,
+      cityState,
+    };
   }, [city]);
 
   useEffect(()=> {
     const getCitySusId = async () => {
       try {
-        const [cityName, cityState] = getNormalizedCityData();
-        console.log(cityName);
+        const { cityName, cityState } = getNormalizedCityData();
         const endpoint = `${BASE_ENDPOINT}?municipio_nome=${cityName}&sigla_uf=${cityState}`;
         const response = await fetch(endpoint);
         const [{ municipio_id_sus: susId }] = await response.json();
 
-        console.log('city: ', city, ' sus_id: ', susId);
         setCitySusId(susId);
       } catch (error) {
         console.log(error);
@@ -45,7 +53,7 @@ export default function Paineis() {
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_sb0vlo02pc",
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_nh780y02pc",
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_f72gfc12pc"
-      ])
+      ]);
     }
     if(city === "Recife - PE"){
       setPanelLink([
@@ -56,7 +64,7 @@ export default function Paineis() {
         "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_sb0vlo02pc",
         "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_nh780y02pc",
         "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_f72gfc12pc"
-      ])
+      ]);
     }
 
     if(city === "Aparecida de Goiânia - GO"){
@@ -68,7 +76,7 @@ export default function Paineis() {
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_sb0vlo02pc",
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_nh780y02pc",
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_f72gfc12pc"
-      ])
+      ]);
     }
   }, [city, getNormalizedCityData]);
 
@@ -94,9 +102,9 @@ export default function Paineis() {
     {
       label: "PRODUÇÃO",
     },
-  ]
-  const router = useRouter()
-  const panel = router.query?.painel
+  ];
+  const router = useRouter();
+  const panel = router.query?.painel;
   return (
     <div style={{fontFamily: "Inter"}}>
       <PanelSelector
