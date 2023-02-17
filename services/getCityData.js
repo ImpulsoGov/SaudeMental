@@ -6,7 +6,7 @@ export const getCityData = async (cityName, cityState) => {
   try {
     const config = {
       method: 'get',
-      url: `${API_URL}/suporte/municipios/?municipio_nome=${cityName}`,
+      url: `${API_URL}/suporte/municipios/?municipio_nome=${cityName}&estado_sigla=${cityState}`,
     };
 
     const { data } = await axios(config);
