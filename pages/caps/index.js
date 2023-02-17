@@ -10,7 +10,7 @@ const DEFAULT_CITY_SUS_ID = '280030';
 
 export default function Paineis() {
   const [city] = useContext(Context);
-  const [panelLinks, setPanelLink] = useState([]);
+  const [panelLinks, setPanelLinks] = useState([]);
   const [citySusId, setCitySusId] = useState(city === DEFAULT_CITY ? DEFAULT_CITY_SUS_ID : '');
 
   useEffect(() => {
@@ -19,11 +19,13 @@ export default function Paineis() {
     getCityData(cityName, cityState)
       .then(({ municipio_id_sus: susId }) => setCitySusId(susId));
 
-    console.log(citySusId);
+    const summaryReport = `https://lookerstudio.google.com/embed/reporting/376becba-6d56-415f-b6ae-879ef2783f17/page/p_gzdcpaaxpc/edit?params=%7B%22df652%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580${citySusId}%22%7D`;
+
+    setPanelLinks([summaryReport]);
 
     if (city === "Aracaju - SE") {
-      setPanelLink([
-        "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_gzdcpaaxpc",
+      setPanelLinks((prevPanelLinks) => [...prevPanelLinks,
+        // "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_gzdcpaaxpc",
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_565p7422pc",
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_sq3fdwu2pc",
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_ks6mmf02pc",
@@ -33,8 +35,8 @@ export default function Paineis() {
       ]);
     }
     if (city === "Recife - PE") {
-      setPanelLink([
-        "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_gzdcpaaxpc",
+      setPanelLinks((prevPanelLinks) => [...prevPanelLinks,
+        // "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_gzdcpaaxpc",
         "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_565p7422pc",
         "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_sq3fdwu2pc",
         "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_ks6mmf02pc",
@@ -45,8 +47,8 @@ export default function Paineis() {
     }
 
     if (city === "Aparecida de Goiânia - GO") {
-      setPanelLink([
-        "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_gzdcpaaxpc",
+      setPanelLinks((prevPanelLinks) => [...prevPanelLinks,
+        // "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_gzdcpaaxpc",
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_565p7422pc",
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_sq3fdwu2pc",
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_ks6mmf02pc",
