@@ -39,7 +39,36 @@ function MyApp(props) {
       </Head>
         <Context.Provider value={[city, setCity]}>
           <NavBar
-            user={null}
+            // user={{
+            //   label: 'ENTRAR',
+            //   login: () => router.push('/caps')
+            // }}
+            // municipio={city}
+            // setMunicipio={setCity}
+            // data={props.res[0].municipios}
+            // theme={{
+            //   logoProjeto: path === "/"
+            //     ? props.res[0].logos[0].logo.url
+            //     : props.res[0].logos[1].logo.url,
+            //   cor: path === "/" ? "ColorSM" : "WhiteSM"
+            // }}
+            // menu={props.res[0].menus}
+            // SeletorTipo={1}
+            // NavBarIconBranco={props.res[0].buttonImages[2].image.url}
+            // NavBarIconDark={props.res[0].buttonImages[1].image.url}
+            user={
+              {
+                  nome : 'nome',
+                  cargo : 'cargo',
+                  button : {label:"sair"},
+                  label : 'ENTRAR',
+                  equipe : 'equipe',
+                  login : () => router.push('/caps'),
+                  logout : () => router.push('/'),
+                  // validarCredencial : validateCredentials,
+                  // validacao : validacao
+              }
+            }
             municipio={city}
             setMunicipio={setCity}
             data={props.res[0].municipios}
@@ -49,10 +78,35 @@ function MyApp(props) {
                 : props.res[0].logos[1].logo.url,
               cor: path === "/" ? "ColorSM" : "WhiteSM"
             }}
-            menu={props.res[0].menus}
-            SeletorTipo={1}
+            seletorMunicipios = {false}
+            menu={ props.res[0].menus }
             NavBarIconBranco={props.res[0].buttonImages[2].image.url}
             NavBarIconDark={props.res[0].buttonImages[1].image.url}
+            esqueciMinhaSenha = {{
+              reqs : {
+                  mail : console.log('mail'),
+                  codigo : console.log('codigo'),
+                  alterarSenha : console.log('senha')
+              },
+            }}
+            ModalInicio={{
+              titulo: "Faça o login para ver os dados restritos.",
+              chamada: "Se esse é o seu primeiro acesso e sua senha ainda não foi criada, clique abaixo em ‘primeiro acesso’. Se você já possui uma senha, clique em ‘entrar’.",
+              cardAlert: "<p style='font-size:14px;'>A área logada é de acesso exclusivo para municípios parceiros. Para ver os resultados públicos do seu município, do Q3/22, <a href='analise' style='text-decoration:underline !important;'>clique aqui.</a></p>",
+              botaoPrincipal : {
+                  label: "entrar",
+              },
+              botaoSecundario : {
+                  label: "primeiro acesso",
+              }
+            }}
+            primeiroAcesso={{
+                reqs:{
+                  mail : console.log('mail'),
+                  codigo : console.log('codigo'),
+                  alterarSenha : console.log('senha')
+                }
+            }}
           />
           <Component {...pageProps} />
 
