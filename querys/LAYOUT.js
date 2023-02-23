@@ -1,51 +1,49 @@
 export const LAYOUT = `
 {
-  municipios {
-    nome
-    uf
-  }
-
-  logos {
-    logo {
-      url
-    }
-  }
-
-  menus {
+  menus(orderBy: ordem_ASC) {
     label
     url
     sub {
-      ... on SubMenu {
-        label
-        url
-        item {
-          ... on SubMenuItem {
-            label
-            url
+        ... on SubMenu {
+          label
+          url
+          item {
+            ... on SubMenuItem {
+              label
+              url
+            }
           }
         }
-
-      }
-    }
   }
-
-
-  buttonImages {
-    image {
-      url
-    }
-  }
-
-  contactCopyrights {
-    email
-    copyright
-  }
-
-  socialMedias {
+}
+logoSms {
+  logo {
     url
-    logo {
-      url
-    }
   }
+}
+footers{
+  label
+  url
+}
+logoImpulsos {
+  logo {
+    url
+  }
+}
+socialMedias {
+  logo {
+    url
+  }
+  url
+}
+copyrights {
+  contato
+  copyright
+}
+logoMenuMoblies {
+  logo {
+    url
+  }
+}
 }
 `
