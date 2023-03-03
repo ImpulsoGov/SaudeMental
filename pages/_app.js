@@ -41,6 +41,7 @@ function MyApp(props) {
   const cargo = props.ses != null ? props.ses.user.cargo : ""
   const [status, setStatus] = useState();
   const [isLoading, setLoading] = useState(true);
+  const [active, setMode] = useState(true);
 
   return (
     <>
@@ -66,6 +67,9 @@ function MyApp(props) {
                   validarCredencial : validateCredentials,
                   validacao : validacao
                 }}
+                login={{
+                  titulo: "Faça o login para ver os indicadores do seu município."
+                }}
                 municipio={city}
                 setMunicipio = {setCity}
                 data={props.res[0].municipios}
@@ -73,11 +77,22 @@ function MyApp(props) {
                   logoProjeto : width > 1000 ? 
                   path == '/' ? props.res[0].logoSms[0].logo[0].url : props.res[0].logoSms[0].logo[1].url : 
                   props.res[0].logoSms[0].logo[0].url,
-                  cor : path == '/' ? "ColorSM" : "White",
+                  cor : path == '/' ? "ColorSM" : "WhiteSM",
                   logoLink : props.ses ? '/inicio' : '/'
                 }}
                 seletorMunicipios = {path == '/analise'}
-                menu={ props.ses ? [props.res[0].menus[1],props.res[0].menus[4],{label: "Capacitações", url : "/capacitacoes"}] :  [props.res[0].menus[0],props.res[0].menus[1],props.res[0].menus[3]]}
+                showMenuMobile = {{
+                  states:{
+                    active : active,
+                    setMode : setMode
+                  }
+                }}
+                menu={[
+                  props.res[0].menus[0],
+                  props.res[0].menus[1],
+                  props.res[0].menus[2],
+                  props.res[0].menus[3]
+                ]}
                 NavBarIconBranco = {props.res[0].logoMenuMoblies[0].logo.url}
                 NavBarIconDark = {props.res[0].logoMenuMoblies[1].logo.url}
                 esqueciMinhaSenha = {{
@@ -86,11 +101,14 @@ function MyApp(props) {
                       codigo : validarCodigo,
                       alterarSenha : alterarSenha
                   },
+                  chamadas: {
+                    sucesso: "Agora é só clicar no botão ENTRAR com seu e-mail e a senha criada."
+                  }
                 }}
                 ModalInicio={{
-                  titulo: "Faça o login para ver os dados restritos.",
-                  chamada: "Se esse é o seu primeiro acesso e sua senha ainda não foi criada, clique abaixo em ‘primeiro acesso’. Se você já possui uma senha, clique em ‘entrar’.",
-                  cardAlert: "<p style='font-size:14px;'>A área logada é de acesso exclusivo para municípios parceiros. Para ver os resultados públicos do seu município, do Q3/22, <a href='analise' style='text-decoration:underline !important;'>clique aqui.</a></p>",
+                  titulo: "Faça o login para ver os indicadores do seu município.",
+                  chamada: "Se você já possui uma senha, clique em ENTRAR. Caso o seu município seja parceiro e seu acesso já foi autorizado, clique em PRIMEIRO ACESSO para criar a sua senha.",
+                  // cardAlert: "<p style='font-size:14px;'>Se você já possui uma senha, clique em ENTRAR.</p>",
                   botaoPrincipal : {
                       label: "entrar",
                   },
@@ -103,6 +121,9 @@ function MyApp(props) {
                         mail : primeiroAcesso,
                         codigo : validarCodigo,
                         alterarSenha : criarSenha,
+                    },
+                    chamadas: {
+                      sucesso: "Agora é só clicar no botão ENTRAR com seu e-mail e a senha criada."
                     }
                 }}
               />
