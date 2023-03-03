@@ -1,10 +1,13 @@
-import { PanelSelector } from "@impulsogov/design-system";
+import { ButtonLight, PanelSelector } from "@impulsogov/design-system";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../contexts/Context";
 import { useRouter } from 'next/router'
+// import { useSession } from "next-auth/react";
 
 export default function Paineis() {
   const [city] = useContext(Context);
+  // const { data: session } = useSession();
+  // const city = session?.user.municipio;
   const [panelLinks, setPanelLink] = useState([]);
 
   useEffect(()=> {
@@ -71,6 +74,17 @@ export default function Paineis() {
   const panel = router.query?.painel
   return (
     <div style={{fontFamily: "Inter"}}>
+      <div style={{padding: "40px 120px"}}>
+        <ButtonLight
+          icone={{
+            posicao: 'right',
+            url: 'https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG'
+          }}
+          label="VOLTAR"
+          link="/inicio"
+        />
+      </div>
+
       <PanelSelector
         panel={Number(panel)}
         links={[panelLinks]}
