@@ -22,7 +22,9 @@ export default function Home({res}) {
     <>
       <div style={{ backgroundColor: "#1B2D82" }}>
         <HomeBanner
-          titulo={res[0].homeBanners[0].title} texto={res[0].homeBanners[0].text} theme="ColorSM"
+          titulo={res[0].homeBanners[0].title}
+          texto={res[0].homeBanners[0].text}
+          theme="ColorSM"
         />
 
         <ImagemFundo
@@ -60,11 +62,22 @@ export default function Home({res}) {
 
         <Parcerias
           parceiros={[
+            { alt: "parceiros", src:  res[0].logos[2].logo.url, titulo: "Título" },
+            { alt: "parceiros", src: res[0].logos[5].logo.url, titulo: "Título" },
+            { alt: "parceiros", src: res[0].logos[4].logo.url, titulo: "Título" },
+            { alt: "parceiros", src: res[0].logos[4].logo.url, titulo: "Título" }
+          ]}
+          theme="ColorAGP"
+          titulo="Apoio"
+        />
+        <Parcerias
+          parceiros={[
             { alt: "parceiros", src:  res[0].logos[2].logo.url },
             { alt: "parceiros", src: res[0].logos[5].logo.url },
             { alt: "parceiros", src: res[0].logos[4].logo.url }
           ]}
           theme="ColorAGP"
+          titulo="Governos Parceiros"
         />
       </div>
 
