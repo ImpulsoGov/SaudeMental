@@ -60,7 +60,6 @@ function MyApp(props) {
                   cargo: cargo,
                   button: { label: "sair" },
                   label: props.ses == null || typeof (props.ses) == undefined ? "Entrar" : nome[0],
-                  equipe: props.ses?.user?.equipe,
                   login: signIn,
                   logout: signOut,
                   validarCredencial: validateCredentials,
@@ -88,7 +87,7 @@ function MyApp(props) {
                 } }
                 menu={
                   props.ses ? [
-                    props.res[0].menus[0],
+                    props.ses ? {label: "Inicio", url: "/inicio"} : {label: "Inicio", url: "/"},
                     props.res[0].menus[1],
                     props.res[0].menus[2],
                     props.res[0].menus[3]
