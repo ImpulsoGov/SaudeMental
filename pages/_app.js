@@ -1,5 +1,4 @@
-import { getSession, signIn, signOut, useSession } from "next-auth/react";
-import { SessionProvider } from "next-auth/react"
+import { getSession, SessionProvider, signIn, signOut, useSession } from "next-auth/react";
 import App from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -37,8 +36,8 @@ function MyApp(props) {
 
   let width = useWindowWidth();
 
-  const nome = props.ses == null || typeof(props.ses) == undefined ? "" : props.ses.user.nome
-  const cargo = props.ses != null ? props.ses.user.cargo : ""
+  const nome = props.ses == null || typeof (props.ses) == undefined ? "" : props.ses.user.nome;
+  const cargo = props.ses != null ? props.ses.user.cargo : "";
   const [status, setStatus] = useState();
   const [isLoading, setLoading] = useState(true);
   const [active, setMode] = useState(true);
@@ -51,108 +50,114 @@ function MyApp(props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Context.Provider value={ [city, setCity] }>
-        <SessionProvider session={session} refetchInterval={60*60} refetchOnWindowFocus={true} clientMaxAge={8 * 60 * 60}>
-          <Auth setStatus={setStatus}>
-            {isLoading && 
+        <SessionProvider session={ session } refetchInterval={ 60 * 60 } refetchOnWindowFocus={ true } clientMaxAge={ 8 * 60 * 60 }>
+          <Auth setStatus={ setStatus }>
+            { isLoading &&
 
               <NavBar
-                user={{
-                  nome : nome,
-                  cargo : cargo,
-                  button : {label:"sair"},
-                  label : props.ses == null || typeof(props.ses) == undefined  ? "Entrar" : nome[0],
-                  equipe : props.ses?.user?.equipe,
-                  login : signIn,
-                  logout : signOut,
-                  validarCredencial : validateCredentials,
-                  validacao : validacao
-                }}
-                login={{
+                user={ {
+                  nome: nome,
+                  cargo: cargo,
+                  button: { label: "sair" },
+                  label: props.ses == null || typeof (props.ses) == undefined ? "Entrar" : nome[0],
+                  equipe: props.ses?.user?.equipe,
+                  login: signIn,
+                  logout: signOut,
+                  validarCredencial: validateCredentials,
+                  validacao: validacao
+                } }
+                login={ {
                   titulo: "Faça o login para ver os indicadores do seu município."
-                }}
-                municipio={city}
-                setMunicipio = {setCity}
-                data={props.res[0].municipios}
-                theme={{
-                  logoProjeto : width > 1000 ? 
-                  path == '/' ? props.res[0].logoSms[0].logo[0].url : props.res[0].logoSms[0].logo[1].url : 
-                  props.res[0].logoSms[0].logo[0].url,
-                  cor : path == '/' ? "ColorSM" : "WhiteSM",
-                  logoLink : props.ses ? '/inicio' : '/'
-                }}
-                seletorMunicipios = {path == '/analise'}
-                showMenuMobile = {{
-                  states:{
-                    active : active,
-                    setMode : setMode
+                } }
+                municipio={ city }
+                setMunicipio={ setCity }
+                data={ props.res[0].municipios }
+                theme={ {
+                  logoProjeto: width > 1000 ?
+                    path == '/' ? props.res[0].logoSms[0].logo[0].url : props.res[0].logoSms[0].logo[1].url :
+                    props.res[0].logoSms[0].logo[0].url,
+                  cor: path == '/' ? "ColorSM" : "WhiteSM",
+                  logoLink: props.ses ? '/inicio' : '/'
+                } }
+                seletorMunicipios={ path == '/analise' }
+                showMenuMobile={ {
+                  states: {
+                    active: active,
+                    setMode: setMode
                   }
-                }}
-                menu={[
-                  props.res[0].menus[0],
-                  props.res[0].menus[1],
-                  props.res[0].menus[2],
-                  props.res[0].menus[3]
-                ]}
-                NavBarIconBranco = {props.res[0].logoMenuMoblies[0].logo.url}
-                NavBarIconDark = {props.res[0].logoMenuMoblies[1].logo.url}
-                esqueciMinhaSenha = {{
-                  reqs : {
-                      mail : solicitarNovaSenha,
-                      codigo : validarCodigo,
-                      alterarSenha : alterarSenha
+                } }
+                menu={
+                  props.ses ? [
+                    props.res[0].menus[0],
+                    props.res[0].menus[1],
+                    props.res[0].menus[2],
+                    props.res[0].menus[3]
+                  ] : [
+                    props.res[0].menus[0],
+                    props.res[0].menus[1],
+                    props.res[0].menus[3]
+                  ]
+                }
+                NavBarIconBranco={ props.res[0].logoMenuMoblies[0].logo.url }
+                NavBarIconDark={ props.res[0].logoMenuMoblies[1].logo.url }
+                esqueciMinhaSenha={ {
+                  reqs: {
+                    mail: solicitarNovaSenha,
+                    codigo: validarCodigo,
+                    alterarSenha: alterarSenha
                   },
                   chamadas: {
                     sucesso: "Agora é só clicar no botão ENTRAR com seu e-mail e a senha criada."
                   }
-                }}
-                ModalInicio={{
+                } }
+                ModalInicio={ {
                   titulo: "Faça o login para ver os indicadores do seu município.",
                   chamada: "Se você já possui uma senha, clique em ENTRAR. Caso o seu município seja parceiro e seu acesso já foi autorizado, clique em PRIMEIRO ACESSO para criar a sua senha.",
                   // cardAlert: "<p style='font-size:14px;'>Se você já possui uma senha, clique em ENTRAR.</p>",
-                  botaoPrincipal : {
-                      label: "entrar",
+                  botaoPrincipal: {
+                    label: "entrar",
                   },
-                  botaoSecundario : {
-                      label: "primeiro acesso",
+                  botaoSecundario: {
+                    label: "primeiro acesso",
                   }
-                }}
-                primeiroAcesso={{
-                    reqs:{
-                        mail : primeiroAcesso,
-                        codigo : validarCodigo,
-                        alterarSenha : criarSenha,
-                    },
-                    chamadas: {
-                      sucesso: "Agora é só clicar no botão ENTRAR com seu e-mail e a senha criada."
-                    }
-                }}
+                } }
+                primeiroAcesso={ {
+                  reqs: {
+                    mail: primeiroAcesso,
+                    codigo: validarCodigo,
+                    alterarSenha: criarSenha,
+                  },
+                  chamadas: {
+                    sucesso: "Agora é só clicar no botão ENTRAR com seu e-mail e a senha criada."
+                  }
+                } }
               />
             }
-            <div style={{"padding-top": "90px"}}>
+            <div style={ { "padding-top": "70px" } }>
               <Component { ...pageProps } />
             </div>
 
             <Footer
-              theme={{
-                logoProjeto : props.res[0].logoSms[0].logo[0].url,
+              theme={ {
+                logoProjeto: props.res[0].logoSms[0].logo[0].url,
                 logoImpulso: props.res[0].logoImpulsos[0].logo.url,
-                cor : "Black"
-              }}
-              logoLink = {props.ses ? '/inicio' : '/'}
-              address={{
-                  first: "",
-                  second: "",
-              }}
-              contactCopyright={{
-                  copyright: props.res[0].copyrights[0].copyright,
-                  email: props.res[0].copyrights[0].contato,
-              }}
-              links={ props.ses ? [props.res[0].menus[1],props.res[0].menus[4]] :  [props.res[0].menus[0],props.res[0].menus[1],props.res[0].menus[3]]}
-              socialMediaURLs={[
-                { url: props.res[0].socialMedias[0].url, logo: props.res[0].socialMedias[0].logo.url},
-                { url: props.res[0].socialMedias[1].url, logo: props.res[0].socialMedias[1].logo.url},
-                { url: props.res[0].socialMedias[2].url, logo: props.res[0].socialMedias[2].logo.url},
-              ]} 
+                cor: "SM"
+              } }
+              logoLink={ props.ses ? '/inicio' : '/' }
+              address={ {
+                first: "",
+                second: "",
+              } }
+              contactCopyright={ {
+                copyright: props.res[0].copyrights[0].copyright,
+                email: props.res[0].copyrights[0].contato,
+              } }
+              links={ [{ label: "Inicio", url: "/inicio" }, { label: "Sobre", url: "/sobre" }, { label: "Glossário", url: "/glossario" }] }
+              socialMediaURLs={ [
+                { url: props.res[0].socialMedias[0].url, logo: props.res[0].socialMedias[0].logo.url },
+                { url: props.res[0].socialMedias[1].url, logo: props.res[0].socialMedias[1].logo.url },
+                { url: props.res[0].socialMedias[2].url, logo: props.res[0].socialMedias[2].logo.url },
+              ] }
             />
 
           </Auth>
@@ -160,7 +165,7 @@ function MyApp(props) {
         <Analytics />
       </Context.Provider>
     </>
-  )
+  );
 }
 
 function Auth({ children, setStatus }) {
