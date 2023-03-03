@@ -62,10 +62,8 @@ export default function Home({res}) {
 
         <Parcerias
           parceiros={[
-            { alt: "parceiros", src:  res[0].logos[2].logo.url, titulo: "Título" },
-            { alt: "parceiros", src: res[0].logos[5].logo.url, titulo: "Título" },
-            { alt: "parceiros", src: res[0].logos[4].logo.url, titulo: "Título" },
-            { alt: "parceiros", src: res[0].logos[4].logo.url, titulo: "Título" }
+            { alt: "parceiros", src: res[0].logos[4].logo.url, titulo: "Técnico e financeiro" },
+            { alt: "parceiros", src:  "https://media.graphassets.com/L3pDd52rQSMTxBA0iZCE", titulo: "Financeiro" },
           ]}
           theme="ColorAGP"
           titulo="Apoio"
@@ -73,8 +71,8 @@ export default function Home({res}) {
         <Parcerias
           parceiros={[
             { alt: "parceiros", src:  res[0].logos[2].logo.url },
-            { alt: "parceiros", src: res[0].logos[5].logo.url },
-            { alt: "parceiros", src: res[0].logos[4].logo.url }
+            { alt: "parceiros", src: "https://media.graphassets.com/aWUhrz97TpWYaM8FZkOO" },
+            { alt: "parceiros", src: "https://media.graphassets.com/w0PeMRhSTMyiAJ6EoHCK" }
           ]}
           theme="ColorAGP"
           titulo="Governos Parceiros"
