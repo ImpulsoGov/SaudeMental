@@ -1,10 +1,10 @@
 import { CardLargeGrid, Greeting } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
-import { LAYOUT } from "../../querys/LAYOUT";
+import { HOME } from "../../querys/HOME";
 import { getData } from "../../services/getData";
 
 function Inicio({res}) {
-  const { data: session,status } = useSession();
+  const { data: session } = useSession();
 
   return (
     <>
@@ -20,27 +20,27 @@ function Inicio({res}) {
         cards={[
           {
             icon: 'https://media.graphassets.com/zCC2wPnJTxagLyEZFV45',
-            links: res[0].menus[2].sub[0].item.map((item) => ({
+            links: res[0].cards[0].body.map((item) => ({
               label: item.label,
               link: item.url
             })),
-            titulo: res[0].menus[2].sub[0].label
+            titulo: res[0].cards[0].title
           },
           {
             icon: 'https://media.graphassets.com/7wvfZaFDQXZ8VdssprbA',
-            links: res[0].menus[2].sub[1].item.map((item) => ({
+            links: res[0].cards[1].body.map((item) => ({
               label: item.label,
               link: item.url
             })),
-            titulo: res[0].menus[2].sub[1].label
+            titulo: res[0].cards[1].title
           },
           {
             icon: 'https://media.graphassets.com/nWpV6nQfCdgKqtkuOfg2',
-            links: res[0].menus[2].sub[2].item.map((item) => ({
+            links: res[0].cards[2].body.map((item) => ({
               label: item.label,
               link: item.url
             })),
-            titulo: res[0].menus[2].sub[2].label
+            titulo: res[0].cards[2].title
           }
         ]}
         obs="Para sair da área logada, basta ir no seu usuário no menu superior e clicar em ‘SAIR’."
@@ -70,7 +70,7 @@ export async function getServerSideProps({req}) {
     }
   }
 
-  const res = [await getData(LAYOUT)];
+  const res = [await getData(HOME)];
 
   return {
       props: {
