@@ -2,12 +2,9 @@ import { ButtonLight, PanelSelector } from "@impulsogov/design-system";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../contexts/Context";
 import { useRouter } from 'next/router'
-// import { useSession } from "next-auth/react";
 
 export default function Paineis() {
   const [city] = useContext(Context);
-  // const { data: session } = useSession();
-  // const city = session?.user.municipio;
   const [panelLinks, setPanelLink] = useState([]);
 
   useEffect(()=> {
