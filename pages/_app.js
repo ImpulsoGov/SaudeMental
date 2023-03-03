@@ -128,7 +128,9 @@ function MyApp(props) {
                 }}
               />
             }
-            <Component { ...pageProps } />
+            <div style={{"padding-top": "90px"}}>
+              <Component { ...pageProps } />
+            </div>
 
             <Footer
               theme={{
