@@ -18,6 +18,7 @@ import { useWindowWidth } from '../helpers/useWindowWidth';
 import { alterarSenha, solicitarNovaSenha, validarCodigo } from '../services/esqueciMinhaSenha';
 import { criarSenha, primeiroAcesso } from '../services/primeiroAcesso';
 import { validacao, validateCredentials } from '../services/validateCredentials';
+import style from '../styles/MyApp.module.css';
 
 function MyApp(props) {
   const { Component, pageProps: { session, ...pageProps } } = props;
@@ -53,7 +54,6 @@ function MyApp(props) {
         <SessionProvider session={ session } refetchInterval={ 60 * 60 } refetchOnWindowFocus={ true } clientMaxAge={ 8 * 60 * 60 }>
           <Auth setStatus={ setStatus }>
             { isLoading &&
-
               <NavBar
                 user={ {
                   nome: nome,
@@ -132,9 +132,10 @@ function MyApp(props) {
                 } }
               />
             }
-            <div style={ { "padding-top": "70px" } }>
+
+            <main className={style["main-content"]}>
               <Component { ...pageProps } />
-            </div>
+            </main>
 
             <Footer
               theme={ {
