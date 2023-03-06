@@ -1,7 +1,7 @@
 import { PanelSelector } from "@impulsogov/design-system";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../contexts/Context";
-import { useRouter } from 'next/router'
+import { BackButton } from "../../components/BackButton";
 
 export default function Paineis() {
   const [city] = useContext(Context);
@@ -51,7 +51,9 @@ export default function Paineis() {
   const router = useRouter()
   const panel = router.query?.painel
   return (
-    <div style={{fontFamily: "Inter"}}>
+    <div>
+      <BackButton />
+
       <PanelSelector
         panel={Number(panel)}
         links={[panelLinks]}
