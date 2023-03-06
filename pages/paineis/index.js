@@ -1,7 +1,31 @@
 import { PanelSelector } from "@impulsogov/design-system"
 import { useContext, useEffect, useState } from "react"
 import { Context } from "../../contexts/Context"
+import { useRouter } from 'next/router';
 import { BackButton } from "../../components/BackButton";
+
+export async function getServerSideProps({req}) {
+  let redirect;
+  const userIsActive = req.cookies['next-auth.session-token'];
+  const userIsActiveSecure = req.cookies['__Secure-next-auth.session-token'];
+
+  if(userIsActive){
+    redirect=true
+  }else{
+    redirect = userIsActiveSecure ? true : false;
+  }
+
+  if(!redirect) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false, // make this true if you want the redirect to be cached by the search engines and clients forever
+      },
+    }
+  }
+
+  return { props: {} }
+}
 
 export default function Paineis() {
   const router = useRouter()
