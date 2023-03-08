@@ -3,26 +3,11 @@ import { useContext, useEffect, useState } from "react";
 import { Context } from "../../contexts/Context";
 import { useRouter } from 'next/router';
 import { BackButton } from "../../components/BackButton";
+import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 
 export async function getServerSideProps({req}) {
-  let redirect;
-  const userIsActive = req.cookies['next-auth.session-token'];
-  const userIsActiveSecure = req.cookies['__Secure-next-auth.session-token'];
-
-  if(userIsActive){
-    redirect=true
-  }else{
-    redirect = userIsActiveSecure ? true : false;
-  }
-
-  if(!redirect) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false, // make this true if you want the redirect to be cached by the search engines and clients forever
-      },
-    }
-  }
+  const redirect = redirectHomeNotLooged(ctx)
+  if(redirect) return redirect
 
   return { props: {} }
 }

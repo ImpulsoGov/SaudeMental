@@ -4,10 +4,11 @@ import axios from "axios";
 import FormData from "form-data";
 import { API_URL } from "../../../constants/API_URL";
 
-export const cargoNome = async (token,mail)=>{
+export const obterDadosUsuarioSM = async (token,mail)=>{
+  console.log(mail)
   let config = {
     method: 'get',
-    url: API_URL+'suporte/ger_usuarios/cargo-nome?id='+mail+'&id_cod=1',
+    url: API_URL+'suporte/ger_usuarios/dados-usuario-sm?id='+mail+'&id_cod=1',
     headers: { 
       'Authorization': 'Bearer '+token
     }
@@ -35,8 +36,12 @@ const getToken = async(credentials)=>{
   };
   return await axios(config)
   .then(async(response)=> {
-    let cargonome = await cargoNome(response.data.access_token,credentials.username)
-    return {...response.data,mail:credentials.username,...cargonome}
+    let DadosUsuario = await obterDadosUsuarioSM(response.data.access_token,credentials.username)
+    console.log(DadosUsuario)
+    console.log(process.env.NEXTAUTH_JWT_SECRET)
+    const res = {...response.data,mail:credentials.username,...DadosUsuario}
+    console.log(res)
+    return res
   })
   .catch(function (error) {
     console.log(error);
@@ -45,7 +50,7 @@ const getToken = async(credentials)=>{
 }
 
 export const authOptions = {
-secret: 'v5oY81w077SDsgs/2VLSGql/5PJ3vwrWoHJISb2zCZk=',
+secret: process.env.NEXTAUTH_JWT_SECRET,
 providers: [
   CredentialsProvider({
     // The name to display on the sign in form (e.g. "Sign in with...")
@@ -77,7 +82,7 @@ session: {
 },
 refetchInterval: 1,
 jwt: {
-  secret: 'v5oY81w077SDsgs/2VLSGql/5PJ3vwrWoHJISb2zCZk=',
+  secret: process.env.NEXTAUTH_SECRET,
   maxAge: 8 * 60 * 60
 },
 callbacks: {

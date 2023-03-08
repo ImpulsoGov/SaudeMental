@@ -1,7 +1,22 @@
 import { CardLargeGrid, Greeting } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
+import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 import { HOME } from "../../querys/HOME";
 import { getData } from "../../services/getData";
+
+export async function getServerSideProps(ctx) {
+  const redirect = redirectHomeNotLooged(ctx)
+  if(redirect) return redirect
+
+  const res = [await getData(HOME)];
+
+  return {
+      props: {
+        res
+      }
+  }
+}
+
 
 function Inicio({res}) {
   const { data: session } = useSession();
@@ -50,33 +65,5 @@ function Inicio({res}) {
   )
 }
 
-export async function getServerSideProps({req}) {
-  let redirect;
-  const userIsActive = req.cookies['next-auth.session-token'];
-  const userIsActiveSecure = req.cookies['__Secure-next-auth.session-token'];
-
-  if(userIsActive){
-    redirect=true
-  }else{
-    redirect = userIsActiveSecure ? true : false;
-  }
-
-  if(!redirect) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false, // make this true if you want the redirect to be cached by the search engines and clients forever
-      }, 
-    }
-  }
-
-  const res = [await getData(HOME)];
-
-  return {
-      props: {
-        res
-      }
-  }
-}
 
 export default Inicio;
