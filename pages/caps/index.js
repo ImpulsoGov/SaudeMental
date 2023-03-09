@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { BackButton } from "../../components/BackButton";
 import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 
-export async function getServerSideProps({req}) {
+export async function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx)
   if(redirect) return redirect
 
