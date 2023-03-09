@@ -94,7 +94,6 @@ function MyApp(props) {
                   ] : [
                     props.res[0].menus[0],
                     props.res[0].menus[1],
-                    props.res[0].menus[3]
                   ]
                 }
                 NavBarIconBranco={ props.res[0].logoMenuMoblies[0].logo.url }
@@ -118,6 +117,10 @@ function MyApp(props) {
                   },
                   botaoSecundario: {
                     label: "primeiro acesso",
+                  },
+                  botaoAjuda: {
+                    label: "ESTOU COM PROBLEMAS NO LOGIN",
+                    link:""
                   }
                 } }
                 primeiroAcesso={ {
