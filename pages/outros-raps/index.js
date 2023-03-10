@@ -1,13 +1,13 @@
-import { PanelSelector } from "@impulsogov/design-system";
+import { PanelSelector, ButtonLight, TituloTexto } from "@impulsogov/design-system";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../contexts/Context";
 import { useRouter } from 'next/router';
-import { BackButton } from "../../components/BackButton";
 import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
+import style from "../duvidas/Duvidas.module.css"
 
 export async function getServerSideProps(ctx) {
-  const redirect = redirectHomeNotLooged(ctx)
-  if(redirect) return redirect
+  // const redirect = redirectHomeNotLooged(ctx)
+  // if(redirect) return redirect
   return { props: {} }
 }
 
@@ -60,13 +60,32 @@ export default function Paineis() {
   const panel = router.query?.painel
   return (
     <div>
-      <BackButton />
+      <div className={style.BotaoVoltar}>
+          <ButtonLight 
+              icone={{posicao: 'right', url: 'https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG'}} 
+              label="VOLTAR" 
+              link="/inicio"/>
+          <div style={{position:"relative",left:"70%"}}>
+            <ButtonLight
+                icone={{posicao: 'right', url: 'https://media.graphassets.com/yaYuyi0KS3WkqhKPUzro'}}
+                label="CENTRAL DE AJUDA"
+                link="/central-de-ajuda"/>
+          </div>
+      </div>
+      <TituloTexto 
+        imagem= {{
+          posicao: null,
+          url: ''
+        }}
+        titulo= "Outros serviços RAPS"
+        texto=""
+      />
 
       <PanelSelector
         panel={Number(panel)}
         links={[panelLinks]}
         list={[labels]}
-        titles={[{label:"Outros serviços RAPS"}]}
+        titles={[{label:""}]}
       />
     </div>
   )
