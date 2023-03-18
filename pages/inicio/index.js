@@ -79,8 +79,8 @@ function Inicio({res}) {
         cardsExtra={[
           {
             icon: 'https://media.graphassets.com/6cOfkxeyT7245Fn19kgU',
-            link: '/duvidas',
-            titulo: 'Solicitar novo usuário'
+            link: '/gestao-usuarios',
+            titulo: 'Gerenciamento de usuários'
           },
           {
             icon: 'https://media.graphassets.com/6cOfkxeyT7245Fn19kgU',
