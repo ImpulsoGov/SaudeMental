@@ -6,8 +6,8 @@ import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 import style from "../duvidas/Duvidas.module.css"
 
 export async function getServerSideProps(ctx) {
-  // const redirect = redirectHomeNotLooged(ctx)
-  // if(redirect) return redirect
+  const redirect = redirectHomeNotLooged(ctx)
+  if(redirect) return redirect
   return { props: {} }
 }
 
