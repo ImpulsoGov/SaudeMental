@@ -7,6 +7,7 @@
 
 .Iframe{
     margin-top: 0px;
+    margin-bottom: 80px;
 }
 
 /* XLARGE */
@@ -15,7 +16,6 @@
         padding: 30px 80px 30px 125px;
         padding-right: 125px;
     }
-    
 }
 
 /* LARGE */
