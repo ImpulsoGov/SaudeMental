@@ -46,7 +46,7 @@ const Index = () => {
       />
 
       {
-        dados &&
+        dados && session &&
         <>
           <Grid12Col
             items={ [
