@@ -1,46 +1,46 @@
-import { PanelSelector, ButtonLight, TituloTexto } from "@impulsogov/design-system";
+import { ButtonLight, PanelSelector, TituloTexto } from "@impulsogov/design-system";
+import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../contexts/Context";
-import { useRouter } from 'next/router';
 import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
-import style from "../duvidas/Duvidas.module.css"
+import style from "../duvidas/Duvidas.module.css";
 
-export async function getServerSideProps({req}) {
-  const redirect = redirectHomeNotLooged(ctx)
-  if(redirect) return redirect
+export async function getServerSideProps(ctx) {
+  const redirect = redirectHomeNotLooged(ctx);
+  if (redirect) return redirect;
 
-  return { props: {} }
+  return { props: {} };
 }
 
 export default function Paineis() {
   const [city] = useContext(Context);
   const [panelLinks, setPanelLink] = useState([]);
 
-  useEffect(()=> {
-    if(city === "Aracaju - SE"){
+  useEffect(() => {
+    if (city === "Aracaju - SE") {
       setPanelLink([
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_3p8joonopc",
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_8kr3t7popc",
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_pidyab2upc",
         "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_e0msek2upc",
-      ])
+      ]);
     }
-    if(city === "Recife - PE"){
+    if (city === "Recife - PE") {
       setPanelLink([
         "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_3p8joonopc",
         "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_8kr3t7popc",
         "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_pidyab2upc",
         "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_e0msek2upc",
-      ])
+      ]);
     }
 
-    if(city === "Aparecida de Goiânia - GO"){
+    if (city === "Aparecida de Goiânia - GO") {
       setPanelLink([
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_3p8joonopc",
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_8kr3t7popc",
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_pidyab2upc",
         "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_e0msek2upc",
-      ])
+      ]);
     }
   }, [city]);
   const labels = [
@@ -56,38 +56,38 @@ export default function Paineis() {
     {
       label: "RAPS E ATENÇÃO HOSPITALAR",
     },
-  ]
-  const router = useRouter()
-  const panel = router.query?.painel
+  ];
+  const router = useRouter();
+  const panel = router.query?.painel;
   return (
     <div>
-      <div className={style.BotaoVoltar}>
-          <ButtonLight 
-              icone={{posicao: 'right', url: 'https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG'}} 
-              label="VOLTAR" 
-              link="/inicio"/>
-          <div style={{position:"relative",left:"70%"}}>
-            <ButtonLight
-                icone={{posicao: 'right', url: 'https://media.graphassets.com/yaYuyi0KS3WkqhKPUzro'}}
-                label="CENTRAL DE AJUDA"
-                link="/central-de-ajuda"/>
-          </div>
+      <div className={ style.BotaoVoltar }>
+        <ButtonLight
+          icone={ { posicao: 'right', url: 'https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG' } }
+          label="VOLTAR"
+          link="/inicio" />
+        <div style={ { position: "relative", left: "70%" } }>
+          <ButtonLight
+            icone={ { posicao: 'right', url: 'https://media.graphassets.com/yaYuyi0KS3WkqhKPUzro' } }
+            label="CENTRAL DE AJUDA"
+            link="/central-de-ajuda" />
+        </div>
       </div>
-      <TituloTexto 
-        imagem= {{
+      <TituloTexto
+        imagem={ {
           posicao: null,
           url: ''
-        }}
-        titulo= "Cuidado compartilhado de Saúde Mental entre as redes de saúde"
+        } }
+        titulo="Cuidado compartilhado de Saúde Mental entre as redes de saúde"
         texto=""
       />
 
       <PanelSelector
-        panel={Number(panel)}
-        links={[panelLinks]}
-        list={[labels]}
-        titles={[{label:""}]}
+        panel={ Number(panel) }
+        links={ [panelLinks] }
+        list={ [labels] }
+        titles={ [{ label: "" }] }
       />
     </div>
-  )
+  );
 }
