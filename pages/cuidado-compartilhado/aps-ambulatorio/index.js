@@ -6,26 +6,27 @@ import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
+
   if (redirect) return redirect;
 
-  return {
-    props: {}
-  };
+  return { props: {} };
 }
 
 const Index = () => {
   const { data: session } = useSession();
-  const getRequestOptions = { method: 'GET', redirect: 'follow' };
   const [dados, setDados] = useState();
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
-      var urlEncaminhamentosAps = API_URL + "saude-mental/encaminhamentos/aps/especializada/resumo?municipio_id_sus=" + session?.user.municipio_id_ibge;
+      const getRequestOptions = { method: 'GET', redirect: 'follow' };
+      const urlEncaminhamentosAps = API_URL + "saude-mental/encaminhamentos/aps/especializada/resumo?municipio_id_sus=" + session?.user.municipio_id_ibge;
 
-      fetch(urlEncaminhamentosAps, getRequestOptions).then(response => response.json()).then(result => {setDados(result); console.log(urlEncaminhamentosAps, session)}).catch(error => console.log('error', error));
+      fetch(urlEncaminhamentosAps, getRequestOptions)
+        .then(response => response.json())
+        .then(result => setDados(result))
+        .catch(error => console.log('error', error));
     }
-  }, []);
-
+  }, [session?.user.municipio_id_ibge]);
 
   return (
     <div>
@@ -52,19 +53,20 @@ const Index = () => {
               <CardInfoTipoA
                 key={ 1345 }
                 descricao="Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta"
-                indicador={ 692 }
+                indicador={ dados["atendimentos_sm_aps"] }
                 titulo={ `Total de atendimentos pela APS em ${dados.nome_mes}` }
               />,
               <CardInfoTipoA
                 key={ 1347 }
                 descricao="Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta"
-                indicador={ 692 }
+                indicador={ dados["encaminhamentos_especializada"] }
                 titulo={ `Encaminhamentos para rede especializada em ${dados.nome_mes} (exceto CAPS)` }
               />,
               <CardInfoTipoA
                 key={ 1346 }
                 descricao="Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta"
-                indicador={ dados["perc_encaminhamentos_especializada"] + " %" }
+                indicador={ dados["perc_encaminhamentos_especializada"] }
+                indicadorSimbolo="%"
                 titulo="Porcentagem"
               />,
             ] }
