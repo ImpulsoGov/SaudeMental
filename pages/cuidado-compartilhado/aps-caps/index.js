@@ -1,10 +1,10 @@
-import { TituloTexto, GraficoInfo, ButtonLight, TituloSmallTexto } from "@impulsogov/design-system";
-import style from "../duvidas/Duvidas.module.css";
+import { TituloTexto, ButtonLight, GraficoInfo, TituloSmallTexto } from "@impulsogov/design-system";
+import style from "../../duvidas/Duvidas.module.css";
 
 const Index = ({ }) => {
   return (
     <div>
-        <div className={ style.BotaoVoltar }>
+      <div className={ style.BotaoVoltar }>
           <ButtonLight
             icone={ { posicao: 'right', url: 'https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG' } }
             label="VOLTAR"
@@ -24,34 +24,26 @@ const Index = ({ }) => {
           titulo="Cuidado compartilhado de Saúde Mental entre as redes de saúde"
           texto=""
         />
-
       <TituloSmallTexto
         imagem={ {
           posicao: null,
           url: ''
         } }
         texto=""
-        titulo="<strong>Resumo</strong>"
+        titulo="<strong>Cuidado compartilhado entre APS e CAPS</strong>"
       />
 
       <GraficoInfo
-        titulo="Cuidado compartilhado entre APS e CAPS"
+        titulo="Matriciamentos"
+        descricao="Quantidade de matriciamentos separados pelos CAPS que estão dentro e fora da meta (meta: 2 matriciamentos / mês em cada CAPS)"
+        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+      />
+
+      <GraficoInfo
+        titulo="Atendimentos"
         fonte="Fonte: SISAB - Elaboração Impulso Gov"
-        link={{label: 'Mais informações',url: '/cuidado-compartilhado/aps-caps'}}
+        descricao="Quantidade de atendimentos de Saúde Mental realizados pela APS que resultarem em Encaminhamentos para CAPS."
       />
-
-      <GraficoInfo
-        titulo="Cuidado compartilhado entre APS e Cuidado Ambulatorial"
-        fonte="Fonte: SISAB - Elaboração Impulso Gov"
-        link={{label: 'Mais informações',url: '/cuidado-compartilhado/aps-ambulatorio'}}
-      />
-
-      <GraficoInfo
-        titulo="Cuidado compartilhado entre RAPS e Rede de Urgência e Emergência"
-        descricao="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS.- Elaboração Impulso Gov"
-        link={{label: 'Mais informações',url: '/cuidado-compartilhado/raps-hospitalar'}}
-      />
-
     </div>
   );
 };

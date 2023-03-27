@@ -1,10 +1,10 @@
-import { TituloTexto, GraficoInfo, ButtonLight, TituloSmallTexto } from "@impulsogov/design-system";
-import style from "../duvidas/Duvidas.module.css";
+import { TituloTexto, ButtonLight, GraficoInfo, TituloSmallTexto } from "@impulsogov/design-system";
+import style from "../../duvidas/Duvidas.module.css";
 
 const Index = ({ }) => {
   return (
     <div>
-        <div className={ style.BotaoVoltar }>
+      <div className={ style.BotaoVoltar }>
           <ButtonLight
             icone={ { posicao: 'right', url: 'https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG' } }
             label="VOLTAR"
@@ -24,34 +24,30 @@ const Index = ({ }) => {
           titulo="Cuidado compartilhado de Saúde Mental entre as redes de saúde"
           texto=""
         />
-
       <TituloSmallTexto
         imagem={ {
           posicao: null,
           url: ''
         } }
         texto=""
-        titulo="<strong>Resumo</strong>"
+        titulo="<strong>Internações finalizadas desde o início do ano</strong>"
       />
 
       <GraficoInfo
-        titulo="Cuidado compartilhado entre APS e CAPS"
-        fonte="Fonte: SISAB - Elaboração Impulso Gov"
-        link={{label: 'Mais informações',url: '/cuidado-compartilhado/aps-caps'}}
+        descricao="Internações finalizadas entre Julho de 2021 e Junho de 2022."
+        fonte="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS - Elaboração Impulso Gov"
+        titulo="Usuários que foram atendidos na RAPS antes ou após a internação"
       />
 
       <GraficoInfo
-        titulo="Cuidado compartilhado entre APS e Cuidado Ambulatorial"
-        fonte="Fonte: SISAB - Elaboração Impulso Gov"
-        link={{label: 'Mais informações',url: '/cuidado-compartilhado/aps-ambulatorio'}}
+        descricao="<strong>Atenção:</strong> os valores acima são aproximados, já que a conexão entre registros ambulatoriais e hospitalares do SUS a partir de dados abertos (não identificados) está sujeita a pequenas imprecisões."
       />
 
       <GraficoInfo
-        titulo="Cuidado compartilhado entre RAPS e Rede de Urgência e Emergência"
-        descricao="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS.- Elaboração Impulso Gov"
-        link={{label: 'Mais informações',url: '/cuidado-compartilhado/raps-hospitalar'}}
+        descricao="Iniciadas entre Julho de 2021 e Junho de 2022."
+        fonte="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS - Elaboração Impulso Gov"
+        titulo="Novas internações e acolhimentos noturnos"
       />
-
     </div>
   );
 };
