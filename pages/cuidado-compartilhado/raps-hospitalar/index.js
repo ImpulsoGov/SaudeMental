@@ -1,7 +1,7 @@
 import { TituloTexto, ButtonLight, GraficoInfo, TituloSmallTexto } from "@impulsogov/design-system";
 import style from "../../duvidas/Duvidas.module.css";
 
-const Index = ({ }) => {
+const RapsHospitalar = ({ }) => {
   return (
     <div>
       <div className={ style.BotaoVoltar }>
@@ -52,4 +52,4 @@ const Index = ({ }) => {
   );
 };
 
-export default Index;
+export default RapsHospitalar;

@@ -13,7 +13,7 @@ export function getServerSideProps(ctx) {
   return { props: {} };
 }
 
-const Index = () => {
+const ApsAmbulatorio = () => {
   const { data: session } = useSession();
   const [encaminhamentosApsResumo, setEncaminhamentosApsResumo] = useState({});
   const [encaminhamentosAps, setEncaminhamentosAps] = useState([]);
@@ -203,4 +203,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default ApsAmbulatorio;

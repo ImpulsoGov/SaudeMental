@@ -1,7 +1,14 @@
-import { TituloTexto, GraficoInfo, ButtonLight, TituloSmallTexto } from "@impulsogov/design-system";
+import { TituloTexto, GraficoInfo, ButtonLight, TituloSmallTexto, PanelSelectorSM } from "@impulsogov/design-system";
 import style from "../duvidas/Duvidas.module.css";
+import { useRouter } from 'next/router';
+import ApsAmbulatorio from "./aps-ambulatorio";
+import ApsCaps from "./aps-caps";
+import RapsHospitalar from "./raps-hospitalar";
 
 const Index = ({ }) => {
+  const router = useRouter()
+  const panel = router.query?.painel
+
   return (
     <div>
         <div className={ style.BotaoVoltar }>
@@ -23,6 +30,32 @@ const Index = ({ }) => {
           } }
           titulo="Cuidado compartilhado de Saúde Mental entre as redes de saúde"
           texto=""
+        />
+
+        <PanelSelectorSM
+          panel={Number(panel)}
+          components={[[ApsAmbulatorio, ApsCaps, ApsAmbulatorio, RapsHospitalar]]}
+          subtitles={[
+            [
+              {
+                label: 'RESUMO'
+              },
+              {
+                label: 'APS E CAPS'
+              },
+              {
+                label: 'APS E AMBULATÓRIO'
+              },
+              {
+                label: 'RAPS E ATENÇÃO HOSPITALAR'
+              }
+            ]
+          ]}
+          titles={[
+            {
+              label: ''
+            }
+          ]}
         />
 
       <TituloSmallTexto
