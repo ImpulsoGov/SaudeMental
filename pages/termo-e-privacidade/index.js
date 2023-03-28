@@ -37,11 +37,41 @@ export default function Glossario({res}) {
               ],
             },
             {
-              title: 'Os produtos do Impulso Previne são gratuitos?',
+              title: 'Propriedade Intelectual',
               blocks: [
                 {
                   subTitle: '',
-                  description: 'Sim, todos os produtos do Impulso Previne são gratuitos. Na nossa área pública você encontra dados quadrimestralmente atualizados sobre os resultados dos indicadores de desempenho de todos os municípios no Previne Brasil, além dos dados de Capitação Ponderada e Incentivos a Ações Estratégicas. Atualizamos essa área do nosso site através dos dados públicos do SISAB (Sistema de Informação em Saúde para a Atenção Primária). Basta clicar no menu superior DADOS PÚBLICOS - Q3/22 e selecionar seu município. Na nossa área logada (acesso restrito), oferecemos produtos de monitoramento nominal para os municípios parceiros.',
+                  description: 'Todo o conteúdo e materiais deste site, incluindo, entre outros, textos, gráficos, imagens, logotipos, ícones de botões, códigos-fonte e software, são propriedade exclusiva da ImpulsoGov ou de seus licenciadores e são protegidos por leis de direitos autorais e outras leis de propriedade intelectual.',
+                  source: '',
+                },
+              ],
+            },
+            {
+              title: 'Uso Permitido',
+              blocks: [
+                {
+                  subTitle: '',
+                  description: 'Você tem permissão para acessar e usar este site e seu conteúdo para fins relacionados com análises de dados e acompanhamento de métricas do seu município e não comerciais. Você não pode modificar, copiar, distribuir, transmitir, exibir, executar, reproduzir, publicar, licenciar, criar trabalhos derivados, transferir ou vender qualquer conteúdo, informação, software, produtos ou serviços obtidos neste site sem a permissão prévia por escrito da ImpulsoGov. Caso deseje usar trechos retirados do site em apresentações internas é necessário indicar a fonte, bem como quaisquer filtros usados durante a análise.',
+                  source: '',
+                },
+              ],
+            },
+            {
+              title: 'Renúncia de Garantias',
+              blocks: [
+                {
+                  subTitle: '',
+                  description: 'Este site é fornecido "como está" e sem garantias de qualquer tipo, expressas ou implícitas. A ImpulsoGov fará o possível para manter as informações atualizadas, mas como depende de fontes externas, não garante que este site ou seu conteúdo serão precisos, completos, confiáveis, atualizados ou livres de erros.',
+                  source: '',
+                },
+              ],
+            },
+            {
+              title: 'Limitação de Responsabilidade',
+              blocks: [
+                {
+                  subTitle: '',
+                  description: 'Em nenhuma circunstância, a Impulso, seus funcionários, diretores, agentes, afiliados ou licenciadores serão responsáveis por quaisquer danos diretos, indiretos, incidentais, especiais, consequenciais ou punitivos decorrentes do uso deste site ou de qualquer conteúdo, produto ou serviço obtido através deste site.',
                   source: '',
                 },
               ],
@@ -157,16 +187,6 @@ export default function Glossario({res}) {
                 {
                   subTitle: '',
                   description: 'Se você tiver alguma dúvida sobre esta política de privacidade ou sobre como a ImpulsoGov trata informações pessoais, entre em contato conosco através do e-mail contato@impulsogov.org.',
-                  source: '',
-                },
-              ],
-            },
-            {
-              title: 'Contato',
-              blocks: [
-                {
-                  subTitle: '',
-                  description: '',
                   source: '',
                 },
               ],
