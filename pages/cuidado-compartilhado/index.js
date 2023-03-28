@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import ApsAmbulatorio from "./aps-ambulatorio";
 import ApsCaps from "./aps-caps";
 import RapsHospitalar from "./raps-hospitalar";
+import Resumo from "./resumo";
 
 const Index = ({ }) => {
   const router = useRouter()
@@ -34,7 +35,7 @@ const Index = ({ }) => {
 
         <PanelSelectorSM
           panel={Number(panel)}
-          components={[[ApsAmbulatorio, ApsCaps, ApsAmbulatorio, RapsHospitalar]]}
+          components={[[<Resumo></Resumo>, <ApsCaps></ApsCaps>, <ApsAmbulatorio></ApsAmbulatorio>, <RapsHospitalar></RapsHospitalar>]]}
           subtitles={[
             [
               {
@@ -58,32 +59,7 @@ const Index = ({ }) => {
           ]}
         />
 
-      <TituloSmallTexto
-        imagem={ {
-          posicao: null,
-          url: ''
-        } }
-        texto=""
-        titulo="<strong>Resumo</strong>"
-      />
-
-      <GraficoInfo
-        titulo="Cuidado compartilhado entre APS e CAPS"
-        fonte="Fonte: SISAB - Elaboração Impulso Gov"
-        link={{label: 'Mais informações',url: '/cuidado-compartilhado/aps-caps'}}
-      />
-
-      <GraficoInfo
-        titulo="Cuidado compartilhado entre APS e Cuidado Ambulatorial"
-        fonte="Fonte: SISAB - Elaboração Impulso Gov"
-        link={{label: 'Mais informações',url: '/cuidado-compartilhado/aps-ambulatorio'}}
-      />
-
-      <GraficoInfo
-        titulo="Cuidado compartilhado entre RAPS e Rede de Urgência e Emergência"
-        descricao="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS.- Elaboração Impulso Gov"
-        link={{label: 'Mais informações',url: '/cuidado-compartilhado/raps-hospitalar'}}
-      />
+      
 
     </div>
   );

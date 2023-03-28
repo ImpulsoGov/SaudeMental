@@ -4,26 +4,6 @@ import style from "../../duvidas/Duvidas.module.css";
 const ApsCaps = ({ }) => {
   return (
     <div>
-      <div className={ style.BotaoVoltar }>
-          <ButtonLight
-            icone={ { posicao: 'right', url: 'https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG' } }
-            label="VOLTAR"
-            link="/inicio" />
-          <div style={ { position: "relative", left: "70%" } }>
-            <ButtonLight
-              icone={ { posicao: 'right', url: 'https://media.graphassets.com/yaYuyi0KS3WkqhKPUzro' } }
-              label="CENTRAL DE AJUDA"
-              link="/central-de-ajuda" />
-          </div>
-        </div>
-        <TituloTexto
-          imagem={ {
-            posicao: null,
-            url: ''
-          } }
-          titulo="Cuidado compartilhado de Saúde Mental entre as redes de saúde"
-          texto=""
-        />
       <TituloSmallTexto
         imagem={ {
           posicao: null,
