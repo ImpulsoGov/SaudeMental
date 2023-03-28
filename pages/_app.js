@@ -155,7 +155,7 @@ function MyApp(props) {
                 copyright: props.res[0].copyrights[0].copyright,
                 email: props.res[0].copyrights[0].contato,
               } }
-              links={ [{ label: "Inicio", url: "/inicio" }, { label: "Sobre", url: "/sobre" }, { label: "Glossário", url: "/glossario" }] }
+              links={ [{ label: "Inicio", url: "/inicio" }, { label: "Sobre", url: "/sobre" }, { label: "Termo de Uso e Politica de Privacidade", url: "/termo-e-privacidade" }] }
               socialMediaURLs={ [
                 { url: props.res[0].socialMedias[0].url, logo: props.res[0].socialMedias[0].logo.url },
                 { url: props.res[0].socialMedias[1].url, logo: props.res[0].socialMedias[1].logo.url },
