@@ -2,6 +2,7 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impuls
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
 import { API_URL } from "../../../constants/API_URL";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 
@@ -165,19 +166,19 @@ const ApsAmbulatorio = () => {
           <Grid12Col
             items={ [
               <CardInfoTipoA
-                key={ 1345 }
+                key={ uuidv4() }
                 descricao="Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta"
                 indicador={ encaminhamentosApsResumo["atendimentos_sm_aps"] }
                 titulo={ `Total de atendimentos pela APS em ${encaminhamentosApsResumo.nome_mes}` }
               />,
               <CardInfoTipoA
-                key={ 1347 }
+                key={ uuidv4() }
                 descricao="Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta"
                 indicador={ encaminhamentosApsResumo["encaminhamentos_especializada"] }
                 titulo={ `Encaminhamentos para rede especializada em ${encaminhamentosApsResumo.nome_mes} (exceto CAPS)` }
               />,
               <CardInfoTipoA
-                key={ 1346 }
+                key={ uuidv4() }
                 descricao="Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta"
                 indicador={ encaminhamentosApsResumo["perc_encaminhamentos_especializada"] }
                 indicadorSimbolo="%"
