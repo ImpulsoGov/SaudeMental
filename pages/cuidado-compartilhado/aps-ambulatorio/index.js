@@ -86,12 +86,14 @@ const ApsAmbulatorio = () => {
         data: orderedEncaminhamentos.map(({ conduta }) => conduta),
         textStyle: {
           fontSize: 14,
-          fontWeight: 500
+          fontWeight: 500,
         },
       },
       toolbox: {
         feature: {
-          saveAsImage: {}
+          saveAsImage: {
+            title: "Salvar como imagem",
+          }
         }
       },
       grid: {
@@ -123,7 +125,7 @@ const ApsAmbulatorio = () => {
           },
           data: orderedEncaminhamentos[1].quantidadesPorPeriodo.map(({ quantidadeRegistrada }) => quantidadeRegistrada),
           itemStyle: {
-            color: "#5367C9"
+            color: "#8F92FF"
           },
         },
         {
@@ -136,7 +138,7 @@ const ApsAmbulatorio = () => {
           },
           data: orderedEncaminhamentos[0].quantidadesPorPeriodo.map(({ quantidadeRegistrada }) => quantidadeRegistrada),
           itemStyle: {
-            color: "#8F92FF"
+            color: "#CACCFE"
           },
         }
       ]
@@ -197,7 +199,7 @@ const ApsAmbulatorio = () => {
       { encaminhamentosAps.length !== 0 &&
         <ReactEcharts
           option={ getEchartsOptions() }
-          style={ { width: "90%", height: "70vh" } }
+          style={ { width: "100%", height: "70vh" } }
         />
       }
     </div>
