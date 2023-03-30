@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { API_URL } from "../../../constants/API_URL";
+import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 
 export function getServerSideProps(ctx) {
@@ -40,110 +41,6 @@ const ApsAmbulatorio = () => {
         .catch(error => console.log('error', error));
     }
   }, [session?.user.municipio_id_ibge]);
-
-  const aggregateByConduta = (encaminhamentos) => {
-    const aggregatedEncaminhamentos = [];
-
-    encaminhamentos.forEach((encaminhamento) => {
-      const { conduta, competencia, periodo, quantidade_registrada: quantidadeRegistrada } = encaminhamento;
-      const foundEncaminhamento = aggregatedEncaminhamentos.find((item) => item.conduta === conduta);
-
-      if (!foundEncaminhamento) {
-        aggregatedEncaminhamentos.push({
-          conduta,
-          quantidadesPorPeriodo: [{ competencia, periodo, quantidadeRegistrada }]
-        });
-      } else {
-        foundEncaminhamento.quantidadesPorPeriodo.push({ competencia, periodo, quantidadeRegistrada });
-      }
-    });
-
-    return aggregatedEncaminhamentos;
-  };
-
-  const orderByCompetencia = (encaminhamentos) => {
-    return encaminhamentos.map(({ conduta, quantidadesPorPeriodo }) => ({
-      conduta,
-      quantidadesPorPeriodo: quantidadesPorPeriodo
-        .sort((a, b) => new Date(a.competencia) - new Date(b.competencia))
-    }));
-  };
-
-  const getEchartsOptions = () => {
-    const aggregatedEncaminhamentos = aggregateByConduta(encaminhamentosAps);
-    const orderedEncaminhamentos = orderByCompetencia(aggregatedEncaminhamentos);
-
-    return {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          label: {
-            backgroundColor: '#6a7985'
-          }
-        }
-      },
-      legend: {
-        data: orderedEncaminhamentos.map(({ conduta }) => conduta),
-        textStyle: {
-          fontSize: 14,
-          fontWeight: 500,
-        },
-      },
-      toolbox: {
-        feature: {
-          saveAsImage: {
-            title: "Salvar como imagem",
-          }
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      xAxis: [
-        {
-          type: 'category',
-          boundaryGap: false,
-          data: orderedEncaminhamentos[0].quantidadesPorPeriodo.map(({ periodo }) => periodo)
-        }
-      ],
-      yAxis: [
-        {
-          type: 'value'
-        }
-      ],
-      series: [
-        {
-          name: orderedEncaminhamentos[1].conduta,
-          type: 'line',
-          stack: 'Total',
-          areaStyle: {},
-          emphasis: {
-            focus: 'series'
-          },
-          data: orderedEncaminhamentos[1].quantidadesPorPeriodo.map(({ quantidadeRegistrada }) => quantidadeRegistrada),
-          itemStyle: {
-            color: "#8F92FF"
-          },
-        },
-        {
-          name: orderedEncaminhamentos[0].conduta,
-          type: 'line',
-          stack: 'Total',
-          areaStyle: {},
-          emphasis: {
-            focus: 'series'
-          },
-          data: orderedEncaminhamentos[0].quantidadesPorPeriodo.map(({ quantidadeRegistrada }) => quantidadeRegistrada),
-          itemStyle: {
-            color: "#CACCFE"
-          },
-        }
-      ]
-    };
-  };
 
   return (
     <div>
@@ -198,7 +95,7 @@ const ApsAmbulatorio = () => {
 
       { encaminhamentosAps.length !== 0 &&
         <ReactEcharts
-          option={ getEchartsOptions() }
+          option={ getEncaminhamentosChartOptions(encaminhamentosAps) }
           style={ { width: "100%", height: "70vh" } }
         />
       }
