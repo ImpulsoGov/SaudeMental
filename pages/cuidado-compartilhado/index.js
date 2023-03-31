@@ -1,6 +1,6 @@
 import { ButtonLight, PanelSelectorSM, TituloTexto } from "@impulsogov/design-system";
 import { useRouter } from 'next/router';
-import { v4 as uuidv4 } from 'uuid';
+import { v1 as uuidv1 } from 'uuid';
 import style from "../duvidas/Duvidas.module.css";
 import ApsAmbulatorio from "./aps-ambulatorio";
 import ApsCaps from "./aps-caps";
@@ -37,10 +37,10 @@ const Index = ({ }) => {
       <PanelSelectorSM
         panel={ Number(panel) }
         components={ [[
-          <Resumo key={ uuidv4() }></Resumo>,
-          <ApsCaps key={ uuidv4() }></ApsCaps>,
-          <ApsAmbulatorio key={ uuidv4() }></ApsAmbulatorio>,
-          <RapsHospitalar key={ uuidv4() }></RapsHospitalar>
+          <Resumo key={ uuidv1() }></Resumo>,
+          <ApsCaps key={ uuidv1() }></ApsCaps>,
+          <ApsAmbulatorio key={ uuidv1() }></ApsAmbulatorio>,
+          <RapsHospitalar key={ uuidv1() }></RapsHospitalar>
         ]] }
         subtitles={ [
           [

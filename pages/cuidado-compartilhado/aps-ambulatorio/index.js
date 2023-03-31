@@ -2,7 +2,7 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impuls
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import { v1 as uuidv1 } from 'uuid';
 import { API_URL } from "../../../constants/API_URL";
 import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
@@ -17,7 +17,7 @@ export function getServerSideProps(ctx) {
 
 const ApsAmbulatorio = () => {
   const { data: session } = useSession();
-  const [encaminhamentosApsResumo, setEncaminhamentosApsResumo] = useState({});
+  const [encaminhamentosApsResumo, setEncaminhamentosApsResumo] = useState();
   const [encaminhamentosAps, setEncaminhamentosAps] = useState([]);
 
   useEffect(() => {
@@ -65,19 +65,19 @@ const ApsAmbulatorio = () => {
           <Grid12Col
             items={ [
               <CardInfoTipoA
-                key={ uuidv4() }
+                key={ uuidv1() }
                 descricao="Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta"
                 indicador={ encaminhamentosApsResumo["atendimentos_sm_aps"] }
                 titulo={ `Total de atendimentos pela APS em ${encaminhamentosApsResumo.nome_mes}` }
               />,
               <CardInfoTipoA
-                key={ uuidv4() }
+                key={ uuidv1() }
                 descricao="Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta"
                 indicador={ encaminhamentosApsResumo["encaminhamentos_especializada"] }
                 titulo={ `Encaminhamentos para rede especializada em ${encaminhamentosApsResumo.nome_mes} (exceto CAPS)` }
               />,
               <CardInfoTipoA
-                key={ uuidv4() }
+                key={ uuidv1() }
                 descricao="Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta"
                 indicador={ encaminhamentosApsResumo["perc_encaminhamentos_especializada"] }
                 indicadorSimbolo="%"

@@ -2,7 +2,7 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impuls
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import { v1 as uuidv1 } from 'uuid';
 import { API_URL } from "../../../constants/API_URL";
 import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
@@ -18,8 +18,8 @@ export function getServerSideProps(ctx) {
 const ApsCaps = () => {
   const { data: session } = useSession();
   const [encaminhamentosApsCaps, setEncaminhamentosApsCaps] = useState([]);
-  const [encaminhamentosApsCapsResumo, setEncaminhamentosApsCapsResumo] = useState({});
-  const [matriciamentosPorMunicipio, setMatriciamentosPorMunicipio] = useState({});
+  const [encaminhamentosApsCapsResumo, setEncaminhamentosApsCapsResumo] = useState();
+  const [matriciamentosPorMunicipio, setMatriciamentosPorMunicipio] = useState();
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -76,17 +76,17 @@ const ApsCaps = () => {
           <Grid12Col
             items={ [
               <CardInfoTipoA
-                key={ uuidv4() }
+                key={ uuidv1() }
                 indicador={ matriciamentosPorMunicipio["estabelecimentos_fora_meta"] }
                 titulo="CAPS fora da meta"
               />,
               <CardInfoTipoA
-                key={ uuidv4() }
+                key={ uuidv1() }
                 indicador={ matriciamentosPorMunicipio["estabelecimentos_na_meta"] }
                 titulo="CAPS dentro da meta"
               />,
               <CardInfoTipoA
-                key={ uuidv4() }
+                key={ uuidv1() }
                 indicador={ matriciamentosPorMunicipio["quantidade_registrada"] }
                 titulo={ `Total de matriciamentos (até ${matriciamentosPorMunicipio["ate_mes"]})` }
               />,
@@ -107,17 +107,17 @@ const ApsCaps = () => {
           <Grid12Col
             items={ [
               <CardInfoTipoA
-                key={ uuidv4() }
+                key={ uuidv1() }
                 indicador={ encaminhamentosApsCapsResumo["atendimentos_sm_aps"] }
                 titulo="Total de atendimentos pela APS"
               />,
               <CardInfoTipoA
-                key={ uuidv4() }
+                key={ uuidv1() }
                 indicador={ encaminhamentosApsCapsResumo["encaminhamentos_caps"] }
                 titulo="Encaminhamentos para CAPS"
               />,
               <CardInfoTipoA
-                key={ uuidv4() }
+                key={ uuidv1() }
                 indicador={ encaminhamentosApsCapsResumo["perc_encaminhamentos_caps"] }
                 indicadorSimbolo="%"
                 titulo="Porcentagem"
