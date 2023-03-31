@@ -40,7 +40,7 @@ const ApsAmbulatorio = () => {
         .then(result => setEncaminhamentosApsResumo(result[0]))
         .catch(error => console.log('error', error));
     }
-  }, [session?.user.municipio_id_ibge]);
+  }, []);
 
   return (
     <div>
