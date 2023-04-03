@@ -1,11 +1,18 @@
 import { ButtonLight, PanelSelectorSM, TituloTexto } from "@impulsogov/design-system";
 import { useRouter } from 'next/router';
 import { v1 as uuidv1 } from 'uuid';
+import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 import style from "../duvidas/Duvidas.module.css";
 import ApsAmbulatorio from "./aps-ambulatorio";
 import ApsCaps from "./aps-caps";
 import RapsHospitalar from "./raps-hospitalar";
 import Resumo from "./resumo";
+
+export async function getServerSideProps(ctx) {
+  const redirect = redirectHomeNotLooged(ctx);
+  if (redirect) return redirect;
+  return { props: {} };
+}
 
 const Index = ({ }) => {
   const router = useRouter();
