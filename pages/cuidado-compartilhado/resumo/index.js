@@ -186,7 +186,7 @@ const Resumo = () => {
                 indiceDescricao="últ. mês"
                 titulo={ `Encaminhamentos para CAPS no mês de ${encaminhamentosApsCapsHorizontal["nome_mes"]}` }
                 tooltip="Usuários que foram encaminhados para CAPS após atendimento em saúde mental ou abuso de substâncias pela Atenção Primária em Saúde"
-                porcentagemSim={ (getPorcentagemAtendimentosFeitos(encaminhamentosApsCapsVertical)) }
+                porcentagemSim={ getPorcentagemAtendimentosFeitos(encaminhamentosApsCapsVertical) }
                 porcentagemNao={ getPorcentagemAtendimentosNaoFeitos(encaminhamentosApsCapsVertical) }
               />
             }
@@ -223,7 +223,7 @@ const Resumo = () => {
                 indiceDescricao="últ. mês"
                 titulo={ `Encaminhamentos para cuidado ambulatorial no mês de ${encaminhamentosApsHorizontal["nome_mes"]}` }
                 tooltip="Usuários que foram encaminhados para cuidado ambulatorial (incluindo referências em psicologia e outros centros de especialidades) após atendimento em saúde mental ou abuso de substâncias pela Atenção Primária em Saúde"
-                porcentagemSim={ (getPorcentagemAtendimentosFeitos(encaminhamentosApsVertical)) }
+                porcentagemSim={ getPorcentagemAtendimentosFeitos(encaminhamentosApsVertical) }
                 porcentagemNao={ getPorcentagemAtendimentosNaoFeitos(encaminhamentosApsVertical) }
               />
             }
@@ -248,7 +248,7 @@ const Resumo = () => {
                 indicador={ internacoesRapsAdmissoes12m["internacoes_atendimento_raps_antes"] }
                 titulo="Atendidos na RAPS nos últimos 6 meses antes da Internação"
                 tooltip="Usuários que tiveram ao menos um procedimento RAAS registrado em serviços RAPS dentro dos 6 meses anteriores a sua internação na rede hospitalar."
-                porcentagemSim={ (getPorcentagemInternacoesFeitas(internacoesRapsAdmissoesVertical)) }
+                porcentagemSim={ getPorcentagemInternacoesFeitas(internacoesRapsAdmissoesVertical) }
                 porcentagemNao={ getPorcentagemInternacoesNaoFeitas(internacoesRapsAdmissoesVertical) }
               />
             }
@@ -262,7 +262,7 @@ const Resumo = () => {
                 indicador={ internacoesRapsAltas12m["altas_atendimento_raps_1m_apos"] }
                 titulo="Atendidos na RAPS até o mês seguinte à alta"
                 tooltip="Usuários que tiveram ao menos um procedimento RAAS registrado em serviços RAPS até o mês seguinte à alta de sua internação na rede hospitalar."
-                porcentagemSim={ (getPorcentagemAltasFeitas(internacoesRapsAltasVertical)) }
+                porcentagemSim={ getPorcentagemAltasFeitas(internacoesRapsAltasVertical) }
                 porcentagemNao={ getPorcentagemAltasNaoFeitas(internacoesRapsAltasVertical) }
               />
             }
