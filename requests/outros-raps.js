@@ -1,63 +1,54 @@
+import axios from "axios";
 import { API_URL } from "../constants/API_URL";
 
-const getRequestOptions = { method: 'GET', redirect: 'follow' };
+const axiosInstance = axios.create({
+  baseURL: `${API_URL}saude-mental`,
+});
 
 export const getAtendimentosConsultorioNaRua = async (municipioIdSus) => {
   try {
-    const url = API_URL
-      + "saude-mental/consultorionarua?municipio_id_sus="
-      + municipioIdSus;
+    const endpoint = "/consultorionarua?municipio_id_sus=" + municipioIdSus;
 
-    const response = await fetch(url, getRequestOptions);
-    const atendimentos = await response.json();
+    const { data } = await axiosInstance(endpoint);
 
-    return atendimentos;
+    return data;
   } catch (error) {
-    console.log('error', error);
+    console.log('error', error.response.data);
   }
 };
 
 export const getAtendimentosConsultorioNaRua12meses = async (municipioIdSus) => {
   try {
-    const url = API_URL
-      + "saude-mental/consultorionarua12meses?municipio_id_sus="
-      + municipioIdSus;
+    const endpoint = "/consultorionarua12meses?municipio_id_sus=" + municipioIdSus;
 
-    const response = await fetch(url, getRequestOptions);
-    const atendimentos12meses = await response.json();
+    const { data } = await axiosInstance(endpoint);
 
-    return atendimentos12meses;
+    return data;
   } catch (error) {
-    console.log('error', error);
+    console.log('error', error.response.data);
   }
 };
 
 export const getAcoesReducaoDeDanos = async (municipioIdSus) => {
   try {
-    const url = API_URL
-      + "saude-mental/reducaodedanos?municipio_id_sus="
-      + municipioIdSus;
+    const endpoint = "/reducaodedanos?municipio_id_sus=" + municipioIdSus;
 
-    const response = await fetch(url, getRequestOptions);
-    const acoes = await response.json();
+    const { data } = await axiosInstance(endpoint);
 
-    return acoes;
+    return data;
   } catch (error) {
-    console.log('error', error);
+    console.log('error', error.response.data);
   }
 };
 
 export const getAcoesReducaoDeDanos12meses = async (municipioIdSus) => {
   try {
-    const url = API_URL
-      + "saude-mental/reducaodedanos12meses?municipio_id_sus="
-      + municipioIdSus;
+    const endpoint = "/reducaodedanos12meses?municipio_id_sus=" + municipioIdSus;
 
-    const response = await fetch(url, getRequestOptions);
-    const acoes12meses = await response.json();
+    const { data } = await axiosInstance(endpoint);
 
-    return acoes12meses;
+    return data;
   } catch (error) {
-    console.log('error', error);
+    console.log('error', error.response.data);
   }
 };
