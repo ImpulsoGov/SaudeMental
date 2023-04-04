@@ -1,0 +1,11 @@
+.Filtro {
+  width: 50%;
+  font-size: 14px;
+}
+
+.GraficoDonutContainer {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  height: 70vh;
+}
