@@ -30,6 +30,7 @@ const ReducaoDeDanos = () => {
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       setAcoes(await getAcoesReducaoDeDanos(municipioIdSus));
+      // remover id_sus específico quando já houver todos no banco
       setAcoes12meses(await getAcoesReducaoDeDanos12meses(350950));
     };
 
