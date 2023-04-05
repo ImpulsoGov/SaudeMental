@@ -129,13 +129,13 @@ const Resumo = () => {
       <GraficoInfo
         titulo="Referência de Saúde Mental"
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
-        link={ { label: 'Mais informações', url: '/cuidado-compartilhado/resumo' } }
+        link={ { label: 'Mais informações', url: '/cuidado-compartilhado?painel=1' } }
       />
 
       <GraficoInfo
         titulo="Consultório na Rua"
         fonte="Fonte: SISAB - Elaboração Impulso Gov"
-        link={ { label: 'Mais informações', url: '/cuidado-compartilhado/consultorio-na-rua' } }
+        link={ { label: 'Mais informações', url: '/cuidado-compartilhado?painel=2' } }
       />
 
       <Grid12Col
@@ -168,7 +168,7 @@ const Resumo = () => {
       <GraficoInfo
         titulo="Ações de redução de danos"
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
-        link={ { label: 'Mais informações', url: '/cuidado-compartilhado/reducao-de-danos' } }
+        link={ { label: 'Mais informações', url: '/cuidado-compartilhado?painel=3' } }
       />
 
       <Grid12Col

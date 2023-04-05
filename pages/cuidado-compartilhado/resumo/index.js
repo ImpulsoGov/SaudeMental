@@ -171,7 +171,7 @@ const Resumo = () => {
       <GraficoInfo
         titulo="Cuidado compartilhado entre APS e CAPS"
         fonte="Fonte: SISAB - Elaboração Impulso Gov"
-        link={ { label: 'Mais informações', url: '/cuidado-compartilhado/aps-caps' } }
+        link={ { label: 'Mais informações', url: '/cuidado-compartilhado?painel=1' } }
       />
       <Grid12Col
         items={ [
@@ -207,7 +207,7 @@ const Resumo = () => {
       <GraficoInfo
         titulo="Cuidado compartilhado entre APS e Cuidado Ambulatorial"
         fonte="Fonte: SISAB - Elaboração Impulso Gov"
-        link={ { label: 'Mais informações', url: '/cuidado-compartilhado/aps-ambulatorio' } }
+        link={ { label: 'Mais informações', url: '/cuidado-compartilhado?painel=2' } }
       />
 
       <Grid12Col
@@ -234,7 +234,7 @@ const Resumo = () => {
       <GraficoInfo
         titulo="Cuidado compartilhado entre RAPS e Rede de Urgência e Emergência"
         fonte="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS.- Elaboração Impulso Gov"
-        link={ { label: 'Mais informações', url: '/cuidado-compartilhado/raps-hospitalar' } }
+        link={ { label: 'Mais informações', url: '/cuidado-compartilhado?painel=3' } }
       />
 
       <Grid12Col
