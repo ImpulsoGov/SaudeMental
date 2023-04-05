@@ -6,7 +6,7 @@ import Select, { components } from "react-select";
 import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from "../../../requests/outros-raps";
-import styles from "./ConsultorioNaRua.module.css";
+import styles from "../OutrosRaps.module.css";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);

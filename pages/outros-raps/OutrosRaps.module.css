@@ -3,6 +3,13 @@
   font-size: 14px;
 }
 
+.Filtros {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
 .GraficoDonutContainer {
   display: flex;
   justify-content: flex-start;
