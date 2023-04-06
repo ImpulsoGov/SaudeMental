@@ -123,6 +123,7 @@ const ReducaoDeDanos = () => {
         label: selected.value
       }),
       isMulti: false,
+      isSearchable: false,
       components: { Control: optionPersonalizada },
       styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
     };
@@ -157,6 +158,7 @@ const ReducaoDeDanos = () => {
         label: selected.value
       }),
       isMulti: false,
+      isSearchable: false,
       components: { Control: optionPersonalizada },
       styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
     };
