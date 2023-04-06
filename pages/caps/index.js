@@ -1,15 +1,15 @@
 import { ButtonLight, PanelSelectorSM, TituloTexto } from "@impulsogov/design-system";
 import { useRouter } from 'next/router';
-import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 import { v1 as uuidv1 } from 'uuid';
+import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 import style from "../duvidas/Duvidas.module.css";
+import AtendimentoIndividual from "./atendimentoindividuais";
+import NovoUsuario from "./novosusuarios";
+import PerfilUsuario from "./perfildousuario";
+import ProcedimentosPorUsuarios from "./procedimentosporusuarios";
+import Producao from "./producao";
 import Resumo from "./resumo";
 import TaxaAbandono from "./taxadeabandono";
-import Producao from "./producao";
-import ProcedimentosPorUsuarios from "./procedimentosporusuarios";
-import PerfilUsuario from "./perfildousuario";
-import NovoUsuario from "./novosusuarios";
-import AtendimentoIndividual from "./atendimentoindividuais";
 
 
 export async function getServerSideProps(ctx) {
@@ -49,12 +49,12 @@ export default function Paineis() {
         panel={ Number(panel) }
         components={ [[
           <Resumo key={ uuidv1() } />,
-          <TaxaAbandono key={ uuidv1() } />,
-          <Producao key={ uuidv1() } />,
-          <ProcedimentosPorUsuarios key={ uuidv1() } />,
           <PerfilUsuario key={ uuidv1() } />,
           <NovoUsuario key={ uuidv1() } />,
+          <TaxaAbandono key={ uuidv1() } />,
           <AtendimentoIndividual key={ uuidv1() } />,
+          <ProcedimentosPorUsuarios key={ uuidv1() } />,
+          <Producao key={ uuidv1() } />,
         ]] }
         subtitles={ [
           [
