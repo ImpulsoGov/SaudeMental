@@ -5,6 +5,7 @@ import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 // import { getPerfilUsuariosPorEstabelecimento, getPerfilUsuarios } from "../../../requests/caps";
 import ReactEcharts from "echarts-for-react";
 import Select, { components } from "react-select";
+import styles from "../Caps.module.css";
 import usuariosAtivos from "./usuariosAtivos.json";
 
 const CORES_GRAFICO_DONUT = ["#5367C9", "#6577CF", "#7685D4", "#8795DA", "#98A4DF", "#A9B3E4", "#BAC2E9", "#CAD0EE", "#D3D8F1", "#E0E4F5", "#8795DA", "#8795DA", "#8795DA"];
@@ -220,19 +221,21 @@ const PerfilUsuario = () => {
 
       { perfil.length !== 0 &&
         <>
-          <div style={ { width: "100%", display: "flex", gap: "24px" } }>
-            <div style={ { width: "50%", fontSize: "14px" } }>
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
               <Select { ...getPropsFiltroEstabelecimento(perfil) } />
             </div>
-            <div style={ { width: "50%", fontSize: "14px" } }>
+            <div className={ styles.Filtro }>
               <Select { ...getPropsFiltroCompetencia(perfil) } />
             </div>
           </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoDonut(perfil) }
-            style={ { width: "100%", height: "70vh" } }
-          />
+          <div className={ styles.GraficoDonutContainer }>
+            <ReactEcharts
+              option={ getOpcoesGraficoDonut(perfil) }
+              style={ { width: "40%", height: "100%" } }
+            />
+          </div>
         </>
       }
 
