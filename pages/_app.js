@@ -11,25 +11,29 @@ import '../styles/globals.css';
 import { getData } from '../services/getData';
 import { LAYOUT } from '../querys/LAYOUT';
 import { Context } from '../contexts/Context';
+import { addUserDataLayer } from '../hooks/addUserDataLayer'
+import { rotaDinamica } from '../hooks/rotaDinamica'
 
-import * as gtag from '../components/Analytics/lib/gtag'
 import Analytics from '../components/Analytics/Analytics'
+import TagManager from "react-gtm-module";
+
+const tagManagerArgs = {
+  gtmId: "GTM-MLMCMBM",
+};
 
 
 function MyApp(props) {
   const { Component, pageProps } = props;
   const [city, setCity] = useState("Aracaju - SE")
+  const [active, setMode] = useState(true)
   const router = useRouter();
+  const dynamicRoute = router.asPath
   let path = router.pathname;
-  useEffect(() => {
-    const handleRouteChange = url => {
-      gtag.pageview(url)
-    }
-    router.events.on('routeChangeComplete', handleRouteChange)
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange)
-    }
-  }, [router.events])
+  useEffect(() => TagManager.initialize(tagManagerArgs),[])
+  useEffect(()=>rotaDinamica(router), [router.events])
+  useEffect(()=>addUserDataLayer(props.ses),[props.ses])
+  useEffect(() =>setMode(true),[dynamicRoute])
+
   return (
     <>
       <Head>
