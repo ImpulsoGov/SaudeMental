@@ -30,7 +30,7 @@ const tagManagerArgs = {
 
 function MyApp(props) {
   const { Component, pageProps: { session, ...pageProps } } = props;
-  // const [city, setCity] = useState("Aracaju - SE")
+  const [city, setCity] = useState("Aracaju - SE");
   const router = useRouter();
   const dynamicRoute = router.asPath;
   let path = router.pathname;
