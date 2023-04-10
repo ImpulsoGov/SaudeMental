@@ -9,7 +9,7 @@ export const getAtendimentosConsultorioNaRua = async (municipioIdSus) => {
   try {
     const endpoint = "/consultorionarua?municipio_id_sus=" + municipioIdSus;
 
-    const { data } = await axiosInstance(endpoint);
+    const { data } = await axiosInstance.get(endpoint);
 
     return data;
   } catch (error) {
@@ -21,7 +21,7 @@ export const getAtendimentosConsultorioNaRua12meses = async (municipioIdSus) => 
   try {
     const endpoint = "/consultorionarua12meses?municipio_id_sus=" + municipioIdSus;
 
-    const { data } = await axiosInstance(endpoint);
+    const { data } = await axiosInstance.get(endpoint);
 
     return data;
   } catch (error) {
@@ -33,7 +33,7 @@ export const getAcoesReducaoDeDanos = async (municipioIdSus) => {
   try {
     const endpoint = "/reducaodedanos?municipio_id_sus=" + municipioIdSus;
 
-    const { data } = await axiosInstance(endpoint);
+    const { data } = await axiosInstance.get(endpoint);
 
     return data;
   } catch (error) {
@@ -45,7 +45,7 @@ export const getAcoesReducaoDeDanos12meses = async (municipioIdSus) => {
   try {
     const endpoint = "/reducaodedanos12meses?municipio_id_sus=" + municipioIdSus;
 
-    const { data } = await axiosInstance(endpoint);
+    const { data } = await axiosInstance.get(endpoint);
 
     return data;
   } catch (error) {
