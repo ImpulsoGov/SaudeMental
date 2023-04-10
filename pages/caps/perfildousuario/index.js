@@ -8,7 +8,10 @@ import Select, { components } from "react-select";
 import styles from "../Caps.module.css";
 import usuariosAtivos from "./usuariosAtivos.json";
 
-const CORES_GRAFICO_DONUT = ["#5367C9", "#6577CF", "#7685D4", "#8795DA", "#98A4DF", "#A9B3E4", "#BAC2E9", "#CAD0EE", "#D3D8F1", "#E0E4F5", "#8795DA", "#8795DA", "#8795DA"];
+const CORES_GRAFICO_CID = ["#5367C9", "#6577CF", "#7685D4", "#8795DA", "#98A4DF", "#A9B3E4", "#BAC2E9", "#CAD0EE", "#D3D8F1", "#E0E4F5", "#8795DA", "#8795DA", "#8795DA"];
+const CORES_GRAFICO_USUARIOS_ATIVOS = ["#5367C9", "#CACCFE", "#E0E4F5"];
+const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "", label: "" };
+const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -22,24 +25,14 @@ const PerfilUsuario = () => {
   const { data: session } = useSession();
   const [perfil, setPerfil] = useState(usuariosAtivos);
   // const [perfilPorEstabelecimento, setPerfilPorEstabelecimento] = useState(usuariosPorEstabelecimento);
-  const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState({
-    value: "Todos", label: "Todos"
-  });
-  const [filtroCompetenciaCID, setFiltroCompetenciaCID] = useState({
-    value: "", label: ""
-  });
-  const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState({
-    value: "Todos", label: "Todos"
-  });
-  const [filtroCompetenciaGenero, setFiltroCompetenciaGenero] = useState({
-    value: "", label: ""
-  });
-  const [filtroEstabelecimentoRacaCor, setFiltroEstabelecimentoRacaCor] = useState({
-    value: "Todos", label: "Todos"
-  });
-  const [filtroCompetenciaRacaCor, setFiltroCompetenciaRacaCor] = useState({
-    value: "", label: ""
-  });
+  const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
+  const [filtroCompetenciaCID, setFiltroCompetenciaCID] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
+  const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
+  const [filtroCompetenciaGenero, setFiltroCompetenciaGenero] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
+  const [filtroEstabelecimentoRacaCor, setFiltroEstabelecimentoRacaCor] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
+  const [filtroCompetenciaRacaCor, setFiltroCompetenciaRacaCor] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
+  const [filtroEstabelecimentoUsuariosAtivos, setFiltroEstabelecimentoUsuariosAtivos] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
+  const [filtroCompetenciaUsuariosAtivos, setFiltroCompetenciaUsuariosAtivos] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
 
   // useEffect(() => {
   //   const getDados = async (municipioIdSus) => {
@@ -156,6 +149,49 @@ const PerfilUsuario = () => {
     return perfilAgregado;
   };
 
+  const agregarPorEstabelecimentoPeriodoSituacaoESubstancias = (perfil) => {
+    const perfilAgregado = [];
+
+    perfil.forEach((dado) => {
+      const {
+        estabelecimento,
+        competencia,
+        periodo,
+        ativos_mes: usuariosAtivos,
+        usuario_situacao_rua: situacaoRua,
+        usuario_abuso_substancias: abusoSubstancias
+      } = dado;
+      const perfilEncontrado = perfilAgregado
+        .find((item) => item.estabelecimento === estabelecimento && item.periodo === periodo);
+
+      if (!perfilEncontrado) {
+        perfilAgregado.push({
+          periodo,
+          competencia,
+          estabelecimento,
+          ativosPorSituacaoDeRua: [{ situacaoRua, usuariosAtivos }],
+          ativosPorAbusoSubstancias: [{ abusoSubstancias, usuariosAtivos }]
+        });
+      } else {
+        const situacaoDeRuaEncontrada = perfilEncontrado.ativosPorSituacaoDeRua
+          .find((item) => item.situacaoRua === situacaoRua);
+
+        const abusoSubtanciasEncontrado = perfilEncontrado.ativosPorAbusoSubstancias
+          .find((item) => item.abusoSubstancias === abusoSubstancias);
+
+        situacaoDeRuaEncontrada
+          ? situacaoDeRuaEncontrada.usuariosAtivos += usuariosAtivos
+          : perfilEncontrado.ativosPorSituacaoDeRua.push({ situacaoRua, usuariosAtivos });
+
+        abusoSubtanciasEncontrado
+          ? abusoSubtanciasEncontrado.usuariosAtivos += usuariosAtivos
+          : perfilEncontrado.ativosPorAbusoSubstancias.push({ abusoSubstancias, usuariosAtivos });
+      }
+    });
+
+    return perfilAgregado;
+  };
+
   const getPropsFiltroEstabelecimento = (perfil, estadoFiltro, funcaoSetFiltro) => {
     const optionsSemDuplicadas = [];
 
@@ -260,7 +296,7 @@ const PerfilUsuario = () => {
             value: usuariosAtivos,
             name: !condicaoSaude ? "Sem informação" : condicaoSaude,
             itemStyle: {
-              color: CORES_GRAFICO_DONUT[index]
+              color: CORES_GRAFICO_CID[index]
             },
           }))
         }
@@ -382,6 +418,80 @@ const PerfilUsuario = () => {
     };
   };
 
+  const getOpcoesGraficoUsuariosAtivos = (perfil, titulo, tipo) => {
+    const PROPIEDADES_POR_TIPO = {
+      SITUACAO_RUA: {
+        prop_agregacao: "ativosPorSituacaoDeRua",
+        prop_nome: "situacaoRua"
+      },
+      ABUSO_SUBSTANCIAS: {
+        prop_agregacao: "ativosPorAbusoSubstancias",
+        prop_nome: "abusoSubstancias"
+      }
+    };
+
+    const perfilAgregado = agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil);
+    const perfilFiltrado = perfilAgregado
+      .filter(({ estabelecimento, periodo }) =>
+        estabelecimento === filtroEstabelecimentoUsuariosAtivos.value
+        // && periodo === filtroCompetencia.value
+      );
+
+    const dadosPerfil = perfilFiltrado.find(({ periodo }) => {
+      return filtroCompetenciaUsuariosAtivos.value === ""
+        ? true
+        : filtroCompetenciaUsuariosAtivos.value === periodo;
+    });
+
+    const dadosUsuariosAtivos = dadosPerfil[PROPIEDADES_POR_TIPO[tipo].prop_agregacao];
+
+    return {
+      title: {
+        text: titulo,
+        textStyle: {
+          fontSize: 14
+        },
+      },
+      tooltip: {
+        trigger: 'item',
+      },
+      legend: {
+        bottom: 0
+      },
+      series: [
+        {
+          top: 30,
+          bottom: 30,
+          name: titulo,
+          type: 'pie',
+          radius: ['40%', '80%'],
+          avoidLabelOverlap: false,
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: "{d}%",
+            color: "#000000"
+          },
+          emphasis: {
+            label: {
+              show: true,
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: dadosUsuariosAtivos.map((item, index) => ({
+            value: item.usuariosAtivos,
+            name: item[PROPIEDADES_POR_TIPO[tipo].prop_nome],
+            itemStyle: {
+              color: CORES_GRAFICO_USUARIOS_ATIVOS[index]
+            },
+          }))
+        }
+      ]
+    };
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -492,7 +602,7 @@ const PerfilUsuario = () => {
             </div>
           </div>
 
-          <div className={ styles.GraficoDonutContainer }>
+          <div className={ styles.GraficoCIDContainer }>
             <ReactEcharts
               option={ getOpcoesGraficoCID(perfil) }
               style={ { width: "40%", height: "100%" } }
@@ -543,6 +653,58 @@ const PerfilUsuario = () => {
         titulo="Usuários ativos"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { perfil.length !== 0 &&
+        <>
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select
+                { ...getPropsFiltroEstabelecimento(
+                  agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil),
+                  filtroEstabelecimentoUsuariosAtivos,
+                  setFiltroEstabelecimentoUsuariosAtivos
+                )
+                }
+              />
+            </div>
+            <div className={ styles.Filtro }>
+              <Select
+                { ...getPropsFiltroCompetencia(
+                  agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil),
+                  filtroCompetenciaUsuariosAtivos,
+                  setFiltroCompetenciaUsuariosAtivos,
+                  filtroEstabelecimentoUsuariosAtivos
+                )
+                }
+              />
+            </div>
+          </div>
+
+          <div className={ styles.GraficosUsuariosAtivosContainer }>
+            <div className={ styles.GraficoUsuariosAtivos }>
+              <ReactEcharts
+                option={ getOpcoesGraficoUsuariosAtivos(
+                  perfil,
+                  "Fazem uso de substâncias psicoativas?",
+                  "ABUSO_SUBSTANCIAS"
+                ) }
+                style={ { width: "100%", height: "100%" } }
+              />
+            </div>
+
+            <div className={ styles.GraficoUsuariosAtivos }>
+              <ReactEcharts
+                option={ getOpcoesGraficoUsuariosAtivos(
+                  perfil,
+                  "Estão em situação de rua?",
+                  "SITUACAO_RUA"
+                ) }
+                style={ { width: "100%", height: "100%" } }
+              />
+            </div>
+          </div>
+        </>
+      }
 
       <GraficoInfo
         titulo="Raça/Cor*"
