@@ -1,4 +1,4 @@
-import { GraficoInfo, TituloSmallTexto } from "@impulsogov/design-system";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
@@ -320,6 +320,60 @@ const PerfilUsuario = () => {
 
       <GraficoInfo
         titulo="Panorama geral"
+      />
+
+      <Grid12Col
+        proporcao="4-4-4"
+        items={ [
+          <>
+            {
+              <CardInfoTipoA
+                fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+                indicador={ 692 }
+                indice={ -141 }
+                indiceDescricao="últ. mês"
+                link={ {
+                  label: 'Mais Informações',
+                  url: '/'
+                } }
+                titulo="Usuários que frequentaram"
+                tooltip="Dados de usuários ativos"
+              />
+            }
+          </>,
+          <>
+            {
+              <CardInfoTipoA
+                fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+                indicador={ 692 }
+                indice={ -141 }
+                indiceDescricao="últ. mês"
+                link={ {
+                  label: 'Mais Informações',
+                  url: '/'
+                } }
+                titulo="Usuários que frequentaram"
+                tooltip="Dados de usuários ativos"
+              />
+            }
+          </>,
+          <>
+            {
+              <CardInfoTipoA
+                fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+                indicador={ 692 }
+                indice={ -141 }
+                indiceDescricao="últ. mês"
+                link={ {
+                  label: 'Mais Informações',
+                  url: '/'
+                } }
+                titulo="Usuários que frequentaram"
+                tooltip="Dados de usuários ativos"
+              />
+            }
+          </>,
+        ] }
       />
 
       <GraficoInfo
