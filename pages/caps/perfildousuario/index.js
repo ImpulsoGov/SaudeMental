@@ -34,6 +34,12 @@ const PerfilUsuario = () => {
   const [filtroCompetenciaGenero, setFiltroCompetenciaGenero] = useState({
     value: "", label: ""
   });
+  const [filtroEstabelecimentoRacaCor, setFiltroEstabelecimentoRacaCor] = useState({
+    value: "Todos", label: "Todos"
+  });
+  const [filtroCompetenciaRacaCor, setFiltroCompetenciaRacaCor] = useState({
+    value: "", label: ""
+  });
 
   // useEffect(() => {
   //   const getDados = async (municipioIdSus) => {
@@ -52,7 +58,7 @@ const PerfilUsuario = () => {
     const perfilAgregado = [];
 
     perfil.forEach((dado) => {
-      const { estabelecimento, competencia, periodo, ativos_mes: quantidadeAtivos, usuario_condicao_saude: condicaoSaude } = dado;
+      const { estabelecimento, competencia, periodo, ativos_mes: usuariosAtivos, usuario_condicao_saude: condicaoSaude } = dado;
       const perfilEncontrado = perfilAgregado
         .find((item) => item.estabelecimento === estabelecimento && item.periodo === periodo);
 
@@ -61,17 +67,15 @@ const PerfilUsuario = () => {
           periodo,
           competencia,
           estabelecimento,
-          ativosPorCondicao: [{ condicaoSaude, quantidadeAtivos }]
+          ativosPorCondicao: [{ condicaoSaude, usuariosAtivos }]
         });
       } else {
         const condicaoEncontrada = perfilEncontrado.ativosPorCondicao
           .find((item) => item.condicaoSaude === condicaoSaude);
 
-        if (!condicaoEncontrada) {
-          perfilEncontrado.ativosPorCondicao.push({ condicaoSaude, quantidadeAtivos });
-        } else {
-          condicaoEncontrada.quantidadeAtivos += quantidadeAtivos;
-        }
+        condicaoEncontrada
+          ? condicaoEncontrada.usuariosAtivos += usuariosAtivos
+          : perfilEncontrado.ativosPorCondicao.push({ condicaoSaude, usuariosAtivos });
       }
     });
 
@@ -86,7 +90,7 @@ const PerfilUsuario = () => {
         estabelecimento,
         competencia,
         periodo,
-        ativos_mes: quantidadeAtivos,
+        ativos_mes: usuariosAtivos,
         usuario_faixa_etaria: faixaEtaria,
         usuario_sexo: usuarioSexo
       } = dado;
@@ -99,19 +103,53 @@ const PerfilUsuario = () => {
           periodo,
           competencia,
           estabelecimento,
-          ativosPorFaixaEtariaEGenero: [{ faixaEtaria, [genero]: quantidadeAtivos }]
+          ativosPorFaixaEtariaEGenero: [{ faixaEtaria, [genero]: usuariosAtivos }]
         });
       } else {
         const ativos = perfilEncontrado.ativosPorFaixaEtariaEGenero
           .find((item) => item.faixaEtaria === faixaEtaria);
 
         if (!ativos) {
-          perfilEncontrado.ativosPorFaixaEtariaEGenero.push({ faixaEtaria, [genero]: quantidadeAtivos });
+          perfilEncontrado.ativosPorFaixaEtariaEGenero.push({ faixaEtaria, [genero]: usuariosAtivos });
         } else {
-          !ativos[genero]
-            ? ativos[genero] = quantidadeAtivos
-            : ativos[genero] += quantidadeAtivos;
+          ativos[genero]
+            ? ativos[genero] += usuariosAtivos
+            : ativos[genero] = usuariosAtivos;
         }
+      }
+    });
+
+    return perfilAgregado;
+  };
+
+  const agregarPorEstabelecimentoPeriodoERacaCor = (perfil) => {
+    const perfilAgregado = [];
+
+    perfil.forEach((dado) => {
+      const {
+        estabelecimento,
+        competencia,
+        periodo,
+        ativos_mes: usuariosAtivos,
+        usuario_raca_cor: racaCor
+      } = dado;
+      const perfilEncontrado = perfilAgregado
+        .find((item) => item.estabelecimento === estabelecimento && item.periodo === periodo);
+
+      if (!perfilEncontrado) {
+        perfilAgregado.push({
+          periodo,
+          competencia,
+          estabelecimento,
+          ativosPorRacaCor: [{ racaCor, usuariosAtivos }]
+        });
+      } else {
+        const racaCorEncontrada = perfilEncontrado.ativosPorRacaCor
+          .find((item) => item.racaCor === racaCor);
+
+        racaCorEncontrada
+          ? racaCorEncontrada.usuariosAtivos += usuariosAtivos
+          : perfilEncontrado.ativosPorRacaCor.push({ racaCor, usuariosAtivos });
       }
     });
 
@@ -181,7 +219,7 @@ const PerfilUsuario = () => {
     };
   };
 
-  const getOpcoesGraficoDonut = (perfil) => {
+  const getOpcoesGraficoCID = (perfil) => {
     const perfilAgregado = agregarPorEstabelecimentoPeriodoECondicao(perfil);
     const perfilFiltrado = perfilAgregado
       .filter(({ estabelecimento, periodo }) =>
@@ -218,8 +256,8 @@ const PerfilUsuario = () => {
           labelLine: {
             show: false
           },
-          data: ativosPorCondicao.map(({ condicaoSaude, quantidadeAtivos }, index) => ({
-            value: quantidadeAtivos,
+          data: ativosPorCondicao.map(({ condicaoSaude, usuariosAtivos }, index) => ({
+            value: usuariosAtivos,
             name: !condicaoSaude ? "Sem informação" : condicaoSaude,
             itemStyle: {
               color: CORES_GRAFICO_DONUT[index]
@@ -230,9 +268,9 @@ const PerfilUsuario = () => {
     };
   };
 
-  const getOpcoesGraficoBarrasDuplas = (perfil) => {
+  const getOpcoesGraficoGeneroEFaixaEtaria = (perfil) => {
     const NOME_DIMENSAO = "genero";
-    const VALORES_DIMENSAO = ["Masculino", "Feminino"];
+    const LABELS_DIMENSAO = ["Masculino", "Feminino"];
 
     const perfilAgregado = agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfil);
     const perfilFiltrado = perfilAgregado
@@ -252,13 +290,13 @@ const PerfilUsuario = () => {
       },
       tooltip: {},
       dataset: {
-        dimensions: [NOME_DIMENSAO, ...VALORES_DIMENSAO],
+        dimensions: [NOME_DIMENSAO, ...LABELS_DIMENSAO],
         source: ativosPorFaixaEtariaEGenero
           .sort((a, b) => a.faixaEtaria.localeCompare(b.faixaEtaria))
           .map((item) => ({
             [NOME_DIMENSAO]: item.faixaEtaria,
-            [VALORES_DIMENSAO[0]]: item[VALORES_DIMENSAO[0].toLowerCase()],
-            [VALORES_DIMENSAO[1]]: item[VALORES_DIMENSAO[1].toLowerCase()],
+            [LABELS_DIMENSAO[0]]: item[LABELS_DIMENSAO[0].toLowerCase()],
+            [LABELS_DIMENSAO[1]]: item[LABELS_DIMENSAO[1].toLowerCase()],
           })),
       },
       xAxis: {
@@ -281,7 +319,7 @@ const PerfilUsuario = () => {
           label: {
             show: true,
             position: 'inside',
-            formatter: `{@${VALORES_DIMENSAO[0]}}`,
+            formatter: `{@${LABELS_DIMENSAO[0]}}`,
             color: "#FFFFFF",
           },
         },
@@ -293,10 +331,53 @@ const PerfilUsuario = () => {
           label: {
             show: true,
             position: 'inside',
-            formatter: `{@${VALORES_DIMENSAO[1]}}`,
+            formatter: `{@${LABELS_DIMENSAO[1]}}`,
             color: "#FFFFFF",
           },
         }
+      ]
+    };
+  };
+
+  const getOpcoesGraficoRacaEcor = (perfil) => {
+    const NOME_DIMENSAO = "usuariosAtivos";
+    const LABEL_DIMENSAO = "Usuários ativos";
+
+    const perfilAgregado = agregarPorEstabelecimentoPeriodoERacaCor(perfil);
+    const perfilFiltrado = perfilAgregado
+      .filter(({ estabelecimento, periodo }) => estabelecimento === filtroEstabelecimentoRacaCor.value
+        // && periodo === filtroCompetencia.value
+      );
+
+    const { ativosPorRacaCor } = perfilFiltrado.find(({ periodo }) => {
+      return filtroCompetenciaRacaCor.value === ""
+        ? true
+        : filtroCompetenciaRacaCor.value === periodo;
+    });
+
+    return {
+      legend: {},
+      tooltip: {},
+      dataset: {
+        dimensions: [NOME_DIMENSAO, LABEL_DIMENSAO],
+        source: ativosPorRacaCor
+          .sort((a, b) => b.racaCor.localeCompare(a.racaCor))
+          .map((item) => ({
+            [NOME_DIMENSAO]: item.racaCor,
+            [LABEL_DIMENSAO]: item.usuariosAtivos,
+          })),
+      },
+      xAxis: {
+        type: 'category',
+      },
+      yAxis: {},
+      series: [
+        {
+          type: 'bar',
+          itemStyle: {
+            color: "#5367C9"
+          },
+        },
       ]
     };
   };
@@ -413,7 +494,7 @@ const PerfilUsuario = () => {
 
           <div className={ styles.GraficoDonutContainer }>
             <ReactEcharts
-              option={ getOpcoesGraficoDonut(perfil) }
+              option={ getOpcoesGraficoCID(perfil) }
               style={ { width: "40%", height: "100%" } }
             />
           </div>
@@ -452,15 +533,57 @@ const PerfilUsuario = () => {
           </div>
 
           <ReactEcharts
-            option={ getOpcoesGraficoBarrasDuplas(perfil) }
+            option={ getOpcoesGraficoGeneroEFaixaEtaria(perfil) }
             style={ { width: "100%", height: "70vh" } }
           />
         </>
       }
 
       <GraficoInfo
-        titulo="Atendimentos por horas trabalhadas"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo="Usuários ativos"
+        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+      />
+
+      <GraficoInfo
+        titulo="Raça/Cor*"
+        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+      />
+
+      { perfil.length !== 0 &&
+        <>
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select
+                { ...getPropsFiltroEstabelecimento(
+                  agregarPorEstabelecimentoPeriodoERacaCor(perfil),
+                  filtroEstabelecimentoRacaCor,
+                  setFiltroEstabelecimentoRacaCor
+                )
+                }
+              />
+            </div>
+            <div className={ styles.Filtro }>
+              <Select
+                { ...getPropsFiltroCompetencia(
+                  agregarPorEstabelecimentoPeriodoERacaCor(perfil),
+                  filtroCompetenciaRacaCor,
+                  setFiltroCompetenciaRacaCor,
+                  filtroEstabelecimentoRacaCor
+                )
+                }
+              />
+            </div>
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoRacaEcor(perfil) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
+
+      <GraficoInfo
+        descricao="*Dados podem ter problemas de coleta, registro e preenchimento"
       />
     </div>
   );
