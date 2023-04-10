@@ -12,29 +12,28 @@ import { Context } from '../contexts/Context';
 import { LAYOUT } from '../querys/LAYOUT';
 import { getData } from '../services/getData';
 
-import Analytics from '../components/Analytics/Analytics';
-import * as gtag from '../components/Analytics/lib/gtag';
 import { useWindowWidth } from '../helpers/useWindowWidth';
 import { alterarSenha, solicitarNovaSenha, validarCodigo } from '../services/esqueciMinhaSenha';
 import { criarSenha, primeiroAcesso } from '../services/primeiroAcesso';
 import { validacao, validateCredentials } from '../services/validateCredentials';
 import style from '../styles/MyApp.module.css';
 
+import { addUserDataLayer } from '../hooks/addUserDataLayer';
+import { rotaDinamica } from '../hooks/rotaDinamica';
+
+import TagManager from "react-gtm-module";
+import Analytics from '../components/Analytics/Analytics';
+
+const tagManagerArgs = {
+  gtmId: "GTM-MLMCMBM",
+};
+
 function MyApp(props) {
   const { Component, pageProps: { session, ...pageProps } } = props;
-  const [city, setCity] = useState("Aracaju - SE");
+  // const [city, setCity] = useState("Aracaju - SE")
   const router = useRouter();
+  const dynamicRoute = router.asPath;
   let path = router.pathname;
-  useEffect(() => {
-    const handleRouteChange = url => {
-      gtag.pageview(url);
-    };
-    router.events.on('routeChangeComplete', handleRouteChange);
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
-    };
-  }, [router.events]);
-
   let width = useWindowWidth();
 
   const nome = props.ses == null || typeof (props.ses) == undefined ? "" : props.ses.user.nome;
@@ -42,6 +41,10 @@ function MyApp(props) {
   const [status, setStatus] = useState();
   const [isLoading, setLoading] = useState(true);
   const [active, setMode] = useState(true);
+  useEffect(() => TagManager.initialize(tagManagerArgs), []);
+  useEffect(() => rotaDinamica(router), [router.events]);
+  useEffect(() => addUserDataLayer(props.ses), [props.ses]);
+  useEffect(() => setMode(true), [dynamicRoute]);
 
   return (
     <>
@@ -87,7 +90,7 @@ function MyApp(props) {
                 } }
                 menu={
                   props.ses ? [
-                    props.ses ? {label: "Inicio", url: "/inicio"} : {label: "Inicio", url: "/"},
+                    props.ses ? { label: "Inicio", url: "/inicio" } : { label: "Inicio", url: "/" },
                     props.res[0].menus[1],
                     props.res[0].menus[2],
                     props.res[0].menus[3]
@@ -120,7 +123,7 @@ function MyApp(props) {
                   },
                   botaoAjuda: {
                     label: "ESTOU COM PROBLEMAS NO LOGIN",
-                    link:""
+                    link: ""
                   }
                 } }
                 primeiroAcesso={ {
@@ -136,7 +139,7 @@ function MyApp(props) {
               />
             }
 
-            <main className={style["main-content"]}>
+            <main className={ style["main-content"] }>
               <Component { ...pageProps } />
             </main>
 
