@@ -1,12 +1,11 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
-import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-// import { getPerfilUsuariosPorEstabelecimento, getPerfilUsuarios } from "../../../requests/caps";
 import ReactEcharts from "echarts-for-react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import Select, { components } from "react-select";
+import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
+import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
 import styles from "../Caps.module.css";
-import usuariosAtivos from "./usuariosAtivos.json";
 
 const CORES_GRAFICO_CID = ["#5367C9", "#6577CF", "#7685D4", "#8795DA", "#98A4DF", "#A9B3E4", "#BAC2E9", "#CAD0EE", "#D3D8F1", "#E0E4F5", "#8795DA", "#8795DA", "#8795DA"];
 const CORES_GRAFICO_USUARIOS_ATIVOS = ["#5367C9", "#CACCFE", "#E0E4F5"];
@@ -23,8 +22,8 @@ export function getServerSideProps(ctx) {
 
 const PerfilUsuario = () => {
   const { data: session } = useSession();
-  const [perfil, setPerfil] = useState(usuariosAtivos);
-  // const [perfilPorEstabelecimento, setPerfilPorEstabelecimento] = useState(usuariosPorEstabelecimento);
+  const [perfil, setPerfil] = useState([]);
+  const [perfilPorEstabelecimento, setPerfilPorEstabelecimento] = useState([]);
   const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
   const [filtroCompetenciaCID, setFiltroCompetenciaCID] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
   const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
@@ -34,18 +33,18 @@ const PerfilUsuario = () => {
   const [filtroEstabelecimentoUsuariosAtivos, setFiltroEstabelecimentoUsuariosAtivos] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
   const [filtroCompetenciaUsuariosAtivos, setFiltroCompetenciaUsuariosAtivos] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
 
-  // useEffect(() => {
-  //   const getDados = async (municipioIdSus) => {
-  //     setPerfil(await getPerfilUsuarios(520880));
-  //     setPerfilPorEstabelecimento(
-  //       await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
-  //     );
-  //   };
+  useEffect(() => {
+    const getDados = async (municipioIdSus) => {
+      setPerfil(await getPerfilUsuarios(520880));
+      setPerfilPorEstabelecimento(
+        await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
+      );
+    };
 
-  //   if (session?.user.municipio_id_ibge) {
-  //     getDados(session?.user.municipio_id_ibge);
-  //   }
-  // }, []);
+    if (session?.user.municipio_id_ibge) {
+      getDados(session?.user.municipio_id_ibge);
+    }
+  }, []);
 
   const agregarPorEstabelecimentoPeriodoECondicao = (perfil) => {
     const perfilAgregado = [];
