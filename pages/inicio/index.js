@@ -66,7 +66,7 @@ function Inicio({res}) {
           {
             icon: 'https://media.graphassets.com/mKRm7fObQ5xJ44Zto9cU',
             link: '/materiais-complementares',
-            texto: 'Encontrei aqui tutoriais sobre o painel, materiais explicativos de indicadores e mais.',
+            texto: 'Encontre aqui tutoriais sobre o painel, materiais explicativos de indicadores e mais.',
             titulo: 'Materiais complementares'
           },
           {
