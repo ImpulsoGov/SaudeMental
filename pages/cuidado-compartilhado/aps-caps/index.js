@@ -67,7 +67,7 @@ const ApsCaps = () => {
 
       <GraficoInfo
         titulo="Matriciamentos"
-        descricao="Quantidade de matriciamentos separados pelos CAPS que estão dentro e fora da meta (meta: 2 matriciamentos / mês em cada CAPS)"
+        descricao="Quantidade de matriciamentos separados pelos CAPS que estão dentro e fora da meta (meta: 1 matriciamentos / mês em cada CAPS)"
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
       />
 

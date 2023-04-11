@@ -144,6 +144,16 @@ const Ambulatorio = () => {
         titulo="Atendimentos por horas trabalhadas"
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
       />
+
+      <GraficoInfo
+        titulo="Pirâmide etária de atendidos"
+        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+      />
+
+      <GraficoInfo
+        titulo="Atendimentos por profissional"
+        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+      />
     </div>
   );
 };

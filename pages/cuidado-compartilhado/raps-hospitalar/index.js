@@ -16,7 +16,13 @@ const RapsHospitalar = ({ }) => {
       <GraficoInfo
         descricao="Internações finalizadas entre Julho de 2021 e Junho de 2022."
         fonte="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS - Elaboração Impulso Gov"
-        titulo="Usuários que foram atendidos na RAPS antes ou após a internação"
+        titulo="Usuários que foram atendidos na RAPS antes ou após a internação - ANUAL"
+      />
+
+      <GraficoInfo
+        descricao="Internações finalizadas no mês selecionado."
+        fonte="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS - Elaboração Impulso Gov"
+        titulo="Usuários que foram atendidos na RAPS antes ou após a internação - MENSAL"
       />
 
       <GraficoInfo
