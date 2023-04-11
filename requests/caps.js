@@ -88,3 +88,39 @@ export const getAtendimentosPorCaps = async (municipioIdSus) => {
     console.log('error', error.response.data);
   }
 };
+
+export const getProcedimentosPorTempoServico = async (municipioIdSus) => {
+  try {
+    const endpoint = "/procedimentos_por_usuario_tempo?municipio_id_sus=" + municipioIdSus;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getProcedimentosPorEstabelecimento = async (municipioIdSus) => {
+  try {
+    const endpoint = "/procedimentos_por_usuario_estabelecimentos?municipio_id_sus=" + municipioIdSus;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getResumoProcedimentosPorTempoServico = async (municipioIdSus) => {
+  try {
+    const endpoint = "/procedimentos_por_usuario_resumo?municipio_id_sus=" + municipioIdSus;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
