@@ -39,7 +39,7 @@ const AtendimentoIndividual = () => {
     }
   }, []);
 
-  const agregarPorLinhaPerfilEEstabelecimento = (atendimentos) => {
+  const agregarPorLinhaPerfil = (atendimentos) => {
     const atendimentosAgregados = [];
 
     atendimentos.forEach((atendimento) => {
@@ -80,7 +80,7 @@ const AtendimentoIndividual = () => {
     const atendimentosPorCapsUltimoPeriodo = atendimentos
       .filter(({ periodo, estabelecimento }) => periodo === "Último período" && estabelecimento !== "Todos");
 
-    const atendimentosAgregados = agregarPorLinhaPerfilEEstabelecimento(atendimentosPorCapsUltimoPeriodo);
+    const atendimentosAgregados = agregarPorLinhaPerfil(atendimentosPorCapsUltimoPeriodo);
 
     const cardsAtendimentosPorCaps = atendimentosAgregados.map(({
       linhaPerfil, atendimentosPorEstabelecimento, nomeMes
