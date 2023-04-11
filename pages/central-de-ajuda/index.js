@@ -30,7 +30,7 @@ const Index = ({ res }) => {
         cards={ [
           {
             icon: 'https://media.graphassets.com/6cOfkxeyT7245Fn19kgU',
-            link: '/materiais-complementares',
+            link: '/glossario',
             titulo: 'Sobre os indicadores'
           },
           {

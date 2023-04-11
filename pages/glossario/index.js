@@ -1,4 +1,4 @@
-import { ToggleList } from "@impulsogov/design-system";
+import { TituloTexto, ToggleList } from "@impulsogov/design-system";
 import { ToggleText } from "@impulsogov/design-system";
 import { ButtonLight } from "@impulsogov/design-system";
 import { GLOSSARIO } from "../../querys/GLOSSARIO";
@@ -21,16 +21,20 @@ export default function Glossario({res}) {
   return (
     <>
       <div className={style.BotaoVoltar}>
-      <ButtonLight icone={{posicao: 'right',url: 'https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG'}} label="VOLTAR" link="/inicio"/>
+      <ButtonLight icone={{posicao: 'right',url: 'https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG'}} label="VOLTAR" link="/central-de-ajuda"/>
       </div>
-      <ToggleText 
-        title={res[0].homeBanners[3].title} 
-        list={res[0].toggleTexts} 
-        rightSubtitle={res[0].homeBanners[4].title} 
-        leftSubtitle={res[0].homeBanners[5].title}
-        imgLink={res[0].buttonImages[0].image.url}
-      />
-      <ToggleList list={res[0].toggleLists} />
+      <TituloTexto
+        imagem = {{
+          posicao: null,
+          url: ''
+        }}
+        titulo = "Entenda como interpretar os indicadores Impulso"
+        texto = ""
+        />
+      <ToggleList
+          title="Indicadores"
+          list={res[0].toggleLists} 
+        />
     </>
   )
 }

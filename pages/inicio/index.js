@@ -28,7 +28,7 @@ function Inicio({res}) {
         greeting="Boas vindas"
         municipio_uf={session?.user.municipio}
         nome_usuario={session?.user.nome}
-        texto="Aqui você pode acompanhar a situação das RAPS e demais serviços de saúde mental do seu minucípio, monitorando a qualidade do cuidado prestado e aprofundando seu diagnóstico sobre o território e a população atendida."
+        texto="Aqui você pode acompanhar a situação das RAPS e demais serviços de saúde mental do seu município, monitorando a qualidade do cuidado prestado e aprofundando seu diagnóstico sobre o território e a população atendida."
       />
 
       <CardLargeGrid
@@ -64,26 +64,26 @@ function Inicio({res}) {
       <CardLargeGridInicioSM
         cards={[
           {
-            icon: 'https://media.graphassets.com/6cOfkxeyT7245Fn19kgU',
+            icon: 'https://media.graphassets.com/mKRm7fObQ5xJ44Zto9cU',
             link: '/materiais-complementares',
-            texto: 'Encontrei aqui as respostas para as dúvidas enviadas ao longo da trilha de capacitação.',
+            texto: 'Encontrei aqui tutoriais sobre o painel, materiais explicativos de indicadores e mais.',
             titulo: 'Materiais complementares'
           },
           {
-            icon: 'https://media.graphassets.com/6cOfkxeyT7245Fn19kgU',
+            icon: 'https://media.graphassets.com/OIodayGQQpuManWWXhPn',
             link: 'central-de-ajuda',
-            texto: 'Encontre aqui as respostas para as dúvidas enviadas ao longo da trilha de capacitação.',
+            texto: 'Aqui você pode ver respostas para as dúvidas mais frequentes e solicitar ajuda para o nosso time.',
             titulo: 'Central de ajuda'
           }
         ]}
         cardsExtra={[
           {
-            icon: 'https://media.graphassets.com/6cOfkxeyT7245Fn19kgU',
+            icon: 'https://media.graphassets.com/7xPUwf12RjSiIrteLkwa',
             link: '/gestao-usuarios',
             titulo: 'Gerenciamento de usuários'
           },
           {
-            icon: 'https://media.graphassets.com/6cOfkxeyT7245Fn19kgU',
+            icon: 'https://media.graphassets.com/TS34Ja4xRqCkx2uTkaGQ',
             link: '/duvidas',
             titulo: 'Feedbacks e sugestões'
           }

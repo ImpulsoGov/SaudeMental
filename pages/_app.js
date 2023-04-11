@@ -92,8 +92,7 @@ function MyApp(props) {
                   props.ses ? [
                     props.ses ? { label: "Inicio", url: "/inicio" } : { label: "Inicio", url: "/" },
                     props.res[0].menus[1],
-                    props.res[0].menus[2],
-                    props.res[0].menus[3]
+                    props.res[0].menus[2]
                   ] : [
                     props.res[0].menus[0],
                     props.res[0].menus[1],
