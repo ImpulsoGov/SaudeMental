@@ -24,21 +24,21 @@ const Index = ({res}) => {
             url: ''
           }}
           titulo= "Materiais complementares"
-          texto="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat adipiscing elit, sed dosiih ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam."
+          texto="Preparamos uma série de documentos e vídeos para te ajudar durante o uso do painel. São guias explicativos dos indicadores, gestão de processos, tutoriais e muito mais. Para acessar é só clicar no tema de interesse e depois no nome do material. Os documentos abrirão em PDF em uma outra guia do navegador e os vídeos abrirão em uma tela aqui mesmo."
         />
         <MateriaisComplementares
-          modulo={[
-            {concluido: true,formato: 'VIDEO',id: 1,link: '/',moduloID: 0,titulo: 'Introdução sobre a Capacitação'},
-            {concluido: true,formato: 'VIDEO',id: 1,link: '/',moduloID: 1,titulo: 'Introdução sobre a Capacitação'},
-            {concluido: false,formato: 'PPT',id: 2,link: '/',moduloID: 1,titulo: 'Introdução ao Indicador de Hipertensão + Introdução ao Indicador de Diabetes'},
-            {concluido: false,formato: 'PDF',id: 1,link: '/',moduloID: 2,titulo: 'Introdução ao Previne Brasil'},
-            {concluido: false,formato: 'QUIZ',id: 2,link: '/',moduloID: 2,titulo: 'Quizz de avaliação desses conteúdos'}
-          ]}
           modulos={[
-            {concluido: true,id: 0,liberado: true,tipo: 'MATERIAIS',titulo: 'Introdução aos indicadores de Hipertensão e Diabetes na APS'},
-            {concluido: true,id: 1,liberado: true,tipo: 'MATERIAIS',titulo: 'Introdução aos indicadores de Hipertensão e Diabetes na APS'},
-            {concluido: false,id: 2,liberado: true,tipo: 'MATERIAIS',titulo: 'Qualificação do registro e monitoramento de dados'},
-            {concluido: false,id: 3,liberado: true,tipo: 'TUTORIAIS',titulo: 'Gestão de processos de trabalho'}
+            {concluido: true,id: 0,liberado: true,tipo: 'MATERIAIS',titulo: 'Guia dos indicadores'},
+            {concluido: true,id: 1,liberado: true,tipo: 'MATERIAIS',titulo: 'Gestão de processos de trabalho'},
+            {concluido: true,id: 2,liberado: true,tipo: 'MATERIAIS',titulo: 'Resolução de problemas'},
+            {concluido: true,id: 3,liberado: true,tipo: 'TUTORIAIS',titulo: 'Como usar o painel?'}
+          ]}
+          modulo={[
+            {concluido: true,formato: 'PDF',id: 0,link: 'https://media.graphassets.com/SzWf3r2ITFuffA39OyPF',moduloID: 0,titulo: 'Internações'},
+            {concluido: false,formato: 'PDF',id: 0,link: 'https://media.graphassets.com/RA8T1VL8Syi3u0rFOLY1',moduloID: 0,titulo: 'Taxa de não adesão'},
+            // {concluido: false,formato: 'PDF',id: 1,link: '/',moduloID: 0,titulo: 'Produção'},
+            // {concluido: false,formato: 'PDF',id: 1,link: '/',moduloID: 1,titulo: 'Planilha de plano de ação'},
+            // {concluido: false,formato: 'PDF',id: 1,link: '/',moduloID: 1,titulo: 'Rotinas de trabalho'}
           ]}
           ultimoModulo={0}
         />
