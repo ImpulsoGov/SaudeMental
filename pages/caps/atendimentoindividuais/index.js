@@ -159,7 +159,7 @@ const AtendimentoIndividual = () => {
   const getOpcoesGraficoHistoricoTemporal = (atendimentos, filtroEstabelecimento) => {
     const atendimentosAgregados = agregarPorEstabelecimentoEPeriodo(atendimentos);
     const atendimentosOrdenados = ordenarAtendimentosPorCompetenciaAsc(atendimentosAgregados);
-    const atendimentoFiltradoPorEstabelecimento = atendimentosOrdenados
+    const atendimentosDeEstabelecimentoFiltrado = atendimentosOrdenados
       .find(({ estabelecimento }) => estabelecimento === filtroEstabelecimento);
 
     return {
@@ -186,7 +186,7 @@ const AtendimentoIndividual = () => {
       },
       xAxis: {
         type: 'category',
-        data: atendimentoFiltradoPorEstabelecimento.atendimentosPorPeriodo
+        data: atendimentosDeEstabelecimentoFiltrado.atendimentosPorPeriodo
           .map(({ periodo }) => periodo)
       },
       yAxis: {
@@ -195,7 +195,7 @@ const AtendimentoIndividual = () => {
       series: [
         {
           name: "Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):",
-          data: atendimentoFiltradoPorEstabelecimento.atendimentosPorPeriodo
+          data: atendimentosDeEstabelecimentoFiltrado.atendimentosPorPeriodo
             .map(({ porcentagemAtendimentos }) => porcentagemAtendimentos),
           type: 'line',
           itemStyle: {
@@ -278,8 +278,22 @@ const AtendimentoIndividual = () => {
       }
 
       <GraficoInfo
-        titulo="Atendimentos por horas trabalhadas"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo="CID dos usuários que realizaram apenas atendimentos individuais"
+        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+      />
+
+      <GraficoInfo
+        titulo="Gênero e faixa etária"
+        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+      />
+
+      <GraficoInfo
+        titulo="Raça/Cor*"
+        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+      />
+
+      <GraficoInfo
+        descricao="*Dados podem ter problemas de coleta, registro e preenchimento"
       />
     </div>
   );

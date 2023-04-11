@@ -25,10 +25,6 @@ const ProcedimentosPorUsuarios = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      // setPerfilAtendimentos(await getPerfilDeAtendimentos(municipioIdSus));
-      // setResumoPerfilAtendimentos(
-      //   await getResumoPerfilDeAtendimentos(municipioIdSus)[0]
-      // );
       setProcedimentosPorEstabelecimento(
         await getProcedimentosPorEstabelecimento(municipioIdSus)
       );
@@ -279,13 +275,8 @@ const ProcedimentosPorUsuarios = () => {
       }
 
       <GraficoInfo
-        titulo="Total de atendimentos"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
-      />
-
-      <GraficoInfo
-        titulo="Atendimentos por horas trabalhadas"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo="Procedimento por usuários x tempo do usuário no serviço"
+        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
     </div>
   );
