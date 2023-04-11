@@ -124,3 +124,39 @@ export const getResumoProcedimentosPorTempoServico = async (municipioIdSus) => {
     console.log('error', error.response.data);
   }
 };
+
+export const getAbandonoMensal = async (municipioIdSus) => {
+  try {
+    const endpoint = "/abandono/mensal?municipio_id_sus=" + municipioIdSus;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getPerfilAbandono = async (municipioIdSus) => {
+  try {
+    const endpoint = "/abandono/resumo?municipio_id_sus=" + municipioIdSus;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getAbandonoCoortes = async (municipioIdSus) => {
+  try {
+    const endpoint = "/abandono/coortes?municipio_id_sus=" + municipioIdSus;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
