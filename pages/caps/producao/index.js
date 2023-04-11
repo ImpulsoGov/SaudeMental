@@ -68,10 +68,14 @@ const Producao = () => {
   };
 
   const getCardsProcedimentosHoraPorEstabelecimento = (procedimentos) => {
-    const procedimentosPorEstabelecimentoUltimoPeriodo = procedimentos
-      .filter(({ periodo, estabelecimento }) => periodo === "Último período" && estabelecimento !== "Todos");
+    const procedimentosPorHoraUltimoPeriodo = procedimentos
+      .filter(({ periodo, estabelecimento, estabelecimento_linha_perfil: linhaPerfil }) =>
+        periodo === "Último período"
+        && estabelecimento !== "Todos"
+        && linhaPerfil !== "Todos"
+      );
 
-    const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosPorEstabelecimentoUltimoPeriodo);
+    const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosPorHoraUltimoPeriodo);
 
     const cardsProcedimentosHoraPorEstabelecimento = procedimentosAgregados.map(({
       linhaPerfil, procedimentosPorEstabelecimento, nomeMes
