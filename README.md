@@ -2,7 +2,7 @@
 
 
 ## :mag_right: Índice
-1. [Contexto](#contexto)
+1. [Contexto ](#contexto)
 2. [Estrutura do repositório](#estrutura)
 3. [Rodando em produção](#rodando)
 4. [Instruções para instalação e acesso ao projeto](#instalacao)
