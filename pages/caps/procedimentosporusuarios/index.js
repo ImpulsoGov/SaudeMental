@@ -1,9 +1,12 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import Select, { components } from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getProcedimentosPorEstabelecimento } from "../../../requests/caps";
+import styles from "../Caps.module.css";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -109,6 +112,128 @@ const ProcedimentosPorUsuarios = () => {
     return cardsProcedimentosPorEstabelecimento;
   };
 
+  const agregarPorEstabelecimentoEPeriodo = (procedimentos) => {
+    const procedimentosAgregados = [];
+
+    procedimentos.forEach((procedimento) => {
+      const {
+        periodo,
+        competencia,
+        estabelecimento,
+        procedimentos_por_usuario: procedimentosPorUsuario,
+      } = procedimento;
+
+      const estabelecimentoEncontrado = procedimentosAgregados
+        .find((item) => item.estabelecimento === estabelecimento);
+
+      if (!estabelecimentoEncontrado) {
+        procedimentosAgregados.push({
+          estabelecimento,
+          procedimentosPorPeriodo: [{
+            periodo,
+            competencia,
+            procedimentosPorUsuario
+          }]
+        });
+      } else {
+        estabelecimentoEncontrado.procedimentosPorPeriodo.push({
+          periodo,
+          competencia,
+          procedimentosPorUsuario
+        });
+      }
+    });
+
+    return procedimentosAgregados;
+  };
+
+  const ordenarProcedimentosPorCompetenciaAsc = (procedimentos) => {
+    return procedimentos.map(({ estabelecimento, procedimentosPorPeriodo }) => ({
+      estabelecimento,
+      procedimentosPorPeriodo: procedimentosPorPeriodo
+        .sort((a, b) => new Date(a.competencia) - new Date(b.competencia))
+    }));
+  };
+
+  const getOpcoesGraficoHistoricoTemporal = (procedimentos, filtroEstabelecimento) => {
+    const procedimentosAgregados = agregarPorEstabelecimentoEPeriodo(procedimentos);
+    const procedimentosOrdenados = ordenarProcedimentosPorCompetenciaAsc(procedimentosAgregados);
+    const procedimentosDeEstabelecimentoFiltrado = procedimentosOrdenados
+      .find(({ estabelecimento }) => estabelecimento === filtroEstabelecimento);
+
+    return {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          label: {
+            backgroundColor: '#6a7985'
+          }
+        }
+      },
+      toolbox: {
+        feature: {
+          saveAsImage: {
+            title: "Salvar como imagem",
+          }
+        }
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: procedimentosDeEstabelecimentoFiltrado.procedimentosPorPeriodo
+          .map(({ periodo }) => periodo)
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          name: procedimentosDeEstabelecimentoFiltrado.estabelecimento,
+          data: procedimentosDeEstabelecimentoFiltrado.procedimentosPorPeriodo
+            .map(({ procedimentosPorUsuario }) => procedimentosPorUsuario),
+          type: 'line',
+          itemStyle: {
+            color: "#5367C9"
+          },
+        }
+      ]
+    };
+  };
+
+  const getPropsFiltroEstabelecimento = (procedimentos) => {
+    const procedimentosPorEstabelecimento = agregarPorEstabelecimentoEPeriodo(procedimentos);
+    const options = procedimentosPorEstabelecimento
+      .map(({ estabelecimento }) => ({
+        value: estabelecimento,
+        label: estabelecimento
+      }));
+
+    const optionPersonalizada = ({ children, ...props }) => (
+      <components.Control { ...props }>
+        Estabelecimento: { children }
+      </components.Control>
+    );
+
+    return {
+      options,
+      defaultValue: filtroEstabelecimentoHistorico,
+      selectedValue: filtroEstabelecimentoHistorico,
+      onChange: (selected) => setFiltroEstabelecimentoHistorico({
+        value: selected.value,
+        label: selected.value
+      }),
+      isMulti: false,
+      isSearchable: false,
+      components: { Control: optionPersonalizada },
+      styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
+    };
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -131,9 +256,27 @@ const ProcedimentosPorUsuarios = () => {
       }
 
       <GraficoInfo
-        titulo="Atendimentos"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo="Histórico Temporal"
+        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { procedimentosPorEstabelecimento.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroEstabelecimento(procedimentosPorEstabelecimento)
+            } />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoHistoricoTemporal(
+              procedimentosPorEstabelecimento,
+              filtroEstabelecimentoHistorico.value
+            ) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
 
       <GraficoInfo
         titulo="Total de atendimentos"
