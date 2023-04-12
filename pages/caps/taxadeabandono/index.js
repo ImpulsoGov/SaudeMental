@@ -22,7 +22,7 @@ const TaxaAbandono = () => {
           url: ''
         } }
         texto=""
-        titulo="<strong>Referências de Saúde Mental</strong>"
+        titulo="<strong>Taxa de não adesão</strong>"
       />
 
       <GraficoInfo

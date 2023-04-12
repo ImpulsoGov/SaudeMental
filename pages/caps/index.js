@@ -68,7 +68,7 @@ export default function Paineis() {
               label: "NOVOS USUÁRIO",
             },
             {
-              label: "TAXA DE ABANDONO",
+              label: "TAXA DE NÃO ADESÃO",
             },
             {
               label: "ATENDIMENTOS INDIVIDUAIS",
