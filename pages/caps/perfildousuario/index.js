@@ -36,7 +36,6 @@ const PerfilUsuario = () => {
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       // remover id_sus específico quando já houver todos no banco
-      setPerfil(await getPerfilUsuarios(520880));
       setPerfilPorEstabelecimento(
         await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
       );
