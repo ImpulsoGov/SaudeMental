@@ -10,6 +10,7 @@ import ProcedimentosPorUsuarios from "./procedimentosporusuarios";
 import Producao from "./producao";
 import Resumo from "./resumo";
 import TaxaAbandono from "./taxadeabandono";
+import { useEffect, useState } from "react";
 
 
 export async function getServerSideProps(ctx) {
@@ -20,7 +21,13 @@ export async function getServerSideProps(ctx) {
 
 export default function Paineis() {
   const router = useRouter();
-  const panel = router.query?.painel;
+  const initialPanel = (typeof(router.query?.painel)!='undefined') ? router.query?.painel : 0
+  const [activeTabIndex, setActiveTabIndex] = useState(Number(router.query?.painel));
+  const [activeTitleTabIndex, setActiveTitleTabIndex] = useState(0)
+  useEffect(()=>{
+    setActiveTabIndex(Number(router.query?.painel))
+    console.log("mudou o painel")
+  },[router.query?.painel])
 
   return (
     <div>
@@ -46,7 +53,13 @@ export default function Paineis() {
       />
 
       <PanelSelectorSM
-        panel={ Number(panel) }
+        panel={ Number(router.query?.painel) }
+        states = {{
+          activeTabIndex : Number(activeTabIndex),
+          setActiveTabIndex : setActiveTabIndex,
+          activeTitleTabIndex : activeTitleTabIndex,
+          setActiveTitleTabIndex : setActiveTitleTabIndex
+        }}
         components={ [[
           <Resumo key={ uuidv1() } />,
           <PerfilUsuario key={ uuidv1() } />,
