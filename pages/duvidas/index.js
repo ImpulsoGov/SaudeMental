@@ -28,7 +28,7 @@ const Index = () => {
         <iframe
           width="85%"
           height="2000"
-          src="https://docs.google.com/forms/d/e/1FAIpQLSelCjrYy908a4dpluwiTI6uev78eDesDWKiHUixOheKzg1nhQ/viewform"
+          src="https://docs.google.com/forms/d/e/1FAIpQLScMBgEr6_cVmv23olNRI1nIXRjqJhp1s1hf2HUg1nJ5HLaqow/viewform?embedded=true"
           allowFullScreen
         />
       </div>

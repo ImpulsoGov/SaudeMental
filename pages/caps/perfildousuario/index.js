@@ -506,7 +506,8 @@ const PerfilUsuario = () => {
       <GraficoInfo
         titulo="Perfil dos usuários ativos"
         descricao="Quantitativo de usuários com RAAS ou BPA movimentada nos últimos meses (exceto acolhimento inicial)."
-        tooltip="a"
+        tooltip="Usuários ativos: Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) nos três meses anteriores ao mês de referência.
+        Usuários inativos: Usuários que não tiveram nenhum procedimento registrado no serviço há mais de 3 meses."
       />
 
       <GraficoInfo
