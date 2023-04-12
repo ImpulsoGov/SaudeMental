@@ -7,6 +7,7 @@ import Ambulatorio from "./ambulatorio";
 import ConsultorioNaRua from "./consultorio-na-rua";
 import ReducaoDeDanos from "./reducao-de-danos";
 import Resumo from "./resumo";
+import { useEffect, useState } from "react";
 
 
 export async function getServerSideProps(ctx) {
@@ -17,7 +18,11 @@ export async function getServerSideProps(ctx) {
 
 export default function Paineis() {
   const router = useRouter();
-  const panel = router.query?.painel;
+  const [activeTabIndex, setActiveTabIndex] = useState(Number(router.query?.painel));
+  const [activeTitleTabIndex, setActiveTitleTabIndex] = useState(0)
+  useEffect(()=>{
+    setActiveTabIndex(Number(router.query?.painel))
+  },[router.query?.painel])
 
   return (
     <div>
@@ -43,7 +48,13 @@ export default function Paineis() {
       />
 
       <PanelSelectorSM
-        panel={ Number(panel) }
+        panel={ Number(router.query?.painel) }
+        states = {{
+          activeTabIndex : Number(activeTabIndex),
+          setActiveTabIndex : setActiveTabIndex,
+          activeTitleTabIndex : activeTitleTabIndex,
+          setActiveTitleTabIndex : setActiveTitleTabIndex
+        }}
         components={ [[
           <Resumo key={ uuidv1() } />,
           <Ambulatorio key={ uuidv1() } />,
