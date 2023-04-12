@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Select, { components } from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getProcedimentosPorEstabelecimento } from "../../../requests/caps";
+import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
 export function getServerSideProps(ctx) {
@@ -19,14 +19,24 @@ export function getServerSideProps(ctx) {
 const ProcedimentosPorUsuarios = () => {
   const { data: session } = useSession();
   const [procedimentosPorEstabelecimento, setProcedimentosPorEstabelecimento] = useState([]);
+  const [procedimentosPorTempoServico, setProcedimentosPorTempoServico] = useState([]);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
     value: "Todos", label: "Todos"
   });
+  const [filtroEstabelecimentoProcedimento, setFiltroEstabelecimentoProcedimento] = useState({
+    value: "Todos", label: "Todos"
+  });
+  const [filtroPeriodoProcedimento, setFiltroPeriodoProcedimento] = useState([
+    { value: "Último período", label: "Último período" },
+  ]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       setProcedimentosPorEstabelecimento(
         await getProcedimentosPorEstabelecimento(municipioIdSus)
+      );
+      setProcedimentosPorTempoServico(
+        await getProcedimentosPorTempoServico(municipioIdSus)
       );
     };
 
@@ -201,7 +211,7 @@ const ProcedimentosPorUsuarios = () => {
     };
   };
 
-  const getPropsFiltroEstabelecimento = (procedimentos) => {
+  const getPropsFiltroEstabelecimento = (procedimentos, estadoFiltro, funcaoSetFiltro) => {
     const procedimentosPorEstabelecimento = agregarPorEstabelecimentoEPeriodo(procedimentos);
     const options = procedimentosPorEstabelecimento
       .map(({ estabelecimento }) => ({
@@ -217,13 +227,119 @@ const ProcedimentosPorUsuarios = () => {
 
     return {
       options,
-      defaultValue: filtroEstabelecimentoHistorico,
-      selectedValue: filtroEstabelecimentoHistorico,
-      onChange: (selected) => setFiltroEstabelecimentoHistorico({
+      defaultValue: estadoFiltro,
+      selectedValue: estadoFiltro,
+      onChange: (selected) => funcaoSetFiltro({
         value: selected.value,
         label: selected.value
       }),
       isMulti: false,
+      isSearchable: false,
+      components: { Control: optionPersonalizada },
+      styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
+    };
+  };
+
+  const agregarPorTempoDeServico = (procedimentos) => {
+    const procedimentosAgregados = [];
+
+    procedimentos.forEach((procedimento) => {
+      const {
+        periodo,
+        tempo_servico_descricao: tempoServico,
+        procedimentos_por_usuario: procedimentosPorUsuario
+      } = procedimento;
+      const procedimentoEncontrado = procedimentosAgregados
+        .find((item) => item.tempoServico === tempoServico);
+
+      if (!procedimentoEncontrado) {
+        procedimentosAgregados.push({
+          tempoServico,
+          procedimentosPorPeriodo: [{
+            periodo,
+            procedimentosPorUsuario
+          }]
+        });
+      } else {
+        procedimentoEncontrado.procedimentosPorPeriodo.push({
+          periodo,
+          procedimentosPorUsuario
+        });
+      }
+    });
+
+    return procedimentosAgregados;
+  };
+
+  const getMediaProcedimentosPorPeriodo = (procedimentosPorPeriodo) => {
+    const somaProcedimentos = procedimentosPorPeriodo
+      .reduce((acc, { procedimentosPorUsuario }) => acc + procedimentosPorUsuario, 0);
+
+    return somaProcedimentos / (procedimentosPorPeriodo.length);
+  };
+
+  const getOpcoesGraficoProcedimentoPorTempo = (procedimentos) => {
+    // console.log(filtroPeriodoProcedimento);
+    const periodosSelecionados = filtroPeriodoProcedimento
+      .map(({ value }) => value);
+    const procedimentosFiltrados = procedimentos.filter((item) =>
+      item.estabelecimento === filtroEstabelecimentoProcedimento.value
+      && periodosSelecionados.includes(item.periodo)
+      && item.tempo_servico_descricao
+    );
+    const procedimentosAgregados = agregarPorTempoDeServico(procedimentosFiltrados);
+
+    return {
+      tooltip: {},
+      xAxis: {
+        type: 'category',
+        data: procedimentosAgregados.map(({ tempoServico }) => tempoServico)
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          data: procedimentosAgregados.map(({ procedimentosPorPeriodo }) =>
+            getMediaProcedimentosPorPeriodo(procedimentosPorPeriodo)),
+          type: 'bar',
+          name: 'Média de procedimentos'
+        }
+      ]
+    };
+  };
+
+  const getPropsFiltroCompetencia = (procedimentos, estadoFiltro, funcaoSetFiltro) => {
+    const periodosSemDuplicadas = [];
+
+    procedimentos.forEach(({ periodo, competencia }) => {
+      const periodoEncontrado = periodosSemDuplicadas
+        .find((item) => item.periodo === periodo);
+
+      if (!periodoEncontrado) {
+        periodosSemDuplicadas.push({ periodo, competencia });
+      }
+    });
+
+    const periodosOrdenadosDesc = periodosSemDuplicadas
+      .sort((a, b) => new Date(b.competencia) - new Date(a.competencia))
+      .map(({ periodo }) => ({
+        value: periodo,
+        label: periodo
+      }));
+
+    const optionPersonalizada = ({ children, ...props }) => (
+      <components.Control { ...props }>
+        Períodos: { children }
+      </components.Control>
+    );
+
+    return {
+      options: periodosOrdenadosDesc,
+      defaultValue: estadoFiltro,
+      selectedValue: estadoFiltro,
+      onChange: (selected) => funcaoSetFiltro(selected),
+      isMulti: true,
       isSearchable: false,
       components: { Control: optionPersonalizada },
       styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
@@ -260,7 +376,11 @@ const ProcedimentosPorUsuarios = () => {
         <>
           <div className={ styles.Filtro }>
             <Select {
-              ...getPropsFiltroEstabelecimento(procedimentosPorEstabelecimento)
+              ...getPropsFiltroEstabelecimento(
+                procedimentosPorEstabelecimento,
+                filtroEstabelecimentoHistorico,
+                setFiltroEstabelecimentoHistorico
+              )
             } />
           </div>
 
@@ -278,6 +398,39 @@ const ProcedimentosPorUsuarios = () => {
         titulo="Procedimento por usuários x tempo do usuário no serviço"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { procedimentosPorTempoServico.length !== 0 &&
+        <>
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroEstabelecimento(
+                  procedimentosPorTempoServico,
+                  filtroEstabelecimentoProcedimento,
+                  setFiltroEstabelecimentoProcedimento
+                )
+              } />
+            </div>
+
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroCompetencia(
+                  procedimentosPorTempoServico,
+                  filtroPeriodoProcedimento,
+                  setFiltroPeriodoProcedimento
+                )
+              } />
+            </div>
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoProcedimentoPorTempo(
+              procedimentosPorTempoServico
+            ) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
     </div>
   );
 };
