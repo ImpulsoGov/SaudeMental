@@ -21,12 +21,10 @@ export async function getServerSideProps(ctx) {
 
 export default function Paineis() {
   const router = useRouter();
-  const initialPanel = (typeof(router.query?.painel)!='undefined') ? router.query?.painel : 0
   const [activeTabIndex, setActiveTabIndex] = useState(Number(router.query?.painel));
   const [activeTitleTabIndex, setActiveTitleTabIndex] = useState(0)
   useEffect(()=>{
     setActiveTabIndex(Number(router.query?.painel))
-    console.log("mudou o painel")
   },[router.query?.painel])
 
   return (
