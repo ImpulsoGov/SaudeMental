@@ -1,11 +1,16 @@
 import { components } from "react-select";
 
 export const getPropsFiltroEstabelecimento = (dados, estadoFiltro, funcaoSetFiltro) => {
-  const options = dados
-    .map(({ estabelecimento }) => ({
-      value: estabelecimento,
-      label: estabelecimento
-    }));
+  const optionsSemDuplicadas = [];
+
+  dados.forEach(({ estabelecimento }) => {
+    const estabelecimentoEncontrado = optionsSemDuplicadas
+      .find((item) => item.value === estabelecimento);
+
+    if (!estabelecimentoEncontrado) {
+      optionsSemDuplicadas.push({ value: estabelecimento, label: estabelecimento });
+    }
+  });
 
   const optionPersonalizada = ({ children, ...props }) => (
     <components.Control { ...props }>
@@ -14,7 +19,7 @@ export const getPropsFiltroEstabelecimento = (dados, estadoFiltro, funcaoSetFilt
   );
 
   return {
-    options,
+    options: optionsSemDuplicadas.sort((a, b) => b.value.localeCompare(a.value)),
     defaultValue: estadoFiltro,
     selectedValue: estadoFiltro,
     onChange: (selected) => funcaoSetFiltro({
