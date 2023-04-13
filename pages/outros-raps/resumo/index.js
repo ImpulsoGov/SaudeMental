@@ -127,17 +127,10 @@ const Resumo = () => {
       />
 
       <GraficoInfo
-        titulo="Referência de Saúde Mental"
+        titulo="Ambulatório de Saúde Mental"
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
         link={ { label: 'Mais informações', url: '/cuidado-compartilhado?painel=1' } }
       />
-
-      <GraficoInfo
-        titulo="Consultório na Rua"
-        fonte="Fonte: SISAB - Elaboração Impulso Gov"
-        link={ { label: 'Mais informações', url: '/cuidado-compartilhado?painel=2' } }
-      />
-
       <Grid12Col
         items={ [
           <>
@@ -156,7 +149,42 @@ const Resumo = () => {
               <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ 100 }
-                titulo={ `Total de atendimentos entre ${["ate_mes"]}/${["ate_ano"]} e ${["ate_mes"]}/${["ate_ano"]}` }
+                titulo={ `Total de atendimentos por hora trabalhada em Julho` }
+                indice={ -141 }
+                indiceDescricao="doze meses anteriores"
+              />
+            }
+          </>,
+        ] }
+      />
+
+
+
+      <GraficoInfo
+        titulo="Consultório na Rua"
+        fonte="Fonte: SISAB - Elaboração Impulso Gov"
+        link={ { label: 'Mais informações', url: '/cuidado-compartilhado?painel=2' } }
+      />
+
+      <Grid12Col
+        items={ [
+          <>
+            {
+              <CardInfoTipoA
+                key={ uuidv1() }
+                indicador={ 100 }
+                titulo={ `Total de atendimentos em Julho` }
+                indice={ -141 }
+                indiceDescricao="últ. mês"
+              />
+            }
+          </>,
+          <>
+            {
+              <CardInfoTipoA
+                key={ uuidv1() }
+                indicador={ 100 }
+                titulo={ `Total de atendimentos entre Julho/2022 e Julho/2022` }
                 indice={ -141 }
                 indiceDescricao="doze meses anteriores"
               />
@@ -178,7 +206,7 @@ const Resumo = () => {
               <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ 100 }
-                titulo={ `Total de ações de redução de danos em ${["ate_mes"]})` }
+                titulo={ `Total de ações de redução de danos em Julho)` }
                 indice={ -141 }
                 indiceDescricao="últ. mês"
               />
@@ -189,7 +217,7 @@ const Resumo = () => {
               <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ 100 }
-                titulo={ `Total ações de redução de danos entre ${["ate_mes"]}/${["ate_ano"]} e ${["ate_mes"]}/${["ate_ano"]}` }
+                titulo={ `Total ações de redução de danos entre Julho/2022 e Julho/2022` }
                 indice={ -141 }
                 indiceDescricao="doze meses anteriores"
               />

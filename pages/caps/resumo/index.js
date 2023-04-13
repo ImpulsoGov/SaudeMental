@@ -140,6 +140,10 @@ const Resumo = () => {
         titulo="<strong>Resumo</strong>"
       />
 
+      <GraficoInfo
+        titulo="Usuários de CAPS"
+      />
+
       {
         novosUsuariosResumo.length !== 0 &&
         perfilPorEstabelecimento.length !== 0 &&
@@ -151,12 +155,49 @@ const Resumo = () => {
       }
 
       <GraficoInfo
-        titulo="Taxa de abandono"
+        titulo="Taxa de não adesão"
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
-        descricao="Conjunto de usuários com 1º procedimento em Março/2022 e abandono até Agosto/2022"
+        descricao="Conjunto de usuários com 1º procedimento em Março/2022 e não aderiram até Agosto/2022"
         tooltip="Porcentagem dos usuários que entraram nos serviços CAPS e deixaram de frequentar o serviço  nos 6 meses posteriores."
-        link={ { label: 'Mais informações', url: '/caps?painel=1' } }
+        link={ { label: 'Mais informações', url: '/caps?painel=3' } }
       />
+      
+      <Grid12Col
+          proporcao="3-3-3-3"
+          items={ [
+            <>
+                <CardInfoTipoA
+                  indicador='2'
+                  indice='10'
+                  indiceDescricao="p.p. semestre anterior"
+                  indicadorSimbolo="%"
+                />
+            </>,
+            <>
+                <CardInfoTipoA
+                  indicador='85'
+                  fonte='Vida'
+                  indicadorSimbolo="%"
+                  titulo="CAPS com maior taxa"
+                />
+            </>,
+            <>
+                <CardInfoTipoA
+                  indicador='30 a 40 anos'
+                  fonte='Masculino'
+                  titulo="Perfil do usuário"
+                />
+            </>,
+            <>
+                 <CardInfoTipoA
+                  indicador='22 usuários'
+                  fonte='Uso de subs. psicoativa'
+                  titulo="CID mais frequente"
+                />
+            </>,
+          ] }
+        />
+
 
       <GraficoInfo
         titulo="Usuários que realizaram apenas atendimentos individuais"
@@ -165,6 +206,43 @@ const Resumo = () => {
         tooltip="Porcentagem do total de usuários que frequentaram serviços CAPS no mês que realizou apenas atendimentos individuais."
         link={ { label: 'Mais informações', url: '/caps?painel=4' } }
       />
+      
+      <Grid12Col
+          proporcao="3-3-3-3"
+          items={ [
+            <>
+                <CardInfoTipoA
+                  indicador='2'
+                  indice='10'
+                  indiceDescricao="p.p. semestre anterior"
+                  indicadorSimbolo="%"
+                />
+            </>,
+            <>
+                <CardInfoTipoA
+                  indicador='85'
+                  fonte='Vida'
+                  indicadorSimbolo="%"
+                  titulo="CAPS com maior taxa"
+                />
+            </>,
+            <>
+                <CardInfoTipoA
+                  indicador='30 a 40 anos'
+                  fonte='Masculino'
+                  titulo="Perfil do usuário"
+                />
+            </>,
+            <>
+                 <CardInfoTipoA
+                  indicador='22 usuários'
+                  fonte='Uso de subs. psicoativa'
+                  titulo="CID mais frequente"
+                />
+            </>,
+          ] }
+        />
+
 
       <GraficoInfo
         titulo="Procedimento por usuário"
@@ -173,6 +251,32 @@ const Resumo = () => {
         tooltip="Média de procedimentos realizados por usuários que frequentaram CAPS no mês de referência."
         link={ { label: 'Mais informações', url: '/caps?painel=5' } }
       />
+      <Grid12Col
+          proporcao="4-4-4"
+          items={ [
+            <>
+                <CardInfoTipoA
+                  indicador='2'
+                  indice='10'
+                  indiceDescricao="últ. mês"
+                />
+            </>,
+            <>
+                <CardInfoTipoA
+                  indicador='CAPS Borboleta'
+                  fonte='600'
+                  titulo="CAPS com maior número"
+                />
+            </>,
+            <>
+                <CardInfoTipoA
+                  indicador='Mais de 5 anos no serviço'
+                  fonte='Média de 1,4 procedimentos no mês'
+                  titulo="Usuários que mais realizam procedimentos são os que estão há"
+                />
+            </>,
+          ] }
+        />
 
       <GraficoInfo
         titulo="Produção"
@@ -180,6 +284,35 @@ const Resumo = () => {
         descricao="Dados de Setembro"
         link={ { label: 'Mais informações', url: '/caps?painel=6' } }
       />
+      <Grid12Col
+          proporcao="4-4-4"
+          items={ [
+            <>
+                <CardInfoTipoA
+                  indicador='2'
+                  indice='2'
+                  indiceDescricao="últ. mês"
+                  titulo="Total de procedimentos"
+                />
+            </>,
+            <>
+                <CardInfoTipoA
+                  indicador='1'
+                  indice='1'
+                  indiceDescricao="últ. mês"
+                  titulo="Procedimentos BPA"
+                />
+            </>,
+            <>
+                <CardInfoTipoA
+                  indicador='1'
+                  indice='1'
+                  indiceDescricao="últ. mês"
+                  titulo="Procedimentos RAAS"
+                />
+            </>,
+          ] }
+        />
     </div>
   );
 };

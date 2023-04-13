@@ -76,7 +76,7 @@ export default function Paineis() {
               label: "PERFIL DO USUÁRIO",
             },
             {
-              label: "NOVOS USUÁRIO",
+              label: "NOVOS USUÁRIOS",
             },
             {
               label: "TAXA DE NÃO ADESÃO",
