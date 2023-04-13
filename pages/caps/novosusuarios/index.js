@@ -122,8 +122,10 @@ const NovoUsuario = () => {
 
   const getOpcoesGraficoHistoricoTemporal = (novosUsuarios, filtroEstabelecimento) => {
     const filtradosPorEstabelecimento = novosUsuarios
-      .filter(({ estabelecimento }) =>
-        estabelecimento === filtroEstabelecimento
+      .filter((item) =>
+        item.estabelecimento === filtroEstabelecimento
+        && item.estabelecimento_linha_perfil === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
       );
 
     const ordenadosPorCompetenciaAsc = filtradosPorEstabelecimento
@@ -177,7 +179,6 @@ const NovoUsuario = () => {
 
   return (
     <div>
-      { console.log(novosUsuarios[0]) }
       <TituloSmallTexto
         imagem={ {
           posicao: null,
@@ -202,12 +203,12 @@ const NovoUsuario = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { novosUsuarios.length !== 0 &&
+      { resumoNovosUsuarios.length !== 0 &&
         <>
           <div className={ styles.Filtro }>
             <Select {
               ...getPropsFiltroEstabelecimento(
-                novosUsuarios,
+                resumoNovosUsuarios,
                 filtroEstabelecimentoHistorico,
                 setFiltroEstabelecimentoHistorico
               )
@@ -216,7 +217,7 @@ const NovoUsuario = () => {
 
           <ReactEcharts
             option={ getOpcoesGraficoHistoricoTemporal(
-              novosUsuarios,
+              resumoNovosUsuarios,
               filtroEstabelecimentoHistorico.value
             ) }
             style={ { width: "100%", height: "70vh" } }
