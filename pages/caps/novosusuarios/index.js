@@ -29,6 +29,9 @@ const NovoUsuario = () => {
   const [filtroPeriodoPerfil, setFiltroPeriodoPerfil] = useState([
     { value: "Último período", label: "Último período" },
   ]);
+  const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState([
+    { value: "Último período", label: "Último período" },
+  ]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -205,9 +208,12 @@ const NovoUsuario = () => {
     return usuariosAgregados;
   };
 
-  const getOpcoesGraficoPerfil = (novosUsuarios) => {
-    const periodosSelecionados = filtroPeriodoPerfil
-      .map(({ value }) => value);
+  const getPeriodosSelecionados = (filtroPeriodo) => {
+    return filtroPeriodo.map(({ value }) => value);
+  };
+
+  const getOpcoesGraficoPerfil = (novosUsuarios, filtroPeriodo) => {
+    const periodosSelecionados = getPeriodosSelecionados(filtroPeriodo);
 
     const dadosUsuariosFiltrados = novosUsuarios
       .filter((item) =>
@@ -249,6 +255,105 @@ const NovoUsuario = () => {
               color: CORES_GRAFICO_DONUT[index]
             },
           }))
+        }
+      ]
+    };
+  };
+
+  const agregarPorFaixaEtariaEGenero = (novosUsusarios) => {
+    const usuariosAgregados = [];
+
+    novosUsusarios.forEach((dado) => {
+      const {
+        usuarios_novos: usuariosNovos,
+        usuario_faixa_etaria: faixaEtaria,
+        usuario_sexo: usuarioSexo
+      } = dado;
+      const genero = usuarioSexo.toLowerCase();
+      const faixaEtariaDados = usuariosAgregados
+        .find((item) => item.faixaEtaria === faixaEtaria);
+
+      if (!faixaEtariaDados) {
+        usuariosAgregados.push({
+          faixaEtaria,
+          [genero]: usuariosNovos
+        });
+      } else {
+        faixaEtariaDados[genero]
+          ? faixaEtariaDados[genero] += usuariosNovos
+          : faixaEtariaDados[genero] = usuariosNovos;
+      }
+    });
+
+    return usuariosAgregados;
+  };
+
+  const getOpcoesGraficoGeneroEFaixaEtaria = (novosUsuarios, filtroPeriodo) => {
+    const NOME_DIMENSAO = "genero";
+    const LABELS_DIMENSAO = ["Masculino", "Feminino"];
+
+    const periodosSelecionados = getPeriodosSelecionados(filtroPeriodo);
+
+    const dadosUsuariosFiltrados = novosUsuarios
+      .filter((item) =>
+        item.estabelecimento === "Todos"
+        && periodosSelecionados.includes(item.periodo)
+        && item.estabelecimento_linha_perfil === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
+      );
+
+    const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(dadosUsuariosFiltrados);
+
+    return {
+      legend: {
+        itemGap: 25,
+      },
+      tooltip: {},
+      dataset: {
+        dimensions: [NOME_DIMENSAO, ...LABELS_DIMENSAO],
+        source: agregadosPorGeneroEFaixaEtaria
+          .sort((a, b) => a.faixaEtaria.localeCompare(b.faixaEtaria))
+          .map((item) => ({
+            [NOME_DIMENSAO]: item.faixaEtaria,
+            [LABELS_DIMENSAO[0]]: item[LABELS_DIMENSAO[0].toLowerCase()],
+            [LABELS_DIMENSAO[1]]: item[LABELS_DIMENSAO[1].toLowerCase()],
+          })),
+      },
+      xAxis: {
+        type: 'category',
+        name: "Faixa etária (em anos)",
+        nameLocation: "center",
+        nameGap: 45,
+      },
+      yAxis: {
+        name: "Usuários novos",
+        nameLocation: "center",
+        nameGap: 55,
+      },
+      series: [
+        {
+          type: 'bar',
+          itemStyle: {
+            color: "#FA81E6"
+          },
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: `{@${LABELS_DIMENSAO[0]}}`,
+            color: "#FFFFFF",
+          },
+        },
+        {
+          type: 'bar',
+          itemStyle: {
+            color: "#5367C9"
+          },
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: `{@${LABELS_DIMENSAO[1]}}`,
+            color: "#FFFFFF",
+          },
         }
       ]
     };
@@ -320,16 +425,38 @@ const NovoUsuario = () => {
           </div>
 
           <ReactEcharts
-            option={ getOpcoesGraficoPerfil(novosUsuarios) }
+            option={ getOpcoesGraficoPerfil(novosUsuarios, filtroPeriodoPerfil) }
             style={ { width: "100%", height: "70vh" } }
           />
         </>
       }
 
       <GraficoInfo
-        titulo="Atendimentos por horas trabalhadas"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo="Gênero e faixa etária"
+        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { novosUsuarios.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroPeriodoMulti(
+                novosUsuarios,
+                filtroPeriodoGenero,
+                setFiltroPeriodoGenero
+              )
+            } />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoGeneroEFaixaEtaria(
+              novosUsuarios,
+              filtroPeriodoGenero
+            ) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
     </div>
   );
 };
