@@ -1,12 +1,15 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Select, { components } from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
+// import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
 import styles from "../Caps.module.css";
+import porEstabelecimento from "./porEstabelecimento.json";
+// NÃO É O RESUMO
+import porTempoServico from "./porTempoServicoResumo.json";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -18,8 +21,8 @@ export function getServerSideProps(ctx) {
 
 const ProcedimentosPorUsuarios = () => {
   const { data: session } = useSession();
-  const [procedimentosPorEstabelecimento, setProcedimentosPorEstabelecimento] = useState([]);
-  const [procedimentosPorTempoServico, setProcedimentosPorTempoServico] = useState([]);
+  const [procedimentosPorEstabelecimento, setProcedimentosPorEstabelecimento] = useState(porEstabelecimento);
+  const [procedimentosPorTempoServico, setProcedimentosPorTempoServico] = useState(porTempoServico);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
     value: "Todos", label: "Todos"
   });
@@ -30,20 +33,20 @@ const ProcedimentosPorUsuarios = () => {
     { value: "Último período", label: "Último período" },
   ]);
 
-  useEffect(() => {
-    const getDados = async (municipioIdSus) => {
-      setProcedimentosPorEstabelecimento(
-        await getProcedimentosPorEstabelecimento(municipioIdSus)
-      );
-      setProcedimentosPorTempoServico(
-        await getProcedimentosPorTempoServico(municipioIdSus)
-      );
-    };
+  // useEffect(() => {
+  //   const getDados = async (municipioIdSus) => {
+  //     setProcedimentosPorEstabelecimento(
+  //       await getProcedimentosPorEstabelecimento(municipioIdSus)
+  //     );
+  //     setProcedimentosPorTempoServico(
+  //       await getProcedimentosPorTempoServico(municipioIdSus)
+  //     );
+  //   };
 
-    if (session?.user.municipio_id_ibge) {
-      getDados(session?.user.municipio_id_ibge);
-    }
-  }, []);
+  //   if (session?.user.municipio_id_ibge) {
+  //     getDados(session?.user.municipio_id_ibge);
+  //   }
+  // }, []);
 
   const agregarPorLinhaPerfil = (procedimentos) => {
     const procedimentosAgregados = [];
