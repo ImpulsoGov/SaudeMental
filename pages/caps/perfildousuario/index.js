@@ -12,7 +12,7 @@ import perfilJSON from "./perfil.json";
 import perfilPorEstabelecimentoJSON from "./perfilPorEstabelecimento.json";
 
 const CORES_GRAFICO_USUARIOS_ATIVOS = ["#5367C9", "#CACCFE", "#E0E4F5"];
-const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "", label: "" };
+const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
 
 export function getServerSideProps(ctx) {
@@ -264,18 +264,12 @@ const PerfilUsuario = () => {
   };
 
   const getOpcoesGraficoCID = (perfil) => {
-    const perfilAgregado = agregarPorEstabelecimentoPeriodoECondicao(perfil);
-    const perfilFiltrado = perfilAgregado
+    const perfilFiltrado = perfil
       .filter(({ estabelecimento, periodo }) =>
         estabelecimento === filtroEstabelecimentoCID.value
-        // && periodo === filtroCompetencia.value
+        && periodo === filtroCompetenciaCID.value
       );
-
-    const { ativosPorCondicao } = perfilFiltrado.find(({ periodo }) => {
-      return filtroCompetenciaCID.value === ""
-        ? true
-        : filtroCompetenciaCID.value === periodo;
-    });
+    const [perfilAgregado] = agregarPorEstabelecimentoPeriodoECondicao(perfilFiltrado);
 
     return {
       tooltip: {
@@ -300,7 +294,7 @@ const PerfilUsuario = () => {
           labelLine: {
             show: false
           },
-          data: ativosPorCondicao.map(({ condicaoSaude, usuariosAtivos }, index) => ({
+          data: perfilAgregado.ativosPorCondicao.map(({ condicaoSaude, usuariosAtivos }, index) => ({
             value: usuariosAtivos,
             name: !condicaoSaude ? "Sem informação" : condicaoSaude,
             itemStyle: {
@@ -317,16 +311,10 @@ const PerfilUsuario = () => {
     const LABELS_DIMENSAO = ["Masculino", "Feminino"];
 
     const perfilAgregado = agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfil);
-    const perfilFiltrado = perfilAgregado
-      .filter(({ estabelecimento, periodo }) => estabelecimento === filtroEstabelecimentoGenero.value
-        // && periodo === filtroCompetencia.value
+    const { ativosPorFaixaEtariaEGenero } = perfilAgregado
+      .find(({ estabelecimento, periodo }) => estabelecimento === filtroEstabelecimentoGenero.value
+        && periodo === filtroCompetenciaGenero.value
       );
-
-    const { ativosPorFaixaEtariaEGenero } = perfilFiltrado.find(({ periodo }) => {
-      return filtroCompetenciaGenero.value === ""
-        ? true
-        : filtroCompetenciaGenero.value === periodo;
-    });
 
     return {
       legend: {
@@ -388,16 +376,10 @@ const PerfilUsuario = () => {
     const LABEL_DIMENSAO = "Usuários ativos";
 
     const perfilAgregado = agregarPorEstabelecimentoPeriodoERacaCor(perfil);
-    const perfilFiltrado = perfilAgregado
-      .filter(({ estabelecimento, periodo }) => estabelecimento === filtroEstabelecimentoRacaCor.value
-        // && periodo === filtroCompetencia.value
+    const { ativosPorRacaCor } = perfilAgregado
+      .find(({ estabelecimento, periodo }) => estabelecimento === filtroEstabelecimentoRacaCor.value
+        && periodo === filtroCompetenciaRacaCor.value
       );
-
-    const { ativosPorRacaCor } = perfilFiltrado.find(({ periodo }) => {
-      return filtroCompetenciaRacaCor.value === ""
-        ? true
-        : filtroCompetenciaRacaCor.value === periodo;
-    });
 
     return {
       legend: {},
@@ -439,17 +421,11 @@ const PerfilUsuario = () => {
     };
 
     const perfilAgregado = agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil);
-    const perfilFiltrado = perfilAgregado
-      .filter(({ estabelecimento, periodo }) =>
+    const dadosPerfil = perfilAgregado
+      .find(({ estabelecimento, periodo }) =>
         estabelecimento === filtroEstabelecimentoUsuariosAtivos.value
-        // && periodo === filtroCompetencia.value
+        && periodo === filtroCompetenciaUsuariosAtivos.value
       );
-
-    const dadosPerfil = perfilFiltrado.find(({ periodo }) => {
-      return filtroCompetenciaUsuariosAtivos.value === ""
-        ? true
-        : filtroCompetenciaUsuariosAtivos.value === periodo;
-    });
 
     const dadosUsuariosAtivos = dadosPerfil[PROPIEDADES_POR_TIPO[tipo].prop_agregacao];
 
