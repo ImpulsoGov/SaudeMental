@@ -35,6 +35,7 @@ const TaxaAbandono = () => {
       <>
         <GraficoInfo
           titulo="Abandono acumulado"
+          tooltip="Dos usuários que entraram no início do período indicado, porcentagem que abandonou o serviço nos seis meses seguintes"
           descricao={ `Conjunto de usuários com 1° procedimento em ${abandonosUltimoPeriodo[0].a_partir_do_mes}/${abandonosUltimoPeriodo[0].a_partir_do_ano} e abandono até ${abandonosUltimoPeriodo[0].ate_mes}/${abandonosUltimoPeriodo[0].ate_ano}` }
           fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
         />
@@ -72,18 +73,29 @@ const TaxaAbandono = () => {
       }
 
       <GraficoInfo
-        titulo="Atendimentos"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo="Histórico Temporal"
+        descricao="Dos usuários acolhidos há menos de 6 meses, quantos abandonaram o serviço no mês"
+        tooltip="A taxa de abandono acumulado se refere à porcentagem de usuários que entraram no serviço em um dado mês e abandonaram o serviço em algum dos 6 meses seguintes. A taxa de abandono mensal se refere a quantidade de usuários que haviam entrado no serviço recentemente e abandonaram o serviço no mês especificado"
+        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
       <GraficoInfo
-        titulo="Total de atendimentos"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo="CID dos usuários que abandonaram o serviço"
+        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
       <GraficoInfo
-        titulo="Atendimentos por horas trabalhadas"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo="Gênero e faixa etária"
+        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
+      />
+
+      <GraficoInfo
+        titulo="Raça/Cor*"
+        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
+      />
+
+      <GraficoInfo
+        descricao="*Dados podem ter problemas de coleta, registro e preenchimento"
       />
     </div>
   );
