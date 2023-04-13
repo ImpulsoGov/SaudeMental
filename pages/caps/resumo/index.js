@@ -90,7 +90,7 @@ const Resumo = () => {
                     url: '/'
                   } }
                   titulo="Usuários que frequentaram"
-                  tooltip="a"
+                  tooltip="Usuários que tiveram ao menos um procedimento registrado em BPA-i ou RAAS no mês de referência (exceto acolhimento inicial)."
                 />
               }
             </>,
@@ -103,7 +103,7 @@ const Resumo = () => {
                   indice={ perfilUsuariosDeEstabelecimento.dif_tornandose_inativos_anterior }
                   indiceDescricao="últ. mês"
                   titulo="Tornaram-se inativos"
-                  tooltip="a"
+                  tooltip="Usuários que, no mês de referência, completaram três meses sem ter nenhum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial)."
                 />
               }
             </>,
@@ -120,7 +120,7 @@ const Resumo = () => {
                     url: '/'
                   } }
                   titulo="Novos usuários"
-                  tooltip="a"
+                  tooltip="Usuários que tiveram o primeiro procedimento registrado em RAAS no mês de referência."
                 />
               }
             </>,
