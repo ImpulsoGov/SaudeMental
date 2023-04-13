@@ -36,6 +36,9 @@ const NovoUsuario = () => {
   const [filtroPeriodoSubstEMoradia, setFiltroPeriodoSubstEMoradia] = useState([
     { value: "Último período", label: "Último período" },
   ]);
+  const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState([
+    { value: "Último período", label: "Último período" },
+  ]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -463,6 +466,65 @@ const NovoUsuario = () => {
     };
   };
 
+  const agregarPorRacaCor = (novosUsuarios) => {
+    const usuariosAgregados = [];
+
+    novosUsuarios.forEach((dado) => {
+      const {
+        usuarios_novos: usuariosNovos,
+        usuario_raca_cor: racaCor
+      } = dado;
+      const racaCorDados = usuariosAgregados
+        .find((item) => item.racaCor === racaCor);
+
+      if (!racaCorDados) {
+        usuariosAgregados.push({
+          racaCor,
+          usuariosNovos
+        });
+      } else {
+        racaCorDados.usuariosNovos += usuariosNovos;
+      }
+    });
+
+    return usuariosAgregados;
+  };
+
+  const getOpcoesGraficoRacaEcor = (novosUsuarios, filtroPeriodo) => {
+    const NOME_DIMENSAO = "usuariosNovos";
+    const LABEL_DIMENSAO = "Usuários novos no período";
+
+    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(novosUsuarios, filtroPeriodo);
+
+    const agregadosPorRacaCor = agregarPorRacaCor(dadosUsuariosFiltrados);
+
+    return {
+      legend: {},
+      tooltip: {},
+      dataset: {
+        dimensions: [NOME_DIMENSAO, LABEL_DIMENSAO],
+        source: agregadosPorRacaCor
+          .sort((a, b) => b.racaCor.localeCompare(a.racaCor))
+          .map((item) => ({
+            [NOME_DIMENSAO]: item.racaCor,
+            [LABEL_DIMENSAO]: item.usuariosNovos,
+          })),
+      },
+      xAxis: {
+        type: 'category',
+      },
+      yAxis: {},
+      series: [
+        {
+          type: 'bar',
+          itemStyle: {
+            color: "#5367C9"
+          },
+        },
+      ]
+    };
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -606,6 +668,37 @@ const NovoUsuario = () => {
           </div>
         </>
       }
+
+      <GraficoInfo
+        titulo="Raça/Cor*"
+        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
+      />
+
+      { novosUsuarios.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroPeriodoMulti(
+                novosUsuarios,
+                filtroPeriodoRacaECor,
+                setFiltroPeriodoRacaECor
+              )
+            } />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoRacaEcor(
+              novosUsuarios,
+              filtroPeriodoRacaECor
+            ) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
+
+      <GraficoInfo
+        descricao="*Dados podem ter problemas de coleta, registro e preenchimento"
+      />
     </div>
   );
 };
