@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import Select, { components } from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getAtendimentosPorCaps, getPerfilDeAtendimentos, getResumoPerfilDeAtendimentos } from "../../../requests/caps";
+// import { getAtendimentosPorCaps, getPerfilDeAtendimentos, getResumoPerfilDeAtendimentos } from "../../../requests/caps";
 import styles from "../Caps.module.css";
+import porCapsJSON from "./porCaps.json";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -27,11 +28,12 @@ const AtendimentoIndividual = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setPerfilAtendimentos(await getPerfilDeAtendimentos(municipioIdSus));
-      setResumoPerfilAtendimentos(
-        await getResumoPerfilDeAtendimentos(municipioIdSus)[0]
-      );
-      setAtendimentosPorCaps(await getAtendimentosPorCaps(municipioIdSus));
+      // setPerfilAtendimentos(await getPerfilDeAtendimentos(municipioIdSus));
+      // setResumoPerfilAtendimentos(
+      //   await getResumoPerfilDeAtendimentos(municipioIdSus)[0]
+      // );
+      // setAtendimentosPorCaps(await getAtendimentosPorCaps(municipioIdSus));
+      setAtendimentosPorCaps(porCapsJSON);
     };
 
     if (session?.user.municipio_id_ibge) {
