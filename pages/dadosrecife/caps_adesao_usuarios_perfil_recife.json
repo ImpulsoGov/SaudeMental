@@ -1,5 +1,4 @@
-{
-"SELECT * FROM saude_mental.caps_adesao_usuarios_perfil WHERE unidade_geografica_id_sus = '261160'": [
+[
 	{
 		"unidade_geografica_id_sus" : "261160",
 		"estabelecimento_linha_perfil" : "Álcool e outras drogas",

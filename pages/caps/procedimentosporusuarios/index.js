@@ -8,6 +8,9 @@ import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
+import porestabelecimentoJSON from "./porEstabelecimentoRecife.json";
+import portempoJSON from "./porTempoServicoResumoRecife.json";
+
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
 
@@ -32,12 +35,16 @@ const ProcedimentosPorUsuarios = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setProcedimentosPorEstabelecimento(
-        await getProcedimentosPorEstabelecimento(municipioIdSus)
-      );
-      setProcedimentosPorTempoServico(
-        await getProcedimentosPorTempoServico(municipioIdSus)
-      );
+      if (municipioIdSus = '261160') {
+        setProcedimentosPorEstabelecimento(porestabelecimentoJSON);
+        setProcedimentosPorTempoServico(portempoJSON);
+      }
+      else {
+        setProcedimentosPorEstabelecimento(await getProcedimentosPorEstabelecimento(municipioIdSus));
+        setProcedimentosPorTempoServico(
+          await getProcedimentosPorTempoServico(municipioIdSus)
+        );
+      }
     };
 
     if (session?.user.municipio_id_ibge) {

@@ -38,7 +38,7 @@ const PerfilUsuario = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      if (municipioIdSus = '261160') {
+      if (municipioIdSus == '261160') {
         setPerfil(perfilJSON);
         setPerfilPorEstabelecimento(perfilPorEstabelecimentoJSON);
       }
