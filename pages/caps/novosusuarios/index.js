@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
+import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodoMulti } from "../../../helpers/filtrosGraficos";
 import novosPerfilJSON from "../../dadosrecife/caps_usuarios_novos_perfil_recife.json";
@@ -30,6 +31,9 @@ const NovoUsuario = () => {
     { value: "Último período", label: "Último período" },
   ]);
   const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState([
+    { value: "Último período", label: "Último período" },
+  ]);
+  const [filtroPeriodoSubstEMoradia, setFiltroPeriodoSubstEMoradia] = useState([
     { value: "Último período", label: "Último período" },
   ]);
 
@@ -208,20 +212,19 @@ const NovoUsuario = () => {
     return usuariosAgregados;
   };
 
-  const getPeriodosSelecionados = (filtroPeriodo) => {
-    return filtroPeriodo.map(({ value }) => value);
+  const filtrarDadosGeraisPorPeriodo = (dados, filtroPeriodo) => {
+    const periodosSelecionados = filtroPeriodo.map(({ value }) => value);
+
+    return dados.filter((item) =>
+      item.estabelecimento === "Todos"
+      && periodosSelecionados.includes(item.periodo)
+      && item.estabelecimento_linha_perfil === "Todos"
+      && item.estabelecimento_linha_idade === "Todos"
+    );
   };
 
   const getOpcoesGraficoPerfil = (novosUsuarios, filtroPeriodo) => {
-    const periodosSelecionados = getPeriodosSelecionados(filtroPeriodo);
-
-    const dadosUsuariosFiltrados = novosUsuarios
-      .filter((item) =>
-        item.estabelecimento === "Todos"
-        && periodosSelecionados.includes(item.periodo)
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
-      );
+    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(novosUsuarios, filtroPeriodo);
 
     const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(dadosUsuariosFiltrados);
 
@@ -292,15 +295,7 @@ const NovoUsuario = () => {
     const NOME_DIMENSAO = "genero";
     const LABELS_DIMENSAO = ["Masculino", "Feminino"];
 
-    const periodosSelecionados = getPeriodosSelecionados(filtroPeriodo);
-
-    const dadosUsuariosFiltrados = novosUsuarios
-      .filter((item) =>
-        item.estabelecimento === "Todos"
-        && periodosSelecionados.includes(item.periodo)
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
-      );
+    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(novosUsuarios, filtroPeriodo);
 
     const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(dadosUsuariosFiltrados);
 
@@ -354,6 +349,115 @@ const NovoUsuario = () => {
             formatter: `{@${LABELS_DIMENSAO[1]}}`,
             color: "#FFFFFF",
           },
+        }
+      ]
+    };
+  };
+
+  const agregarPorAbusoSubstancias = (usuariosNovos) => {
+    const usuariosAgregados = [];
+
+    usuariosNovos.forEach((dado) => {
+      const {
+        usuarios_novos: usuariosNovos,
+        usuario_abuso_substancias: abusoSubstancias
+      } = dado;
+      const abusoSubstanciasDados = usuariosAgregados
+        .find((item) => item.abusoSubstancias === abusoSubstancias);
+
+      if (!abusoSubstanciasDados) {
+        usuariosAgregados.push({
+          abusoSubstancias,
+          usuariosNovos
+        });
+      } else {
+        abusoSubstanciasDados.usuariosNovos += usuariosNovos;
+      }
+    });
+
+    return usuariosAgregados;
+  };
+
+  const agregarPorSituacaoRua = (usuariosNovos) => {
+    const usuariosAgregados = [];
+
+    usuariosNovos.forEach((dado) => {
+      const {
+        usuarios_novos: usuariosNovos,
+        usuario_situacao_rua: situacaoRua,
+      } = dado;
+      const situacaoRuaDados = usuariosAgregados
+        .find((item) => item.situacaoRua === situacaoRua);
+
+      if (!situacaoRuaDados) {
+        usuariosAgregados.push({
+          situacaoRua,
+          usuariosNovos
+        });
+      } else {
+        situacaoRuaDados.usuariosNovos += usuariosNovos;
+      }
+    });
+
+    return usuariosAgregados;
+  };
+
+  const getOpcoesGraficoAbusoESituacao = (novosUsuarios, titulo, tipo, filtroPeriodo) => {
+    const PROPIEDADES_POR_TIPO = {
+      SITUACAO_RUA: "situacaoRua",
+      ABUSO_SUBSTANCIAS: "abusoSubstancias"
+    };
+
+    const propriedade = PROPIEDADES_POR_TIPO[tipo];
+
+    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(novosUsuarios, filtroPeriodo);
+
+    const dadosUsuariosAgregados = tipo === "SITUACAO_RUA"
+      ? agregarPorSituacaoRua(dadosUsuariosFiltrados)
+      : agregarPorAbusoSubstancias(dadosUsuariosFiltrados);
+
+    return {
+      title: {
+        text: titulo,
+        textStyle: {
+          fontSize: 14
+        },
+      },
+      tooltip: {
+        trigger: 'item',
+      },
+      legend: {
+        bottom: 0
+      },
+      series: [
+        {
+          top: 30,
+          bottom: 30,
+          name: titulo,
+          type: 'pie',
+          radius: ['40%', '80%'],
+          avoidLabelOverlap: false,
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: "{d}%",
+            color: "#000000"
+          },
+          emphasis: {
+            label: {
+              show: true,
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: dadosUsuariosAgregados.map((item, index) => ({
+            value: item.usuariosNovos,
+            name: item[propriedade],
+            itemStyle: {
+              color: CORES_GRAFICO_SUBST_MORADIA[index]
+            },
+          }))
         }
       ]
     };
@@ -455,6 +559,50 @@ const NovoUsuario = () => {
             ) }
             style={ { width: "100%", height: "70vh" } }
           />
+        </>
+      }
+
+      <GraficoInfo
+        titulo="Uso de substâncias e condição de moradia"
+      />
+
+      { novosUsuarios.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroPeriodoMulti(
+                novosUsuarios,
+                filtroPeriodoSubstEMoradia,
+                setFiltroPeriodoSubstEMoradia
+              )
+            } />
+          </div>
+
+          <div className={ styles.GraficosUsuariosAtivosContainer }>
+            <div className={ styles.GraficoUsuariosAtivos }>
+              <ReactEcharts
+                option={ getOpcoesGraficoAbusoESituacao(
+                  novosUsuarios,
+                  "Fazem uso de substâncias psicoativas?",
+                  "ABUSO_SUBSTANCIAS",
+                  filtroPeriodoSubstEMoradia
+                ) }
+                style={ { width: "100%", height: "100%" } }
+              />
+            </div>
+
+            <div className={ styles.GraficoUsuariosAtivos }>
+              <ReactEcharts
+                option={ getOpcoesGraficoAbusoESituacao(
+                  novosUsuarios,
+                  "Estão em situação de rua?",
+                  "SITUACAO_RUA",
+                  filtroPeriodoSubstEMoradia
+                ) }
+                style={ { width: "100%", height: "100%" } }
+              />
+            </div>
+          </div>
         </>
       }
     </div>
