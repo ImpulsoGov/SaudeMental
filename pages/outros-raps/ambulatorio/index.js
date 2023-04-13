@@ -122,10 +122,10 @@ const Ambulatorio = () => {
           url: ''
         } }
         texto=""
-        titulo="<strong>Referências de Saúde Mental</strong>"
+        titulo="<strong>Em breve.</strong>"
       />
 
-      <GraficoInfo
+      {/* <GraficoInfo
         titulo="Referência de Saúde Mental"
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
       />
@@ -155,7 +155,7 @@ const Ambulatorio = () => {
       <GraficoInfo
         titulo="Atendimentos por profissional"
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
-      />
+      /> */}
     </div>
   );
 };
