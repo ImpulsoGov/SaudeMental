@@ -7,6 +7,9 @@ import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
+import perfilPorEstabelecimentoJSON from "./perfilPorEstabelecimento.json";
+import perfilJSON from "./perfil.json";
+
 const CORES_GRAFICO_CID = ["#5367C9", "#6577CF", "#7685D4", "#8795DA", "#98A4DF", "#A9B3E4", "#BAC2E9", "#CAD0EE", "#D3D8F1", "#E0E4F5", "#8795DA", "#8795DA", "#8795DA"];
 const CORES_GRAFICO_USUARIOS_ATIVOS = ["#5367C9", "#CACCFE", "#E0E4F5"];
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "", label: "" };
@@ -35,10 +38,16 @@ const PerfilUsuario = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setPerfil(await getPerfilUsuarios(municipioIdSus));
-      setPerfilPorEstabelecimento(
-        await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
-      );
+      if (municipioIdSus = '261160') {
+        setPerfil(perfilJSON);
+        setPerfilPorEstabelecimento(perfilPorEstabelecimentoJSON);
+      }
+      else {
+        setPerfil(await getPerfilUsuarios(municipioIdSus));
+        setPerfilPorEstabelecimento(
+          await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
+        );
+      }
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -509,10 +518,9 @@ const PerfilUsuario = () => {
         Usuários inativos: Usuários que não tiveram nenhum procedimento registrado no serviço há mais de 3 meses."
       />
 
-      <GraficoInfo
+      {/* <GraficoInfo
         titulo="Panorama geral"
       />
-
       <Grid12Col
         proporcao="4-4-4"
         items={ [
@@ -565,7 +573,7 @@ const PerfilUsuario = () => {
             }
           </>,
         ] }
-      />
+      /> */}
 
       <GraficoInfo
         titulo="Detalhamento por estabelecimento"
