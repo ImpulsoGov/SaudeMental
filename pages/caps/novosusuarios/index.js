@@ -1,12 +1,11 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { v1 as uuidv1 } from "uuid";
-import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-// import novosResumo from "./novosResumo.json";
-import ReactEcharts from "echarts-for-react";
 import Select from "react-select";
+import { v1 as uuidv1 } from "uuid";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
+import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodoMulti } from "../../../helpers/filtrosGraficos";
 import novosPerfilJSON from "../../dadosrecife/caps_usuarios_novos_perfil_recife.json";
 import novosResumoJSON from "../../dadosrecife/caps_usuarios_novos_resumo_recife.json";
@@ -29,7 +28,6 @@ const NovoUsuario = () => {
   });
   const [filtroPeriodoPerfil, setFiltroPeriodoPerfil] = useState([
     { value: "Último período", label: "Último período" },
-    { value: "Jan/23", label: "Jan/23" },
   ]);
 
   useEffect(() => {
