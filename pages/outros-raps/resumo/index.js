@@ -23,6 +23,8 @@ const Resumo = () => {
   const [consultorioNaRua12Meses, setConsultorioNaRua12Meses] = useState([]);
   const [reducaoDanos, setReducaoDanos] = useState([]);
   const [reducaoDanos12Meses, setReducaoDanos12Meses] = useState([]);
+  const [ambulatorioResumo, setAmbulatorioResumo] = useState([]);
+  const [ambulatorioUltMes, setAmbulatorioUltMes] = useState([]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
