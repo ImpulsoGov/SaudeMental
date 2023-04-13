@@ -1,16 +1,16 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import { GraficoInfo, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Select, { components } from "react-select";
+import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
-import perfilPorEstabelecimentoJSON from "./perfilPorEstabelecimento.json";
 import perfilJSON from "./perfil.json";
+import perfilPorEstabelecimentoJSON from "./perfilPorEstabelecimento.json";
 
-const CORES_GRAFICO_CID = ["#5367C9", "#6577CF", "#7685D4", "#8795DA", "#98A4DF", "#A9B3E4", "#BAC2E9", "#CAD0EE", "#D3D8F1", "#E0E4F5", "#8795DA", "#8795DA", "#8795DA"];
 const CORES_GRAFICO_USUARIOS_ATIVOS = ["#5367C9", "#CACCFE", "#E0E4F5"];
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "", label: "" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
@@ -304,7 +304,7 @@ const PerfilUsuario = () => {
             value: usuariosAtivos,
             name: !condicaoSaude ? "Sem informação" : condicaoSaude,
             itemStyle: {
-              color: CORES_GRAFICO_CID[index]
+              color: CORES_GRAFICO_DONUT[index]
             },
           }))
         }

@@ -1,9 +1,14 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getAbandonoCoortes } from "../../../requests/caps";
+// import { getAbandonoCoortes } from "../../../requests/caps";
+import ReactEcharts from "echarts-for-react";
+import Select from "react-select";
+import { getPropsFiltroEstabelecimento } from "../../../helpers/filtrosGraficos";
+import styles from "../Caps.module.css";
+import coortes from "./coortes.json";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -15,17 +20,20 @@ export function getServerSideProps(ctx) {
 
 const TaxaAbandono = () => {
   const { data: session } = useSession();
-  const [abandonoCoortes, setAbandonoCoortes] = useState([]);
+  const [abandonoCoortes, setAbandonoCoortes] = useState(coortes);
+  const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
+    value: "Todos", label: "Todos"
+  });
 
-  useEffect(() => {
-    const getDados = async (municipioIdSus) => {
-      setAbandonoCoortes(await getAbandonoCoortes(municipioIdSus));
-    };
+  // useEffect(() => {
+  //   const getDados = async (municipioIdSus) => {
+  //     setAbandonoCoortes(await getAbandonoCoortes(municipioIdSus));
+  //   };
 
-    if (session?.user.municipio_id_ibge) {
-      getDados(session?.user.municipio_id_ibge);
-    }
-  }, []);
+  //   if (session?.user.municipio_id_ibge) {
+  //     getDados(session?.user.municipio_id_ibge);
+  //   }
+  // }, []);
 
   const getCardsAbandonoAcumulado = (abandonos) => {
     const abandonosUltimoPeriodo = abandonos
@@ -57,6 +65,63 @@ const TaxaAbandono = () => {
     );
   };
 
+  const getOpcoesGraficoHistoricoTemporal = (abandonoCoortes, filtroEstabelecimento) => {
+    const filtradosPorEstabelecimento = abandonoCoortes
+      .filter(({ estabelecimento }) =>
+        estabelecimento === filtroEstabelecimento
+      );
+
+    const ordenadosPorCompetenciaAsc = filtradosPorEstabelecimento
+      .sort((a, b) => new Date(a.competencia) - new Date(b.competencia));
+
+    const periodos = ordenadosPorCompetenciaAsc.map(({ periodo }) => periodo);
+    const porcentagensNaoAdesaoPorPeriodo = ordenadosPorCompetenciaAsc
+      .map(({ usuarios_coorte_nao_aderiram_perc: porcentagemNaoAdesao }) =>
+        porcentagemNaoAdesao
+      );
+
+    return {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          label: {
+            backgroundColor: '#6a7985'
+          }
+        }
+      },
+      toolbox: {
+        feature: {
+          saveAsImage: {
+            title: "Salvar como imagem",
+          }
+        }
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: periodos
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          name: "Taxa de abandono mensal (%):",
+          data: porcentagensNaoAdesaoPorPeriodo,
+          type: 'line',
+          itemStyle: {
+            color: "#5367C9"
+          },
+        }
+      ]
+    };
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -78,6 +143,28 @@ const TaxaAbandono = () => {
         tooltip="A taxa de abandono acumulado se refere à porcentagem de usuários que entraram no serviço em um dado mês e abandonaram o serviço em algum dos 6 meses seguintes. A taxa de abandono mensal se refere a quantidade de usuários que haviam entrado no serviço recentemente e abandonaram o serviço no mês especificado"
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { abandonoCoortes.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroEstabelecimento(
+                abandonoCoortes,
+                filtroEstabelecimentoHistorico,
+                setFiltroEstabelecimentoHistorico
+              )
+            } />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoHistoricoTemporal(
+              abandonoCoortes,
+              filtroEstabelecimentoHistorico.value
+            ) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
 
       <GraficoInfo
         titulo="CID dos usuários que abandonaram o serviço"
