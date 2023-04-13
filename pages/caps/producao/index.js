@@ -1,7 +1,6 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
@@ -10,6 +9,7 @@ import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodoMulti } from "../..
 import styles from "../Caps.module.css";
 import porHora from "./porHora.json";
 import porTipo from "./porTipo.json";
+import { useEffect, useState } from "react";
 
 const OCUPACOES_NAO_ACEITAS = ["Todas", null];
 
@@ -23,8 +23,8 @@ export function getServerSideProps(ctx) {
 
 const Producao = () => {
   const { data: session } = useSession();
-  const [procedimentosPorHora, setProcedimentosPorHora] = useState(porHora);
-  const [procedimentosPorTipo, setProcedimentosPorTipo] = useState(porTipo);
+  const [procedimentosPorHora, setProcedimentosPorHora] = useState([]);
+  const [procedimentosPorTipo, setProcedimentosPorTipo] = useState([]);
   const [filtroEstabelecimentoCBO, setFiltroEstabelecimentoCBO] = useState({
     value: "Todos", label: "Todos"
   });
@@ -47,15 +47,24 @@ const Producao = () => {
     { value: "Abr/16", label: "Abr/16" },
   ]);
 
-  // useEffect(() => {
-  //   const getDados = async (municipioIdSus) => {
-  //     setProcedimentosPorHora(await getProcedimentosPorHora(municipioIdSus));
-  //   };
-
-  //   if (session?.user.municipio_id_ibge) {
-  //     getDados(session?.user.municipio_id_ibge);
-  //   }
-  // }, []);
+  useEffect(() => {
+    const getDados = async (municipioIdSus) => {
+      if (municipioIdSus = '261160') {
+        setProcedimentosPorHora(porHora);
+        setProcedimentosPorTipo(porTipo);
+      }
+      else {
+        setProcedimentosPorHora(await getProcedimentosPorHora(municipioIdSus));
+        setProcedimentosPorTipo(
+          await getProcedimentosPorTipo(municipioIdSus)
+        );
+      }
+    };
+    
+  if (session?.user.municipio_id_ibge) {
+      getDados(session?.user.municipio_id_ibge);
+    }
+  }, []);
 
   const agregarPorLinhaPerfil = (procedimentos) => {
     const procedimentosAgregados = [];

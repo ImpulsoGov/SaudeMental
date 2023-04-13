@@ -1142,7 +1142,7 @@
   "resolved" "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz"
   "version" "1.2.1"
 
-"@impulsogov/design-system@^1.0.21":
+"@impulsogov/design-system@^1.0.22":
   "integrity" "sha512-WeYkfUxygIbCszMWls1Hm270Solb1hdhdhybPq08QmXBARinrhJPLgpb86q48ZPbYwLGuiLDHi+Pj/yh64DdZw=="
   "resolved" "https://registry.npmjs.org/@impulsogov/design-system/-/design-system-1.0.22.tgz"
   "version" "1.0.22"

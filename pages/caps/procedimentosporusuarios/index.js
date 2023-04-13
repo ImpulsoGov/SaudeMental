@@ -1,15 +1,15 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select, { components } from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 // import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
 import styles from "../Caps.module.css";
-import porEstabelecimento from "./porEstabelecimento.json";
-// NÃO É O RESUMO
-import porTempoServico from "./porTempoServicoResumo.json";
+
+import porestabelecimentoJSON from "./porEstabelecimentoRecife.json";
+import portempoJSON from "./porTempoServicoResumoRecife.json";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -21,8 +21,8 @@ export function getServerSideProps(ctx) {
 
 const ProcedimentosPorUsuarios = () => {
   const { data: session } = useSession();
-  const [procedimentosPorEstabelecimento, setProcedimentosPorEstabelecimento] = useState(porEstabelecimento);
-  const [procedimentosPorTempoServico, setProcedimentosPorTempoServico] = useState(porTempoServico);
+  const [procedimentosPorEstabelecimento, setProcedimentosPorEstabelecimento] = useState([]);
+  const [procedimentosPorTempoServico, setProcedimentosPorTempoServico] = useState([]);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
     value: "Todos", label: "Todos"
   });
@@ -33,20 +33,24 @@ const ProcedimentosPorUsuarios = () => {
     { value: "Último período", label: "Último período" },
   ]);
 
-  // useEffect(() => {
-  //   const getDados = async (municipioIdSus) => {
-  //     setProcedimentosPorEstabelecimento(
-  //       await getProcedimentosPorEstabelecimento(municipioIdSus)
-  //     );
-  //     setProcedimentosPorTempoServico(
-  //       await getProcedimentosPorTempoServico(municipioIdSus)
-  //     );
-  //   };
+  useEffect(() => {
+    const getDados = async (municipioIdSus) => {
+      if (municipioIdSus = '261160') {
+        setProcedimentosPorEstabelecimento(porestabelecimentoJSON);
+        setProcedimentosPorTempoServico(portempoJSON);
+      }
+      else {
+        setProcedimentosPorEstabelecimento(await getProcedimentosPorEstabelecimento(municipioIdSus));
+        setProcedimentosPorTempoServico(
+          await getProcedimentosPorTempoServico(municipioIdSus)
+        );
+      }
+    };
 
-  //   if (session?.user.municipio_id_ibge) {
-  //     getDados(session?.user.municipio_id_ibge);
-  //   }
-  // }, []);
+    if (session?.user.municipio_id_ibge) {
+      getDados(session?.user.municipio_id_ibge);
+    }
+  }, []);
 
   const agregarPorLinhaPerfil = (procedimentos) => {
     const procedimentosAgregados = [];
@@ -87,7 +91,9 @@ const ProcedimentosPorUsuarios = () => {
 
   const getCardsProcedimentosPorEstabelecimento = (procedimentos) => {
     const procedimentosPorEstabelecimentoUltimoPeriodo = procedimentos
-      .filter(({ periodo, estabelecimento }) => periodo === "Último período" && estabelecimento !== "Todos");
+      .filter(({ periodo, estabelecimento, estabelecimento_linha_perfil: linhaPerfil }) =>
+        periodo === "Último período" && estabelecimento !== "Todos" && linhaPerfil !== "Todos"
+      );
 
     const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosPorEstabelecimentoUltimoPeriodo);
 

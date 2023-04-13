@@ -6,6 +6,7 @@ import { v1 as uuidv1 } from 'uuid';
 import { API_URL } from "../../../constants/API_URL";
 import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
+import { DataGrid } from '@mui/x-data-grid';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -20,6 +21,14 @@ const ApsCaps = () => {
   const [encaminhamentosApsCaps, setEncaminhamentosApsCaps] = useState([]);
   const [encaminhamentosApsCapsResumo, setEncaminhamentosApsCapsResumo] = useState();
   const [matriciamentosPorMunicipio, setMatriciamentosPorMunicipio] = useState();
+  const [matriciamentosPorCaps, setMatriciamentosPorCaps] = useState();
+
+  const columns = [
+      { field: 'estabelecimento', headerName: 'CAPS',  editable: true, width: 300 },
+      { field: 'quantidade_registrada',headerName: 'Matriciamentos realizados', editable: true, width: 300},
+      { field: 'faltam_no_ano', headerName: 'Faltam no ano', width: 200 },
+      { field: 'media_mensal_para_meta', headerName: 'Média mensal para completar a meta', width: 200 },
+  ];
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -47,10 +56,15 @@ const ApsCaps = () => {
         + "saude-mental/matriciamentos/municipio?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
+      const urlMatriciamentosPorCaps = API_URL
+      + "saude-mental/matriciamentos/caps?municipio_id_sus="
+      + session?.user.municipio_id_ibge;
+      
       fetch(urlMatriciamentosPorMunicipio, getRequestOptions)
         .then(response => response.json())
         .then(result => setMatriciamentosPorMunicipio(result[0]))
         .catch(error => console.log('error', error));
+      
     }
   }, []);
 
