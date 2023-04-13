@@ -279,7 +279,6 @@ const ProcedimentosPorUsuarios = () => {
   };
 
   const getOpcoesGraficoProcedimentoPorTempo = (procedimentos) => {
-    // console.log(filtroPeriodoProcedimento);
     const periodosSelecionados = filtroPeriodoProcedimento
       .map(({ value }) => value);
     const procedimentosFiltrados = procedimentos.filter((item) =>
