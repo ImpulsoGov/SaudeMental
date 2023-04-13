@@ -564,6 +564,7 @@ const NovoUsuario = () => {
 
       <GraficoInfo
         titulo="Uso de substâncias e condição de moradia"
+        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
       { novosUsuarios.length !== 0 &&
