@@ -140,6 +140,10 @@ const Resumo = () => {
         titulo="<strong>Resumo</strong>"
       />
 
+      <GraficoInfo
+        titulo="Usuários de CAPS"
+      />
+
       {
         novosUsuariosResumo.length !== 0 &&
         perfilPorEstabelecimento.length !== 0 &&
@@ -157,6 +161,7 @@ const Resumo = () => {
         tooltip="Porcentagem dos usuários que entraram nos serviços CAPS e deixaram de frequentar o serviço  nos 6 meses posteriores."
         link={ { label: 'Mais informações', url: '/caps?painel=3' } }
       />
+      
       <Grid12Col
           proporcao="3-3-3-3"
           items={ [
