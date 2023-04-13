@@ -166,7 +166,7 @@ const NovoUsuario = () => {
       },
       series: [
         {
-          name: "Taxa de abandono mensal (%):",
+          name: "Usuários novos:",
           data: quantidadesUsuariosNovos,
           type: 'line',
           itemStyle: {
