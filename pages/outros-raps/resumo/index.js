@@ -127,7 +127,7 @@ const Resumo = () => {
       />
 
       <GraficoInfo
-        titulo="Referência de Saúde Mental"
+        titulo="Ambulatório de Saúde Mental"
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
         link={ { label: 'Mais informações', url: '/cuidado-compartilhado?painel=1' } }
       />

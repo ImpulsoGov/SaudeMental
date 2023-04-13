@@ -494,7 +494,7 @@ const PerfilUsuario = () => {
         Usuários inativos: Usuários que não tiveram nenhum procedimento registrado no serviço há mais de 3 meses."
       />
 
-      {/* <GraficoInfo
+      <GraficoInfo
         titulo="Panorama geral"
       />
       <Grid12Col
@@ -549,7 +549,7 @@ const PerfilUsuario = () => {
             }
           </>,
         ] }
-      /> */}
+      />
 
       <GraficoInfo
         titulo="Detalhamento por estabelecimento"
