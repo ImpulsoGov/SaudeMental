@@ -38,18 +38,13 @@ const Producao = () => {
     { value: "Último período", label: "Último período" },
     { value: "Nov/18", label: "Nov/18" },
     { value: "Abr/16", label: "Abr/16" },
-    // { value: "Mar/19", label: "Mar/19" },
-    // { value: "Abr/16", label: "Abr/16" },
   ]);
   const [filtroEstabelecimentoRAAS, setFiltroEstabelecimentoRAAS] = useState({
     value: "Todos", label: "Todos"
   });
   const [filtroPeriodoRAAS, setFiltroPeriodoRAAS] = useState([
     { value: "Último período", label: "Último período" },
-    // { value: "Nov/18", label: "Nov/18" },
     { value: "Abr/16", label: "Abr/16" },
-    // { value: "Mar/19", label: "Mar/19" },
-    // { value: "Abr/16", label: "Abr/16" },
   ]);
 
   // useEffect(() => {
@@ -244,7 +239,6 @@ const Producao = () => {
 
     procedimentos.forEach((item) => {
       const {
-        periodo,
         procedimento,
         procedimentos_registrados_bpa: procedimentosBPA,
         procedimentos_registrados_raas: procedimentosRAAS,
@@ -256,34 +250,14 @@ const Producao = () => {
       if (!procedimentoEncontrado) {
         procedimentosAgregados.push({
           procedimento,
-          procedimentosBPAPorPeriodo: [{
-            periodo,
-            quantidadeProcedimento: procedimentosBPA
-          }],
-          procedimentosRAASPorPeriodo: [{
-            periodo,
-            quantidadeProcedimento: procedimentosRAAS
-          }],
-          procedimentosTotaisPorPeriodo: [{
-            periodo,
-            quantidadeProcedimento: procedimentosTotal
-          }],
+          quantidadeBPA: procedimentosBPA,
+          quantidadeRAAS: procedimentosRAAS,
+          quantidadeTotal: procedimentosTotal,
         });
       } else {
-        procedimentoEncontrado.procedimentosBPAPorPeriodo.push({
-          periodo,
-          quantidadeProcedimento: procedimentosBPA
-        });
-
-        procedimentoEncontrado.procedimentosRAASPorPeriodo.push({
-          periodo,
-          quantidadeProcedimento: procedimentosRAAS
-        });
-
-        procedimentoEncontrado.procedimentosTotaisPorPeriodo.push({
-          periodo,
-          quantidadeProcedimento: procedimentosTotal
-        });
+        procedimentoEncontrado.quantidadeBPA += procedimentosBPA;
+        procedimentoEncontrado.quantidadeRAAS += procedimentosRAAS;
+        procedimentoEncontrado.quantidadeTotal += procedimentosTotal;
       }
     });
 
@@ -292,8 +266,8 @@ const Producao = () => {
 
   const getOpcoesGraficoTiposProcedimento = (procedimentos, tipo, filtroEstabelecimento, filtroPeriodo) => {
     const PROPIEDADES_POR_TIPO = {
-      BPA: "procedimentosBPAPorPeriodo",
-      RAAS: "procedimentosRAASPorPeriodo"
+      BPA: "quantidadeBPA",
+      RAAS: "quantidadeRAAS"
     };
 
     const propriedade = PROPIEDADES_POR_TIPO[tipo];
@@ -304,7 +278,6 @@ const Producao = () => {
       filtroPeriodo
     );
     const procedimentosAgregados = agregarPorProcedimentoTipo(procedimentosFiltrados);
-    console.log(procedimentosAgregados);
 
     return {
       tooltip: {
@@ -329,14 +302,15 @@ const Producao = () => {
           labelLine: {
             show: false
           },
-          data: procedimentosAgregados.map((item, index) => ({
-            value: item[propriedade]
-              .reduce((acc, { quantidadeProcedimento }) => acc + quantidadeProcedimento, 0),
-            name: item.procedimento,
-            itemStyle: {
-              color: CORES_GRAFICO_DONUT[index]
-            },
-          })).filter((item) => item.value !== 0)
+          data: procedimentosAgregados
+            .filter((item) => item[propriedade] !== 0)
+            .map((item, index) => ({
+              value: item[propriedade],
+              name: item.procedimento,
+              itemStyle: {
+                color: CORES_GRAFICO_DONUT[index]
+              }
+            }))
         }
       ]
     };
