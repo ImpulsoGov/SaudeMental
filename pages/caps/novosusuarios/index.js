@@ -6,7 +6,8 @@ import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 // import novosResumo from "./novosResumo.json";
 import ReactEcharts from "echarts-for-react";
 import Select from "react-select";
-import { getPropsFiltroEstabelecimento } from "../../../helpers/filtrosGraficos";
+import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
+import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodoMulti } from "../../../helpers/filtrosGraficos";
 import novosPerfilJSON from "../../dadosrecife/caps_usuarios_novos_perfil_recife.json";
 import novosResumoJSON from "../../dadosrecife/caps_usuarios_novos_resumo_recife.json";
 import styles from "../Caps.module.css";
@@ -26,6 +27,10 @@ const NovoUsuario = () => {
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
     value: "Todos", label: "Todos"
   });
+  const [filtroPeriodoPerfil, setFiltroPeriodoPerfil] = useState([
+    { value: "Último período", label: "Último período" },
+    { value: "Jan/23", label: "Jan/23" },
+  ]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -177,6 +182,80 @@ const NovoUsuario = () => {
     };
   };
 
+  const agregarPorCondicaoSaude = (novosUsuarios) => {
+    const usuariosAgregados = [];
+
+    novosUsuarios.forEach((dado) => {
+      const {
+        usuarios_novos: usuariosNovos,
+        usuario_condicao_saude: condicaoSaude
+      } = dado;
+
+      const condicaoSaudeDados = usuariosAgregados
+        .find((item) => item.condicaoSaude === condicaoSaude);
+
+      if (!condicaoSaudeDados) {
+        usuariosAgregados.push({
+          condicaoSaude,
+          usuariosNovos
+        });
+      } else {
+        condicaoSaudeDados.usuariosNovos += usuariosNovos;
+      }
+    });
+
+    return usuariosAgregados;
+  };
+
+  const getOpcoesGraficoPerfil = (novosUsuarios) => {
+    const periodosSelecionados = filtroPeriodoPerfil
+      .map(({ value }) => value);
+
+    const dadosUsuariosFiltrados = novosUsuarios
+      .filter((item) =>
+        item.estabelecimento === "Todos"
+        && periodosSelecionados.includes(item.periodo)
+        && item.estabelecimento_linha_perfil === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
+      );
+
+    const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(dadosUsuariosFiltrados);
+
+    return {
+      tooltip: {
+        trigger: 'item',
+      },
+      series: [
+        {
+          type: 'pie',
+          radius: ['40%', '80%'],
+          avoidLabelOverlap: false,
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: "{d}%",
+            color: "#000000"
+          },
+          emphasis: {
+            label: {
+              show: true,
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: agregadosPorCondicaoSaude.map(({ condicaoSaude, usuariosNovos }, index) => ({
+            value: usuariosNovos,
+            name: !condicaoSaude ? "Sem informação" : condicaoSaude,
+            itemStyle: {
+              color: CORES_GRAFICO_DONUT[index]
+            },
+          }))
+        }
+      ]
+    };
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -226,9 +305,28 @@ const NovoUsuario = () => {
       }
 
       <GraficoInfo
-        titulo="Total de atendimentos"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo="Perfil dos novos usuários"
+        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { novosUsuarios.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroPeriodoMulti(
+                novosUsuarios,
+                filtroPeriodoPerfil,
+                setFiltroPeriodoPerfil
+              )
+            } />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoPerfil(novosUsuarios) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
 
       <GraficoInfo
         titulo="Atendimentos por horas trabalhadas"
