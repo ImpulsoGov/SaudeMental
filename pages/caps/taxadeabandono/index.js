@@ -6,9 +6,15 @@ import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 // import { getAbandonoCoortes } from "../../../requests/caps";
 import ReactEcharts from "echarts-for-react";
 import Select from "react-select";
-import { getPropsFiltroEstabelecimento } from "../../../helpers/filtrosGraficos";
+import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
+import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodoMulti } from "../../../helpers/filtrosGraficos";
 import styles from "../Caps.module.css";
-import coortes from "./coortes.json";
+import coortesJSON from "./coortes.json";
+import perfilJSON from "./perfil.json";
+
+const FILTRO_PERIODO_MULTI_DEFAULT = [
+  { value: "Último período", label: "Último período" },
+];
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -20,10 +26,12 @@ export function getServerSideProps(ctx) {
 
 const TaxaAbandono = () => {
   const { data: session } = useSession();
-  const [abandonoCoortes, setAbandonoCoortes] = useState(coortes);
+  const [abandonoCoortes, setAbandonoCoortes] = useState(coortesJSON);
+  const [abandonoPerfil, setAbandonoPerfil] = useState(perfilJSON);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
     value: "Todos", label: "Todos"
   });
+  const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   // useEffect(() => {
   //   const getDados = async (municipioIdSus) => {
@@ -122,6 +130,77 @@ const TaxaAbandono = () => {
     };
   };
 
+  const agregarPorCondicaoSaude = (perfilDeAbandono) => {
+    const dadosAgregados = [];
+
+    perfilDeAbandono.forEach((dado) => {
+      const {
+        quantidade_registrada: quantidadeUsuarios,
+        grupo_descricao_curta_cid10: condicaoSaude
+      } = dado;
+
+      const condicaoSaudeDados = dadosAgregados
+        .find((item) => item.condicaoSaude === condicaoSaude);
+
+      if (!condicaoSaudeDados) {
+        dadosAgregados.push({
+          condicaoSaude,
+          quantidadeUsuarios
+        });
+      } else {
+        condicaoSaudeDados.quantidadeUsuarios += quantidadeUsuarios;
+      }
+    });
+
+    return dadosAgregados;
+  };
+
+  const filtrarDadosPorPeriodos = (dados, filtroPeriodo) => {
+    const periodosSelecionados = filtroPeriodo.map(({ value }) => value);
+
+    return dados.filter((item) => periodosSelecionados.includes(item.periodo));
+  };
+
+  const getOpcoesGraficoCID = (perfilDeAbandono, filtroPeriodo) => {
+    const dadosAbandonoFiltrados = filtrarDadosPorPeriodos(perfilDeAbandono, filtroPeriodo);
+    const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(dadosAbandonoFiltrados);
+
+    return {
+      tooltip: {
+        trigger: 'item',
+      },
+      series: [
+        {
+          type: 'pie',
+          radius: ['40%', '80%'],
+          avoidLabelOverlap: false,
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: "{d}%",
+            color: "#000000"
+          },
+          emphasis: {
+            label: {
+              show: true,
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: agregadosPorCondicaoSaude
+            .map(({ condicaoSaude, quantidadeUsuarios }, index) => ({
+              value: quantidadeUsuarios,
+              name: !condicaoSaude ? "Sem informação" : condicaoSaude,
+              itemStyle: {
+                color: CORES_GRAFICO_DONUT[index]
+              },
+            }))
+        }
+      ]
+    };
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -170,6 +249,25 @@ const TaxaAbandono = () => {
         titulo="CID dos usuários que abandonaram o serviço"
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { abandonoPerfil.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroPeriodoMulti(
+                abandonoPerfil,
+                filtroPeriodoCID,
+                setFiltroPeriodoCID
+              )
+            } />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoCID(abandonoPerfil, filtroPeriodoCID) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
 
       <GraficoInfo
         titulo="Gênero e faixa etária"
