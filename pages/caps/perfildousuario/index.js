@@ -1,4 +1,4 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import { GraficoInfo, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -7,6 +7,9 @@ import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
 import styles from "../Caps.module.css";
+
+import perfilJSON from "./perfil.json";
+import perfilPorEstabelecimentoJSON from "./perfilPorEstabelecimento.json";
 
 const CORES_GRAFICO_USUARIOS_ATIVOS = ["#5367C9", "#CACCFE", "#E0E4F5"];
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "", label: "" };
@@ -35,10 +38,16 @@ const PerfilUsuario = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setPerfil(await getPerfilUsuarios(municipioIdSus));
-      setPerfilPorEstabelecimento(
-        await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
-      );
+      if (municipioIdSus = '261160') {
+        setPerfil(perfilJSON);
+        setPerfilPorEstabelecimento(perfilPorEstabelecimentoJSON);
+      }
+      else {
+        setPerfil(await getPerfilUsuarios(municipioIdSus));
+        setPerfilPorEstabelecimento(
+          await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
+        );
+      }
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -509,10 +518,9 @@ const PerfilUsuario = () => {
         Usuários inativos: Usuários que não tiveram nenhum procedimento registrado no serviço há mais de 3 meses."
       />
 
-      <GraficoInfo
+      {/* <GraficoInfo
         titulo="Panorama geral"
       />
-
       <Grid12Col
         proporcao="4-4-4"
         items={ [
@@ -565,7 +573,7 @@ const PerfilUsuario = () => {
             }
           </>,
         ] }
-      />
+      /> */}
 
       <GraficoInfo
         titulo="Detalhamento por estabelecimento"
