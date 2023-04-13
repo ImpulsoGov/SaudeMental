@@ -1,8 +1,10 @@
-import { GraficoInfo, TituloSmallTexto } from "@impulsogov/design-system";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getNovosUsuarios, getResumoNovosUsuarios } from "../../../requests/caps";
+// import { getNovosUsuarios, getResumoNovosUsuarios } from "../../../requests/caps";
+import { v1 as uuidv1 } from "uuid";
+import novosResumo from "./novosResumo.json";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -14,39 +16,118 @@ export function getServerSideProps(ctx) {
 
 const NovoUsuario = () => {
   const { data: session } = useSession();
-  const [novosUsuarios, setNovosUsusarios] = useState([]);
-  const [resumoNovosUsuarios, setResumoNovosUsuarios] = useState([]);
+  const [novosUsuarios, setNovosUsusarios] = useState();
+  const [resumoNovosUsuarios, setResumoNovosUsuarios] = useState(novosResumo);
 
-  useEffect(() => {
-    const getDados = async (municipioIdSus) => {
-      setNovosUsusarios(await getNovosUsuarios(municipioIdSus));
-      setResumoNovosUsuarios(
-        await getResumoNovosUsuarios(municipioIdSus)
+  // useEffect(() => {
+  //   const getDados = async (municipioIdSus) => {
+  //     setNovosUsusarios(await getNovosUsuarios(municipioIdSus));
+  //     setResumoNovosUsuarios(
+  //       await getResumoNovosUsuarios(municipioIdSus)
+  //     );
+  //   };
+
+  //   if (session?.user.municipio_id_ibge) {
+  //     getDados(session?.user.municipio_id_ibge);
+  //   }
+  // }, []);
+
+  const agregarPorLinhaPerfil = (usuariosNovos) => {
+    const usuariosAgregados = [];
+
+    usuariosNovos.forEach((item) => {
+      const {
+        estabelecimento,
+        nome_mes: nomeMes,
+        estabelecimento_linha_perfil: linhaPerfil,
+        usuarios_novos: usuariosNovos,
+        dif_usuarios_novos_anterior: diferencaMesAnterior
+      } = item;
+
+      const linhaPerfilEncontrada = usuariosAgregados
+        .find((item) => item.linhaPerfil === linhaPerfil);
+
+      if (!linhaPerfilEncontrada) {
+        usuariosAgregados.push({
+          nomeMes,
+          linhaPerfil,
+          usuariosPorEstabelecimento: [{
+            estabelecimento,
+            usuariosNovos,
+            diferencaMesAnterior
+          }]
+        });
+      } else {
+        linhaPerfilEncontrada.usuariosPorEstabelecimento.push({
+          estabelecimento,
+          usuariosNovos,
+          diferencaMesAnterior
+        });
+      }
+    });
+
+    return usuariosAgregados;
+  };
+
+  const getCardsNovosUsuariosPorEstabelecimento = (novosUsuarios) => {
+    const novosUsuariosUltimoPeriodo = novosUsuarios
+      .filter(({ periodo, estabelecimento, estabelecimento_linha_perfil: linhaPerfil }) =>
+        periodo === "Último período"
+        && estabelecimento !== "Todos"
+        && linhaPerfil !== "Todos"
       );
-    };
 
-    if (session?.user.municipio_id_ibge) {
-      getDados(session?.user.municipio_id_ibge);
-    }
-  }, []);
+    const usuariosAgregados = agregarPorLinhaPerfil(novosUsuariosUltimoPeriodo);
+
+    const cards = usuariosAgregados.map(({
+      linhaPerfil, usuariosPorEstabelecimento, nomeMes
+    }) => (
+      <>
+        <GraficoInfo
+          titulo={ `CAPS ${linhaPerfil}` }
+          fonte={ `Dados de ${nomeMes}` }
+        />
+
+        <Grid12Col
+          items={
+            usuariosPorEstabelecimento.map((item) => (
+              <CardInfoTipoA
+                titulo={ item.estabelecimento }
+                indicador={ item.usuariosNovos }
+                indice={ item.diferencaMesAnterior }
+                indiceDescricao="últ. mês"
+                key={ uuidv1() }
+              />
+            ))
+          }
+          proporcao="3-3-3-3"
+        />
+      </>
+    ));
+
+    return cards;
+  };
 
   return (
     <div>
-      { console.log(novosUsuarios) }
-      { console.log(resumoNovosUsuarios) }
       <TituloSmallTexto
         imagem={ {
           posicao: null,
           url: ''
         } }
         texto=""
-        titulo="<strong>Referências de Saúde Mental</strong>"
+        titulo="<strong>Novos usuários</strong>"
       />
 
       <GraficoInfo
-        titulo="Referência de Saúde Mental"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        descricao="Taxa de novos usuários que passaram por primeiro procedimento (registrado em RAAS), excluindo-se usuários que passaram apenas por acolhimento inicial."
+        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      {
+        resumoNovosUsuarios.length !== 0
+        && getCardsNovosUsuariosPorEstabelecimento(resumoNovosUsuarios)
+      }
 
       <GraficoInfo
         titulo="Atendimentos"
