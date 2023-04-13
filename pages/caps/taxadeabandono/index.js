@@ -318,7 +318,7 @@ const TaxaAbandono = () => {
     const dadosAbandonoFiltrados = filtrarDadosPorPeriodos(perfilDeAbandono, filtroPeriodo);
 
     const agregadosPorRacaCor = agregarPorRacaCor(dadosAbandonoFiltrados);
-    console.log(agregadosPorRacaCor);
+
     return {
       legend: {},
       tooltip: {},
