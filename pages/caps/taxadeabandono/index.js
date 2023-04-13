@@ -32,6 +32,8 @@ const TaxaAbandono = () => {
     value: "Todos", label: "Todos"
   });
   const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   // useEffect(() => {
   //   const getDados = async (municipioIdSus) => {
@@ -201,6 +203,149 @@ const TaxaAbandono = () => {
     };
   };
 
+  const agregarPorFaixaEtariaEGenero = (perfilDeAbandono) => {
+    const dadosAgregados = [];
+
+    perfilDeAbandono.forEach((dado) => {
+      const {
+        quantidade_registrada: quantidadeUsuarios,
+        usuario_faixa_etaria_descricao: faixaEtaria,
+        usuario_sexo: usuarioSexo
+      } = dado;
+      const genero = usuarioSexo.toLowerCase();
+      const faixaEtariaDados = dadosAgregados
+        .find((item) => item.faixaEtaria === faixaEtaria);
+
+      if (!faixaEtariaDados) {
+        dadosAgregados.push({
+          faixaEtaria,
+          [genero]: quantidadeUsuarios
+        });
+      } else {
+        faixaEtariaDados[genero]
+          ? faixaEtariaDados[genero] += quantidadeUsuarios
+          : faixaEtariaDados[genero] = quantidadeUsuarios;
+      }
+    });
+
+    return dadosAgregados;
+  };
+
+  const getOpcoesGraficoGeneroEFaixaEtaria = (perfilDeAbandono, filtroPeriodo) => {
+    const NOME_DIMENSAO = "genero";
+    const LABELS_DIMENSAO = ["Masculino", "Feminino"];
+
+    const dadosAbandonoFiltrados = filtrarDadosPorPeriodos(perfilDeAbandono, filtroPeriodo);
+
+    const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(dadosAbandonoFiltrados);
+
+    return {
+      legend: {
+        itemGap: 25,
+      },
+      tooltip: {},
+      dataset: {
+        dimensions: [NOME_DIMENSAO, ...LABELS_DIMENSAO],
+        source: agregadosPorGeneroEFaixaEtaria
+          .sort((a, b) => a.faixaEtaria.localeCompare(b.faixaEtaria))
+          .map((item) => ({
+            [NOME_DIMENSAO]: item.faixaEtaria,
+            [LABELS_DIMENSAO[0]]: item[LABELS_DIMENSAO[0].toLowerCase()],
+            [LABELS_DIMENSAO[1]]: item[LABELS_DIMENSAO[1].toLowerCase()],
+          })),
+      },
+      xAxis: {
+        type: 'category',
+      },
+      yAxis: {},
+      series: [
+        {
+          type: 'bar',
+          itemStyle: {
+            color: "#FA81E6"
+          },
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: `{@${LABELS_DIMENSAO[0]}}`,
+            color: "#FFFFFF",
+          },
+        },
+        {
+          type: 'bar',
+          itemStyle: {
+            color: "#5367C9"
+          },
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: `{@${LABELS_DIMENSAO[1]}}`,
+            color: "#FFFFFF",
+          },
+        }
+      ]
+    };
+  };
+
+  const agregarPorRacaCor = (perfilDeAbandono) => {
+    const dadosAgregados = [];
+
+    perfilDeAbandono.forEach((dado) => {
+      const {
+        quantidade_registrada: quantidadeUsuarios,
+        usuario_raca_cor: racaCor
+      } = dado;
+      const racaCorDados = dadosAgregados
+        .find((item) => item.racaCor === racaCor);
+
+      if (!racaCorDados) {
+        dadosAgregados.push({
+          racaCor,
+          quantidadeUsuarios
+        });
+      } else {
+        racaCorDados.quantidadeUsuarios += quantidadeUsuarios;
+      }
+    });
+
+    return dadosAgregados;
+  };
+
+  const getOpcoesGraficoRacaEcor = (perfilDeAbandono, filtroPeriodo) => {
+    const NOME_DIMENSAO = "usuariosAbandonaram";
+    const LABEL_DIMENSAO = "Usuários recentes que abandonaram no período";
+
+    const dadosAbandonoFiltrados = filtrarDadosPorPeriodos(perfilDeAbandono, filtroPeriodo);
+
+    const agregadosPorRacaCor = agregarPorRacaCor(dadosAbandonoFiltrados);
+    console.log(agregadosPorRacaCor);
+    return {
+      legend: {},
+      tooltip: {},
+      dataset: {
+        dimensions: [NOME_DIMENSAO, LABEL_DIMENSAO],
+        source: agregadosPorRacaCor
+          .sort((a, b) => b.racaCor.localeCompare(a.racaCor))
+          .map((item) => ({
+            [NOME_DIMENSAO]: item.racaCor,
+            [LABEL_DIMENSAO]: item.quantidadeUsuarios,
+          })),
+      },
+      xAxis: {
+        type: 'category',
+      },
+      yAxis: {},
+      series: [
+        {
+          type: 'bar',
+          itemStyle: {
+            color: "#5367C9"
+          },
+        },
+      ]
+    };
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -274,10 +419,54 @@ const TaxaAbandono = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
+      { abandonoPerfil.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroPeriodoMulti(
+                abandonoPerfil,
+                filtroPeriodoGenero,
+                setFiltroPeriodoGenero
+              )
+            } />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoGeneroEFaixaEtaria(
+              abandonoPerfil,
+              filtroPeriodoGenero
+            ) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
+
       <GraficoInfo
         titulo="Raça/Cor*"
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { abandonoPerfil.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroPeriodoMulti(
+                abandonoPerfil,
+                filtroPeriodoRacaECor,
+                setFiltroPeriodoRacaECor
+              )
+            } />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoRacaEcor(
+              abandonoPerfil,
+              filtroPeriodoRacaECor
+            ) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
 
       <GraficoInfo
         descricao="*Dados podem ter problemas de coleta, registro e preenchimento"
