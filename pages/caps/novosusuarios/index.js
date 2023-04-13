@@ -12,6 +12,10 @@ import novosPerfilJSON from "../../dadosrecife/caps_usuarios_novos_perfil_recife
 import novosResumoJSON from "../../dadosrecife/caps_usuarios_novos_resumo_recife.json";
 import styles from "../Caps.module.css";
 
+const FILTRO_PERIODO_MULTI_DEFAULT = [
+  { value: "Último período", label: "Último período" },
+];
+
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
 
@@ -27,18 +31,10 @@ const NovoUsuario = () => {
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
     value: "Todos", label: "Todos"
   });
-  const [filtroPeriodoPerfil, setFiltroPeriodoPerfil] = useState([
-    { value: "Último período", label: "Último período" },
-  ]);
-  const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState([
-    { value: "Último período", label: "Último período" },
-  ]);
-  const [filtroPeriodoSubstEMoradia, setFiltroPeriodoSubstEMoradia] = useState([
-    { value: "Último período", label: "Último período" },
-  ]);
-  const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState([
-    { value: "Último período", label: "Último período" },
-  ]);
+  const [filtroPeriodoPerfil, setFiltroPeriodoPerfil] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroPeriodoSubstEMoradia, setFiltroPeriodoSubstEMoradia] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
