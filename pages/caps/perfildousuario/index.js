@@ -8,8 +8,8 @@ import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
-import perfilJSON from "./perfil.json";
-import perfilPorEstabelecimentoJSON from "./perfilPorEstabelecimento.json";
+import perfilRecife from "../../dadosrecife/caps_usuarios_ativos_perfil_recife.json";
+import perfilPorEstabelecimentoRecife from "../../dadosrecife/caps_usuarios_ativos_por_estabelecimento_resumo_recife.json";
 
 const CORES_GRAFICO_USUARIOS_ATIVOS = ["#5367C9", "#CACCFE", "#E0E4F5"];
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "", label: "" };
@@ -38,16 +38,36 @@ const PerfilUsuario = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      if (municipioIdSus == '261160') {
-        setPerfil(perfilJSON);
-        setPerfilPorEstabelecimento(perfilPorEstabelecimentoJSON);
+      municipioIdSus = '280030';
+      if (municipioIdSus = '261160') {
+        setPerfil(perfilRecife);
+        setPerfilPorEstabelecimento(perfilPorEstabelecimentoRecife);
       }
-      else {
-        setPerfil(await getPerfilUsuarios(municipioIdSus));
-        setPerfilPorEstabelecimento(
-          await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
-        );
+      if (municipioIdSus = '280030') {
+        setPerfil(perfilRecife);
+        setPerfilPorEstabelecimento(perfilPorEstabelecimentoRecife);
       }
+      if (municipioIdSus = '150140') {
+        setPerfil(perfilRecife);
+        setPerfilPorEstabelecimento(perfilPorEstabelecimentoRecife);
+      }
+      if (municipioIdSus = '431490') {
+        setPerfil(perfilRecife);
+        setPerfilPorEstabelecimento(perfilPorEstabelecimentoRecife);
+      }
+      if (municipioIdSus = '315780') {
+        setPerfil(perfilRecife);
+        setPerfilPorEstabelecimento(perfilPorEstabelecimentoRecife);
+      }
+      // else {
+      //   console.log('aqui');
+      //   data.filter((x)=>x.type === "ar");
+
+      //   setPerfil(await getPerfilUsuarios(municipioIdSus));
+      //   setPerfilPorEstabelecimento(
+      //     await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
+      //   );
+      // }
     };
 
     if (session?.user.municipio_id_ibge) {

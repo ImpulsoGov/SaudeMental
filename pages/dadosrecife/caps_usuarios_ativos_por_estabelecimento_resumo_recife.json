@@ -1,5 +1,4 @@
-{
-"SELECT *\nFROM saude_mental.caps_usuarios_ativos_por_estabelecimento_resumo\nWHERE \ncompetencia >= '2019-01-01'::date AND\nunidade_geografica_id_sus = '261160'": [
+[
 	{
 		"id" : "9626343b217a3a8588f36c983d37233c",
 		"unidade_geografica_id" : "c3b61631-8674-4f65-b90e-550c51df839b",
@@ -95000,4 +94999,4 @@
 		"nome_mes" : "Maio",
 		"periodo_ordem" : 19.05
 	}
-]}
+]
