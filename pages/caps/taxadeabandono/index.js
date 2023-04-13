@@ -140,7 +140,7 @@ const TaxaAbandono = () => {
       <GraficoInfo
         titulo="Histórico Temporal"
         descricao="Dos usuários acolhidos há menos de 6 meses, quantos abandonaram o serviço no mês"
-        tooltip="A taxa de abandono acumulado se refere à porcentagem de usuários que entraram no serviço em um dado mês e abandonaram o serviço em algum dos 6 meses seguintes. A taxa de abandono mensal se refere a quantidade de usuários que haviam entrado no serviço recentemente e abandonaram o serviço no mês especificado"
+        tooltip="A taxa de não adesão acumulado se refere à porcentagem de usuários que entraram no serviço em um dado mês e abandonaram o serviço em algum dos 6 meses seguintes. A taxa de não adesão mensal se refere à quantidade de usuários que haviam entrado no serviço recentemente e abandonaram o serviço no mês especificado."
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
