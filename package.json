@@ -23,6 +23,7 @@
     "next": "12.3.1",
     "next-auth": "^4.19.2",
     "next-transpile-modules": "^9.0.0",
+    "parquetjs-react": "^0.8.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-gtm-module": "^2.0.11",
