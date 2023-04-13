@@ -1,10 +1,15 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
-import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-// import { getNovosUsuarios, getResumoNovosUsuarios } from "../../../requests/caps";
+import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from "uuid";
-import novosResumo from "./novosResumo.json";
+import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
+// import novosResumo from "./novosResumo.json";
+import ReactEcharts from "echarts-for-react";
+import Select from "react-select";
+import { getPropsFiltroEstabelecimento } from "../../../helpers/filtrosGraficos";
+import novosPerfilJSON from "../../dadosrecife/caps_usuarios_novos_perfil_recife.json";
+import novosResumoJSON from "../../dadosrecife/caps_usuarios_novos_resumo_recife.json";
+import styles from "../Caps.module.css";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -16,21 +21,28 @@ export function getServerSideProps(ctx) {
 
 const NovoUsuario = () => {
   const { data: session } = useSession();
-  const [novosUsuarios, setNovosUsusarios] = useState();
-  const [resumoNovosUsuarios, setResumoNovosUsuarios] = useState(novosResumo);
+  const [novosUsuarios, setNovosUsusarios] = useState([]);
+  const [resumoNovosUsuarios, setResumoNovosUsuarios] = useState([]);
+  const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
+    value: "Todos", label: "Todos"
+  });
 
-  // useEffect(() => {
-  //   const getDados = async (municipioIdSus) => {
-  //     setNovosUsusarios(await getNovosUsuarios(municipioIdSus));
-  //     setResumoNovosUsuarios(
-  //       await getResumoNovosUsuarios(municipioIdSus)
-  //     );
-  //   };
+  useEffect(() => {
+    const getDados = async (municipioIdSus) => {
+      // if (municipioIdSus = '261160') {
+      setNovosUsusarios(novosPerfilJSON);
+      setResumoNovosUsuarios(novosResumoJSON);
+      // }
+      // setNovosUsusarios(await getNovosUsuarios(municipioIdSus));
+      // setResumoNovosUsuarios(
+      //   await getResumoNovosUsuarios(municipioIdSus)
+      // );
+    };
 
-  //   if (session?.user.municipio_id_ibge) {
-  //     getDados(session?.user.municipio_id_ibge);
-  //   }
-  // }, []);
+    if (session?.user.municipio_id_ibge) {
+      getDados(session?.user.municipio_id_ibge);
+    }
+  }, []);
 
   const agregarPorLinhaPerfil = (usuariosNovos) => {
     const usuariosAgregados = [];
@@ -108,8 +120,64 @@ const NovoUsuario = () => {
     return cards;
   };
 
+  const getOpcoesGraficoHistoricoTemporal = (novosUsuarios, filtroEstabelecimento) => {
+    const filtradosPorEstabelecimento = novosUsuarios
+      .filter(({ estabelecimento }) =>
+        estabelecimento === filtroEstabelecimento
+      );
+
+    const ordenadosPorCompetenciaAsc = filtradosPorEstabelecimento
+      .sort((a, b) => new Date(a.competencia) - new Date(b.competencia));
+
+    const periodos = ordenadosPorCompetenciaAsc.map(({ periodo }) => periodo);
+    const quantidadesUsuariosNovos = ordenadosPorCompetenciaAsc
+      .map(({ usuarios_novos: usuariosNovos }) => usuariosNovos);
+
+    return {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          label: {
+            backgroundColor: '#6a7985'
+          }
+        }
+      },
+      toolbox: {
+        feature: {
+          saveAsImage: {
+            title: "Salvar como imagem",
+          }
+        }
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: periodos
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          name: "Taxa de abandono mensal (%):",
+          data: quantidadesUsuariosNovos,
+          type: 'line',
+          itemStyle: {
+            color: "#5367C9"
+          },
+        }
+      ]
+    };
+  };
+
   return (
     <div>
+      { console.log(novosUsuarios[0]) }
       <TituloSmallTexto
         imagem={ {
           posicao: null,
@@ -130,9 +198,31 @@ const NovoUsuario = () => {
       }
 
       <GraficoInfo
-        titulo="Atendimentos"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo="Histórico Temporal"
+        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { novosUsuarios.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroEstabelecimento(
+                novosUsuarios,
+                filtroEstabelecimentoHistorico,
+                setFiltroEstabelecimentoHistorico
+              )
+            } />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoHistoricoTemporal(
+              novosUsuarios,
+              filtroEstabelecimentoHistorico.value
+            ) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
 
       <GraficoInfo
         titulo="Total de atendimentos"
