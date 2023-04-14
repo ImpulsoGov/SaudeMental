@@ -2,12 +2,12 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impuls
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import Select, { components } from "react-select";
+import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 // import { getAtendimentosPorCaps, getPerfilDeAtendimentos, getResumoPerfilDeAtendimentos } from "../../../requests/caps";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
-import { getPropsFiltroPeriodoMulti } from "../../../helpers/filtrosGraficos";
+import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodoMulti } from "../../../helpers/filtrosGraficos";
 import styles from "../Caps.module.css";
 import perfilJSON from "./perfil.json";
 import porCapsJSON from "./porCaps.json";
@@ -216,35 +216,6 @@ const AtendimentoIndividual = () => {
           },
         }
       ]
-    };
-  };
-
-  const getPropsFiltroEstabelecimento = (atendimentos) => {
-    const atendimentosPorEstabelecimento = agregarPorEstabelecimentoEPeriodo(atendimentos);
-    const options = atendimentosPorEstabelecimento
-      .map(({ estabelecimento }) => ({
-        value: estabelecimento,
-        label: estabelecimento
-      }));
-
-    const optionPersonalizada = ({ children, ...props }) => (
-      <components.Control { ...props }>
-        Estabelecimento: { children }
-      </components.Control>
-    );
-
-    return {
-      options,
-      defaultValue: filtroEstabelecimentoHistorico,
-      selectedValue: filtroEstabelecimentoHistorico,
-      onChange: (selected) => setFiltroEstabelecimentoHistorico({
-        value: selected.value,
-        label: selected.value
-      }),
-      isMulti: false,
-      isSearchable: false,
-      components: { Control: optionPersonalizada },
-      styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
     };
   };
 
@@ -503,7 +474,11 @@ const AtendimentoIndividual = () => {
       { atendimentosPorCaps.length !== 0 &&
         <>
           <div className={ styles.Filtro }>
-            <Select { ...getPropsFiltroEstabelecimento(atendimentosPorCaps) } />
+            <Select { ...getPropsFiltroEstabelecimento(
+              atendimentosPorCaps,
+              filtroEstabelecimentoHistorico,
+              setFiltroEstabelecimentoHistorico
+            ) } />
           </div>
 
           <ReactEcharts
