@@ -50,16 +50,10 @@ const Producao = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      if (municipioIdSus = '261160') {
-        setProcedimentosPorHora(porHoraJSON);
-        setProcedimentosPorTipo(porTipo);
-      }
-      else {
-        setProcedimentosPorHora(await getProcedimentosPorHora(municipioIdSus));
-        setProcedimentosPorTipo(
-          await getProcedimentosPorTipo(municipioIdSus)
-        );
-      }
+      setProcedimentosPorHora(await getProcedimentosPorHora(municipioIdSus));
+      setProcedimentosPorTipo(
+        await getProcedimentosPorTipo(municipioIdSus)
+      );
     };
 
     if (session?.user.municipio_id_ibge) {
