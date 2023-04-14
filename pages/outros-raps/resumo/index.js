@@ -1,9 +1,13 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
-// import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
-// import { API_URL } from "../../../constants/API_URL";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
+import { getAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses, getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from "../../../requests/outros-raps";
+import naRuaJSON from "../dadosrecife/consultorioNaRua.json";
+import naRua12MesesJSON from "../dadosrecife/consultorioNaRua12.json";
+import reducaoDeDanosJSON from "../dadosrecife/reducaoDeDanos.json";
+import reducaoDeDanos12JSON from "../dadosrecife/reducaoDeDanos12.json";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -15,105 +19,61 @@ export function getServerSideProps(ctx) {
 
 const Resumo = () => {
   const { data: session } = useSession();
-  // const [internacoesRapsAdmissoesVertical, setInternacoesRapsAdmissoesVertical] = useState([]);
-  // const [internacoesRapsAltasVertical, setInternacoesRapsAltasVertical] = useState([]);
-  // const [internacoesRapsAdmissoes12m, setInternacoesRapsAdmissoes12m] = useState();
-  // const [internacoesRapsAltas12m, setInternacoesRapsAltas12m] = useState();
-  // const [encaminhamentosApsCapsVertical, setEncaminhamentosApsCapsVertical] = useState([]);
-  // const [encaminhamentosApsCapsHorizontal, setEncaminhamentosApsCapsHorizontal] = useState();
-  // const [encaminhamentosApsVertical, setEncaminhamentosApsVertical] = useState([]);
-  // const [encaminhamentosApsHorizontal, setEncaminhamentosApsHorizontal] = useState();
+  const [consultorioNaRua, setConsultorioNaRua] = useState([]);
+  const [consultorioNaRua12Meses, setConsultorioNaRua12Meses] = useState([]);
+  const [reducaoDanos, setReducaoDanos] = useState([]);
+  const [reducaoDanos12Meses, setReducaoDanos12Meses] = useState([]);
+  const [ambulatorioResumo, setAmbulatorioResumo] = useState([]);
+  const [ambulatorioUltMes, setAmbulatorioUltMes] = useState([]);
 
-  // const [matriciamentosPorMunicipio, setMatriciamentosPorMunicipio] = useState();
+  useEffect(() => {
+    const getDados = async (municipioIdSus) => {
+      if (municipioIdSus === '261160') {
+        setConsultorioNaRua(naRuaJSON);
+        setConsultorioNaRua12Meses(naRua12MesesJSON);
+        setReducaoDanos(reducaoDeDanosJSON);
+        setReducaoDanos12Meses(reducaoDeDanos12JSON);
+      }
+      else {
+        setConsultorioNaRua(await getAtendimentosConsultorioNaRua(municipioIdSus));
+        setConsultorioNaRua12Meses(await getAtendimentosConsultorioNaRua12meses(municipioIdSus));
+        setReducaoDanos(await getAcoesReducaoDeDanos(municipioIdSus));
+        setReducaoDanos12Meses(await getAcoesReducaoDeDanos12meses(municipioIdSus));
+      }
+    };
 
-  // useEffect(() => {
-  //   if (session?.user.municipio_id_ibge) {
-  //     const getRequestOptions = { method: 'GET', redirect: 'follow' };
+    if (session?.user.municipio_id_ibge) {
+      getDados(session?.user.municipio_id_ibge);
+    }
+  }, []);
 
-  //     const urlInternacoesRapsAdmissoes = API_URL
-  //       + "saude-mental/internacoes/raps/admissoes/resumo/vertical?municipio_id_sus="
-  //       + session?.user.municipio_id_ibge;
+  const getDadosConsultorioNaRua = () => {
+    return consultorioNaRua.find((item) =>
+      item.periodo === "Último período" && item.tipo_producao === "Todos");
+  };
 
-  //     fetch(urlInternacoesRapsAdmissoes, getRequestOptions)
-  //       .then(response => response.json())
-  //       .then(result => setInternacoesRapsAdmissoesVertical(result))
-  //       .catch(error => console.log('error', error));
+  const getDadosConsultorioNaRua12meses = () => {
+    return consultorioNaRua12Meses.find((item) =>
+      item.tipo_producao === "Todos");
+  };
 
-  //     const urlInternacoesRapsAltas = API_URL
-  //       + "saude-mental/internacoes/raps/altas/resumo/vertical?municipio_id_sus="
-  //       + session?.user.municipio_id_ibge;
+  const getDadosReducaoDanos = () => {
+    return reducaoDanos.find((item) =>
+      item.periodo === "Último período"
+      && item.estabelecimento === "Todos"
+      && item.estabelecimento_linha_perfil === "Todas"
+      && item.estabelecimento_linha_idade === "Todas"
+    );
+  };
 
-  //     fetch(urlInternacoesRapsAltas, getRequestOptions)
-  //       .then(response => response.json())
-  //       .then(result => setInternacoesRapsAltasVertical(result))
-  //       .catch(error => console.log('error', error));
-
-  //     const urlEncaminhamentosApsCapsVertical = API_URL
-  //       + "saude-mental/encaminhamentos/aps/caps/resumo?municipio_id_sus="
-  //       + session?.user.municipio_id_ibge
-  //       + "&sentido=vertical";
-
-  //     fetch(urlEncaminhamentosApsCapsVertical, getRequestOptions)
-  //       .then(response => response.json())
-  //       .then(result => setEncaminhamentosApsCapsVertical(result))
-  //       .catch(error => console.log('error', error));
-
-  //     const urlEncaminhamentosApsVertical = API_URL
-  //       + "saude-mental/encaminhamentos/aps/especializada/resumo?municipio_id_sus="
-  //       + session?.user.municipio_id_ibge
-  //       + "&sentido=vertical";
-
-  //     fetch(urlEncaminhamentosApsVertical, getRequestOptions)
-  //       .then(response => response.json())
-  //       .then(result => setEncaminhamentosApsVertical(result))
-  //       .catch(error => console.log('error', error));
-
-  //     const urlMatriciamentosPorMunicipio = API_URL
-  //       + "saude-mental/matriciamentos/municipio?municipio_id_sus="
-  //       + session?.user.municipio_id_ibge;
-
-  //     fetch(urlMatriciamentosPorMunicipio, getRequestOptions)
-  //       .then(response => response.json())
-  //       .then(result => setMatriciamentosPorMunicipio(result[0]))
-  //       .catch(error => console.log('error', error));
-
-  //     const urlEncaminhamentosApsCapsHorizontal = API_URL
-  //       + "saude-mental/encaminhamentos/aps/caps/resumo?municipio_id_sus="
-  //       + session?.user.municipio_id_ibge;
-
-  //     fetch(urlEncaminhamentosApsCapsHorizontal, getRequestOptions)
-  //       .then(response => response.json())
-  //       .then(result => setEncaminhamentosApsCapsHorizontal(result[0]))
-  //       .catch(error => console.log('error', error));
-
-  //     const urlEncaminhamentosApsHorizontal = API_URL
-  //       + "saude-mental/encaminhamentos/aps/especializada/resumo?municipio_id_sus="
-  //       + session?.user.municipio_id_ibge;
-
-  //     fetch(urlEncaminhamentosApsHorizontal, getRequestOptions)
-  //       .then(response => response.json())
-  //       .then(result => setEncaminhamentosApsHorizontal(result[0]))
-  //       .catch(error => console.log('error', error));
-
-  //     const urlinternacoesRapsAdmissoes12m = API_URL
-  //       + "saude-mental/internacoes/raps/admissoes/resumo/12m?municipio_id_sus="
-  //       + session?.user.municipio_id_ibge;
-
-  //     fetch(urlinternacoesRapsAdmissoes12m, getRequestOptions)
-  //       .then(response => response.json())
-  //       .then(result => setInternacoesRapsAdmissoes12m(result[0]))
-  //       .catch(error => console.log('error', error));
-
-  //     const urlinternacoesRapsAltas12m = API_URL
-  //       + "saude-mental/internacoes/raps/altas/resumo/12m?municipio_id_sus="
-  //       + session?.user.municipio_id_ibge;
-
-  //     fetch(urlinternacoesRapsAltas12m, getRequestOptions)
-  //       .then(response => response.json())
-  //       .then(result => setInternacoesRapsAltas12m(result[0]))
-  //       .catch(error => console.log('error', error));
-  //   }
-  // }, []);
+  const getDadosReducaoDanos12meses = () => {
+    return reducaoDanos12Meses.find((item) =>
+      item.estabelecimento === "Todos"
+      && item.estabelecimento_linha_perfil === "Todas"
+      && item.profissional_vinculo_ocupacao === "Todas"
+      && item.estabelecimento_linha_idade === "Todas"
+    );
+  };
 
   return (
     <div>
@@ -169,23 +129,23 @@ const Resumo = () => {
       <Grid12Col
         items={ [
           <>
-            {
+            { consultorioNaRua.length !== 0 &&
               <CardInfoTipoA
                 key={ uuidv1() }
-                indicador={ 100 }
-                titulo={ `Total de atendimentos em Julho` }
-                indice={ -141 }
+                indicador={ getDadosConsultorioNaRua().quantidade_registrada }
+                titulo={ `Total de atendimentos em ${getDadosConsultorioNaRua().nome_mes}` }
+                indice={ getDadosConsultorioNaRua().dif_quantidade_registrada_anterior }
                 indiceDescricao="últ. mês"
               />
             }
           </>,
           <>
-            {
+            { consultorioNaRua12Meses.length !== 0 &&
               <CardInfoTipoA
                 key={ uuidv1() }
-                indicador={ 100 }
-                titulo={ `Total de atendimentos entre Julho/2022 e Julho/2022` }
-                indice={ -141 }
+                indicador={ getDadosConsultorioNaRua12meses().quantidade_registrada }
+                titulo={ `Total de atendimentos entre ${getDadosConsultorioNaRua12meses().a_partir_do_mes}/${getDadosConsultorioNaRua12meses().a_partir_do_ano} e ${getDadosConsultorioNaRua12meses().ate_mes}/${getDadosConsultorioNaRua12meses().ate_ano}` }
+                indice={ getDadosConsultorioNaRua12meses().dif_quantidade_registrada_anterior }
                 indiceDescricao="doze meses anteriores"
               />
             }
@@ -202,23 +162,23 @@ const Resumo = () => {
       <Grid12Col
         items={ [
           <>
-            {
+            { reducaoDanos.length !== 0 &&
               <CardInfoTipoA
                 key={ uuidv1() }
-                indicador={ 100 }
-                titulo={ `Total de ações de redução de danos em Julho)` }
-                indice={ -141 }
+                indicador={ getDadosReducaoDanos().quantidade_registrada }
+                titulo={ `Total de ações de redução de danos em ${getDadosReducaoDanos().nome_mes}` }
+                indice={ getDadosReducaoDanos().dif_quantidade_registrada_anterior }
                 indiceDescricao="últ. mês"
               />
             }
           </>,
           <>
-            {
+            { reducaoDanos12Meses.length !== 0 &&
               <CardInfoTipoA
                 key={ uuidv1() }
-                indicador={ 100 }
-                titulo={ `Total ações de redução de danos entre Julho/2022 e Julho/2022` }
-                indice={ -141 }
+                indicador={ getDadosReducaoDanos12meses().quantidade_registrada }
+                titulo={ `Total ações de redução de danos entre ${getDadosReducaoDanos12meses().a_partir_do_mes}/${getDadosReducaoDanos12meses().a_partir_do_ano} e ${getDadosReducaoDanos12meses().ate_mes}/${getDadosReducaoDanos12meses().ate_ano}` }
+                indice={ getDadosReducaoDanos12meses().dif_quantidade_registrada_anterior }
                 indiceDescricao="doze meses anteriores"
               />
             }
