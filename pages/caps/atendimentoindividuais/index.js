@@ -7,7 +7,7 @@ import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 // import { getAtendimentosPorCaps, getPerfilDeAtendimentos, getResumoPerfilDeAtendimentos } from "../../../requests/caps";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodoMulti } from "../../../helpers/filtrosGraficos";
+import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import styles from "../Caps.module.css";
 import perfilJSON from "./perfil.json";
 import porCapsJSON from "./porCaps.json";
@@ -500,7 +500,7 @@ const AtendimentoIndividual = () => {
         <>
           <div className={ styles.Filtro }>
             <Select {
-              ...getPropsFiltroPeriodoMulti(
+              ...getPropsFiltroPeriodo(
                 perfilAtendimentos,
                 filtroPeriodoCID,
                 setFiltroPeriodoCID
@@ -524,7 +524,7 @@ const AtendimentoIndividual = () => {
         <>
           <div className={ styles.Filtro }>
             <Select {
-              ...getPropsFiltroPeriodoMulti(
+              ...getPropsFiltroPeriodo(
                 perfilAtendimentos,
                 filtroPeriodoGenero,
                 setFiltroPeriodoGenero
@@ -551,7 +551,7 @@ const AtendimentoIndividual = () => {
         <>
           <div className={ styles.Filtro }>
             <Select {
-              ...getPropsFiltroPeriodoMulti(
+              ...getPropsFiltroPeriodo(
                 perfilAtendimentos,
                 filtroPeriodoRacaECor,
                 setFiltroPeriodoRacaECor

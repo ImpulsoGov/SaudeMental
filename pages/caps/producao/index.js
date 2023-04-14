@@ -6,7 +6,7 @@ import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodoMulti } from "../../../helpers/filtrosGraficos";
+import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { getProcedimentosPorHora, getProcedimentosPorTipo } from "../../../requests/caps";
 import porHoraJSON from "../../dadosrecife/caps_procedimentos_por_hora_resumo_recife.json";
 import styles from "../Caps.module.css";
@@ -50,6 +50,7 @@ const Producao = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
+      console.log(municipioIdSus);
       if (municipioIdSus = '261160') {
         setProcedimentosPorHora(porHoraJSON);
         setProcedimentosPorTipo(porTipo);
@@ -132,7 +133,6 @@ const Producao = () => {
           titulo={ `CAPS ${linhaPerfil}` }
           descricao="Comparativo de produção por hora de trabalho dos profissionais nos CAPS"
           fonte={ `Dados de ${nomeMes}` }
-          tooltip="a"
         />
 
         <Grid12Col
@@ -377,7 +377,7 @@ const Producao = () => {
 
             <div className={ styles.Filtro }>
               <Select {
-                ...getPropsFiltroPeriodoMulti(
+                ...getPropsFiltroPeriodo(
                   procedimentosPorHora,
                   filtroPeriodoCBO,
                   setFiltroPeriodoCBO
@@ -415,7 +415,7 @@ const Producao = () => {
 
             <div className={ styles.Filtro }>
               <Select {
-                ...getPropsFiltroPeriodoMulti(
+                ...getPropsFiltroPeriodo(
                   procedimentosPorTipo,
                   filtroPeriodoBPA,
                   setFiltroPeriodoBPA
@@ -456,7 +456,7 @@ const Producao = () => {
 
             <div className={ styles.Filtro }>
               <Select {
-                ...getPropsFiltroPeriodoMulti(
+                ...getPropsFiltroPeriodo(
                   procedimentosPorTipo,
                   filtroPeriodoRAAS,
                   setFiltroPeriodoRAAS

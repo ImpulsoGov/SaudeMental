@@ -33,7 +33,7 @@ export const getPropsFiltroEstabelecimento = (dados, estadoFiltro, funcaoSetFilt
   };
 };
 
-export const getPropsFiltroPeriodoMulti = (dados, estadoFiltro, funcaoSetFiltro) => {
+export const getPropsFiltroPeriodo = (dados, estadoFiltro, funcaoSetFiltro, multi = true) => {
   const periodosSemDuplicadas = [];
 
   dados.forEach(({ periodo, competencia }) => {
@@ -54,7 +54,7 @@ export const getPropsFiltroPeriodoMulti = (dados, estadoFiltro, funcaoSetFiltro)
 
   const optionPersonalizada = ({ children, ...props }) => (
     <components.Control { ...props }>
-      Períodos: { children }
+      Competência: { children }
     </components.Control>
   );
 
@@ -63,7 +63,7 @@ export const getPropsFiltroPeriodoMulti = (dados, estadoFiltro, funcaoSetFiltro)
     defaultValue: estadoFiltro,
     selectedValue: estadoFiltro,
     onChange: (selected) => funcaoSetFiltro(selected),
-    isMulti: true,
+    isMulti: multi,
     isSearchable: false,
     components: { Control: optionPersonalizada },
     styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
