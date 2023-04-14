@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Select, { components } from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-// import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
+import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
 import porestabelecimentoJSON from "./porEstabelecimentoRecife.json";
@@ -35,16 +35,10 @@ const ProcedimentosPorUsuarios = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      if (municipioIdSus = '261160') {
-        setProcedimentosPorEstabelecimento(porestabelecimentoJSON);
-        setProcedimentosPorTempoServico(portempoJSON);
-      }
-      else {
-        setProcedimentosPorEstabelecimento(await getProcedimentosPorEstabelecimento(municipioIdSus));
-        setProcedimentosPorTempoServico(
-          await getProcedimentosPorTempoServico(municipioIdSus)
-        );
-      }
+      setProcedimentosPorEstabelecimento(await getProcedimentosPorEstabelecimento(municipioIdSus));
+      setProcedimentosPorTempoServico(
+        await getProcedimentosPorTempoServico(municipioIdSus)
+      );
     };
 
     if (session?.user.municipio_id_ibge) {
