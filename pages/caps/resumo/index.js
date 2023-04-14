@@ -158,7 +158,7 @@ const Resumo = () => {
         titulo="Taxa de não adesão"
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
         descricao="Conjunto de usuários com 1º procedimento em Março/2022 e não aderiram até Agosto/2022"
-        tooltip="Porcentagem dos usuários que entraram nos serviços CAPS e deixaram de frequentar o serviço  nos 6 meses posteriores."
+        tooltip="Porcentagem dos usuários que entraram nos serviços CAPS e deixaram de frequentar o serviço  nos 3 meses posteriores."
         link={ { label: 'Mais informações', url: '/caps?painel=3' } }
       />
       
