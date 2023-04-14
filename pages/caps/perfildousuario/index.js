@@ -1,4 +1,4 @@
-import { GraficoInfo, TituloSmallTexto } from "@impulsogov/design-system";
+import { GraficoInfo, TituloSmallTexto, Grid12Col, CardInfoTipoA } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -38,16 +38,10 @@ const PerfilUsuario = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      if (municipioIdSus == '261160') {
-        setPerfil(perfilJSON);
-        setPerfilPorEstabelecimento(perfilPorEstabelecimentoJSON);
-      }
-      else {
         setPerfil(await getPerfilUsuarios(municipioIdSus));
         setPerfilPorEstabelecimento(
           await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
         );
-      }
     };
 
     if (session?.user.municipio_id_ibge) {

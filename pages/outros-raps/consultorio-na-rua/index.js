@@ -296,6 +296,7 @@ const ConsultorioNaRua = () => {
       <GraficoInfo
         titulo="Atendimentos realizados por equipes"
         fonte="Fonte: SISAB - Elaboração Impulso Gov"
+        descricao="Equipes de Consultório na Rua habilitadas no Ministério da Saúde​"
         tooltip="Total de contatos assistenciais promovidos por todas as equipes de CnR ao longo de um período, considerados atendimentos individuais, odontológicos, procedimentos e visitas domiciliares."
       />
 
