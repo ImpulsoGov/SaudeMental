@@ -11,6 +11,7 @@ import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodoMulti } from "../..
 import novosPerfilJSON from "../../dadosrecife/caps_usuarios_novos_perfil_recife.json";
 import novosResumoJSON from "../../dadosrecife/caps_usuarios_novos_resumo_recife.json";
 import styles from "../Caps.module.css";
+import {getResumoNovosUsuarios, getNovosUsuarios} from "../../../requests/caps";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
   { value: "Último período", label: "Último período" },
@@ -39,13 +40,13 @@ const NovoUsuario = () => {
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       // if (municipioIdSus = '261160') {
-      setNovosUsusarios(novosPerfilJSON);
-      setResumoNovosUsuarios(novosResumoJSON);
+      // setNovosUsusarios(novosPerfilJSON);
+      // setResumoNovosUsuarios(novosResumoJSON);
       // }
-      // setNovosUsusarios(await getNovosUsuarios(municipioIdSus));
-      // setResumoNovosUsuarios(
-      //   await getResumoNovosUsuarios(municipioIdSus)
-      // );
+      setNovosUsusarios(await getNovosUsuarios(municipioIdSus));
+      setResumoNovosUsuarios(
+        await getResumoNovosUsuarios(municipioIdSus)
+      );
     };
 
     if (session?.user.municipio_id_ibge) {
