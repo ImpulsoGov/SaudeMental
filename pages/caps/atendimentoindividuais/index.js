@@ -6,8 +6,15 @@ import Select, { components } from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 // import { getAtendimentosPorCaps, getPerfilDeAtendimentos, getResumoPerfilDeAtendimentos } from "../../../requests/caps";
+import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
+import { getPropsFiltroPeriodoMulti } from "../../../helpers/filtrosGraficos";
 import styles from "../Caps.module.css";
+import perfilJSON from "./perfil.json";
 import porCapsJSON from "./porCaps.json";
+
+const FILTRO_PERIODO_MULTI_DEFAULT = [
+  { value: "Último período", label: "Último período" },
+];
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -25,6 +32,7 @@ const AtendimentoIndividual = () => {
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
     value: "Todos", label: "Todos"
   });
+  const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -34,6 +42,7 @@ const AtendimentoIndividual = () => {
       // );
       // setAtendimentosPorCaps(await getAtendimentosPorCaps(municipioIdSus));
       setAtendimentosPorCaps(porCapsJSON);
+      setPerfilAtendimentos(perfilJSON);
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -237,6 +246,83 @@ const AtendimentoIndividual = () => {
     };
   };
 
+  const agregarPorCondicaoSaude = (perfilDeAtendimento) => {
+    const dadosAgregados = [];
+
+    perfilDeAtendimento.forEach((dado) => {
+      const {
+        usuarios_apenas_atendimento_individual: quantidadeUsuarios,
+        usuario_condicao_saude: condicaoSaude
+      } = dado;
+
+      const condicaoSaudeDados = dadosAgregados
+        .find((item) => item.condicaoSaude === condicaoSaude);
+
+      if (!condicaoSaudeDados) {
+        dadosAgregados.push({
+          condicaoSaude,
+          quantidadeUsuarios
+        });
+      } else {
+        condicaoSaudeDados.quantidadeUsuarios += quantidadeUsuarios;
+      }
+    });
+
+    return dadosAgregados;
+  };
+
+  const filtrarPorEstabelecimentosTodosEPeriodos = (dados, filtroPeriodo) => {
+    const periodosSelecionados = filtroPeriodo.map(({ value }) => value);
+
+    return dados.filter((item) =>
+      item.estabelecimento === "Todos"
+      && periodosSelecionados.includes(item.periodo)
+    );
+  };
+
+  const getOpcoesGraficoCID = (perfilDeAtendimento, filtroPeriodo) => {
+    const dadosAtendimentoFiltrados = filtrarPorEstabelecimentosTodosEPeriodos(
+      perfilDeAtendimento,
+      filtroPeriodo
+    );
+    const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(dadosAtendimentoFiltrados);
+
+    return {
+      tooltip: {
+        trigger: 'item',
+      },
+      series: [
+        {
+          type: 'pie',
+          radius: ['40%', '80%'],
+          avoidLabelOverlap: false,
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: "{d}%",
+            color: "#000000"
+          },
+          emphasis: {
+            label: {
+              show: true,
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: agregadosPorCondicaoSaude
+            .map(({ condicaoSaude, quantidadeUsuarios }, index) => ({
+              value: quantidadeUsuarios,
+              name: !condicaoSaude ? "Sem informação" : condicaoSaude,
+              itemStyle: {
+                color: CORES_GRAFICO_DONUT[index]
+              },
+            }))
+        }
+      ]
+    };
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -283,6 +369,25 @@ const AtendimentoIndividual = () => {
         titulo="CID dos usuários que realizaram apenas atendimentos individuais"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { perfilAtendimentos.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroPeriodoMulti(
+                perfilAtendimentos,
+                filtroPeriodoCID,
+                setFiltroPeriodoCID
+              )
+            } />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoCID(perfilAtendimentos, filtroPeriodoCID) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
 
       <GraficoInfo
         titulo="Gênero e faixa etária"
