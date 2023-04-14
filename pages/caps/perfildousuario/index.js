@@ -1,4 +1,4 @@
-import { GraficoInfo, TituloSmallTexto, Grid12Col, CardInfoTipoA } from "@impulsogov/design-system";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -8,10 +8,10 @@ import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
+import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
 import perfilJSON from "./perfil.json";
 import perfilPorEstabelecimentoJSON from "./perfilPorEstabelecimento.json";
 
-const CORES_GRAFICO_USUARIOS_ATIVOS = ["#5367C9", "#CACCFE", "#E0E4F5"];
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
 
@@ -462,7 +462,7 @@ const PerfilUsuario = () => {
             value: item.usuariosAtivos,
             name: item[PROPIEDADES_POR_TIPO[tipo].prop_nome],
             itemStyle: {
-              color: CORES_GRAFICO_USUARIOS_ATIVOS[index]
+              color: CORES_GRAFICO_SUBST_MORADIA[index]
             },
           }))
         }

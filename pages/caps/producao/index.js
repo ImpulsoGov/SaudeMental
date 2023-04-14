@@ -1,15 +1,16 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodoMulti } from "../../../helpers/filtrosGraficos";
+import { getProcedimentosPorHora, getProcedimentosPorTipo } from "../../../requests/caps";
+import porHoraJSON from "../../dadosrecife/caps_procedimentos_por_hora_resumo_recife.json";
 import styles from "../Caps.module.css";
-import porHora from "./porHora.json";
 import porTipo from "./porTipo.json";
-import { useEffect, useState } from "react";
 
 const OCUPACOES_NAO_ACEITAS = ["Todas", null];
 
@@ -50,7 +51,7 @@ const Producao = () => {
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       if (municipioIdSus = '261160') {
-        setProcedimentosPorHora(porHora);
+        setProcedimentosPorHora(porHoraJSON);
         setProcedimentosPorTipo(porTipo);
       }
       else {
@@ -60,8 +61,8 @@ const Producao = () => {
         );
       }
     };
-    
-  if (session?.user.municipio_id_ibge) {
+
+    if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
@@ -105,10 +106,20 @@ const Producao = () => {
 
   const getCardsProcedimentosHoraPorEstabelecimento = (procedimentos) => {
     const procedimentosPorHoraUltimoPeriodo = procedimentos
-      .filter(({ periodo, estabelecimento, estabelecimento_linha_perfil: linhaPerfil }) =>
+      .filter(({
+        periodo,
+        estabelecimento,
+        ocupacao,
+        estabelecimento_linha_perfil: linhaPerfil,
+        estabelecimento_linha_idade: linhaIdade,
+        procedimentos_por_hora: procedimentosPorHora
+      }) =>
         periodo === "Último período"
         && estabelecimento !== "Todos"
         && linhaPerfil !== "Todos"
+        && linhaIdade === "Todos"
+        && procedimentosPorHora
+        && ocupacao === "Todas"
       );
 
     const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosPorHoraUltimoPeriodo);
