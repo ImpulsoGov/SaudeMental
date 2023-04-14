@@ -20,7 +20,7 @@ import atendPorCaps from "../atendimentoindividuais/porCaps.json";
 import novosResumo from "../novosusuarios/novosResumo.json";
 import perfPorEstabelecimento from "../perfildousuario/perfilPorEstabelecimento.json";
 import procePorEstabelecimento from "../procedimentosporusuarios/porEstabelecimento.json";
-import procePorTempoServicoResumo from "../procedimentosporusuarios/porTempoServicoResumo.json";
+import procePorTempoServicoResumo from "../procedimentosporusuarios/porTempoServicoResumoAracaju.json";
 import procePorHora from "../producao/porHora.json";
 
 export function getServerSideProps(ctx) {
@@ -151,13 +151,13 @@ const Resumo = () => {
       maior_taxa: maiorTaxa
     } = atendimentosTodosEstabelecimentos;
 
-
     const {
       sexo_predominante: sexoPredominante,
       faixa_etaria_predominante: faixaEtariaPredominante,
       cid_grupo_predominante: cidPredominante,
       usuarios_cid_predominante: quantidadeUsuariosComCid
     } = atendimentosPerfil;
+
     return (
       <Grid12Col
         proporcao="3-3-3-3"
@@ -190,6 +190,58 @@ const Resumo = () => {
               indicador={ quantidadeUsuariosComCid }
               fonte={ cidPredominante }
               titulo="CID mais frequente"
+            />
+          </>,
+        ] }
+      />
+    );
+  };
+
+  const getCardsProcedimentos = (procedimentosPorEstabelecimento, resumoTempoServico) => {
+    const procedimentosUltimoPeriodo = getDadosUltimoPeriodo(
+      procedimentosPorEstabelecimento
+    );
+    const procedimentosTodosEstabelecimentos = getDadosDeEstabelecimentoFiltrado(
+      procedimentosUltimoPeriodo,
+      "Todos"
+    );
+
+    const {
+      procedimentos_por_usuario: procedimentosPorUsuario,
+      dif_procedimentos_por_usuario_anterior_perc: difPercProcedimentosPorUsuario,
+      maior_taxa_estabelecimento: estabelecimentoMaiorTaxa,
+      maior_taxa: maiorTaxaProcedimentos
+    } = procedimentosTodosEstabelecimentos;
+
+    const {
+      tempo_servico_maior_taxa: tempoServicoMaiorTaxaDescricao,
+      maior_taxa: maiorTaxaTempoServico
+    } = resumoTempoServico;
+
+    return (
+      <Grid12Col
+        proporcao="4-4-4"
+        items={ [
+          <>
+            <CardInfoTipoA
+              indicador={ procedimentosPorUsuario }
+              indice={ difPercProcedimentosPorUsuario }
+              indiceSimbolo="%"
+              indiceDescricao="últ. mês"
+            />
+          </>,
+          <>
+            <CardInfoTipoA
+              indicador='CAPS Borboleta'
+              fonte={ maiorTaxaProcedimentos }
+              titulo="CAPS com maior número"
+            />
+          </>,
+          <>
+            <CardInfoTipoA
+              indicador={ `${tempoServicoMaiorTaxaDescricao} no serviço` }
+              fonte={ `Média de ${maiorTaxaTempoServico} procedimentos no mês` }
+              titulo="Usuários que mais realizam procedimentos são os que estão há"
             />
           </>,
         ] }
@@ -280,14 +332,15 @@ const Resumo = () => {
         ] }
       />
 
-
-      <GraficoInfo
-        titulo="Usuários que realizaram apenas atendimentos individuais"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
-        descricao={ `Dados de ${atendimentoPerfilResumo.nome_mes}` }
-        tooltip="Porcentagem do total de usuários que frequentaram serviços CAPS no mês que realizou apenas atendimentos individuais."
-        link={ { label: 'Mais informações', url: '/caps?painel=4' } }
-      />
+      { atendimentoPerfilResumo &&
+        <GraficoInfo
+          titulo="Usuários que realizaram apenas atendimentos individuais"
+          fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+          descricao={ `Dados de ${atendimentoPerfilResumo.nome_mes}` }
+          tooltip="Porcentagem do total de usuários que frequentaram serviços CAPS no mês que realizou apenas atendimentos individuais."
+          link={ { label: 'Mais informações', url: '/caps?painel=4' } }
+        />
+      }
 
       {
         atendimentoPorCaps.length !== 0 &&
@@ -305,32 +358,15 @@ const Resumo = () => {
         tooltip="Média de procedimentos realizados por usuários que frequentaram CAPS no mês de referência."
         link={ { label: 'Mais informações', url: '/caps?painel=5' } }
       />
-      <Grid12Col
-        proporcao="4-4-4"
-        items={ [
-          <>
-            <CardInfoTipoA
-              indicador='2'
-              indice='10'
-              indiceDescricao="últ. mês"
-            />
-          </>,
-          <>
-            <CardInfoTipoA
-              indicador='CAPS Borboleta'
-              fonte='600'
-              titulo="CAPS com maior número"
-            />
-          </>,
-          <>
-            <CardInfoTipoA
-              indicador='Mais de 5 anos no serviço'
-              fonte='Média de 1,4 procedimentos no mês'
-              titulo="Usuários que mais realizam procedimentos são os que estão há"
-            />
-          </>,
-        ] }
-      />
+
+      {
+        procedimentosPorEstabelecimento.length !== 0 &&
+        procedimentoPorTempoServicoResumo &&
+        getCardsProcedimentos(
+          procedimentosPorEstabelecimento,
+          procedimentoPorTempoServicoResumo
+        )
+      }
 
       <GraficoInfo
         titulo="Produção"
