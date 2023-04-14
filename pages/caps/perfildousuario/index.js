@@ -40,16 +40,10 @@ const PerfilUsuario = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      if (municipioIdSus == '261160') {
-        setPerfil(perfilJSON);
-        setPerfilPorEstabelecimento(perfilPorEstabelecimentoJSON);
-      }
-      else {
         setPerfil(await getPerfilUsuarios(municipioIdSus));
         setPerfilPorEstabelecimento(
           await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
         );
-      }
     };
 
     if (session?.user.municipio_id_ibge) {

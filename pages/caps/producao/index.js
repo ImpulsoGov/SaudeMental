@@ -8,11 +8,15 @@ import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { getProcedimentosPorHora, getProcedimentosPorTipo } from "../../../requests/caps";
-import porHoraJSON from "../../dadosrecife/caps_procedimentos_por_hora_resumo_recife.json";
 import styles from "../Caps.module.css";
-import porTipo from "./porTipo.json";
 
 const OCUPACOES_NAO_ACEITAS = ["Todas", null];
+const FILTRO_PERIODO_MULTI_DEFAULT = [
+  { value: "Último período", label: "Último período" },
+];
+const FILTRO_ESTABELECIMENTO_DEFAULT = {
+  value: "Todos", label: "Todos"
+};
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -26,41 +30,19 @@ const Producao = () => {
   const { data: session } = useSession();
   const [procedimentosPorHora, setProcedimentosPorHora] = useState([]);
   const [procedimentosPorTipo, setProcedimentosPorTipo] = useState([]);
-  const [filtroEstabelecimentoCBO, setFiltroEstabelecimentoCBO] = useState({
-    value: "Todos", label: "Todos"
-  });
-  const [filtroPeriodoCBO, setFiltroPeriodoCBO] = useState([
-    { value: "Último período", label: "Último período" },
-  ]);
-  const [filtroEstabelecimentoBPA, setFiltroEstabelecimentoBPA] = useState({
-    value: "Todos", label: "Todos"
-  });
-  const [filtroPeriodoBPA, setFiltroPeriodoBPA] = useState([
-    { value: "Último período", label: "Último período" },
-    { value: "Nov/18", label: "Nov/18" },
-    { value: "Abr/16", label: "Abr/16" },
-  ]);
-  const [filtroEstabelecimentoRAAS, setFiltroEstabelecimentoRAAS] = useState({
-    value: "Todos", label: "Todos"
-  });
-  const [filtroPeriodoRAAS, setFiltroPeriodoRAAS] = useState([
-    { value: "Último período", label: "Último período" },
-    { value: "Abr/16", label: "Abr/16" },
-  ]);
+  const [filtroEstabelecimentoCBO, setFiltroEstabelecimentoCBO] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroPeriodoCBO, setFiltroPeriodoCBO] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoBPA, setFiltroEstabelecimentoBPA] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroPeriodoBPA, setFiltroPeriodoBPA] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoRAAS, setFiltroEstabelecimentoRAAS] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroPeriodoRAAS, setFiltroPeriodoRAAS] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      console.log(municipioIdSus);
-      if (municipioIdSus = '261160') {
-        setProcedimentosPorHora(porHoraJSON);
-        setProcedimentosPorTipo(porTipo);
-      }
-      else {
-        setProcedimentosPorHora(await getProcedimentosPorHora(municipioIdSus));
-        setProcedimentosPorTipo(
-          await getProcedimentosPorTipo(municipioIdSus)
-        );
-      }
+      setProcedimentosPorHora(await getProcedimentosPorHora(municipioIdSus));
+      setProcedimentosPorTipo(
+        await getProcedimentosPorTipo(municipioIdSus)
+      );
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -118,7 +100,6 @@ const Producao = () => {
         periodo === "Último período"
         && estabelecimento !== "Todos"
         && linhaPerfil !== "Todos"
-        && linhaIdade === "Todos"
         && procedimentosPorHora
         && ocupacao === "Todas"
       );
@@ -199,7 +180,6 @@ const Producao = () => {
       item.estabelecimento === filtroEstabelecimento.value
       && periodosSelecionados.includes(item.periodo)
       && !OCUPACOES_NAO_ACEITAS.includes(item.ocupacao)
-      && item.estabelecimento_linha_perfil === "Todos"
       && item.procedimentos_por_hora
     );
   };
@@ -210,7 +190,6 @@ const Producao = () => {
     return procedimentos.filter((item) =>
       item.estabelecimento === filtroEstabelecimento.value
       && periodosSelecionados.includes(item.periodo)
-      && item.estabelecimento_linha_perfil === "Todos"
     );
   };
 

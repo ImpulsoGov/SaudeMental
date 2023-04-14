@@ -1,9 +1,10 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-// import { getAbandonoCoortes } from "../../../requests/caps";
+import { getAbandonoCoortes, getPerfilAbandono } from "../../../requests/caps";
+
 import ReactEcharts from "echarts-for-react";
 import Select from "react-select";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
@@ -26,8 +27,10 @@ export function getServerSideProps(ctx) {
 
 const TaxaAbandono = () => {
   const { data: session } = useSession();
-  const [abandonoCoortes, setAbandonoCoortes] = useState(coortesJSON);
-  const [abandonoPerfil, setAbandonoPerfil] = useState(perfilJSON);
+  // const [abandonoCoortes, setAbandonoCoortes] = useState(coortesJSON);
+  // const [abandonoPerfil, setAbandonoPerfil] = useState(perfilJSON);
+  const [abandonoCoortes, setAbandonoCoortes] = useState([]);
+  const [abandonoPerfil, setAbandonoPerfil] = useState([]);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
     value: "Todos", label: "Todos"
   });
@@ -35,15 +38,16 @@ const TaxaAbandono = () => {
   const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
-  // useEffect(() => {
-  //   const getDados = async (municipioIdSus) => {
-  //     setAbandonoCoortes(await getAbandonoCoortes(municipioIdSus));
-  //   };
+  useEffect(() => {
+    const getDados = async (municipioIdSus) => {
+      setAbandonoCoortes(await getAbandonoCoortes(municipioIdSus));
+      setAbandonoPerfil(await getPerfilAbandono(municipioIdSus));
+    };
 
-  //   if (session?.user.municipio_id_ibge) {
-  //     getDados(session?.user.municipio_id_ibge);
-  //   }
-  // }, []);
+    if (session?.user.municipio_id_ibge) {
+      getDados(session?.user.municipio_id_ibge);
+    }
+  }, []);
 
   const getCardsAbandonoAcumulado = (abandonos) => {
     const abandonosUltimoPeriodo = abandonos
@@ -364,7 +368,7 @@ const TaxaAbandono = () => {
       <GraficoInfo
         titulo="Histórico Temporal"
         descricao="Dos usuários acolhidos há menos de 6 meses, quantos abandonaram o serviço no mês"
-        tooltip="A taxa de abandono acumulado se refere à porcentagem de usuários que entraram no serviço em um dado mês e abandonaram o serviço em algum dos 6 meses seguintes. A taxa de abandono mensal se refere a quantidade de usuários que haviam entrado no serviço recentemente e abandonaram o serviço no mês especificado"
+        tooltip="A taxa de não adesão acumulado se refere à porcentagem de usuários que entraram no serviço em um dado mês e abandonaram o serviço em algum dos 6 meses seguintes. A taxa de não adesão mensal se refere à quantidade de usuários que haviam entrado no serviço recentemente e abandonaram o serviço no mês especificado."
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
