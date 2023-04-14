@@ -33,6 +33,7 @@ const AtendimentoIndividual = () => {
     value: "Todos", label: "Todos"
   });
   const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -323,6 +324,93 @@ const AtendimentoIndividual = () => {
     };
   };
 
+  const agregarPorFaixaEtariaEGenero = (perfilDeAtendimento) => {
+    const dadosAgregados = [];
+
+    perfilDeAtendimento.forEach((dado) => {
+      const {
+        usuarios_apenas_atendimento_individual: quantidadeUsuarios,
+        usuario_faixa_etaria_descricao: faixaEtaria,
+        usuario_sexo: usuarioSexo
+      } = dado;
+      const genero = usuarioSexo.toLowerCase();
+      const faixaEtariaDados = dadosAgregados
+        .find((item) => item.faixaEtaria === faixaEtaria);
+
+      if (!faixaEtariaDados) {
+        dadosAgregados.push({
+          faixaEtaria,
+          [genero]: quantidadeUsuarios
+        });
+      } else {
+        faixaEtariaDados[genero]
+          ? faixaEtariaDados[genero] += quantidadeUsuarios
+          : faixaEtariaDados[genero] = quantidadeUsuarios;
+      }
+    });
+
+    return dadosAgregados;
+  };
+
+  const getOpcoesGraficoGeneroEFaixaEtaria = (perfilDeAtendimento, filtroPeriodo) => {
+    const NOME_DIMENSAO = "genero";
+    const LABELS_DIMENSAO = ["Masculino", "Feminino"];
+
+    const dadosAtendimentoFiltrados = filtrarPorEstabelecimentosTodosEPeriodos(
+      perfilDeAtendimento,
+      filtroPeriodo
+    );
+
+    const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(dadosAtendimentoFiltrados);
+
+    return {
+      legend: {
+        itemGap: 25,
+      },
+      tooltip: {},
+      dataset: {
+        dimensions: [NOME_DIMENSAO, ...LABELS_DIMENSAO],
+        source: agregadosPorGeneroEFaixaEtaria
+          .sort((a, b) => a.faixaEtaria.localeCompare(b.faixaEtaria))
+          .map((item) => ({
+            [NOME_DIMENSAO]: item.faixaEtaria,
+            [LABELS_DIMENSAO[0]]: item[LABELS_DIMENSAO[0].toLowerCase()],
+            [LABELS_DIMENSAO[1]]: item[LABELS_DIMENSAO[1].toLowerCase()],
+          })),
+      },
+      xAxis: {
+        type: 'category',
+      },
+      yAxis: {},
+      series: [
+        {
+          type: 'bar',
+          itemStyle: {
+            color: "#FA81E6"
+          },
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: `{@${LABELS_DIMENSAO[0]}}`,
+            color: "#FFFFFF",
+          },
+        },
+        {
+          type: 'bar',
+          itemStyle: {
+            color: "#5367C9"
+          },
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: `{@${LABELS_DIMENSAO[1]}}`,
+            color: "#FFFFFF",
+          },
+        }
+      ]
+    };
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -393,6 +481,28 @@ const AtendimentoIndividual = () => {
         titulo="Gênero e faixa etária"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { perfilAtendimentos.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroPeriodoMulti(
+                perfilAtendimentos,
+                filtroPeriodoGenero,
+                setFiltroPeriodoGenero
+              )
+            } />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoGeneroEFaixaEtaria(
+              perfilAtendimentos,
+              filtroPeriodoGenero
+            ) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
 
       <GraficoInfo
         titulo="Raça/Cor*"
