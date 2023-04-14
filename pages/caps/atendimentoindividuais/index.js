@@ -34,6 +34,7 @@ const AtendimentoIndividual = () => {
   });
   const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -411,6 +412,68 @@ const AtendimentoIndividual = () => {
     };
   };
 
+  const agregarPorRacaCor = (perfilDeAtendimento) => {
+    const dadosAgregados = [];
+
+    perfilDeAtendimento.forEach((dado) => {
+      const {
+        usuarios_apenas_atendimento_individual: quantidadeUsuarios,
+        usuario_raca_cor: racaCor
+      } = dado;
+      const racaCorDados = dadosAgregados
+        .find((item) => item.racaCor === racaCor);
+
+      if (!racaCorDados) {
+        dadosAgregados.push({
+          racaCor,
+          quantidadeUsuarios
+        });
+      } else {
+        racaCorDados.quantidadeUsuarios += quantidadeUsuarios;
+      }
+    });
+
+    return dadosAgregados;
+  };
+
+  const getOpcoesGraficoRacaEcor = (perfilDeAtendimento, filtroPeriodo) => {
+    const NOME_DIMENSAO = "usuariosAtendimentosIndividuais";
+    const LABEL_DIMENSAO = "Usuários que realizaram apenas atendimentos individuais";
+
+    const dadosAtendimentoFiltrados = filtrarPorEstabelecimentosTodosEPeriodos(
+      perfilDeAtendimento,
+      filtroPeriodo
+    );
+
+    const agregadosPorRacaCor = agregarPorRacaCor(dadosAtendimentoFiltrados);
+
+    return {
+      legend: {},
+      tooltip: {},
+      dataset: {
+        dimensions: [NOME_DIMENSAO, LABEL_DIMENSAO],
+        source: agregadosPorRacaCor
+          .sort((a, b) => b.racaCor.localeCompare(a.racaCor))
+          .map((item) => ({
+            [NOME_DIMENSAO]: item.racaCor,
+            [LABEL_DIMENSAO]: item.quantidadeUsuarios,
+          })),
+      },
+      xAxis: {
+        type: 'category',
+      },
+      yAxis: {},
+      series: [
+        {
+          type: 'bar',
+          itemStyle: {
+            color: "#5367C9"
+          },
+        },
+      ]
+    };
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -508,6 +571,28 @@ const AtendimentoIndividual = () => {
         titulo="Raça/Cor*"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { perfilAtendimentos.length !== 0 &&
+        <>
+          <div className={ styles.Filtro }>
+            <Select {
+              ...getPropsFiltroPeriodoMulti(
+                perfilAtendimentos,
+                filtroPeriodoRacaECor,
+                setFiltroPeriodoRacaECor
+              )
+            } />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoRacaEcor(
+              perfilAtendimentos,
+              filtroPeriodoRacaECor
+            ) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
 
       <GraficoInfo
         descricao="*Dados podem ter problemas de coleta, registro e preenchimento"
