@@ -12,6 +12,10 @@ import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 //   getResumoProcedimentosPorTempoServico,
 //   getProcedimentosPorHora
 // } from "../../../requests/caps";
+import Select from "react-select";
+import { getPropsFiltroEstabelecimento } from "../../../helpers/filtrosGraficos";
+import styles from "../Caps.module.css";
+import atendPerfilResumo from "../atendimentoindividuais/perfilResumo.json";
 import atendPorCaps from "../atendimentoindividuais/porCaps.json";
 import novosResumo from "../novosusuarios/novosResumo.json";
 import perfPorEstabelecimento from "../perfildousuario/perfilPorEstabelecimento.json";
@@ -33,6 +37,7 @@ const Resumo = () => {
   const [procedimentoPorTempoServicoResumo, setProcedimentosPorTempoServicoResumo] = useState(procePorTempoServicoResumo[0]);
   const [procedimentosPorEstabelecimento, setProcedimentosPorEstabelecimento] = useState(procePorEstabelecimento);
   const [atendimentoPorCaps, setAtendimentoPorCaps] = useState(atendPorCaps);
+  const [atendimentoPerfilResumo, setAtendimentoPerfilResumo] = useState(atendPerfilResumo[0]);
   const [novosUsuariosResumo, setNovosUsuariosResumo] = useState(novosResumo);
   const [perfilPorEstabelecimento, setPerfilPorEstabelecimento] = useState(perfPorEstabelecimento);
   const [filtroEstabelecimento, setFiltroEstabelecimento] = useState({
@@ -129,6 +134,69 @@ const Resumo = () => {
       </>
     );
   };
+
+  const getCardsAtendimentosIndividuais = (atendimentosPorEstabelecimento, atendimentosPerfil) => {
+    const atendimentosUltimoPeriodo = getDadosUltimoPeriodo(
+      atendimentosPorEstabelecimento
+    );
+    const atendimentosTodosEstabelecimentos = getDadosDeEstabelecimentoFiltrado(
+      atendimentosUltimoPeriodo,
+      "Todos"
+    );
+
+    const {
+      perc_apenas_atendimentos_individuais: percAtendimentosIndividuais,
+      dif_perc_apenas_atendimentos_individuais: difPercAtendimentosIndividuais,
+      maior_taxa_estabelecimento: estabelecimentoMaiorTaxa,
+      maior_taxa: maiorTaxa
+    } = atendimentosTodosEstabelecimentos;
+
+
+    const {
+      sexo_predominante: sexoPredominante,
+      faixa_etaria_predominante: faixaEtariaPredominante,
+      cid_grupo_predominante: cidPredominante,
+      usuarios_cid_predominante: quantidadeUsuariosComCid
+    } = atendimentosPerfil;
+    return (
+      <Grid12Col
+        proporcao="3-3-3-3"
+        items={ [
+          <>
+            <CardInfoTipoA
+              indicador={ percAtendimentosIndividuais }
+              indice={ difPercAtendimentosIndividuais }
+              indiceDescricao="p.p. semestre anterior"
+              indicadorSimbolo="%"
+            />
+          </>,
+          <>
+            <CardInfoTipoA
+              indicador={ maiorTaxa }
+              fonte={ estabelecimentoMaiorTaxa }
+              indicadorSimbolo="%"
+              titulo="CAPS com maior taxa"
+            />
+          </>,
+          <>
+            <CardInfoTipoA
+              indicador={ faixaEtariaPredominante }
+              fonte={ sexoPredominante }
+              titulo="Perfil do usuário"
+            />
+          </>,
+          <>
+            <CardInfoTipoA
+              indicador={ quantidadeUsuariosComCid }
+              fonte={ cidPredominante }
+              titulo="CID mais frequente"
+            />
+          </>,
+        ] }
+      />
+    );
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -147,6 +215,20 @@ const Resumo = () => {
       {
         novosUsuariosResumo.length !== 0 &&
         perfilPorEstabelecimento.length !== 0 &&
+        <div className={ styles.Filtro }>
+          <Select {
+            ...getPropsFiltroEstabelecimento(
+              perfilPorEstabelecimento,
+              filtroEstabelecimento,
+              setFiltroEstabelecimento
+            )
+          } />
+        </div>
+      }
+
+      {
+        novosUsuariosResumo.length !== 0 &&
+        perfilPorEstabelecimento.length !== 0 &&
         getCardsResumoUsuarios(
           perfilPorEstabelecimento,
           novosUsuariosResumo,
@@ -161,88 +243,60 @@ const Resumo = () => {
         tooltip="Porcentagem dos usuários que entraram nos serviços CAPS e deixaram de frequentar o serviço  nos 3 meses posteriores."
         link={ { label: 'Mais informações', url: '/caps?painel=3' } }
       />
-      
+
       <Grid12Col
-          proporcao="3-3-3-3"
-          items={ [
-            <>
-                <CardInfoTipoA
-                  indicador='2'
-                  indice='10'
-                  indiceDescricao="p.p. semestre anterior"
-                  indicadorSimbolo="%"
-                />
-            </>,
-            <>
-                <CardInfoTipoA
-                  indicador='85'
-                  fonte='Vida'
-                  indicadorSimbolo="%"
-                  titulo="CAPS com maior taxa"
-                />
-            </>,
-            <>
-                <CardInfoTipoA
-                  indicador='30 a 40 anos'
-                  fonte='Masculino'
-                  titulo="Perfil do usuário"
-                />
-            </>,
-            <>
-                 <CardInfoTipoA
-                  indicador='22 usuários'
-                  fonte='Uso de subs. psicoativa'
-                  titulo="CID mais frequente"
-                />
-            </>,
-          ] }
-        />
+        proporcao="3-3-3-3"
+        items={ [
+          <>
+            <CardInfoTipoA
+              indicador='2'
+              indice='10'
+              indiceDescricao="p.p. semestre anterior"
+              indicadorSimbolo="%"
+            />
+          </>,
+          <>
+            <CardInfoTipoA
+              indicador='85'
+              fonte='Vida'
+              indicadorSimbolo="%"
+              titulo="CAPS com maior taxa"
+            />
+          </>,
+          <>
+            <CardInfoTipoA
+              indicador='30 a 40 anos'
+              fonte='Masculino'
+              titulo="Perfil do usuário"
+            />
+          </>,
+          <>
+            <CardInfoTipoA
+              indicador='22 usuários'
+              fonte='Uso de subs. psicoativa'
+              titulo="CID mais frequente"
+            />
+          </>,
+        ] }
+      />
 
 
       <GraficoInfo
         titulo="Usuários que realizaram apenas atendimentos individuais"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
-        descricao="Dados de Setembro"
+        descricao={ `Dados de ${atendimentoPerfilResumo.nome_mes}` }
         tooltip="Porcentagem do total de usuários que frequentaram serviços CAPS no mês que realizou apenas atendimentos individuais."
         link={ { label: 'Mais informações', url: '/caps?painel=4' } }
       />
-      
-      <Grid12Col
-          proporcao="3-3-3-3"
-          items={ [
-            <>
-                <CardInfoTipoA
-                  indicador='2'
-                  indice='10'
-                  indiceDescricao="p.p. semestre anterior"
-                  indicadorSimbolo="%"
-                />
-            </>,
-            <>
-                <CardInfoTipoA
-                  indicador='85'
-                  fonte='Vida'
-                  indicadorSimbolo="%"
-                  titulo="CAPS com maior taxa"
-                />
-            </>,
-            <>
-                <CardInfoTipoA
-                  indicador='30 a 40 anos'
-                  fonte='Masculino'
-                  titulo="Perfil do usuário"
-                />
-            </>,
-            <>
-                 <CardInfoTipoA
-                  indicador='22 usuários'
-                  fonte='Uso de subs. psicoativa'
-                  titulo="CID mais frequente"
-                />
-            </>,
-          ] }
-        />
 
+      {
+        atendimentoPorCaps.length !== 0 &&
+        atendimentoPerfilResumo &&
+        getCardsAtendimentosIndividuais(
+          atendimentoPorCaps,
+          atendimentoPerfilResumo
+        )
+      }
 
       <GraficoInfo
         titulo="Procedimento por usuário"
@@ -252,31 +306,31 @@ const Resumo = () => {
         link={ { label: 'Mais informações', url: '/caps?painel=5' } }
       />
       <Grid12Col
-          proporcao="4-4-4"
-          items={ [
-            <>
-                <CardInfoTipoA
-                  indicador='2'
-                  indice='10'
-                  indiceDescricao="últ. mês"
-                />
-            </>,
-            <>
-                <CardInfoTipoA
-                  indicador='CAPS Borboleta'
-                  fonte='600'
-                  titulo="CAPS com maior número"
-                />
-            </>,
-            <>
-                <CardInfoTipoA
-                  indicador='Mais de 5 anos no serviço'
-                  fonte='Média de 1,4 procedimentos no mês'
-                  titulo="Usuários que mais realizam procedimentos são os que estão há"
-                />
-            </>,
-          ] }
-        />
+        proporcao="4-4-4"
+        items={ [
+          <>
+            <CardInfoTipoA
+              indicador='2'
+              indice='10'
+              indiceDescricao="últ. mês"
+            />
+          </>,
+          <>
+            <CardInfoTipoA
+              indicador='CAPS Borboleta'
+              fonte='600'
+              titulo="CAPS com maior número"
+            />
+          </>,
+          <>
+            <CardInfoTipoA
+              indicador='Mais de 5 anos no serviço'
+              fonte='Média de 1,4 procedimentos no mês'
+              titulo="Usuários que mais realizam procedimentos são os que estão há"
+            />
+          </>,
+        ] }
+      />
 
       <GraficoInfo
         titulo="Produção"
@@ -285,34 +339,34 @@ const Resumo = () => {
         link={ { label: 'Mais informações', url: '/caps?painel=6' } }
       />
       <Grid12Col
-          proporcao="4-4-4"
-          items={ [
-            <>
-                <CardInfoTipoA
-                  indicador='2'
-                  indice='2'
-                  indiceDescricao="últ. mês"
-                  titulo="Total de procedimentos"
-                />
-            </>,
-            <>
-                <CardInfoTipoA
-                  indicador='1'
-                  indice='1'
-                  indiceDescricao="últ. mês"
-                  titulo="Procedimentos BPA"
-                />
-            </>,
-            <>
-                <CardInfoTipoA
-                  indicador='1'
-                  indice='1'
-                  indiceDescricao="últ. mês"
-                  titulo="Procedimentos RAAS"
-                />
-            </>,
-          ] }
-        />
+        proporcao="4-4-4"
+        items={ [
+          <>
+            <CardInfoTipoA
+              indicador='2'
+              indice='2'
+              indiceDescricao="últ. mês"
+              titulo="Total de procedimentos"
+            />
+          </>,
+          <>
+            <CardInfoTipoA
+              indicador='1'
+              indice='1'
+              indiceDescricao="últ. mês"
+              titulo="Procedimentos BPA"
+            />
+          </>,
+          <>
+            <CardInfoTipoA
+              indicador='1'
+              indice='1'
+              indiceDescricao="últ. mês"
+              titulo="Procedimentos RAAS"
+            />
+          </>,
+        ] }
+      />
     </div>
   );
 };

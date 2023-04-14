@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import Select, { components } from "react-select";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
 import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
+import { getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
+import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
 import perfilJSON from "./perfil.json";
 import perfilPorEstabelecimentoJSON from "./perfilPorEstabelecimento.json";
 
@@ -35,6 +36,7 @@ const PerfilUsuario = () => {
   const [filtroCompetenciaRacaCor, setFiltroCompetenciaRacaCor] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
   const [filtroEstabelecimentoUsuariosAtivos, setFiltroEstabelecimentoUsuariosAtivos] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
   const [filtroCompetenciaUsuariosAtivos, setFiltroCompetenciaUsuariosAtivos] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
+  const [filtroPeriodoPanorama, setFiltroPeriodoPanorama] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -470,6 +472,80 @@ const PerfilUsuario = () => {
     };
   };
 
+  const getCardsPanoramaGeral = (perfilDeEstabelecimentos, filtroPeriodo) => {
+    const perfilTodosEstabelecimentos = perfilDeEstabelecimentos.find((item) =>
+      item.estabelecimento === "Todos"
+      && item.estabelecimento_linha_perfil === "Todos"
+      && item.estabelecimento_linha_idade === "Todos"
+      && item.periodo === filtroPeriodo
+    );
+
+    const {
+      ativos_mes: ativosMes,
+      dif_ativos_mes_anterior: difAtivosMesAnterior,
+      ativos_3meses: ativos3Meses,
+      dif_ativos_3meses_anterior: difAtivos3MesesAnterior,
+      tornandose_inativos: tornandoInativos,
+      dif_tornandose_inativos_anterior: difTornandoInativosAnterior
+    } = perfilTodosEstabelecimentos;
+
+    return (
+      <Grid12Col
+        proporcao="4-4-4"
+        items={ [
+          <>
+            {
+              <CardInfoTipoA
+                fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+                indicador={ ativos3Meses }
+                indice={ difAtivos3MesesAnterior }
+                indiceDescricao="últ. mês"
+                link={ {
+                  label: 'Histórico temporal',
+                  url: '/'
+                } }
+                titulo="Usuários ativos"
+                tooltip="Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) nos três meses anteriores ao mês de referência"
+              />
+            }
+          </>,
+          <>
+            {
+              <CardInfoTipoA
+                fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+                indicador={ ativosMes }
+                indice={ difAtivosMesAnterior }
+                indiceDescricao="últ. mês"
+                link={ {
+                  label: 'Histórico temporal',
+                  url: '/'
+                } }
+                titulo="Frequentaram no mês"
+                tooltip="Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) durante o mês de referÊncia"
+              />
+            }
+          </>,
+          <>
+            {
+              <CardInfoTipoA
+                fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+                indicador={ tornandoInativos }
+                indice={ difTornandoInativosAnterior }
+                indiceDescricao="últ. mês"
+                link={ {
+                  label: 'Histórico temporal',
+                  url: '/'
+                } }
+                titulo="Tornaram-se inativos"
+                tooltip="Usuários que, no mês de referência, completaram três meses sem ter procedimentos registrados em BPA-i ou RAAS (exceto acolhimento inicial)"
+              />
+            }
+          </>,
+        ] }
+      />
+    );
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -491,59 +567,24 @@ const PerfilUsuario = () => {
       <GraficoInfo
         titulo="Panorama geral"
       />
-      <Grid12Col
-        proporcao="4-4-4"
-        items={ [
-          <>
-            {
-              <CardInfoTipoA
-                fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
-                indicador={ 692 }
-                indice={ -141 }
-                indiceDescricao="últ. mês"
-                link={ {
-                  label: 'Mais Informações',
-                  url: '/'
-                } }
-                titulo="Usuários que frequentaram"
-                tooltip="Dados de usuários ativos"
-              />
-            }
-          </>,
-          <>
-            {
-              <CardInfoTipoA
-                fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
-                indicador={ 692 }
-                indice={ -141 }
-                indiceDescricao="últ. mês"
-                link={ {
-                  label: 'Mais Informações',
-                  url: '/'
-                } }
-                titulo="Usuários que frequentaram"
-                tooltip="Dados de usuários ativos"
-              />
-            }
-          </>,
-          <>
-            {
-              <CardInfoTipoA
-                fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
-                indicador={ 692 }
-                indice={ -141 }
-                indiceDescricao="últ. mês"
-                link={ {
-                  label: 'Mais Informações',
-                  url: '/'
-                } }
-                titulo="Usuários que frequentaram"
-                tooltip="Dados de usuários ativos"
-              />
-            }
-          </>,
-        ] }
-      />
+
+      { perfilPorEstabelecimento.length !== 0 &&
+        <div className={ styles.Filtro }>
+          <Select { ...getPropsFiltroPeriodo(
+            perfilPorEstabelecimento,
+            filtroPeriodoPanorama,
+            setFiltroPeriodoPanorama,
+            false
+          ) } />
+        </div>
+      }
+
+      { perfilPorEstabelecimento.length !== 0 &&
+        getCardsPanoramaGeral(
+          perfilPorEstabelecimento,
+          filtroPeriodoPanorama.value
+        )
+      }
 
       <GraficoInfo
         titulo="Detalhamento por estabelecimento"

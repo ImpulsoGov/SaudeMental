@@ -7,7 +7,7 @@ import { v1 as uuidv1 } from "uuid";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodoMulti } from "../../../helpers/filtrosGraficos";
+import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import novosPerfilJSON from "../../dadosrecife/caps_usuarios_novos_perfil_recife.json";
 import novosResumoJSON from "../../dadosrecife/caps_usuarios_novos_resumo_recife.json";
 import styles from "../Caps.module.css";
@@ -579,7 +579,7 @@ const NovoUsuario = () => {
         <>
           <div className={ styles.Filtro }>
             <Select {
-              ...getPropsFiltroPeriodoMulti(
+              ...getPropsFiltroPeriodo(
                 novosUsuarios,
                 filtroPeriodoPerfil,
                 setFiltroPeriodoPerfil
@@ -603,7 +603,7 @@ const NovoUsuario = () => {
         <>
           <div className={ styles.Filtro }>
             <Select {
-              ...getPropsFiltroPeriodoMulti(
+              ...getPropsFiltroPeriodo(
                 novosUsuarios,
                 filtroPeriodoGenero,
                 setFiltroPeriodoGenero
@@ -630,7 +630,7 @@ const NovoUsuario = () => {
         <>
           <div className={ styles.Filtro }>
             <Select {
-              ...getPropsFiltroPeriodoMulti(
+              ...getPropsFiltroPeriodo(
                 novosUsuarios,
                 filtroPeriodoSubstEMoradia,
                 setFiltroPeriodoSubstEMoradia
@@ -675,7 +675,7 @@ const NovoUsuario = () => {
         <>
           <div className={ styles.Filtro }>
             <Select {
-              ...getPropsFiltroPeriodoMulti(
+              ...getPropsFiltroPeriodo(
                 novosUsuarios,
                 filtroPeriodoRacaECor,
                 setFiltroPeriodoRacaECor

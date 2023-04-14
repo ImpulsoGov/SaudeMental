@@ -8,7 +8,7 @@ import { getAbandonoCoortes, getPerfilAbandono } from "../../../requests/caps";
 import ReactEcharts from "echarts-for-react";
 import Select from "react-select";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodoMulti } from "../../../helpers/filtrosGraficos";
+import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import styles from "../Caps.module.css";
 import coortesJSON from "./coortes.json";
 import perfilJSON from "./perfil.json";
@@ -403,7 +403,7 @@ const TaxaAbandono = () => {
         <>
           <div className={ styles.Filtro }>
             <Select {
-              ...getPropsFiltroPeriodoMulti(
+              ...getPropsFiltroPeriodo(
                 abandonoPerfil,
                 filtroPeriodoCID,
                 setFiltroPeriodoCID
@@ -427,7 +427,7 @@ const TaxaAbandono = () => {
         <>
           <div className={ styles.Filtro }>
             <Select {
-              ...getPropsFiltroPeriodoMulti(
+              ...getPropsFiltroPeriodo(
                 abandonoPerfil,
                 filtroPeriodoGenero,
                 setFiltroPeriodoGenero
@@ -454,7 +454,7 @@ const TaxaAbandono = () => {
         <>
           <div className={ styles.Filtro }>
             <Select {
-              ...getPropsFiltroPeriodoMulti(
+              ...getPropsFiltroPeriodo(
                 abandonoPerfil,
                 filtroPeriodoRacaECor,
                 setFiltroPeriodoRacaECor
