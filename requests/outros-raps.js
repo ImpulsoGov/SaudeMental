@@ -52,3 +52,15 @@ export const getAcoesReducaoDeDanos12meses = async (municipioIdSus) => {
     console.log('error', error.response.data);
   }
 };
+
+export const getAtendimentosAmbulatorioResumoUltimoMes = async (municipioIdSus) => {
+  try {
+    const endpoint = "/ambulatorio/atendimento-resumo-ultimomes?municipio_id_sus=" + municipioIdSus;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};

@@ -3,11 +3,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses, getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from "../../../requests/outros-raps";
-import naRuaJSON from "../dadosrecife/consultorioNaRua.json";
-import naRua12MesesJSON from "../dadosrecife/consultorioNaRua12.json";
-import reducaoDeDanosJSON from "../dadosrecife/reducaoDeDanos.json";
-import reducaoDeDanos12JSON from "../dadosrecife/reducaoDeDanos12.json";
+import { getAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses, getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from "../../../requests/outros-raps";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -23,23 +19,19 @@ const Resumo = () => {
   const [consultorioNaRua12Meses, setConsultorioNaRua12Meses] = useState([]);
   const [reducaoDanos, setReducaoDanos] = useState([]);
   const [reducaoDanos12Meses, setReducaoDanos12Meses] = useState([]);
-  const [ambulatorioResumo, setAmbulatorioResumo] = useState([]);
   const [ambulatorioUltMes, setAmbulatorioUltMes] = useState([]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      if (municipioIdSus === '261160') {
-        setConsultorioNaRua(naRuaJSON);
-        setConsultorioNaRua12Meses(naRua12MesesJSON);
-        setReducaoDanos(reducaoDeDanosJSON);
-        setReducaoDanos12Meses(reducaoDeDanos12JSON);
-      }
-      else {
-        setConsultorioNaRua(await getAtendimentosConsultorioNaRua(municipioIdSus));
-        setConsultorioNaRua12Meses(await getAtendimentosConsultorioNaRua12meses(municipioIdSus));
-        setReducaoDanos(await getAcoesReducaoDeDanos(municipioIdSus));
-        setReducaoDanos12Meses(await getAcoesReducaoDeDanos12meses(municipioIdSus));
-      }
+      setConsultorioNaRua(await getAtendimentosConsultorioNaRua(municipioIdSus));
+      setConsultorioNaRua12Meses(
+        await getAtendimentosConsultorioNaRua12meses(municipioIdSus)
+      );
+      setReducaoDanos(await getAcoesReducaoDeDanos(municipioIdSus));
+      setReducaoDanos12Meses(await getAcoesReducaoDeDanos12meses(municipioIdSus));
+      setAmbulatorioUltMes(
+        await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus)
+      );
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -75,6 +67,15 @@ const Resumo = () => {
     );
   };
 
+  const getDadosAmbulatorioUltimoMes = () => {
+    return ambulatorioUltMes.find((item) =>
+      item.periodo === "Último período"
+      && item.estabelecimento === "Todos"
+      && item.estabelecimento_linha_perfil === "Todas"
+      && item.estabelecimento_linha_idade === "Todas"
+    );
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -94,24 +95,24 @@ const Resumo = () => {
       <Grid12Col
         items={ [
           <>
-            {
+            { ambulatorioUltMes.length !== 0 &&
               <CardInfoTipoA
                 key={ uuidv1() }
-                indicador={ 100 }
-                titulo={ `Total de atendimentos em ${["ate_mes"]}` }
-                indice={ -141 }
+                indicador={ getDadosAmbulatorioUltimoMes().procedimentos_realizados }
+                titulo={ `Total de atendimentos em ${getDadosAmbulatorioUltimoMes().nome_mes}` }
+                indice={ getDadosAmbulatorioUltimoMes().dif_procedimentos_realizados_anterior }
                 indiceDescricao="últ. mês"
               />
             }
           </>,
           <>
-            {
+            { ambulatorioUltMes.length !== 0 &&
               <CardInfoTipoA
                 key={ uuidv1() }
-                indicador={ 100 }
-                titulo={ `Total de atendimentos por hora trabalhada em Julho` }
-                indice={ -141 }
-                indiceDescricao="doze meses anteriores"
+                indicador={ getDadosAmbulatorioUltimoMes().procedimentos_por_hora }
+                titulo={ `Total de atendimentos por hora trabalhada em ${getDadosAmbulatorioUltimoMes().nome_mes}` }
+                indice={ getDadosAmbulatorioUltimoMes().dif_procedimentos_por_hora_anterior }
+                indiceDescricao="últ. mês"
               />
             }
           </>,
