@@ -8,14 +8,15 @@ import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
-import novosPerfilJSON from "../../dadosrecife/caps_usuarios_novos_perfil_recife.json";
-import novosResumoJSON from "../../dadosrecife/caps_usuarios_novos_resumo_recife.json";
+import { getNovosUsuarios, getResumoNovosUsuarios } from "../../../requests/caps";
 import styles from "../Caps.module.css";
-import {getResumoNovosUsuarios, getNovosUsuarios} from "../../../requests/caps";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
   { value: "Último período", label: "Último período" },
 ];
+const FILTRO_ESTABELECIMENTO_DEFAULT = {
+  value: "Todos", label: "Todos"
+};
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -33,16 +34,16 @@ const NovoUsuario = () => {
     value: "Todos", label: "Todos"
   });
   const [filtroPeriodoPerfil, setFiltroPeriodoPerfil] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoPerfil, setFiltroEstabelecimentoPerfil] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoSubstEMoradia, setFiltroPeriodoSubstEMoradia] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoSubstEMoradia, setFiltroEstabelecimentoSubstEMoradia] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoRacaECor, setFiltroEstabelecimentoRacaECor] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      // if (municipioIdSus = '261160') {
-      // setNovosUsusarios(novosPerfilJSON);
-      // setResumoNovosUsuarios(novosResumoJSON);
-      // }
       setNovosUsusarios(await getNovosUsuarios(municipioIdSus));
       setResumoNovosUsuarios(
         await getResumoNovosUsuarios(municipioIdSus)
@@ -93,10 +94,16 @@ const NovoUsuario = () => {
 
   const getCardsNovosUsuariosPorEstabelecimento = (novosUsuarios) => {
     const novosUsuariosUltimoPeriodo = novosUsuarios
-      .filter(({ periodo, estabelecimento, estabelecimento_linha_perfil: linhaPerfil }) =>
+      .filter(({
+        periodo,
+        estabelecimento,
+        estabelecimento_linha_perfil: linhaPerfil,
+        estabelecimento_linha_idade: linhaIdade
+      }) =>
         periodo === "Último período"
         && estabelecimento !== "Todos"
         && linhaPerfil !== "Todos"
+        && linhaIdade === "Todos"
       );
 
     const usuariosAgregados = agregarPorLinhaPerfil(novosUsuariosUltimoPeriodo);
@@ -212,19 +219,23 @@ const NovoUsuario = () => {
     return usuariosAgregados;
   };
 
-  const filtrarDadosGeraisPorPeriodo = (dados, filtroPeriodo) => {
+  const filtrarDadosGeraisPorPeriodo = (dados, filtroEstabelecimento, filtroPeriodo) => {
     const periodosSelecionados = filtroPeriodo.map(({ value }) => value);
 
     return dados.filter((item) =>
-      item.estabelecimento === "Todos"
+      item.estabelecimento === filtroEstabelecimento.value
       && periodosSelecionados.includes(item.periodo)
       && item.estabelecimento_linha_perfil === "Todos"
       && item.estabelecimento_linha_idade === "Todos"
     );
   };
 
-  const getOpcoesGraficoPerfil = (novosUsuarios, filtroPeriodo) => {
-    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(novosUsuarios, filtroPeriodo);
+  const getOpcoesGraficoPerfil = (novosUsuarios, filtroEstabelecimento, filtroPeriodo) => {
+    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(
+      novosUsuarios,
+      filtroEstabelecimento,
+      filtroPeriodo
+    );
 
     const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(dadosUsuariosFiltrados);
 
@@ -291,11 +302,15 @@ const NovoUsuario = () => {
     return usuariosAgregados;
   };
 
-  const getOpcoesGraficoGeneroEFaixaEtaria = (novosUsuarios, filtroPeriodo) => {
+  const getOpcoesGraficoGeneroEFaixaEtaria = (novosUsuarios, filtroEstabelecimento, filtroPeriodo) => {
     const NOME_DIMENSAO = "genero";
     const LABELS_DIMENSAO = ["Masculino", "Feminino"];
 
-    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(novosUsuarios, filtroPeriodo);
+    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(
+      novosUsuarios,
+      filtroEstabelecimento,
+      filtroPeriodo
+    );
 
     const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(dadosUsuariosFiltrados);
 
@@ -402,7 +417,7 @@ const NovoUsuario = () => {
     return usuariosAgregados;
   };
 
-  const getOpcoesGraficoAbusoESituacao = (novosUsuarios, titulo, tipo, filtroPeriodo) => {
+  const getOpcoesGraficoAbusoESituacao = (novosUsuarios, titulo, tipo, filtroEstabelecimento, filtroPeriodo) => {
     const PROPIEDADES_POR_TIPO = {
       SITUACAO_RUA: "situacaoRua",
       ABUSO_SUBSTANCIAS: "abusoSubstancias"
@@ -410,7 +425,11 @@ const NovoUsuario = () => {
 
     const propriedade = PROPIEDADES_POR_TIPO[tipo];
 
-    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(novosUsuarios, filtroPeriodo);
+    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(
+      novosUsuarios,
+      filtroEstabelecimento,
+      filtroPeriodo
+    );
 
     const dadosUsuariosAgregados = tipo === "SITUACAO_RUA"
       ? agregarPorSituacaoRua(dadosUsuariosFiltrados)
@@ -487,11 +506,15 @@ const NovoUsuario = () => {
     return usuariosAgregados;
   };
 
-  const getOpcoesGraficoRacaEcor = (novosUsuarios, filtroPeriodo) => {
+  const getOpcoesGraficoRacaEcor = (novosUsuarios, filtroEstabelecimento, filtroPeriodo) => {
     const NOME_DIMENSAO = "usuariosNovos";
     const LABEL_DIMENSAO = "Usuários novos no período";
 
-    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(novosUsuarios, filtroPeriodo);
+    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(
+      novosUsuarios,
+      filtroEstabelecimento,
+      filtroPeriodo
+    );
 
     const agregadosPorRacaCor = agregarPorRacaCor(dadosUsuariosFiltrados);
 
@@ -577,18 +600,33 @@ const NovoUsuario = () => {
 
       { novosUsuarios.length !== 0 &&
         <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroPeriodo(
-                novosUsuarios,
-                filtroPeriodoPerfil,
-                setFiltroPeriodoPerfil
-              )
-            } />
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroEstabelecimento(
+                  novosUsuarios,
+                  filtroEstabelecimentoPerfil,
+                  setFiltroEstabelecimentoPerfil
+                )
+              } />
+            </div>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroPeriodo(
+                  novosUsuarios,
+                  filtroPeriodoPerfil,
+                  setFiltroPeriodoPerfil
+                )
+              } />
+            </div>
           </div>
 
           <ReactEcharts
-            option={ getOpcoesGraficoPerfil(novosUsuarios, filtroPeriodoPerfil) }
+            option={ getOpcoesGraficoPerfil(
+              novosUsuarios,
+              filtroEstabelecimentoPerfil,
+              filtroPeriodoPerfil
+            ) }
             style={ { width: "100%", height: "70vh" } }
           />
         </>
@@ -601,19 +639,31 @@ const NovoUsuario = () => {
 
       { novosUsuarios.length !== 0 &&
         <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroPeriodo(
-                novosUsuarios,
-                filtroPeriodoGenero,
-                setFiltroPeriodoGenero
-              )
-            } />
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroEstabelecimento(
+                  novosUsuarios,
+                  filtroEstabelecimentoGenero,
+                  setFiltroEstabelecimentoGenero
+                )
+              } />
+            </div>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroPeriodo(
+                  novosUsuarios,
+                  filtroPeriodoGenero,
+                  setFiltroPeriodoGenero
+                )
+              } />
+            </div>
           </div>
 
           <ReactEcharts
             option={ getOpcoesGraficoGeneroEFaixaEtaria(
               novosUsuarios,
+              filtroEstabelecimentoGenero,
               filtroPeriodoGenero
             ) }
             style={ { width: "100%", height: "70vh" } }
@@ -628,14 +678,25 @@ const NovoUsuario = () => {
 
       { novosUsuarios.length !== 0 &&
         <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroPeriodo(
-                novosUsuarios,
-                filtroPeriodoSubstEMoradia,
-                setFiltroPeriodoSubstEMoradia
-              )
-            } />
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroEstabelecimento(
+                  novosUsuarios,
+                  filtroEstabelecimentoSubstEMoradia,
+                  setFiltroEstabelecimentoSubstEMoradia
+                )
+              } />
+            </div>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroPeriodo(
+                  novosUsuarios,
+                  filtroPeriodoSubstEMoradia,
+                  setFiltroPeriodoSubstEMoradia
+                )
+              } />
+            </div>
           </div>
 
           <div className={ styles.GraficosUsuariosAtivosContainer }>
@@ -645,6 +706,7 @@ const NovoUsuario = () => {
                   novosUsuarios,
                   "Fazem uso de substâncias psicoativas?",
                   "ABUSO_SUBSTANCIAS",
+                  filtroEstabelecimentoSubstEMoradia,
                   filtroPeriodoSubstEMoradia
                 ) }
                 style={ { width: "100%", height: "100%" } }
@@ -657,6 +719,7 @@ const NovoUsuario = () => {
                   novosUsuarios,
                   "Estão em situação de rua?",
                   "SITUACAO_RUA",
+                  filtroEstabelecimentoSubstEMoradia,
                   filtroPeriodoSubstEMoradia
                 ) }
                 style={ { width: "100%", height: "100%" } }
@@ -673,19 +736,31 @@ const NovoUsuario = () => {
 
       { novosUsuarios.length !== 0 &&
         <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroPeriodo(
-                novosUsuarios,
-                filtroPeriodoRacaECor,
-                setFiltroPeriodoRacaECor
-              )
-            } />
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroEstabelecimento(
+                  novosUsuarios,
+                  filtroEstabelecimentoRacaECor,
+                  setFiltroEstabelecimentoRacaECor
+                )
+              } />
+            </div>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroPeriodo(
+                  novosUsuarios,
+                  filtroPeriodoRacaECor,
+                  setFiltroPeriodoRacaECor
+                )
+              } />
+            </div>
           </div>
 
           <ReactEcharts
             option={ getOpcoesGraficoRacaEcor(
               novosUsuarios,
+              filtroEstabelecimentoRacaECor,
               filtroPeriodoRacaECor
             ) }
             style={ { width: "100%", height: "70vh" } }
