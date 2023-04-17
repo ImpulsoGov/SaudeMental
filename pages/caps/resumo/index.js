@@ -90,10 +90,6 @@ const Resumo = () => {
                   indicador={ perfilUsuariosDeEstabelecimento.ativos_mes }
                   indice={ perfilUsuariosDeEstabelecimento.dif_ativos_mes_anterior }
                   indiceDescricao="últ. mês"
-                  link={ {
-                    label: 'Mais Informações',
-                    url: '/'
-                  } }
                   titulo="Usuários que frequentaram"
                   tooltip="Usuários que tiveram ao menos um procedimento registrado em BPA-i ou RAAS no mês de referência (exceto acolhimento inicial)."
                 />
@@ -120,10 +116,6 @@ const Resumo = () => {
                   indicador={ novosUsuariosDeEstabelecimento.usuarios_novos }
                   indice={ novosUsuariosDeEstabelecimento.dif_usuarios_novos_anterior }
                   indiceDescricao="últ. mês"
-                  link={ {
-                    label: 'Mais Informações',
-                    url: '/'
-                  } }
                   titulo="Novos usuários"
                   tooltip="Usuários que tiveram o primeiro procedimento registrado em RAAS no mês de referência."
                 />

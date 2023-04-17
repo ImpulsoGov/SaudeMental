@@ -10,8 +10,6 @@ import styles from "../Caps.module.css";
 import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
 import { getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
-import perfilJSON from "./perfil.json";
-import perfilPorEstabelecimentoJSON from "./perfilPorEstabelecimento.json";
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
@@ -40,10 +38,10 @@ const PerfilUsuario = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-        setPerfil(await getPerfilUsuarios(municipioIdSus));
-        setPerfilPorEstabelecimento(
-          await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
-        );
+      setPerfil(await getPerfilUsuarios(municipioIdSus));
+      setPerfilPorEstabelecimento(
+        await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
+      );
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -500,10 +498,6 @@ const PerfilUsuario = () => {
                 indicador={ ativos3Meses }
                 indice={ difAtivos3MesesAnterior }
                 indiceDescricao="últ. mês"
-                link={ {
-                  label: 'Histórico temporal',
-                  url: '/'
-                } }
                 titulo="Usuários ativos"
                 tooltip="Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) nos três meses anteriores ao mês de referência"
               />
@@ -516,10 +510,6 @@ const PerfilUsuario = () => {
                 indicador={ ativosMes }
                 indice={ difAtivosMesAnterior }
                 indiceDescricao="últ. mês"
-                link={ {
-                  label: 'Histórico temporal',
-                  url: '/'
-                } }
                 titulo="Frequentaram no mês"
                 tooltip="Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) durante o mês de referÊncia"
               />
@@ -532,10 +522,6 @@ const PerfilUsuario = () => {
                 indicador={ tornandoInativos }
                 indice={ difTornandoInativosAnterior }
                 indiceDescricao="últ. mês"
-                link={ {
-                  label: 'Histórico temporal',
-                  url: '/'
-                } }
                 titulo="Tornaram-se inativos"
                 tooltip="Usuários que, no mês de referência, completaram três meses sem ter procedimentos registrados em BPA-i ou RAAS (exceto acolhimento inicial)"
               />
