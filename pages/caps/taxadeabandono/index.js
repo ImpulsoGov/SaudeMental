@@ -7,14 +7,19 @@ import { getAbandonoCoortes, getPerfilAbandono } from "../../../requests/caps";
 
 import ReactEcharts from "echarts-for-react";
 import Select from "react-select";
-import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
+import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
+import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
+import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
 import styles from "../Caps.module.css";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
   { value: "Último período", label: "Último período" },
 ];
+const FILTRO_ESTABELECIMENTO_DEFAULT = {
+  value: "Todos", label: "Todos"
+};
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -32,8 +37,11 @@ const TaxaAbandono = () => {
     value: "Todos", label: "Todos"
   });
   const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoRacaECor, setFiltroEstabelecimentoRacaECor] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -83,219 +91,33 @@ const TaxaAbandono = () => {
       );
   };
 
-  const agregarPorCondicaoSaude = (perfilDeAbandono) => {
-    const dadosAgregados = [];
-
-    perfilDeAbandono.forEach((dado) => {
-      const {
-        quantidade_registrada: quantidadeUsuarios,
-        grupo_descricao_curta_cid10: condicaoSaude
-      } = dado;
-
-      const condicaoSaudeDados = dadosAgregados
-        .find((item) => item.condicaoSaude === condicaoSaude);
-
-      if (!condicaoSaudeDados) {
-        dadosAgregados.push({
-          condicaoSaude,
-          quantidadeUsuarios
-        });
-      } else {
-        condicaoSaudeDados.quantidadeUsuarios += quantidadeUsuarios;
-      }
-    });
-
-    return dadosAgregados;
-  };
-
-  const filtrarDadosPorPeriodos = (dados, filtroPeriodo) => {
+  const filtrarPorPeriodoEstabelecimento = (dados, filtroEstabelecimento, filtroPeriodo) => {
     const periodosSelecionados = filtroPeriodo.map(({ value }) => value);
 
-    return dados.filter((item) => periodosSelecionados.includes(item.periodo));
+    return dados.filter((item) =>
+      item.estabelecimento === filtroEstabelecimento.value
+      && periodosSelecionados.includes(item.periodo)
+    );
   };
 
-  const getOpcoesGraficoCID = (perfilDeAbandono, filtroPeriodo) => {
-    const dadosAbandonoFiltrados = filtrarDadosPorPeriodos(perfilDeAbandono, filtroPeriodo);
-    const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(dadosAbandonoFiltrados);
+  const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(
+    filtrarPorPeriodoEstabelecimento(abandonoPerfil, filtroEstabelecimentoCID, filtroPeriodoCID),
+    "grupo_descricao_curta_cid10",
+    "quantidade_registrada"
+  );
 
-    return {
-      tooltip: {
-        trigger: 'item',
-      },
-      series: [
-        {
-          type: 'pie',
-          radius: ['40%', '80%'],
-          avoidLabelOverlap: false,
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: "{d}%",
-            color: "#000000"
-          },
-          emphasis: {
-            label: {
-              show: true,
-            }
-          },
-          labelLine: {
-            show: false
-          },
-          data: agregadosPorCondicaoSaude
-            .map(({ condicaoSaude, quantidadeUsuarios }, index) => ({
-              value: quantidadeUsuarios,
-              name: !condicaoSaude ? "Sem informação" : condicaoSaude,
-              itemStyle: {
-                color: CORES_GRAFICO_DONUT[index]
-              },
-            }))
-        }
-      ]
-    };
-  };
+  const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(
+    filtrarPorPeriodoEstabelecimento(abandonoPerfil, filtroEstabelecimentoGenero, filtroPeriodoGenero),
+    "usuario_faixa_etaria_descricao",
+    "usuario_sexo",
+    "quantidade_registrada"
+  );
 
-  const agregarPorFaixaEtariaEGenero = (perfilDeAbandono) => {
-    const dadosAgregados = [];
-
-    perfilDeAbandono.forEach((dado) => {
-      const {
-        quantidade_registrada: quantidadeUsuarios,
-        usuario_faixa_etaria_descricao: faixaEtaria,
-        usuario_sexo: usuarioSexo
-      } = dado;
-      const genero = usuarioSexo.toLowerCase();
-      const faixaEtariaDados = dadosAgregados
-        .find((item) => item.faixaEtaria === faixaEtaria);
-
-      if (!faixaEtariaDados) {
-        dadosAgregados.push({
-          faixaEtaria,
-          [genero]: quantidadeUsuarios
-        });
-      } else {
-        faixaEtariaDados[genero]
-          ? faixaEtariaDados[genero] += quantidadeUsuarios
-          : faixaEtariaDados[genero] = quantidadeUsuarios;
-      }
-    });
-
-    return dadosAgregados;
-  };
-
-  const getOpcoesGraficoGeneroEFaixaEtaria = (perfilDeAbandono, filtroPeriodo) => {
-    const NOME_DIMENSAO = "genero";
-    const LABELS_DIMENSAO = ["Masculino", "Feminino"];
-
-    const dadosAbandonoFiltrados = filtrarDadosPorPeriodos(perfilDeAbandono, filtroPeriodo);
-
-    const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(dadosAbandonoFiltrados);
-
-    return {
-      legend: {
-        itemGap: 25,
-      },
-      tooltip: {},
-      dataset: {
-        dimensions: [NOME_DIMENSAO, ...LABELS_DIMENSAO],
-        source: agregadosPorGeneroEFaixaEtaria
-          .sort((a, b) => a.faixaEtaria.localeCompare(b.faixaEtaria))
-          .map((item) => ({
-            [NOME_DIMENSAO]: item.faixaEtaria,
-            [LABELS_DIMENSAO[0]]: item[LABELS_DIMENSAO[0].toLowerCase()],
-            [LABELS_DIMENSAO[1]]: item[LABELS_DIMENSAO[1].toLowerCase()],
-          })),
-      },
-      xAxis: {
-        type: 'category',
-      },
-      yAxis: {},
-      series: [
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#FA81E6"
-          },
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: `{@${LABELS_DIMENSAO[0]}}`,
-            color: "#FFFFFF",
-          },
-        },
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#5367C9"
-          },
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: `{@${LABELS_DIMENSAO[1]}}`,
-            color: "#FFFFFF",
-          },
-        }
-      ]
-    };
-  };
-
-  const agregarPorRacaCor = (perfilDeAbandono) => {
-    const dadosAgregados = [];
-
-    perfilDeAbandono.forEach((dado) => {
-      const {
-        quantidade_registrada: quantidadeUsuarios,
-        usuario_raca_cor: racaCor
-      } = dado;
-      const racaCorDados = dadosAgregados
-        .find((item) => item.racaCor === racaCor);
-
-      if (!racaCorDados) {
-        dadosAgregados.push({
-          racaCor,
-          quantidadeUsuarios
-        });
-      } else {
-        racaCorDados.quantidadeUsuarios += quantidadeUsuarios;
-      }
-    });
-
-    return dadosAgregados;
-  };
-
-  const getOpcoesGraficoRacaEcor = (perfilDeAbandono, filtroPeriodo) => {
-    const NOME_DIMENSAO = "usuariosAbandonaram";
-    const LABEL_DIMENSAO = "Usuários recentes que abandonaram no período";
-
-    const dadosAbandonoFiltrados = filtrarDadosPorPeriodos(perfilDeAbandono, filtroPeriodo);
-
-    const agregadosPorRacaCor = agregarPorRacaCor(dadosAbandonoFiltrados);
-
-    return {
-      legend: {},
-      tooltip: {},
-      dataset: {
-        dimensions: [NOME_DIMENSAO, LABEL_DIMENSAO],
-        source: agregadosPorRacaCor
-          .sort((a, b) => b.racaCor.localeCompare(a.racaCor))
-          .map((item) => ({
-            [NOME_DIMENSAO]: item.racaCor,
-            [LABEL_DIMENSAO]: item.quantidadeUsuarios,
-          })),
-      },
-      xAxis: {
-        type: 'category',
-      },
-      yAxis: {},
-      series: [
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#5367C9"
-          },
-        },
-      ]
-    };
-  };
+  const agregadosPorRacaCor = agregarPorRacaCor(
+    filtrarPorPeriodoEstabelecimento(abandonoPerfil, filtroEstabelecimentoGenero, filtroPeriodoGenero),
+    "usuario_raca_cor",
+    "quantidade_registrada"
+  );
 
   return (
     <div>
@@ -349,18 +171,29 @@ const TaxaAbandono = () => {
 
       { abandonoPerfil.length !== 0 &&
         <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroPeriodo(
-                abandonoPerfil,
-                filtroPeriodoCID,
-                setFiltroPeriodoCID
-              )
-            } />
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroEstabelecimento(
+                  abandonoPerfil,
+                  filtroEstabelecimentoCID,
+                  setFiltroEstabelecimentoCID
+                )
+              } />
+            </div>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroPeriodo(
+                  abandonoPerfil,
+                  filtroPeriodoCID,
+                  setFiltroPeriodoCID
+                )
+              } />
+            </div>
           </div>
 
           <ReactEcharts
-            option={ getOpcoesGraficoCID(abandonoPerfil, filtroPeriodoCID) }
+            option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
             style={ { width: "100%", height: "70vh" } }
           />
         </>
@@ -373,20 +206,31 @@ const TaxaAbandono = () => {
 
       { abandonoPerfil.length !== 0 &&
         <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroPeriodo(
-                abandonoPerfil,
-                filtroPeriodoGenero,
-                setFiltroPeriodoGenero
-              )
-            } />
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroEstabelecimento(
+                  abandonoPerfil,
+                  filtroEstabelecimentoGenero,
+                  setFiltroEstabelecimentoGenero
+                )
+              } />
+            </div>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroPeriodo(
+                  abandonoPerfil,
+                  filtroPeriodoGenero,
+                  setFiltroPeriodoGenero
+                )
+              } />
+            </div>
           </div>
 
           <ReactEcharts
             option={ getOpcoesGraficoGeneroEFaixaEtaria(
-              abandonoPerfil,
-              filtroPeriodoGenero
+              agregadosPorGeneroEFaixaEtaria,
+              ""
             ) }
             style={ { width: "100%", height: "70vh" } }
           />
@@ -400,20 +244,31 @@ const TaxaAbandono = () => {
 
       { abandonoPerfil.length !== 0 &&
         <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroPeriodo(
-                abandonoPerfil,
-                filtroPeriodoRacaECor,
-                setFiltroPeriodoRacaECor
-              )
-            } />
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroEstabelecimento(
+                  abandonoPerfil,
+                  filtroEstabelecimentoRacaECor,
+                  setFiltroEstabelecimentoRacaECor
+                )
+              } />
+            </div>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroPeriodo(
+                  abandonoPerfil,
+                  filtroPeriodoRacaECor,
+                  setFiltroPeriodoRacaECor
+                )
+              } />
+            </div>
           </div>
 
           <ReactEcharts
             option={ getOpcoesGraficoRacaEcor(
-              abandonoPerfil,
-              filtroPeriodoRacaECor
+              agregadosPorRacaCor,
+              "Usuários recentes que abandonaram no período"
             ) }
             style={ { width: "100%", height: "70vh" } }
           />
