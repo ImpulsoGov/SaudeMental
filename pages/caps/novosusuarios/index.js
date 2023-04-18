@@ -30,9 +30,7 @@ const NovoUsuario = () => {
   const { data: session } = useSession();
   const [novosUsuarios, setNovosUsusarios] = useState([]);
   const [resumoNovosUsuarios, setResumoNovosUsuarios] = useState([]);
-  const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
-    value: "Todos", label: "Todos"
-  });
+  const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoPerfil, setFiltroPeriodoPerfil] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoPerfil, setFiltroEstabelecimentoPerfil] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
@@ -103,7 +101,7 @@ const NovoUsuario = () => {
         periodo === "Último período"
         && estabelecimento !== "Todos"
         && linhaPerfil !== "Todos"
-        && linhaIdade === "Todos"
+        // && linhaIdade === "Todos"
       );
 
     const usuariosAgregados = agregarPorLinhaPerfil(novosUsuariosUltimoPeriodo);
@@ -141,9 +139,11 @@ const NovoUsuario = () => {
     const filtradosPorEstabelecimento = novosUsuarios
       .filter((item) =>
         item.estabelecimento === filtroEstabelecimento
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
+        // && item.estabelecimento_linha_perfil === "Todos"
+        // && item.estabelecimento_linha_idade === "Todos"
       );
+    console.log("filtroEstabelecimento", filtroEstabelecimento);
+    console.log("filtradosPorEstabelecimento", filtradosPorEstabelecimento);
 
     const ordenadosPorCompetenciaAsc = filtradosPorEstabelecimento
       .sort((a, b) => new Date(a.competencia) - new Date(b.competencia));
