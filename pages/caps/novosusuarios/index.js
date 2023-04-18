@@ -4,11 +4,13 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
-import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
-import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
+import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from "../../../helpers/graficoAbusoESituacao";
+import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
+import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
+import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
 import { getNovosUsuarios, getResumoNovosUsuarios } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
@@ -145,32 +147,7 @@ const NovoUsuario = () => {
       );
   };
 
-  const agregarPorCondicaoSaude = (novosUsuarios) => {
-    const usuariosAgregados = [];
-
-    novosUsuarios.forEach((dado) => {
-      const {
-        usuarios_novos: usuariosNovos,
-        usuario_condicao_saude: condicaoSaude
-      } = dado;
-
-      const condicaoSaudeDados = usuariosAgregados
-        .find((item) => item.condicaoSaude === condicaoSaude);
-
-      if (!condicaoSaudeDados) {
-        usuariosAgregados.push({
-          condicaoSaude,
-          usuariosNovos
-        });
-      } else {
-        condicaoSaudeDados.usuariosNovos += usuariosNovos;
-      }
-    });
-
-    return usuariosAgregados;
-  };
-
-  const filtrarDadosGeraisPorPeriodo = (dados, filtroEstabelecimento, filtroPeriodo) => {
+  const filtrarDadosGeraisPorPeriodoEstabelecimento = (dados, filtroEstabelecimento, filtroPeriodo) => {
     const periodosSelecionados = filtroPeriodo.map(({ value }) => value);
 
     return dados.filter((item) =>
@@ -181,320 +158,36 @@ const NovoUsuario = () => {
     );
   };
 
-  const getOpcoesGraficoPerfil = (novosUsuarios, filtroEstabelecimento, filtroPeriodo) => {
-    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(
-      novosUsuarios,
-      filtroEstabelecimento,
-      filtroPeriodo
-    );
+  const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(
+    filtrarDadosGeraisPorPeriodoEstabelecimento(novosUsuarios, filtroEstabelecimentoPerfil, filtroPeriodoPerfil),
+    "usuario_condicao_saude",
+    "usuarios_novos"
+  );
 
-    const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(dadosUsuariosFiltrados);
+  const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(
+    filtrarDadosGeraisPorPeriodoEstabelecimento(novosUsuarios, filtroEstabelecimentoGenero, filtroPeriodoGenero),
+    "usuario_faixa_etaria",
+    "usuario_sexo",
+    "usuarios_novos"
+  );
 
-    return {
-      tooltip: {
-        trigger: 'item',
-      },
-      series: [
-        {
-          type: 'pie',
-          radius: ['40%', '80%'],
-          avoidLabelOverlap: false,
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: "{d}%",
-            color: "#000000"
-          },
-          emphasis: {
-            label: {
-              show: true,
-            }
-          },
-          labelLine: {
-            show: false
-          },
-          data: agregadosPorCondicaoSaude.map(({ condicaoSaude, usuariosNovos }, index) => ({
-            value: usuariosNovos,
-            name: !condicaoSaude ? "Sem informação" : condicaoSaude,
-            itemStyle: {
-              color: CORES_GRAFICO_DONUT[index]
-            },
-          }))
-        }
-      ]
-    };
-  };
+  const agregadosPorAbusoSubstancias = agregarPorAbusoSubstancias(
+    filtrarDadosGeraisPorPeriodoEstabelecimento(novosUsuarios, filtroEstabelecimentoSubstEMoradia, filtroPeriodoSubstEMoradia),
+    "usuario_abuso_substancias",
+    "usuarios_novos"
+  );
 
-  const agregarPorFaixaEtariaEGenero = (novosUsusarios) => {
-    const usuariosAgregados = [];
+  const agregadosPorSituacaoRua = agregarPorSituacaoRua(
+    filtrarDadosGeraisPorPeriodoEstabelecimento(novosUsuarios, filtroEstabelecimentoSubstEMoradia, filtroPeriodoSubstEMoradia),
+    "usuario_situacao_rua",
+    "usuarios_novos"
+  );
 
-    novosUsusarios.forEach((dado) => {
-      const {
-        usuarios_novos: usuariosNovos,
-        usuario_faixa_etaria: faixaEtaria,
-        usuario_sexo: usuarioSexo
-      } = dado;
-      const genero = usuarioSexo.toLowerCase();
-      const faixaEtariaDados = usuariosAgregados
-        .find((item) => item.faixaEtaria === faixaEtaria);
-
-      if (!faixaEtariaDados) {
-        usuariosAgregados.push({
-          faixaEtaria,
-          [genero]: usuariosNovos
-        });
-      } else {
-        faixaEtariaDados[genero]
-          ? faixaEtariaDados[genero] += usuariosNovos
-          : faixaEtariaDados[genero] = usuariosNovos;
-      }
-    });
-
-    return usuariosAgregados;
-  };
-
-  const getOpcoesGraficoGeneroEFaixaEtaria = (novosUsuarios, filtroEstabelecimento, filtroPeriodo) => {
-    const NOME_DIMENSAO = "genero";
-    const LABELS_DIMENSAO = ["Masculino", "Feminino"];
-
-    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(
-      novosUsuarios,
-      filtroEstabelecimento,
-      filtroPeriodo
-    );
-
-    const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(dadosUsuariosFiltrados);
-
-    return {
-      legend: {
-        itemGap: 25,
-      },
-      tooltip: {},
-      dataset: {
-        dimensions: [NOME_DIMENSAO, ...LABELS_DIMENSAO],
-        source: agregadosPorGeneroEFaixaEtaria
-          .sort((a, b) => a.faixaEtaria.localeCompare(b.faixaEtaria))
-          .map((item) => ({
-            [NOME_DIMENSAO]: item.faixaEtaria,
-            [LABELS_DIMENSAO[0]]: item[LABELS_DIMENSAO[0].toLowerCase()],
-            [LABELS_DIMENSAO[1]]: item[LABELS_DIMENSAO[1].toLowerCase()],
-          })),
-      },
-      xAxis: {
-        type: 'category',
-        name: "Faixa etária (em anos)",
-        nameLocation: "center",
-        nameGap: 45,
-      },
-      yAxis: {
-        name: "Usuários novos",
-        nameLocation: "center",
-        nameGap: 55,
-      },
-      series: [
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#FA81E6"
-          },
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: `{@${LABELS_DIMENSAO[0]}}`,
-            color: "#FFFFFF",
-          },
-        },
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#5367C9"
-          },
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: `{@${LABELS_DIMENSAO[1]}}`,
-            color: "#FFFFFF",
-          },
-        }
-      ]
-    };
-  };
-
-  const agregarPorAbusoSubstancias = (usuariosNovos) => {
-    const usuariosAgregados = [];
-
-    usuariosNovos.forEach((dado) => {
-      const {
-        usuarios_novos: usuariosNovos,
-        usuario_abuso_substancias: abusoSubstancias
-      } = dado;
-      const abusoSubstanciasDados = usuariosAgregados
-        .find((item) => item.abusoSubstancias === abusoSubstancias);
-
-      if (!abusoSubstanciasDados) {
-        usuariosAgregados.push({
-          abusoSubstancias,
-          usuariosNovos
-        });
-      } else {
-        abusoSubstanciasDados.usuariosNovos += usuariosNovos;
-      }
-    });
-
-    return usuariosAgregados;
-  };
-
-  const agregarPorSituacaoRua = (usuariosNovos) => {
-    const usuariosAgregados = [];
-
-    usuariosNovos.forEach((dado) => {
-      const {
-        usuarios_novos: usuariosNovos,
-        usuario_situacao_rua: situacaoRua,
-      } = dado;
-      const situacaoRuaDados = usuariosAgregados
-        .find((item) => item.situacaoRua === situacaoRua);
-
-      if (!situacaoRuaDados) {
-        usuariosAgregados.push({
-          situacaoRua,
-          usuariosNovos
-        });
-      } else {
-        situacaoRuaDados.usuariosNovos += usuariosNovos;
-      }
-    });
-
-    return usuariosAgregados;
-  };
-
-  const getOpcoesGraficoAbusoESituacao = (novosUsuarios, titulo, tipo, filtroEstabelecimento, filtroPeriodo) => {
-    const PROPIEDADES_POR_TIPO = {
-      SITUACAO_RUA: "situacaoRua",
-      ABUSO_SUBSTANCIAS: "abusoSubstancias"
-    };
-
-    const propriedade = PROPIEDADES_POR_TIPO[tipo];
-
-    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(
-      novosUsuarios,
-      filtroEstabelecimento,
-      filtroPeriodo
-    );
-
-    const dadosUsuariosAgregados = tipo === "SITUACAO_RUA"
-      ? agregarPorSituacaoRua(dadosUsuariosFiltrados)
-      : agregarPorAbusoSubstancias(dadosUsuariosFiltrados);
-
-    return {
-      title: {
-        text: titulo,
-        textStyle: {
-          fontSize: 14
-        },
-      },
-      tooltip: {
-        trigger: 'item',
-      },
-      legend: {
-        bottom: 0
-      },
-      series: [
-        {
-          top: 30,
-          bottom: 30,
-          name: titulo,
-          type: 'pie',
-          radius: ['40%', '80%'],
-          avoidLabelOverlap: false,
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: "{d}%",
-            color: "#000000"
-          },
-          emphasis: {
-            label: {
-              show: true,
-            }
-          },
-          labelLine: {
-            show: false
-          },
-          data: dadosUsuariosAgregados.map((item, index) => ({
-            value: item.usuariosNovos,
-            name: item[propriedade],
-            itemStyle: {
-              color: CORES_GRAFICO_SUBST_MORADIA[index]
-            },
-          }))
-        }
-      ]
-    };
-  };
-
-  const agregarPorRacaCor = (novosUsuarios) => {
-    const usuariosAgregados = [];
-
-    novosUsuarios.forEach((dado) => {
-      const {
-        usuarios_novos: usuariosNovos,
-        usuario_raca_cor: racaCor
-      } = dado;
-      const racaCorDados = usuariosAgregados
-        .find((item) => item.racaCor === racaCor);
-
-      if (!racaCorDados) {
-        usuariosAgregados.push({
-          racaCor,
-          usuariosNovos
-        });
-      } else {
-        racaCorDados.usuariosNovos += usuariosNovos;
-      }
-    });
-
-    return usuariosAgregados;
-  };
-
-  const getOpcoesGraficoRacaEcor = (novosUsuarios, filtroEstabelecimento, filtroPeriodo) => {
-    const NOME_DIMENSAO = "usuariosNovos";
-    const LABEL_DIMENSAO = "Usuários novos no período";
-
-    const dadosUsuariosFiltrados = filtrarDadosGeraisPorPeriodo(
-      novosUsuarios,
-      filtroEstabelecimento,
-      filtroPeriodo
-    );
-
-    const agregadosPorRacaCor = agregarPorRacaCor(dadosUsuariosFiltrados);
-
-    return {
-      legend: {},
-      tooltip: {},
-      dataset: {
-        dimensions: [NOME_DIMENSAO, LABEL_DIMENSAO],
-        source: agregadosPorRacaCor
-          .sort((a, b) => b.racaCor.localeCompare(a.racaCor))
-          .map((item) => ({
-            [NOME_DIMENSAO]: item.racaCor,
-            [LABEL_DIMENSAO]: item.usuariosNovos,
-          })),
-      },
-      xAxis: {
-        type: 'category',
-      },
-      yAxis: {},
-      series: [
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#5367C9"
-          },
-        },
-      ]
-    };
-  };
+  const agregadosPorRacaCor = agregarPorRacaCor(
+    filtrarDadosGeraisPorPeriodoEstabelecimento(novosUsuarios, filtroEstabelecimentoRacaECor, filtroPeriodoRacaECor),
+    "usuario_raca_cor",
+    "usuarios_novos"
+  );
 
   return (
     <div>
@@ -574,11 +267,7 @@ const NovoUsuario = () => {
           </div>
 
           <ReactEcharts
-            option={ getOpcoesGraficoPerfil(
-              novosUsuarios,
-              filtroEstabelecimentoPerfil,
-              filtroPeriodoPerfil
-            ) }
+            option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
             style={ { width: "100%", height: "70vh" } }
           />
         </>
@@ -614,9 +303,8 @@ const NovoUsuario = () => {
 
           <ReactEcharts
             option={ getOpcoesGraficoGeneroEFaixaEtaria(
-              novosUsuarios,
-              filtroEstabelecimentoGenero,
-              filtroPeriodoGenero
+              agregadosPorGeneroEFaixaEtaria,
+              "Usuários novos"
             ) }
             style={ { width: "100%", height: "70vh" } }
           />
@@ -655,11 +343,9 @@ const NovoUsuario = () => {
             <div className={ styles.GraficoUsuariosAtivos }>
               <ReactEcharts
                 option={ getOpcoesGraficoAbusoESituacao(
-                  novosUsuarios,
+                  agregadosPorAbusoSubstancias,
                   "Fazem uso de substâncias psicoativas?",
                   "ABUSO_SUBSTANCIAS",
-                  filtroEstabelecimentoSubstEMoradia,
-                  filtroPeriodoSubstEMoradia
                 ) }
                 style={ { width: "100%", height: "100%" } }
               />
@@ -668,11 +354,9 @@ const NovoUsuario = () => {
             <div className={ styles.GraficoUsuariosAtivos }>
               <ReactEcharts
                 option={ getOpcoesGraficoAbusoESituacao(
-                  novosUsuarios,
+                  agregadosPorSituacaoRua,
                   "Estão em situação de rua?",
                   "SITUACAO_RUA",
-                  filtroEstabelecimentoSubstEMoradia,
-                  filtroPeriodoSubstEMoradia
                 ) }
                 style={ { width: "100%", height: "100%" } }
               />
@@ -711,9 +395,8 @@ const NovoUsuario = () => {
 
           <ReactEcharts
             option={ getOpcoesGraficoRacaEcor(
-              novosUsuarios,
-              filtroEstabelecimentoRacaECor,
-              filtroPeriodoRacaECor
+              agregadosPorRacaCor,
+              "Usuários novos no período"
             ) }
             style={ { width: "100%", height: "70vh" } }
           />
