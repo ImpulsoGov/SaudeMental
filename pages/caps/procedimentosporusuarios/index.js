@@ -134,7 +134,7 @@ const ProcedimentosPorUsuarios = () => {
       .filter((item) =>
         item.estabelecimento === filtroEstabelecimento.value
         && item.estabelecimento_linha_perfil === "Todos"
-        // && item.estabelecimento_linha_idade === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
       );
   };
 
