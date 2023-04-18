@@ -85,7 +85,17 @@ const AtendimentoIndividual = () => {
 
   const getCardsAtendimentosPorCaps = (atendimentos) => {
     const atendimentosPorCapsUltimoPeriodo = atendimentos
-      .filter(({ periodo, estabelecimento }) => periodo === "Último período" && estabelecimento !== "Todos");
+      .filter(({
+        periodo,
+        estabelecimento,
+        estabelecimento_linha_perfil: linhaPerfil,
+        estabelecimento_linha_idade: linhaIdade
+      }) =>
+        periodo === "Último período"
+        && estabelecimento !== "Todos"
+        && linhaPerfil !== "Todos"
+        && linhaIdade === "Todos"
+      );
 
     const atendimentosAgregados = agregarPorLinhaPerfil(atendimentosPorCapsUltimoPeriodo);
 
