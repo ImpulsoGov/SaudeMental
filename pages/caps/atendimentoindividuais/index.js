@@ -4,16 +4,21 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
-import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
+import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
+import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
+import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
 import { getAtendimentosPorCaps, getPerfilDeAtendimentos } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
   { value: "Último período", label: "Último período" },
 ];
+const FILTRO_ESTABELECIMENTO_DEFAULT = {
+  value: "Todos", label: "Todos"
+};
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -28,12 +33,13 @@ const AtendimentoIndividual = () => {
   const [perfilAtendimentos, setPerfilAtendimentos] = useState([]);
   const [resumoPerfilAtendimentos, setResumoPerfilAtendimentos] = useState();
   const [atendimentosPorCaps, setAtendimentosPorCaps] = useState([]);
-  const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
-    value: "Todos", label: "Todos"
-  });
+  const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoRacaECor, setFiltroEstabelecimentoRacaECor] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -139,231 +145,35 @@ const AtendimentoIndividual = () => {
       );
   };
 
-  const agregarPorCondicaoSaude = (perfilDeAtendimento) => {
-    const dadosAgregados = [];
-
-    perfilDeAtendimento.forEach((dado) => {
-      const {
-        usuarios_apenas_atendimento_individual: quantidadeUsuarios,
-        usuario_condicao_saude: condicaoSaude
-      } = dado;
-
-      const condicaoSaudeDados = dadosAgregados
-        .find((item) => item.condicaoSaude === condicaoSaude);
-
-      if (!condicaoSaudeDados) {
-        dadosAgregados.push({
-          condicaoSaude,
-          quantidadeUsuarios
-        });
-      } else {
-        condicaoSaudeDados.quantidadeUsuarios += quantidadeUsuarios;
-      }
-    });
-
-    return dadosAgregados;
-  };
-
-  const filtrarPorEstabelecimentosTodosEPeriodos = (dados, filtroPeriodo) => {
+  const filtrarPorPeriodoEstabelecimento = (dados, filtroEstabelecimento, filtroPeriodo) => {
     const periodosSelecionados = filtroPeriodo.map(({ value }) => value);
 
     return dados.filter((item) =>
-      item.estabelecimento === "Todos"
+      item.estabelecimento === filtroEstabelecimento.value
       && periodosSelecionados.includes(item.periodo)
+      && item.estabelecimento_linha_perfil === "Todos"
+      && item.estabelecimento_linha_idade === "Todos"
     );
   };
 
-  const getOpcoesGraficoCID = (perfilDeAtendimento, filtroPeriodo) => {
-    const dadosAtendimentoFiltrados = filtrarPorEstabelecimentosTodosEPeriodos(
-      perfilDeAtendimento,
-      filtroPeriodo
-    );
-    const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(dadosAtendimentoFiltrados);
+  const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(
+    filtrarPorPeriodoEstabelecimento(perfilAtendimentos, filtroEstabelecimentoCID, filtroPeriodoCID),
+    "usuario_condicao_saude",
+    "usuarios_apenas_atendimento_individual"
+  );
 
-    return {
-      tooltip: {
-        trigger: 'item',
-      },
-      series: [
-        {
-          type: 'pie',
-          radius: ['40%', '80%'],
-          avoidLabelOverlap: false,
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: "{d}%",
-            color: "#000000"
-          },
-          emphasis: {
-            label: {
-              show: true,
-            }
-          },
-          labelLine: {
-            show: false
-          },
-          data: agregadosPorCondicaoSaude
-            .map(({ condicaoSaude, quantidadeUsuarios }, index) => ({
-              value: quantidadeUsuarios,
-              name: !condicaoSaude ? "Sem informação" : condicaoSaude,
-              itemStyle: {
-                color: CORES_GRAFICO_DONUT[index]
-              },
-            }))
-        }
-      ]
-    };
-  };
+  const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(
+    filtrarPorPeriodoEstabelecimento(perfilAtendimentos, filtroEstabelecimentoGenero, filtroPeriodoGenero),
+    "usuario_faixa_etaria_descricao",
+    "usuario_sexo",
+    "usuarios_apenas_atendimento_individual"
+  );
 
-  const agregarPorFaixaEtariaEGenero = (perfilDeAtendimento) => {
-    const dadosAgregados = [];
-
-    perfilDeAtendimento.forEach((dado) => {
-      const {
-        usuarios_apenas_atendimento_individual: quantidadeUsuarios,
-        usuario_faixa_etaria_descricao: faixaEtaria,
-        usuario_sexo: usuarioSexo
-      } = dado;
-      const genero = usuarioSexo.toLowerCase();
-      const faixaEtariaDados = dadosAgregados
-        .find((item) => item.faixaEtaria === faixaEtaria);
-
-      if (!faixaEtariaDados) {
-        dadosAgregados.push({
-          faixaEtaria,
-          [genero]: quantidadeUsuarios
-        });
-      } else {
-        faixaEtariaDados[genero]
-          ? faixaEtariaDados[genero] += quantidadeUsuarios
-          : faixaEtariaDados[genero] = quantidadeUsuarios;
-      }
-    });
-
-    return dadosAgregados;
-  };
-
-  const getOpcoesGraficoGeneroEFaixaEtaria = (perfilDeAtendimento, filtroPeriodo) => {
-    const NOME_DIMENSAO = "genero";
-    const LABELS_DIMENSAO = ["Masculino", "Feminino"];
-
-    const dadosAtendimentoFiltrados = filtrarPorEstabelecimentosTodosEPeriodos(
-      perfilDeAtendimento,
-      filtroPeriodo
-    );
-
-    const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(dadosAtendimentoFiltrados);
-
-    return {
-      legend: {
-        itemGap: 25,
-      },
-      tooltip: {},
-      dataset: {
-        dimensions: [NOME_DIMENSAO, ...LABELS_DIMENSAO],
-        source: agregadosPorGeneroEFaixaEtaria
-          .sort((a, b) => a.faixaEtaria.localeCompare(b.faixaEtaria))
-          .map((item) => ({
-            [NOME_DIMENSAO]: item.faixaEtaria,
-            [LABELS_DIMENSAO[0]]: item[LABELS_DIMENSAO[0].toLowerCase()],
-            [LABELS_DIMENSAO[1]]: item[LABELS_DIMENSAO[1].toLowerCase()],
-          })),
-      },
-      xAxis: {
-        type: 'category',
-      },
-      yAxis: {},
-      series: [
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#FA81E6"
-          },
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: `{@${LABELS_DIMENSAO[0]}}`,
-            color: "#FFFFFF",
-          },
-        },
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#5367C9"
-          },
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: `{@${LABELS_DIMENSAO[1]}}`,
-            color: "#FFFFFF",
-          },
-        }
-      ]
-    };
-  };
-
-  const agregarPorRacaCor = (perfilDeAtendimento) => {
-    const dadosAgregados = [];
-
-    perfilDeAtendimento.forEach((dado) => {
-      const {
-        usuarios_apenas_atendimento_individual: quantidadeUsuarios,
-        usuario_raca_cor: racaCor
-      } = dado;
-      const racaCorDados = dadosAgregados
-        .find((item) => item.racaCor === racaCor);
-
-      if (!racaCorDados) {
-        dadosAgregados.push({
-          racaCor,
-          quantidadeUsuarios
-        });
-      } else {
-        racaCorDados.quantidadeUsuarios += quantidadeUsuarios;
-      }
-    });
-
-    return dadosAgregados;
-  };
-
-  const getOpcoesGraficoRacaEcor = (perfilDeAtendimento, filtroPeriodo) => {
-    const NOME_DIMENSAO = "usuariosAtendimentosIndividuais";
-    const LABEL_DIMENSAO = "Usuários que realizaram apenas atendimentos individuais";
-
-    const dadosAtendimentoFiltrados = filtrarPorEstabelecimentosTodosEPeriodos(
-      perfilDeAtendimento,
-      filtroPeriodo
-    );
-
-    const agregadosPorRacaCor = agregarPorRacaCor(dadosAtendimentoFiltrados);
-
-    return {
-      legend: {},
-      tooltip: {},
-      dataset: {
-        dimensions: [NOME_DIMENSAO, LABEL_DIMENSAO],
-        source: agregadosPorRacaCor
-          .sort((a, b) => b.racaCor.localeCompare(a.racaCor))
-          .map((item) => ({
-            [NOME_DIMENSAO]: item.racaCor,
-            [LABEL_DIMENSAO]: item.quantidadeUsuarios,
-          })),
-      },
-      xAxis: {
-        type: 'category',
-      },
-      yAxis: {},
-      series: [
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#5367C9"
-          },
-        },
-      ]
-    };
-  };
+  const agregadosPorRacaCor = agregarPorRacaCor(
+    filtrarPorPeriodoEstabelecimento(perfilAtendimentos, filtroEstabelecimentoRacaECor, filtroPeriodoRacaECor),
+    "usuario_raca_cor",
+    "usuarios_apenas_atendimento_individual"
+  );
 
   return (
     <div>
@@ -419,18 +229,27 @@ const AtendimentoIndividual = () => {
 
       { perfilAtendimentos.length !== 0 &&
         <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroPeriodo(
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select { ...getPropsFiltroEstabelecimento(
                 perfilAtendimentos,
-                filtroPeriodoCID,
-                setFiltroPeriodoCID
-              )
-            } />
+                filtroEstabelecimentoCID,
+                setFiltroEstabelecimentoCID
+              ) } />
+            </div>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroPeriodo(
+                  perfilAtendimentos,
+                  filtroPeriodoCID,
+                  setFiltroPeriodoCID
+                )
+              } />
+            </div>
           </div>
 
           <ReactEcharts
-            option={ getOpcoesGraficoCID(perfilAtendimentos, filtroPeriodoCID) }
+            option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
             style={ { width: "100%", height: "70vh" } }
           />
         </>
@@ -443,20 +262,29 @@ const AtendimentoIndividual = () => {
 
       { perfilAtendimentos.length !== 0 &&
         <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroPeriodo(
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select { ...getPropsFiltroEstabelecimento(
                 perfilAtendimentos,
-                filtroPeriodoGenero,
-                setFiltroPeriodoGenero
-              )
-            } />
+                filtroEstabelecimentoGenero,
+                setFiltroEstabelecimentoGenero
+              ) } />
+            </div>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroPeriodo(
+                  perfilAtendimentos,
+                  filtroPeriodoGenero,
+                  setFiltroPeriodoGenero
+                )
+              } />
+            </div>
           </div>
 
           <ReactEcharts
             option={ getOpcoesGraficoGeneroEFaixaEtaria(
-              perfilAtendimentos,
-              filtroPeriodoGenero
+              agregadosPorGeneroEFaixaEtaria,
+              ""
             ) }
             style={ { width: "100%", height: "70vh" } }
           />
@@ -470,20 +298,29 @@ const AtendimentoIndividual = () => {
 
       { perfilAtendimentos.length !== 0 &&
         <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroPeriodo(
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select { ...getPropsFiltroEstabelecimento(
                 perfilAtendimentos,
-                filtroPeriodoRacaECor,
-                setFiltroPeriodoRacaECor
-              )
-            } />
+                filtroEstabelecimentoRacaECor,
+                setFiltroEstabelecimentoRacaECor
+              ) } />
+            </div>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroPeriodo(
+                  perfilAtendimentos,
+                  filtroPeriodoRacaECor,
+                  setFiltroPeriodoRacaECor
+                )
+              } />
+            </div>
           </div>
 
           <ReactEcharts
             option={ getOpcoesGraficoRacaEcor(
-              perfilAtendimentos,
-              filtroPeriodoRacaECor
+              agregadosPorRacaCor,
+              "Usuários que realizaram apenas atendimentos individuais"
             ) }
             style={ { width: "100%", height: "70vh" } }
           />
