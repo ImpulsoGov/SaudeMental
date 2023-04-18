@@ -115,7 +115,7 @@ const NovoUsuario = () => {
       <>
         <GraficoInfo
           titulo={ `CAPS ${linhaPerfil}` }
-          fonte={ `Dados de ${nomeMes}` }
+          descricao={ `Dados de ${nomeMes}` }
         />
 
         <Grid12Col
@@ -142,8 +142,8 @@ const NovoUsuario = () => {
     return dados
       .filter((item) =>
         item.estabelecimento === filtroEstabelecimento.value
-        // && item.estabelecimento_linha_perfil === "Todos"
-        // && item.estabelecimento_linha_idade === "Todos"
+        && item.estabelecimento_linha_perfil === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
       );
   };
 
@@ -204,6 +204,20 @@ const NovoUsuario = () => {
         descricao="Taxa de novos usuários que passaram por primeiro procedimento (registrado em RAAS), excluindo-se usuários que passaram apenas por acolhimento inicial."
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { resumoNovosUsuarios.length !== 0 &&
+        <GraficoInfo
+          descricao={ `Última competência disponível: ${resumoNovosUsuarios
+            .find((item) =>
+              item.estabelecimento === "Todos"
+              && item.estabelecimento_linha_perfil === "Todos"
+              && item.estabelecimento_linha_idade === "Todos"
+              && item.periodo === "Último período"
+            )
+            .nome_mes
+            }` }
+        />
+      }
 
       {
         resumoNovosUsuarios.length !== 0

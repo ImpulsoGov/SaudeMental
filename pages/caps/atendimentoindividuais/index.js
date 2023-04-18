@@ -191,6 +191,20 @@ const AtendimentoIndividual = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
+      { atendimentosPorCaps.length !== 0 &&
+        <GraficoInfo
+          descricao={ `Última competência disponível: ${atendimentosPorCaps
+            .find((item) =>
+              item.estabelecimento === "Todos"
+              && item.estabelecimento_linha_perfil === "Todos"
+              && item.estabelecimento_linha_idade === "Todos"
+              && item.periodo === "Último período"
+            )
+            .nome_mes
+            }` }
+        />
+      }
+
       {
         atendimentosPorCaps.length !== 0
         && getCardsAtendimentosPorCaps(atendimentosPorCaps)

@@ -470,12 +470,19 @@ const PerfilUsuario = () => {
     };
   };
 
-  const getCardsPanoramaGeral = (perfilDeEstabelecimentos, filtroPeriodo) => {
-    const perfilTodosEstabelecimentos = perfilDeEstabelecimentos.find((item) =>
+  const filtrarDadosGeraisPorPeriodo = (dados, filtroPeriodo) => {
+    return dados.find((item) =>
       item.estabelecimento === "Todos"
       && item.estabelecimento_linha_perfil === "Todos"
       && item.estabelecimento_linha_idade === "Todos"
       && item.periodo === filtroPeriodo
+    );
+  };
+
+  const getCardsPanoramaGeral = (perfilDeEstabelecimentos, filtroPeriodo) => {
+    const perfilTodosEstabelecimentos = filtrarDadosGeraisPorPeriodo(
+      perfilDeEstabelecimentos,
+      filtroPeriodo
     );
 
     const {
@@ -549,6 +556,13 @@ const PerfilUsuario = () => {
         tooltip="Usuários ativos: Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) nos três meses anteriores ao mês de referência.
         Usuários inativos: Usuários que não tiveram nenhum procedimento registrado no serviço há mais de 3 meses."
       />
+
+      { perfilPorEstabelecimento.length !== 0 &&
+        <GraficoInfo
+          descricao={ `Última competência disponível: ${filtrarDadosGeraisPorPeriodo(perfilPorEstabelecimento, "Último período").nome_mes
+            }` }
+        />
+      }
 
       <GraficoInfo
         titulo="Panorama geral"

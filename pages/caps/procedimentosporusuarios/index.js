@@ -183,6 +183,8 @@ const ProcedimentosPorUsuarios = () => {
       item.estabelecimento === filtroEstabelecimentoProcedimento.value
       && periodosSelecionados.includes(item.periodo)
       && item.tempo_servico_descricao
+      && item.estabelecimento_linha_perfil === "Todos"
+      && item.estabelecimento_linha_idade === "Todos"
     );
     const procedimentosAgregados = agregarPorTempoDeServico(procedimentosFiltrados);
 
@@ -258,6 +260,20 @@ const ProcedimentosPorUsuarios = () => {
         descricao="Taxa de procedimentos registrados pelo número de usuários com fichas movimentadas durante o mês de referência"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
+
+      { procedimentosPorEstabelecimento.length !== 0 &&
+        <GraficoInfo
+          descricao={ `Última competência disponível: ${procedimentosPorEstabelecimento
+            .find((item) =>
+              item.estabelecimento === "Todos"
+              && item.estabelecimento_linha_perfil === "Todos"
+              && item.estabelecimento_linha_idade === "Todos"
+              && item.periodo === "Último período"
+            )
+            .nome_mes
+            }` }
+        />
+      }
 
       {
         procedimentosPorEstabelecimento.length !== 0

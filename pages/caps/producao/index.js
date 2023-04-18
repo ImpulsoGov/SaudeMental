@@ -332,6 +332,20 @@ const Producao = () => {
         fonte="Fonte: BPA-c, BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
+      { procedimentosPorHora.length !== 0 &&
+        <GraficoInfo
+          descricao={ `Última competência disponível: ${procedimentosPorHora
+            .find((item) =>
+              item.estabelecimento === "Todos"
+              && item.estabelecimento_linha_perfil === "Todos"
+              && item.estabelecimento_linha_idade === "Todos"
+              && item.periodo === "Último período"
+            )
+            .nome_mes
+            }` }
+        />
+      }
+
       {
         procedimentosPorHora.length !== 0
         && getCardsProcedimentosHoraPorEstabelecimento(procedimentosPorHora)

@@ -131,6 +131,18 @@ const TaxaAbandono = () => {
       />
 
       { abandonoCoortes.length !== 0 &&
+        <GraficoInfo
+          descricao={ `Última competência disponível: ${abandonoCoortes
+            .find((item) =>
+              item.estabelecimento === "Todos"
+              && item.periodo === "Último período"
+            )
+            .nome_mes
+            }` }
+        />
+      }
+
+      { abandonoCoortes.length !== 0 &&
         getCardsAbandonoAcumulado(abandonoCoortes)
       }
 
