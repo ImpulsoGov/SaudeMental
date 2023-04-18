@@ -85,8 +85,16 @@ const ProcedimentosPorUsuarios = () => {
 
   const getCardsProcedimentosPorEstabelecimento = (procedimentos) => {
     const procedimentosPorEstabelecimentoUltimoPeriodo = procedimentos
-      .filter(({ periodo, estabelecimento, estabelecimento_linha_perfil: linhaPerfil }) =>
-        periodo === "Último período" && estabelecimento !== "Todos" && linhaPerfil !== "Todos"
+      .filter(({
+        periodo,
+        estabelecimento,
+        estabelecimento_linha_perfil: linhaPerfil,
+        estabelecimento_linha_idade: linhaIdade
+      }) =>
+        periodo === "Último período"
+        && estabelecimento !== "Todos"
+        && linhaPerfil !== "Todos"
+        && linhaIdade === "Todos"
       );
 
     const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosPorEstabelecimentoUltimoPeriodo);
