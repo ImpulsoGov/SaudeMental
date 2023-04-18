@@ -11,7 +11,7 @@ import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../h
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
-import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
+import { agregarPorRacaCor } from "../../../helpers/graficoRacaECor";
 import styles from "../Caps.module.css";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -237,7 +237,7 @@ const TaxaAbandono = () => {
         </>
       }
 
-      <GraficoInfo
+      {/* <GraficoInfo
         titulo="Raça/Cor*"
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
@@ -277,7 +277,7 @@ const TaxaAbandono = () => {
 
       <GraficoInfo
         descricao="*Dados podem ter problemas de coleta, registro e preenchimento"
-      />
+      /> */}
     </div>
   );
 };
