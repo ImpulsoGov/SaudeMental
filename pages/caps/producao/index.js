@@ -114,6 +114,7 @@ const Producao = () => {
           titulo={ `CAPS ${linhaPerfil}` }
           descricao="Comparativo de produção por hora de trabalho dos profissionais nos CAPS"
           fonte={ `Dados de ${nomeMes}` }
+          tooltip="Indicador é calculado a partir da divisão do total de procedimentos registrados pelo total de horas de trabalho estabelecidas em contrato. De tal modo, dados podem apresentar valores subestimados no caso de férias, licenças, feriados e números de finais de semana no mês."
         />
 
         <Grid12Col
