@@ -8,10 +8,8 @@ import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
-// import { getNovosUsuarios, getResumoNovosUsuarios } from "../../../requests/caps";
+import { getNovosUsuarios, getResumoNovosUsuarios } from "../../../requests/caps";
 import styles from "../Caps.module.css";
-import novosAparecidaJSON from "./novosUsuariosAparecida.json";
-import resumoAparecidaJSON from "./resumoAparecida.json";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
   { value: "Último período", label: "Último período" },
@@ -43,19 +41,16 @@ const NovoUsuario = () => {
   const [filtroEstabelecimentoRacaECor, setFiltroEstabelecimentoRacaECor] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
 
   useEffect(() => {
-    // const getDados = async (municipioIdSus) => {
-    //   setNovosUsusarios(await getNovosUsuarios(municipioIdSus));
-    //   setResumoNovosUsuarios(
-    //     await getResumoNovosUsuarios(municipioIdSus)
-    //   );
-    // };
+    const getDados = async (municipioIdSus) => {
+      setNovosUsusarios(await getNovosUsuarios(municipioIdSus));
+      setResumoNovosUsuarios(
+        await getResumoNovosUsuarios(municipioIdSus)
+      );
+    };
 
-    // if (session?.user.municipio_id_ibge) {
-    //   getDados(session?.user.municipio_id_ibge);
-    // }
-
-    setNovosUsusarios(novosAparecidaJSON);
-    setResumoNovosUsuarios(resumoAparecidaJSON);
+    if (session?.user.municipio_id_ibge) {
+      getDados(session?.user.municipio_id_ibge);
+    }
   }, []);
 
   const agregarPorLinhaPerfil = (usuariosNovos) => {
