@@ -9,7 +9,9 @@ import styles from "../Caps.module.css";
 
 import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
 import { getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
-import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
+// import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
+import perfilAparecidaJSON from "./perfilAparecida.json";
+import porEstabelecimentoAparecidaJSON from "./porEstabelecimentoAparecida.json";
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
@@ -37,16 +39,18 @@ const PerfilUsuario = () => {
   const [filtroPeriodoPanorama, setFiltroPeriodoPanorama] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
 
   useEffect(() => {
-    const getDados = async (municipioIdSus) => {
-      setPerfil(await getPerfilUsuarios(municipioIdSus));
-      setPerfilPorEstabelecimento(
-        await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
-      );
-    };
+    // const getDados = async (municipioIdSus) => {
+    //   setPerfil(await getPerfilUsuarios(municipioIdSus));
+    //   setPerfilPorEstabelecimento(
+    //     await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
+    //   );
+    // };
 
-    if (session?.user.municipio_id_ibge) {
-      getDados(session?.user.municipio_id_ibge);
-    }
+    // if (session?.user.municipio_id_ibge) {
+    //   getDados(session?.user.municipio_id_ibge);
+    // }
+    setPerfil(perfilAparecidaJSON);
+    setPerfilPorEstabelecimento(porEstabelecimentoAparecidaJSON);
   }, []);
 
   const agregarPorEstabelecimentoPeriodoECondicao = (perfil) => {
