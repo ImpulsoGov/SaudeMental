@@ -114,7 +114,7 @@ const TaxaAbandono = () => {
   );
 
   const agregadosPorRacaCor = agregarPorRacaCor(
-    filtrarPorPeriodoEstabelecimento(abandonoPerfil, filtroEstabelecimentoGenero, filtroPeriodoGenero),
+    filtrarPorPeriodoEstabelecimento(abandonoPerfil, filtroEstabelecimentoRacaECor, filtroPeriodoRacaECor),
     "usuario_raca_cor",
     "quantidade_registrada"
   );
