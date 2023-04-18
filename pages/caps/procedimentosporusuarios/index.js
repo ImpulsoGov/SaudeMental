@@ -8,8 +8,8 @@ import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
-import porestabelecimentoJSON from "./porEstabelecimentoRecife.json";
-import portempoJSON from "./porTempoServicoResumoRecife.json";
+import { getPropsFiltroEstabelecimento } from "../../../helpers/filtrosGraficos";
+import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -121,126 +121,13 @@ const ProcedimentosPorUsuarios = () => {
     return cardsProcedimentosPorEstabelecimento;
   };
 
-  const agregarPorEstabelecimentoEPeriodo = (procedimentos) => {
-    const procedimentosAgregados = [];
-
-    procedimentos.forEach((procedimento) => {
-      const {
-        periodo,
-        competencia,
-        estabelecimento,
-        procedimentos_por_usuario: procedimentosPorUsuario,
-      } = procedimento;
-
-      const estabelecimentoEncontrado = procedimentosAgregados
-        .find((item) => item.estabelecimento === estabelecimento);
-
-      if (!estabelecimentoEncontrado) {
-        procedimentosAgregados.push({
-          estabelecimento,
-          procedimentosPorPeriodo: [{
-            periodo,
-            competencia,
-            procedimentosPorUsuario
-          }]
-        });
-      } else {
-        estabelecimentoEncontrado.procedimentosPorPeriodo.push({
-          periodo,
-          competencia,
-          procedimentosPorUsuario
-        });
-      }
-    });
-
-    return procedimentosAgregados;
-  };
-
-  const ordenarProcedimentosPorCompetenciaAsc = (procedimentos) => {
-    return procedimentos.map(({ estabelecimento, procedimentosPorPeriodo }) => ({
-      estabelecimento,
-      procedimentosPorPeriodo: procedimentosPorPeriodo
-        .sort((a, b) => new Date(a.competencia) - new Date(b.competencia))
-    }));
-  };
-
-  const getOpcoesGraficoHistoricoTemporal = (procedimentos, filtroEstabelecimento) => {
-    const procedimentosAgregados = agregarPorEstabelecimentoEPeriodo(procedimentos);
-    const procedimentosOrdenados = ordenarProcedimentosPorCompetenciaAsc(procedimentosAgregados);
-    const procedimentosDeEstabelecimentoFiltrado = procedimentosOrdenados
-      .find(({ estabelecimento }) => estabelecimento === filtroEstabelecimento);
-
-    return {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          label: {
-            backgroundColor: '#6a7985'
-          }
-        }
-      },
-      toolbox: {
-        feature: {
-          saveAsImage: {
-            title: "Salvar como imagem",
-          }
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: procedimentosDeEstabelecimentoFiltrado.procedimentosPorPeriodo
-          .map(({ periodo }) => periodo)
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [
-        {
-          name: procedimentosDeEstabelecimentoFiltrado.estabelecimento,
-          data: procedimentosDeEstabelecimentoFiltrado.procedimentosPorPeriodo
-            .map(({ procedimentosPorUsuario }) => procedimentosPorUsuario),
-          type: 'line',
-          itemStyle: {
-            color: "#5367C9"
-          },
-        }
-      ]
-    };
-  };
-
-  const getPropsFiltroEstabelecimento = (procedimentos, estadoFiltro, funcaoSetFiltro) => {
-    const procedimentosPorEstabelecimento = agregarPorEstabelecimentoEPeriodo(procedimentos);
-    const options = procedimentosPorEstabelecimento
-      .map(({ estabelecimento }) => ({
-        value: estabelecimento,
-        label: estabelecimento
-      }));
-
-    const optionPersonalizada = ({ children, ...props }) => (
-      <components.Control { ...props }>
-        Estabelecimento: { children }
-      </components.Control>
-    );
-
-    return {
-      options,
-      defaultValue: estadoFiltro,
-      selectedValue: estadoFiltro,
-      onChange: (selected) => funcaoSetFiltro({
-        value: selected.value,
-        label: selected.value
-      }),
-      isMulti: false,
-      isSearchable: false,
-      components: { Control: optionPersonalizada },
-      styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
-    };
+  const filtrarPorEstabelecimento = (dados, filtroEstabelecimento) => {
+    return dados
+      .filter((item) =>
+        item.estabelecimento === filtroEstabelecimento.value
+        && item.estabelecimento_linha_perfil === "Todos"
+        // && item.estabelecimento_linha_idade === "Todos"
+      );
   };
 
   const agregarPorTempoDeServico = (procedimentos) => {
@@ -388,7 +275,8 @@ const ProcedimentosPorUsuarios = () => {
 
           <ReactEcharts
             option={ getOpcoesGraficoHistoricoTemporal(
-              procedimentosPorEstabelecimento,
+              filtrarPorEstabelecimento(procedimentosPorEstabelecimento, filtroEstabelecimentoHistorico),
+              "procedimentos_por_usuario",
               filtroEstabelecimentoHistorico.value
             ) }
             style={ { width: "100%", height: "70vh" } }

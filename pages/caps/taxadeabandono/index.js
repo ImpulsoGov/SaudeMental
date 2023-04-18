@@ -1,6 +1,6 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getAbandonoCoortes, getPerfilAbandono } from "../../../requests/caps";
@@ -9,9 +9,8 @@ import ReactEcharts from "echarts-for-react";
 import Select from "react-select";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
+import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import styles from "../Caps.module.css";
-import coortesJSON from "./coortes.json";
-import perfilJSON from "./perfil.json";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
   { value: "Último período", label: "Último período" },
@@ -27,8 +26,6 @@ export function getServerSideProps(ctx) {
 
 const TaxaAbandono = () => {
   const { data: session } = useSession();
-  // const [abandonoCoortes, setAbandonoCoortes] = useState(coortesJSON);
-  // const [abandonoPerfil, setAbandonoPerfil] = useState(perfilJSON);
   const [abandonoCoortes, setAbandonoCoortes] = useState([]);
   const [abandonoPerfil, setAbandonoPerfil] = useState([]);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
@@ -56,7 +53,7 @@ const TaxaAbandono = () => {
     return (
       <>
         <GraficoInfo
-          titulo="Abandono acumulado"
+          titulo="Taxa de não adesão acumulada"
           tooltip="Dos usuários que entraram no início do período indicado, porcentagem que abandonou o serviço nos seis meses seguintes"
           descricao={ `Conjunto de usuários com 1° procedimento em ${abandonosUltimoPeriodo[0].a_partir_do_mes}/${abandonosUltimoPeriodo[0].a_partir_do_ano} e abandono até ${abandonosUltimoPeriodo[0].ate_mes}/${abandonosUltimoPeriodo[0].ate_ano}` }
           fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
@@ -79,61 +76,11 @@ const TaxaAbandono = () => {
     );
   };
 
-  const getOpcoesGraficoHistoricoTemporal = (abandonoCoortes, filtroEstabelecimento) => {
-    const filtradosPorEstabelecimento = abandonoCoortes
-      .filter(({ estabelecimento }) =>
-        estabelecimento === filtroEstabelecimento
+  const filtrarPorEstabelecimento = (dados, filtroEstabelecimento) => {
+    return dados
+      .filter((item) =>
+        item.estabelecimento === filtroEstabelecimento.value
       );
-
-    const ordenadosPorCompetenciaAsc = filtradosPorEstabelecimento
-      .sort((a, b) => new Date(a.competencia) - new Date(b.competencia));
-
-    const periodos = ordenadosPorCompetenciaAsc.map(({ periodo }) => periodo);
-    const porcentagensNaoAdesaoPorPeriodo = ordenadosPorCompetenciaAsc
-      .map(({ usuarios_coorte_nao_aderiram_perc: porcentagemNaoAdesao }) =>
-        porcentagemNaoAdesao
-      );
-
-    return {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          label: {
-            backgroundColor: '#6a7985'
-          }
-        }
-      },
-      toolbox: {
-        feature: {
-          saveAsImage: {
-            title: "Salvar como imagem",
-          }
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: periodos
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [
-        {
-          name: "Taxa de abandono mensal (%):",
-          data: porcentagensNaoAdesaoPorPeriodo,
-          type: 'line',
-          itemStyle: {
-            color: "#5367C9"
-          },
-        }
-      ]
-    };
   };
 
   const agregarPorCondicaoSaude = (perfilDeAbandono) => {
@@ -368,7 +315,7 @@ const TaxaAbandono = () => {
       <GraficoInfo
         titulo="Histórico Temporal"
         descricao="Dos usuários acolhidos há menos de 3 meses, quantos abandonaram o serviço no mês"
-        tooltip="A taxa de não adesão acumulado se refere à porcentagem de usuários que entraram no serviço em um dado mês e abandonaram o serviço em algum dos 3 meses seguintes. A taxa de não adesão mensal se refere à quantidade de usuários que haviam entrado no serviço recentemente e abandonaram o serviço no mês especificado."
+        tooltip="A taxa de não adesão acumulada se refere à porcentagem de usuários que entraram no serviço em um dado mês e abandonaram o serviço em algum dos 3 meses seguintes. A taxa de não adesão mensal se refere à quantidade de usuários que haviam entrado no serviço recentemente e abandonaram o serviço no mês especificado."
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
@@ -386,8 +333,9 @@ const TaxaAbandono = () => {
 
           <ReactEcharts
             option={ getOpcoesGraficoHistoricoTemporal(
-              abandonoCoortes,
-              filtroEstabelecimentoHistorico.value
+              filtrarPorEstabelecimento(abandonoCoortes, filtroEstabelecimentoHistorico),
+              "usuarios_coorte_nao_aderiram_perc",
+              "Taxa de não adesão mensal (%):"
             ) }
             style={ { width: "100%", height: "70vh" } }
           />

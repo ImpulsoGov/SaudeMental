@@ -4,13 +4,12 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
-import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getAtendimentosPorCaps, getPerfilDeAtendimentos, getResumoPerfilDeAtendimentos } from "../../../requests/caps";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
+import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
+import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
+import { getAtendimentosPorCaps, getPerfilDeAtendimentos } from "../../../requests/caps";
 import styles from "../Caps.module.css";
-import perfilJSON from "./perfil.json";
-import porCapsJSON from "./porCaps.json";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
   { value: "Último período", label: "Último período" },
@@ -39,12 +38,7 @@ const AtendimentoIndividual = () => {
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       setPerfilAtendimentos(await getPerfilDeAtendimentos(municipioIdSus));
-      // setResumoPerfilAtendimentos(
-      //   await getResumoPerfilDeAtendimentos(municipioIdSus)[0]
-      // );
       setAtendimentosPorCaps(await getAtendimentosPorCaps(municipioIdSus));
-      // setAtendimentosPorCaps(porCapsJSON);
-      // setPerfilAtendimentos(perfilJSON);
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -126,97 +120,13 @@ const AtendimentoIndividual = () => {
     return cardsAtendimentosPorCaps;
   };
 
-  const agregarPorEstabelecimentoEPeriodo = (atendimentos) => {
-    const atendimentosAgregados = [];
-
-    atendimentos.forEach((atendimento) => {
-      const {
-        periodo,
-        competencia,
-        estabelecimento,
-        perc_apenas_atendimentos_individuais: porcentagemAtendimentos,
-      } = atendimento;
-
-      const estabelecimentoEncontrado = atendimentosAgregados
-        .find((item) => item.estabelecimento === estabelecimento);
-
-      if (!estabelecimentoEncontrado) {
-        atendimentosAgregados.push({
-          estabelecimento,
-          atendimentosPorPeriodo: [{
-            periodo,
-            competencia,
-            porcentagemAtendimentos
-          }]
-        });
-      } else {
-        estabelecimentoEncontrado.atendimentosPorPeriodo.push({
-          periodo,
-          competencia,
-          porcentagemAtendimentos
-        });
-      }
-    });
-
-    return atendimentosAgregados;
-  };
-
-  const ordenarAtendimentosPorCompetenciaAsc = (atendimentos) => {
-    return atendimentos.map(({ estabelecimento, atendimentosPorPeriodo }) => ({
-      estabelecimento,
-      atendimentosPorPeriodo: atendimentosPorPeriodo
-        .sort((a, b) => new Date(a.competencia) - new Date(b.competencia))
-    }));
-  };
-
-  const getOpcoesGraficoHistoricoTemporal = (atendimentos, filtroEstabelecimento) => {
-    const atendimentosAgregados = agregarPorEstabelecimentoEPeriodo(atendimentos);
-    const atendimentosOrdenados = ordenarAtendimentosPorCompetenciaAsc(atendimentosAgregados);
-    const atendimentosDeEstabelecimentoFiltrado = atendimentosOrdenados
-      .find(({ estabelecimento }) => estabelecimento === filtroEstabelecimento);
-
-    return {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          label: {
-            backgroundColor: '#6a7985'
-          }
-        }
-      },
-      toolbox: {
-        feature: {
-          saveAsImage: {
-            title: "Salvar como imagem",
-          }
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: atendimentosDeEstabelecimentoFiltrado.atendimentosPorPeriodo
-          .map(({ periodo }) => periodo)
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [
-        {
-          name: "Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):",
-          data: atendimentosDeEstabelecimentoFiltrado.atendimentosPorPeriodo
-            .map(({ porcentagemAtendimentos }) => porcentagemAtendimentos),
-          type: 'line',
-          itemStyle: {
-            color: "#5367C9"
-          },
-        }
-      ]
-    };
+  const filtrarPorEstabelecimento = (dados, filtroEstabelecimento) => {
+    return dados
+      .filter((item) =>
+        item.estabelecimento === filtroEstabelecimento.value
+        && item.estabelecimento_linha_perfil === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
+      );
   };
 
   const agregarPorCondicaoSaude = (perfilDeAtendimento) => {
@@ -483,8 +393,9 @@ const AtendimentoIndividual = () => {
 
           <ReactEcharts
             option={ getOpcoesGraficoHistoricoTemporal(
-              atendimentosPorCaps,
-              filtroEstabelecimentoHistorico.value
+              filtrarPorEstabelecimento(atendimentosPorCaps, filtroEstabelecimentoHistorico),
+              "perc_apenas_atendimentos_individuais",
+              "Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):"
             ) }
             style={ { width: "100%", height: "70vh" } }
           />

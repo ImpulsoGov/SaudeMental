@@ -8,6 +8,7 @@ import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
+import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { getNovosUsuarios, getResumoNovosUsuarios } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
@@ -135,63 +136,13 @@ const NovoUsuario = () => {
     return cards;
   };
 
-  const getOpcoesGraficoHistoricoTemporal = (novosUsuarios, filtroEstabelecimento) => {
-    const filtradosPorEstabelecimento = novosUsuarios
+  const filtrarPorEstabelecimento = (dados, filtroEstabelecimento) => {
+    return dados
       .filter((item) =>
-        item.estabelecimento === filtroEstabelecimento
+        item.estabelecimento === filtroEstabelecimento.value
         // && item.estabelecimento_linha_perfil === "Todos"
         // && item.estabelecimento_linha_idade === "Todos"
       );
-    console.log("filtroEstabelecimento", filtroEstabelecimento);
-    console.log("filtradosPorEstabelecimento", filtradosPorEstabelecimento);
-
-    const ordenadosPorCompetenciaAsc = filtradosPorEstabelecimento
-      .sort((a, b) => new Date(a.competencia) - new Date(b.competencia));
-
-    const periodos = ordenadosPorCompetenciaAsc.map(({ periodo }) => periodo);
-    const quantidadesUsuariosNovos = ordenadosPorCompetenciaAsc
-      .map(({ usuarios_novos: usuariosNovos }) => usuariosNovos);
-
-    return {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          label: {
-            backgroundColor: '#6a7985'
-          }
-        }
-      },
-      toolbox: {
-        feature: {
-          saveAsImage: {
-            title: "Salvar como imagem",
-          }
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: periodos
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [
-        {
-          name: "Usuários novos:",
-          data: quantidadesUsuariosNovos,
-          type: 'line',
-          itemStyle: {
-            color: "#5367C9"
-          },
-        }
-      ]
-    };
   };
 
   const agregarPorCondicaoSaude = (novosUsuarios) => {
@@ -585,8 +536,9 @@ const NovoUsuario = () => {
 
           <ReactEcharts
             option={ getOpcoesGraficoHistoricoTemporal(
-              resumoNovosUsuarios,
-              filtroEstabelecimentoHistorico.value
+              filtrarPorEstabelecimento(resumoNovosUsuarios, filtroEstabelecimentoHistorico),
+              "usuarios_novos",
+              "Usuários novos:"
             ) }
             style={ { width: "100%", height: "70vh" } }
           />
