@@ -123,7 +123,7 @@ const Producao = () => {
               <CardInfoTipoA
                 titulo={ item.estabelecimento }
                 indicador={ item.procedimentosPorHora }
-                indicarDescricao="procedimentos/hora"
+                indicadorDescricao="procedimentos/hora"
                 indice={ item.porcentagemDifProcedimentosPorHoraAnterior }
                 indiceSimbolo="%"
                 indiceDescricao="últ. mês"
