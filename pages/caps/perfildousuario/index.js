@@ -576,9 +576,9 @@ const PerfilUsuario = () => {
         )
       }
 
-      <GraficoInfo
+      {/* <GraficoInfo
         titulo="Detalhamento por estabelecimento"
-      />
+      /> */}
 
       <GraficoInfo
         titulo="CID dos usuários ativos"
