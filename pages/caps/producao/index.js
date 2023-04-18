@@ -31,7 +31,7 @@ const Producao = () => {
   const [procedimentosPorHora, setProcedimentosPorHora] = useState([]);
   const [procedimentosPorTipo, setProcedimentosPorTipo] = useState([]);
   const [filtroEstabelecimentoCBO, setFiltroEstabelecimentoCBO] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
-  const [filtroPeriodoCBO, setFiltroPeriodoCBO] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroPeriodoCBO, setFiltroPeriodoCBO] = useState({ value: "Último período", label: "Último período" });
   const [filtroEstabelecimentoBPA, setFiltroEstabelecimentoBPA] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoBPA, setFiltroPeriodoBPA] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoRAAS, setFiltroEstabelecimentoRAAS] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
@@ -175,13 +175,13 @@ const Producao = () => {
   };
 
   const filtrarPorHoraEstabelecimentoEPeriodo = (procedimentos, filtroEstabelecimento, filtroPeriodo) => {
-    const periodosSelecionados = getValoresPeriodosSelecionados(filtroPeriodo);
-
     return procedimentos.filter((item) =>
       item.estabelecimento === filtroEstabelecimento.value
-      && periodosSelecionados.includes(item.periodo)
+      && item.periodo === filtroPeriodo.value
       && !OCUPACOES_NAO_ACEITAS.includes(item.ocupacao)
       && item.procedimentos_por_hora
+      && item.estabelecimento_linha_perfil === "Todos"
+      && item.estabelecimento_linha_idade === "Todos"
     );
   };
 
@@ -207,6 +207,7 @@ const Producao = () => {
       filtroEstabelecimentoCBO,
       filtroPeriodoCBO
     );
+
     const procedimentosAgregados = agregarPorOcupacao(procedimentosFiltrados);
 
     return {
@@ -360,7 +361,8 @@ const Producao = () => {
                 ...getPropsFiltroPeriodo(
                   procedimentosPorHora,
                   filtroPeriodoCBO,
-                  setFiltroPeriodoCBO
+                  setFiltroPeriodoCBO,
+                  false
                 )
               } />
             </div>
