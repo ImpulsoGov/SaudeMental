@@ -7,6 +7,7 @@ import { v1 as uuidv1 } from "uuid";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
+import { agregarPorPropriedadeESomarQuantidade, getOpcoesGraficoBarrasProducao } from "../../../helpers/graficoBarrasProducao";
 import { getProcedimentosPorHora, getProcedimentosPorTipo } from "../../../requests/caps";
 import styles from "../Caps.module.css";
 
@@ -36,6 +37,8 @@ const Producao = () => {
   const [filtroPeriodoBPA, setFiltroPeriodoBPA] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoRAAS, setFiltroEstabelecimentoRAAS] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoRAAS, setFiltroPeriodoRAAS] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoProducao, setFiltroEstabelecimentoProducao] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroPeriodoProducao, setFiltroPeriodoProducao] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -140,37 +143,6 @@ const Producao = () => {
     return cardsProcedimentosHoraPorEstabelecimento;
   };
 
-  const agregarPorOcupacao = (procedimentos) => {
-    const procedimentosAgregados = [];
-
-    procedimentos.forEach((procedimento) => {
-      const {
-        periodo,
-        ocupacao,
-        procedimentos_por_hora: procedimentosPorHora
-      } = procedimento;
-      const procedimentoEncontrado = procedimentosAgregados
-        .find((item) => item.ocupacao === ocupacao);
-
-      if (!procedimentoEncontrado) {
-        procedimentosAgregados.push({
-          ocupacao,
-          procedimentosPorPeriodo: [{
-            periodo,
-            procedimentosPorHora
-          }]
-        });
-      } else {
-        procedimentoEncontrado.procedimentosPorPeriodo.push({
-          periodo,
-          procedimentosPorHora
-        });
-      }
-    });
-
-    return procedimentosAgregados;
-  };
-
   const getValoresPeriodosSelecionados = (periodosSelecionados) => {
     return periodosSelecionados.map(({ value }) => value);
   };
@@ -197,46 +169,17 @@ const Producao = () => {
     );
   };
 
-  const getSomaProcedimentosPorPeriodo = (procedimentosPorPeriodo) => {
-    return procedimentosPorPeriodo
-      .reduce((acc, { procedimentosPorHora }) =>
-        acc + procedimentosPorHora,
-        0);
-  };
+  const agregadosPorCBO = agregarPorPropriedadeESomarQuantidade(
+    filtrarPorHoraEstabelecimentoEPeriodo(procedimentosPorHora, filtroEstabelecimentoCBO, filtroPeriodoCBO),
+    "ocupacao",
+    "procedimentos_por_hora"
+  );
 
-  const getOpcoesGraficoProducaoPorCBO = (procedimentos) => {
-    const procedimentosFiltrados = filtrarPorHoraEstabelecimentoEPeriodo(
-      procedimentos,
-      filtroEstabelecimentoCBO,
-      filtroPeriodoCBO
-    );
-
-    const procedimentosAgregados = agregarPorOcupacao(procedimentosFiltrados);
-
-    return {
-      tooltip: {},
-      xAxis: {
-        type: 'category',
-        axisLabel: {
-          rotate: 35,
-          width: 100,
-          overflow: "break"
-        },
-        data: procedimentosAgregados.map(({ ocupacao }) => ocupacao)
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [
-        {
-          data: procedimentosAgregados.map(({ procedimentosPorPeriodo }) =>
-            getSomaProcedimentosPorPeriodo(procedimentosPorPeriodo)),
-          type: 'bar',
-          name: 'Procedimentos por hora'
-        }
-      ]
-    };
-  };
+  const agregadosPorProducao = agregarPorPropriedadeESomarQuantidade(
+    filtrarPorTipoEstabelecimentoEPeriodo(procedimentosPorTipo, filtroEstabelecimentoProducao, filtroPeriodoProducao),
+    "procedimento",
+    "procedimentos_registrados_total"
+  );
 
   const agregarPorProcedimentoTipo = (procedimentos) => {
     const procedimentosAgregados = [];
@@ -399,8 +342,9 @@ const Producao = () => {
           </div>
 
           <ReactEcharts
-            option={ getOpcoesGraficoProducaoPorCBO(
-              procedimentosPorHora
+            option={ getOpcoesGraficoBarrasProducao(
+              agregadosPorCBO,
+              "Procedimentos por hora"
             ) }
             style={ { width: "100%", height: "70vh" } }
           />
@@ -483,6 +427,45 @@ const Producao = () => {
               "RAAS",
               filtroEstabelecimentoRAAS,
               filtroPeriodoRAAS
+            ) }
+            style={ { width: "100%", height: "70vh" } }
+          />
+        </>
+      }
+
+      <GraficoInfo
+        titulo="Produção"
+        fonte="Fonte: BPA-c, BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+      />
+
+      { procedimentosPorTipo.length !== 0 &&
+        <>
+          <div className={ styles.Filtros }>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroEstabelecimento(
+                  procedimentosPorTipo,
+                  filtroEstabelecimentoProducao,
+                  setFiltroEstabelecimentoProducao
+                )
+              } />
+            </div>
+
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroPeriodo(
+                  procedimentosPorTipo,
+                  filtroPeriodoProducao,
+                  setFiltroPeriodoProducao,
+                )
+              } />
+            </div>
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoBarrasProducao(
+              agregadosPorProducao,
+              "Quantidade registrada"
             ) }
             style={ { width: "100%", height: "70vh" } }
           />
