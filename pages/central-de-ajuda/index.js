@@ -58,14 +58,39 @@ const Index = ({ res }) => {
           icon: 'https://media.graphassets.com/Eu5DAy5SnCFbpRetwKSl',
           list: [
             {
+              title: 'Primeiro acesso e gerenciamento de usuários',
+              blocks: [
+                {
+                  subTitle: 'Esqueci qual é o meu e-mail cadastrado',
+                  description: 'Caso não se lembre do e-mail que nos forneceu para a criação do seu login e senha, entre em contato conosco pelo Whatsapp <a href="https://wa.me/message/IX6SKT7NHH7OE1" target="_blank">(11) 94264-2429</a> nos dizendo seu nome e o seu município que nós te reenviaremos o seu e-mail cadastrado.',
+                },
+                {
+                  subTitle: 'Esqueci minha senha',
+                  description: 'Caso não se lembre da senha cadastrada, você pode cadastrar uma nova senha diretamente da tela de login. Na parte superior do <u><a href=" https://saudemental.impulsogov.org/" target="_blank">site</a></u> clique em “Entrar” e depois em “Esqueci minha senha”, seguindo posteriormente os passos que aparecerão na tela.',
+                },
+                {
+                  subTitle: 'Estou fazendo meu primeiro acesso como município parceiro e ainda não tenho uma senha',
+                  description: 'Para realizar o seu primeiro acesso à área restrita, vá na parte superior do <u><a href=" https://saudemental.impulsogov.org/" target="_blank">site</a></u> e clique em “Entrar“. Insira o e-mail que nos forneceu para a criação do seu cadastro e na tela seguinte clique em “Primeiro Acesso“. Nós te enviaremos um código de validação para o seu e-mail cadastrado. Digite o código de validação que você receberá. Em seguida, crie sua senha e realize o login na área restrita.',
+                },
+                {
+                  subTitle: 'Como solicito acesso a um novo usuário?',
+                  description: 'Será necessário que um colaborador do município que já tenha acesso preencha o formulário de suporte disponível ao clicar na seção “Gerenciamento de usuários” da área logada e solicitar “Inclusão de usuário”.<br><br>Caso o pedido venha diretamente de uma das pessoas autorizadas a solicitar novos acessos já vamos aprovar automaticamente. Caso venha de algum usuário não autorizado, vamos entrar em contato com as pessoas previamente autorizadas a liberar o acesso para efetuar a validação.',
+                },
+                {
+                  subTitle: 'Como solicito a exclusão de um usuário?',
+                  description: 'Para solicitar a exclusão de um usuário o mesmo formulário deverá ser utilizado, nesse caso fazendo uma requisição para “Exclusão de usuário”.<br><br>Caso o pedido venha diretamente de uma das pessoas autorizadas a solicitar novos acessos já vamos aprovar automaticamente. Caso venha de algum usuário não autorizado, vamos entrar em contato com as pessoas previamente autorizadas a liberar o acesso para efetuar a validação.'
+                },
+              ]
+            },
+            {
               title: 'Sobre a Impulso',
               blocks: [
                 {
                   concept: {
                     elements: [],
                   },
-                  subTitle: 'Qual é o objetivo da Impulso? Como o trabalho é financiado?',
-                  description: "A Impulso é uma organização sem fins lucrativos, suprapartidária, e nossa missão é impulsionar o uso inteligente de dados e tecnologia no SUS para que todas as pessoas no Brasil tenham acesso a serviços de saúde de qualidade. Trabalhamos para que os profissionais do SUS tenham acesso às informações e ferramentas necessárias para agir de maneira preventiva e resolutiva e, para isso, nos unimos a eles para desenvolver soluções gratuitas que facilitam a identificação de riscos de saúde da população e a tomada de decisão com base em evidências.<br><br>Nosso trabalho é financiado por parceiros (como Institutos, Fundações e e empresas) que acreditam no nosso trabalho e fazem doações que viabilizam a nossa sustentabilidade financeira. Esse modelo permite que possamos oferecer produtos e serviços de forma gratuita para governos, focando nas necessidades da gestão pública e no impacto. <br><br>Para saber mais, acesse o nosso site ([https://www.impulsogov.org/](https://www.impulsogov.org/)) ou entre em contato conosco."
+                  subTitle: 'O que é a ImpulsoGov? Como o trabalho é financiado?',
+                  description: 'A ImpulsoGov é uma organização sem fins lucrativos, suprapartidária, e nossa missão é impulsionar o uso inteligente de dados e tecnologia no SUS para que todas as pessoas no Brasil tenham acesso a serviços de saúde de qualidade. Trabalhamos para que os profissionais do SUS tenham acesso às informações e ferramentas necessárias para agir de maneira preventiva e resolutiva e, para isso, nos unimos a eles para desenvolver soluções gratuitas que facilitam a identificação de riscos de saúde da população e a tomada de decisão com base em evidências.<br><br>Nosso trabalho é financiado por organizações filantrópicas e empresas que acreditam em nosso trabalho e fazem doações que viabilizam a nossa sustentabilidade financeira. Esse modelo permite que possamos oferecer produtos e serviços de forma gratuita para governos, focando nas necessidades da gestão pública e no impacto.<br><br>Para saber mais, acesse o nosso <u><a href=" https://saudemental.impulsogov.org/" target="_blank">site</a></u> ou entre em contato conosco através do <u><a href="saudemental@impulsogov.org" target="_blank">saudemental@impulsogov.org</a></u>.'
                 },
               ]
             },
@@ -81,8 +106,8 @@ const Index = ({ res }) => {
                   description: 'Não é necessário ter nenhum tipo de prontuário ou digitalização de registro do dia-a-dia das unidades para usar o nosso painel. Os dados de CAPS são obtidos a partir das fichas RAAS e BPA que são mensalmente enviados diretamente para o Ministério da Saúde pelas unidades de saúde, secretarias de saúde ou prefeituras (o fluxo pode variar dependendo do seu município). Portanto, contanto que alguém esteja inserindo mensalmente os dados de RAAS e BPA no sistema do Ministério da Saúde, no fluxo que já é padrão para os municípios, sejam os prontuários físicos ou digitais, a ImpulsoGov terá acesso a todos os dados necessários para que você possa ver as informações sobre o seu município no painel de indicadores.<br></br>É importante destacar que, para garantir um melhor funcionando do painel de indicadores para o seu município, os registros devem ser preferencialmente feitos em fichas RAAS, com exceção do acolhimento inicial que parte das fichas de BPA individualizado (BPA-i), sendo poucos os procedimentos que deveriam ser prioritariamente registrados em BPA consolidado (BPA-c).<br></br>Chamamos atenção a esse ponto porque em casos de registros feitos em BPA-c, ao invés de RAAS ou BPA-i, os dados do seu município podem parecer subnotificados, uma vez que o registro consolidado impede o acesso à individualização dos atendimentos que a RAAS e o BPA-i permitem, não sendo possível, por exemplo, contabilizar se determinado paciente está tendo uma oferta adequada de cuidado multiprofissional, ou se não aderiu ao serviço após primeiro acolhimento.',
                 },
                 {
-                  subTitle: 'Os dados disponibilizados são apenas a partir do início da parceria ou existe dados históricos?',
-                  description: 'No painel de indicadores, baseado nas experiências que tivemos com municípios parceiros até o momento, mostramos dados históricos a partir de 2017, esse histórico não é influenciado pela data de início da parceria com a Impulso. Apesar disso, existe a possibilidade de mostrarmos períodos anteriores; caso o seu município queira consultar séries históricas prévias a 2017, orientamos que entre em contato com a nossa equipe para avaliação.',
+                  subTitle: 'O painel disponibiliza somente os dados gerados a partir do início da parceria ou mostra dados anteriores?',
+                  description: 'O painel pode mostrar dados históricos a partir de 2017. Caso o seu município queira consultar séries históricas anteriores, orientamos que entre em contato com a nossa equipe para avaliação.',
                 },
                 {
                   subTitle: 'Como os dados são obtidos?',
@@ -94,7 +119,7 @@ const Index = ({ res }) => {
                 },
                 {
                   subTitle: 'Algo na tela não está carregando! O que fazer?',
-                  description: 'Indicamos uma lista de passos que você deve realizar, nesta ordem, caso algo não esteja carregando na tela:<ol><li>Verifique se sua conexão com a internet está ativa e estável;</li><li>Atualize a página pelo botão de recarregar página no seu navegador, ou utilizando a tecla F5 do teclado;</li><li>Limpe os dados de navegação e realize o login novamente;</li><li>Caso os passos anteriores não solucionem o problema de carregamento, entre em contato com a equipe pelo formulário de suporte.</li></ol>'                
+                  description: 'Indicamos uma lista de passos que você deve realizar, nesta ordem, caso algo não esteja carregando na tela:<ol><li>Verifique se sua conexão com a internet está ativa e estável;</li><li>Atualize a página pelo botão de recarregar página no seu navegador, ou utilizando a tecla F5 do teclado;</li><li>Limpe os dados de navegação do site de Saúde Mental e realize o login novamente. Escolha seu navegador abaixo e siga o passo a passo dele para limpar os dados de navegação:<ul><li><a href="https://support.google.com/accounts/answer/32050?hl=pt-BR&co=GENIE.Platform%3DDesktop" target="_blank">Chrome</a></li><li><a href="https://support.mozilla.org/pt-BR/kb/gerencie-configuracoes-de-armazenamento-local-de-s" target="_blank">Firefox</a></li><li><a href="https://support.microsoft.com/pt-br/microsoft-edge/excluir-cookies-no-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank">Edge</a></li></li></ul><li>Caso os passos anteriores não solucionem o problema de carregamento, entre em contato com a equipe pelo formulário de suporte.</li></ol>',
                 },
                 {
                   subTitle: 'Algum dado parece incorreto ou alguma informação dos CAPS está desatualizada! Como proceder?',
@@ -110,12 +135,8 @@ const Index = ({ res }) => {
                   description: 'O documento possui validade de um ano.'
                 },
                 {
-                  description: 'Pré-selecionamos municípios que possuem, no mínimo, 3 CAPS + pelo menos um CAPS III ou IV.',
-                  subTitle: 'Como os municípios participantes são escolhidos?'
-                },
-                {
-                  description: 'Será necessário que um colaborador do município que já tenha acesso preencha o formulário de suporte disponível ao clicar na seção “Gerenciamento de usuários” da área logada e solicitar “Inclusão de usuário”.<br><br>Para solicitar a exclusão de um usuário o mesmo formulário deverá ser utilizado, nesse caso fazendo uma requisição para “Exclusão de usuário”.',
-                  subTitle: 'Como solicito acesso a um novo usuário? Como consigo pedir a exclusão de um usuário?'
+                  subTitle: 'Como os municípios participantes são escolhidos?',
+                  description: 'Pré-selecionamos municípios que possuem, no mínimo, 3 CAPS + pelo menos um CAPS III ou IV.'
                 },
               ]
             }
