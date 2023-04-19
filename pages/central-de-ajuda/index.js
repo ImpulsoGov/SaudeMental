@@ -58,14 +58,39 @@ const Index = ({ res }) => {
           icon: 'https://media.graphassets.com/Eu5DAy5SnCFbpRetwKSl',
           list: [
             {
+              title: 'Primeiro acesso e gerenciamento de usuários',
+              blocks: [
+                {
+                  subTitle: 'Esqueci qual é o meu e-mail cadastrado',
+                  description: 'Caso não se lembre do e-mail que nos forneceu para a criação do seu login e senha, entre em contato conosco pelo Whatsapp <a href="https://wa.me/message/IX6SKT7NHH7OE1">(11) 94264-2429</a> ([(11) 94264-2429](https://wa.me/message/IX6SKT7NHH7OE1)) nos dizendo seu nome e o seu município que nós te reenviaremos o seu e-mail cadastrado.',
+                },
+                {
+                  subTitle: 'Esqueci minha senha',
+                  description: 'Caso não se lembre da senha cadastrada, você pode cadastrar uma nova senha diretamente da tela de login. Na parte superior do ([site](https://saudemental.impulsogov.org/)) clique em “Entrar” e depois em “Esqueci minha senha”, seguindo posteriormente os passos que aparecerão na tela.',
+                },
+                {
+                  subTitle: 'Estou fazendo meu primeiro acesso como município parceiro e ainda não tenho uma senha',
+                  description: 'Para realizar o seu primeiro acesso à área restrita, vá na parte superior do ([site](https://saudemental.impulsogov.org/)) e clique em “Entrar“. Insira o e-mail que nos forneceu para a criação do seu cadastro e na tela seguinte clique em “Primeiro Acesso“. Nós te enviaremos um código de validação para o seu e-mail cadastrado. Digite o código de validação que você receberá. Em seguida, crie sua senha e realize o login na área restrita.',
+                },
+                {
+                  subTitle: 'Como solicito acesso a um novo usuário?',
+                  description: 'Será necessário que um colaborador do município que já tenha acesso preencha o formulário de suporte disponível ao clicar na seção “Gerenciamento de usuários” da área logada e solicitar “Inclusão de usuário”.<br><br>Caso o pedido venha diretamente de uma das pessoas autorizadas a solicitar novos acessos já vamos aprovar automaticamente. Caso venha de algum usuário não autorizado, vamos entrar em contato com as pessoas previamente autorizadas a liberar o acesso para efetuar a validação.',
+                },
+                {
+                  subTitle: 'Como solicito a exclusão de um usuário?',
+                  description: 'Para solicitar a exclusão de um usuário o mesmo formulário deverá ser utilizado, nesse caso fazendo uma requisição para “Exclusão de usuário”.<br><br>Caso o pedido venha diretamente de uma das pessoas autorizadas a solicitar novos acessos já vamos aprovar automaticamente. Caso venha de algum usuário não autorizado, vamos entrar em contato com as pessoas previamente autorizadas a liberar o acesso para efetuar a validação.'
+                },
+              ]
+            },
+            {
               title: 'Sobre a Impulso',
               blocks: [
                 {
                   concept: {
                     elements: [],
                   },
-                  subTitle: 'Qual é o objetivo da Impulso? Como o trabalho é financiado?',
-                  description: "A Impulso é uma organização sem fins lucrativos, suprapartidária, e nossa missão é impulsionar o uso inteligente de dados e tecnologia no SUS para que todas as pessoas no Brasil tenham acesso a serviços de saúde de qualidade. Trabalhamos para que os profissionais do SUS tenham acesso às informações e ferramentas necessárias para agir de maneira preventiva e resolutiva e, para isso, nos unimos a eles para desenvolver soluções gratuitas que facilitam a identificação de riscos de saúde da população e a tomada de decisão com base em evidências.<br><br>Nosso trabalho é financiado por parceiros (como Institutos, Fundações e e empresas) que acreditam no nosso trabalho e fazem doações que viabilizam a nossa sustentabilidade financeira. Esse modelo permite que possamos oferecer produtos e serviços de forma gratuita para governos, focando nas necessidades da gestão pública e no impacto. <br><br>Para saber mais, acesse o nosso site ([https://www.impulsogov.org/](https://www.impulsogov.org/)) ou entre em contato conosco."
+                  subTitle: 'O que é a ImpulsoGov? Como o trabalho é financiado?',
+                  description: 'A ImpulsoGov é uma organização sem fins lucrativos, suprapartidária, e nossa missão é impulsionar o uso inteligente de dados e tecnologia no SUS para que todas as pessoas no Brasil tenham acesso a serviços de saúde de qualidade. Trabalhamos para que os profissionais do SUS tenham acesso às informações e ferramentas necessárias para agir de maneira preventiva e resolutiva e, para isso, nos unimos a eles para desenvolver soluções gratuitas que facilitam a identificação de riscos de saúde da população e a tomada de decisão com base em evidências.<br><br>Nosso trabalho é financiado por organizações filantrópicas e empresas que acreditam em nosso trabalho e fazem doações que viabilizam a nossa sustentabilidade financeira. Esse modelo permite que possamos oferecer produtos e serviços de forma gratuita para governos, focando nas necessidades da gestão pública e no impacto.<br><br>Para saber mais, acesse o nosso site (https://www.impulsogov.org/) ou entre em contato conosco através do email saudemental@impulsogov.org.'
                 },
               ]
             },
@@ -110,8 +135,8 @@ const Index = ({ res }) => {
                   description: 'O documento possui validade de um ano.'
                 },
                 {
-                  description: 'Pré-selecionamos municípios que possuem, no mínimo, 3 CAPS + pelo menos um CAPS III ou IV.',
-                  subTitle: 'Como os municípios participantes são escolhidos?'
+                  subTitle: 'Como os municípios participantes são escolhidos?',
+                  description: 'Pré-selecionamos municípios que possuem, no mínimo, 3 CAPS + pelo menos um CAPS III ou IV.'
                 },
                 {
                   description: 'Será necessário que um colaborador do município que já tenha acesso preencha o formulário de suporte disponível ao clicar na seção “Gerenciamento de usuários” da área logada e solicitar “Inclusão de usuário”.<br><br>Para solicitar a exclusão de um usuário o mesmo formulário deverá ser utilizado, nesse caso fazendo uma requisição para “Exclusão de usuário”.',
