@@ -62,8 +62,8 @@ const TaxaAbandono = () => {
       <>
         <GraficoInfo
           titulo="Taxa de não adesão acumulada"
-          tooltip="Dos usuários que entraram no início do período indicado, porcentagem que abandonou o serviço nos seis meses seguintes"
-          descricao={ `Conjunto de usuários com 1° procedimento em ${abandonosUltimoPeriodo[0].a_partir_do_mes}/${abandonosUltimoPeriodo[0].a_partir_do_ano} e abandono até ${abandonosUltimoPeriodo[0].ate_mes}/${abandonosUltimoPeriodo[0].ate_ano}` }
+          tooltip="Dos usuários que entraram no início do período indicado, porcentagem que deixou de frequentar nos três meses seguintes (não aderiu ao serviço)"
+          descricao={ `Conjunto de usuários com 1° procedimento em ${abandonosUltimoPeriodo[0].a_partir_do_mes}/${abandonosUltimoPeriodo[0].a_partir_do_ano} e não adesão até ${abandonosUltimoPeriodo[0].ate_mes}/${abandonosUltimoPeriodo[0].ate_ano}` }
           fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
         />
 
@@ -147,9 +147,9 @@ const TaxaAbandono = () => {
       }
 
       <GraficoInfo
-        titulo="Histórico Temporal"
-        descricao="Dos usuários acolhidos há menos de 3 meses, quantos abandonaram o serviço no mês"
-        tooltip="A taxa de não adesão acumulada se refere à porcentagem de usuários que entraram no serviço em um dado mês e abandonaram o serviço em algum dos 3 meses seguintes. A taxa de não adesão mensal se refere à quantidade de usuários que haviam entrado no serviço recentemente e abandonaram o serviço no mês especificado."
+        titulo="Histórico Temporal - Taxa de não adesão mensal"
+        descricao="Dos usuários acolhidos há menos de 3 meses, quantos não aderiram ao serviço no mês"
+        tooltip="Diferente do indicador de não adesão acumulado, que mostra o percentual de usuários que iniciaram o vínculo em um determinado mês e em até 3 meses deixaram de frequentar o CAPS, a taxa de não adesão mensal mostra o percentual de usuários recentes que deixaram de frequentar o serviço em um mês específico. Ou seja, o indicador mensal mostra qual foi o mês que o usuário iniciou o período de inatividade (que precisa ser igual ou superior a 3 meses)."
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
@@ -177,7 +177,7 @@ const TaxaAbandono = () => {
       }
 
       <GraficoInfo
-        titulo="CID dos usuários que abandonaram o serviço"
+        titulo="CID dos usuários que não aderiram ao serviço"
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
