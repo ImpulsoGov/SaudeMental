@@ -49,7 +49,7 @@ const ApsAmbulatorio = () => {
           posicao: null,
           url: ''
         } }
-        texto="Dados referentes à produção da rede de atenção especializada, onde são registrados os procedimentos de psicólogas e psiquiatras de referência (ambulatório)"
+        texto="Dados referentes aos atendimentos em saúde mental realizados na APS que resultaram em encaminhamento para serviços especializados"
         titulo="<strong>Cuidado compartilhado entre APS e ambulatório</strong>"
       />
 
