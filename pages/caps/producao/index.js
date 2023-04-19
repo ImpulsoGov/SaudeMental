@@ -102,6 +102,7 @@ const Producao = () => {
         && linhaPerfil !== "Todos"
         && procedimentosPorHora
         && ocupacao === "Todas"
+        && linhaIdade === "Todos"
       );
 
     const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosPorHoraUltimoPeriodo);
@@ -191,6 +192,8 @@ const Producao = () => {
     return procedimentos.filter((item) =>
       item.estabelecimento === filtroEstabelecimento.value
       && periodosSelecionados.includes(item.periodo)
+      && item.estabelecimento_linha_perfil === "Todos"
+      && item.estabelecimento_linha_idade === "Todos"
     );
   };
 
@@ -284,11 +287,24 @@ const Producao = () => {
       tooltip: {
         trigger: 'item',
       },
+      // legend: {
+      //   show: true,
+      //   orient: 'vertical',
+      //   right: 0,
+      //   top: 50,
+      //   textStyle: {
+      //     width: 200,
+      //     overflow: 'break',
+      //   }
+      // },
       series: [
         {
           type: 'pie',
           radius: ['40%', '80%'],
           avoidLabelOverlap: false,
+          // top: 0,
+          // left: 0,
+          // width: 500,
           label: {
             show: true,
             position: 'inside',
