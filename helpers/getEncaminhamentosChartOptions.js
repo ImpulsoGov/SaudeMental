@@ -28,7 +28,8 @@ const orderByCompetencia = (encaminhamentos) => {
 
 const getEncaminhamentosChartOptions = (encaminhamentos) => {
   const aggregatedEncaminhamentos = aggregateByConduta(encaminhamentos);
-  const orderedEncaminhamentos = orderByCompetencia(aggregatedEncaminhamentos);
+  const orderedByCompetencia = orderByCompetencia(aggregatedEncaminhamentos);
+  const orderedAlphabetic = orderedByCompetencia.sort((a, b) => b.conduta.localeCompare(a.conduta));
 
   const options = {
     tooltip: {
@@ -40,7 +41,7 @@ const getEncaminhamentosChartOptions = (encaminhamentos) => {
       }
     },
     legend: {
-      data: orderedEncaminhamentos.map(({ conduta }) => conduta),
+      data: orderedAlphabetic.map(({ conduta }) => conduta),
       textStyle: {
         fontSize: 14,
         fontWeight: 500,
@@ -63,7 +64,7 @@ const getEncaminhamentosChartOptions = (encaminhamentos) => {
       {
         type: 'category',
         boundaryGap: false,
-        data: orderedEncaminhamentos[0].quantidadesPorPeriodo.map(({ periodo }) => periodo)
+        data: orderedAlphabetic[0].quantidadesPorPeriodo.map(({ periodo }) => periodo)
       }
     ],
     yAxis: [
@@ -73,27 +74,27 @@ const getEncaminhamentosChartOptions = (encaminhamentos) => {
     ],
     series: [
       {
-        name: orderedEncaminhamentos[1].conduta,
+        name: orderedAlphabetic[1].conduta,
         type: 'line',
         stack: 'Total',
         areaStyle: {},
         emphasis: {
           focus: 'series'
         },
-        data: orderedEncaminhamentos[1].quantidadesPorPeriodo.map(({ quantidadeRegistrada }) => quantidadeRegistrada),
+        data: orderedAlphabetic[1].quantidadesPorPeriodo.map(({ quantidadeRegistrada }) => quantidadeRegistrada),
         itemStyle: {
           color: "#8F92FF"
         },
       },
       {
-        name: orderedEncaminhamentos[0].conduta,
+        name: orderedAlphabetic[0].conduta,
         type: 'line',
         stack: 'Total',
         areaStyle: {},
         emphasis: {
           focus: 'series'
         },
-        data: orderedEncaminhamentos[0].quantidadesPorPeriodo.map(({ quantidadeRegistrada }) => quantidadeRegistrada),
+        data: orderedAlphabetic[0].quantidadesPorPeriodo.map(({ quantidadeRegistrada }) => quantidadeRegistrada),
         itemStyle: {
           color: "#CACCFE"
         },
