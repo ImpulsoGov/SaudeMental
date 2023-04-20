@@ -69,7 +69,8 @@ const getEncaminhamentosChartOptions = (encaminhamentos) => {
     ],
     yAxis: [
       {
-        type: 'value'
+        type: 'log',
+        logBase: 10000
       }
     ],
     series: [
