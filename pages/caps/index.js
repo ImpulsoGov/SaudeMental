@@ -1,5 +1,6 @@
 import { ButtonLight, PanelSelectorSM, TituloTexto } from "@impulsogov/design-system";
 import { useRouter } from 'next/router';
+import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 import style from "../duvidas/Duvidas.module.css";
@@ -10,7 +11,6 @@ import ProcedimentosPorUsuarios from "./procedimentosporusuarios";
 import Producao from "./producao";
 import Resumo from "./resumo";
 import TaxaAbandono from "./taxadeabandono";
-import { useEffect, useState } from "react";
 
 
 export async function getServerSideProps(ctx) {
@@ -22,10 +22,19 @@ export async function getServerSideProps(ctx) {
 export default function Paineis() {
   const router = useRouter();
   const [activeTabIndex, setActiveTabIndex] = useState(Number(router.query?.painel));
-  const [activeTitleTabIndex, setActiveTitleTabIndex] = useState(0)
-  useEffect(()=>{
-    setActiveTabIndex(Number(router.query?.painel))
-  },[router.query?.painel])
+  const [activeTitleTabIndex, setActiveTitleTabIndex] = useState(0);
+  useEffect(() => {
+    setActiveTabIndex(Number(router.query?.painel));
+  }, [router.query?.painel]);
+
+  useEffect(() => {
+    router.push({
+      pathname: router.pathname,
+      query: { painel: activeTabIndex }
+    },
+      undefined, { shallow: true }
+    );
+  }, [activeTabIndex]);
 
   return (
     <div>
@@ -52,12 +61,12 @@ export default function Paineis() {
 
       <PanelSelectorSM
         panel={ Number(router.query?.painel) }
-        states = {{
-          activeTabIndex : Number(activeTabIndex),
-          setActiveTabIndex : setActiveTabIndex,
-          activeTitleTabIndex : activeTitleTabIndex,
-          setActiveTitleTabIndex : setActiveTitleTabIndex
-        }}
+        states={ {
+          activeTabIndex: Number(activeTabIndex),
+          setActiveTabIndex: setActiveTabIndex,
+          activeTitleTabIndex: activeTitleTabIndex,
+          setActiveTitleTabIndex: setActiveTitleTabIndex
+        } }
         components={ [[
           <Resumo key={ uuidv1() } />,
           <PerfilUsuario key={ uuidv1() } />,
