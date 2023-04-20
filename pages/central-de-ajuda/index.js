@@ -47,6 +47,7 @@ const Index = ({ res }) => {
               },
               {
                 content: '(11) 94264-2429',
+                link: 'https://wa.me/message/IX6SKT7NHH7OE1',
                 icon: 'https://media.graphassets.com/X8qAQFkrTLapqBDlfkMO'
               }
             ],
