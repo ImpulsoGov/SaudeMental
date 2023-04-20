@@ -182,7 +182,7 @@ const ProcedimentosPorUsuarios = () => {
     const procedimentosFiltrados = procedimentos.filter((item) =>
       item.estabelecimento === filtroEstabelecimentoProcedimento.value
       && periodosSelecionados.includes(item.periodo)
-      && item.tempo_servico_descricao
+      && item.tempo_servico_descricao !== null
       && item.estabelecimento_linha_perfil === "Todos"
       && item.estabelecimento_linha_idade === "Todos"
     );

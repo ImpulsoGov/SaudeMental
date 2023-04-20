@@ -97,6 +97,7 @@ const TaxaAbandono = () => {
     return dados.filter((item) =>
       item.estabelecimento === filtroEstabelecimento.value
       && periodosSelecionados.includes(item.periodo)
+      && item.estatus_adesao_mes === "Evadiram no mês"
     );
   };
 

@@ -259,9 +259,11 @@ const PerfilUsuario = () => {
 
   const getOpcoesGraficoCID = (perfil) => {
     const perfilFiltrado = perfil
-      .filter(({ estabelecimento, periodo }) =>
-        estabelecimento === filtroEstabelecimentoCID.value
-        && periodo === filtroCompetenciaCID.value
+      .filter((item) =>
+        item.estabelecimento === filtroEstabelecimentoCID.value
+        && item.periodo === filtroCompetenciaCID.value
+        && item.estabelecimento_linha_perfil === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
       );
     const [perfilAgregado] = agregarPorEstabelecimentoPeriodoECondicao(perfilFiltrado);
 
@@ -304,11 +306,14 @@ const PerfilUsuario = () => {
     const NOME_DIMENSAO = "genero";
     const LABELS_DIMENSAO = ["Masculino", "Feminino"];
 
-    const perfilAgregado = agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfil);
-    const { ativosPorFaixaEtariaEGenero } = perfilAgregado
-      .find(({ estabelecimento, periodo }) => estabelecimento === filtroEstabelecimentoGenero.value
-        && periodo === filtroCompetenciaGenero.value
+    const perfilFiltrado = perfil
+      .filter((item) =>
+        item.estabelecimento === filtroEstabelecimentoGenero.value
+        && item.periodo === filtroCompetenciaGenero.value
+        && item.estabelecimento_linha_perfil === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
       );
+    const [perfilAgregado] = agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfilFiltrado);
 
     return {
       legend: {
@@ -317,7 +322,7 @@ const PerfilUsuario = () => {
       tooltip: {},
       dataset: {
         dimensions: [NOME_DIMENSAO, ...LABELS_DIMENSAO],
-        source: ativosPorFaixaEtariaEGenero
+        source: perfilAgregado.ativosPorFaixaEtariaEGenero
           .sort((a, b) => a.faixaEtaria.localeCompare(b.faixaEtaria))
           .map((item) => ({
             [NOME_DIMENSAO]: item.faixaEtaria,
@@ -369,18 +374,21 @@ const PerfilUsuario = () => {
     const NOME_DIMENSAO = "usuariosAtivos";
     const LABEL_DIMENSAO = "Usuários ativos";
 
-    const perfilAgregado = agregarPorEstabelecimentoPeriodoERacaCor(perfil);
-    const { ativosPorRacaCor } = perfilAgregado
-      .find(({ estabelecimento, periodo }) => estabelecimento === filtroEstabelecimentoRacaCor.value
-        && periodo === filtroCompetenciaRacaCor.value
+    const perfilFiltrado = perfil
+      .filter((item) =>
+        item.estabelecimento === filtroEstabelecimentoRacaCor.value
+        && item.periodo === filtroCompetenciaRacaCor.value
+        && item.estabelecimento_linha_perfil === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
       );
+    const [perfilAgregado] = agregarPorEstabelecimentoPeriodoERacaCor(perfilFiltrado);
 
     return {
       legend: {},
       tooltip: {},
       dataset: {
         dimensions: [NOME_DIMENSAO, LABEL_DIMENSAO],
-        source: ativosPorRacaCor
+        source: perfilAgregado.ativosPorRacaCor
           .sort((a, b) => b.racaCor.localeCompare(a.racaCor))
           .map((item) => ({
             [NOME_DIMENSAO]: item.racaCor,
@@ -414,14 +422,16 @@ const PerfilUsuario = () => {
       }
     };
 
-    const perfilAgregado = agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil);
-    const dadosPerfil = perfilAgregado
-      .find(({ estabelecimento, periodo }) =>
-        estabelecimento === filtroEstabelecimentoUsuariosAtivos.value
-        && periodo === filtroCompetenciaUsuariosAtivos.value
+    const perfilFiltrado = perfil
+      .filter((item) =>
+        item.estabelecimento === filtroEstabelecimentoUsuariosAtivos.value
+        && item.periodo === filtroCompetenciaUsuariosAtivos.value
+        && item.estabelecimento_linha_perfil === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
       );
+    const [perfilAgregado] = agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfilFiltrado);
 
-    const dadosUsuariosAtivos = dadosPerfil[PROPIEDADES_POR_TIPO[tipo].prop_agregacao];
+    const dadosUsuariosAtivos = perfilAgregado[PROPIEDADES_POR_TIPO[tipo].prop_agregacao];
 
     return {
       title: {

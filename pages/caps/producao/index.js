@@ -103,7 +103,7 @@ const Producao = () => {
         periodo === "Último período"
         && estabelecimento !== "Todos"
         && linhaPerfil !== "Todos"
-        && procedimentosPorHora
+        && procedimentosPorHora !== null
         && ocupacao === "Todas"
         && linhaIdade === "Todos"
       );
@@ -152,7 +152,7 @@ const Producao = () => {
       item.estabelecimento === filtroEstabelecimento.value
       && item.periodo === filtroPeriodo.value
       && !OCUPACOES_NAO_ACEITAS.includes(item.ocupacao)
-      && item.procedimentos_por_hora
+      && item.procedimentos_por_hora !== null
       && item.estabelecimento_linha_perfil === "Todos"
       && item.estabelecimento_linha_idade === "Todos"
     );
