@@ -98,31 +98,31 @@ const Resumo = () => {
             items={ [
               <>
                 <CardInfoTipoA
-                  indicador='2'
-                  indice='10'
+                  indicador={ resumoMunicipio.usuarios_coorte_nao_aderiram }
+                  indice={ resumoMunicipio.dif_usuarios_coorte_nao_aderiram }
                   indiceDescricao="p.p. semestre anterior"
                   indicadorSimbolo="%"
                 />
               </>,
               <>
                 <CardInfoTipoA
-                  indicador='85'
-                  fonte='Vida'
+                  indicador={ resumoMunicipio.maior_taxa_nao_adesao }
+                  fonte={ resumoMunicipio.maior_taxa_estabelecimento_nao_adesao }
                   indicadorSimbolo="%"
                   titulo="CAPS com maior taxa"
                 />
               </>,
               <>
                 <CardInfoTipoA
-                  indicador='30 a 40 anos'
-                  fonte='Masculino'
+                  indicador={ resumoMunicipio.predominio_faixa_etaria }
+                  fonte={ resumoMunicipio.predominio_sexo }
                   titulo="Perfil do usuário"
                 />
               </>,
               <>
                 <CardInfoTipoA
-                  indicador='22 usuários'
-                  fonte='Uso de subs. psicoativa'
+                  indicador={ `${resumoMunicipio.predominio_condicao_grupo_cid10_usuarios} usuários` }
+                  fonte={ resumoMunicipio.predominio_condicao_grupo_descricao_curta_cid10 }
                   titulo="CID mais frequente"
                 />
               </>,
@@ -130,7 +130,6 @@ const Resumo = () => {
           />
         </>
       }
-
 
       { resumoMunicipio &&
         <>
