@@ -183,8 +183,8 @@ const ProcedimentosPorUsuarios = () => {
       item.estabelecimento === filtroEstabelecimentoProcedimento.value
       && periodosSelecionados.includes(item.periodo)
       && item.tempo_servico_descricao !== null
-      && item.estabelecimento_linha_perfil === "Todos"
-      && item.estabelecimento_linha_idade === "Todos"
+      // && item.estabelecimento_linha_perfil === "Todos"
+      // && item.estabelecimento_linha_idade === "Todos"
     );
     const procedimentosAgregados = agregarPorTempoDeServico(procedimentosFiltrados);
 
