@@ -5,7 +5,7 @@ import style from "../duvidas/Duvidas.module.css";
 export async function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
 
-  if(redirect) return redirect;
+  if (redirect) return redirect;
 
   return { props: {} };
 }
@@ -22,26 +22,26 @@ const Index = () => {
 
   return (
     <>
-      <div className={style.BotaoVoltar}>
+      <div className={ style.BotaoVoltar }>
         <ButtonLight
-          icone={{posicao: "right",url: "https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG"}}
+          icone={ { posicao: "right", url: "https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG" } }
           label="VOLTAR"
           link="/inicio"
         />
       </div>
 
-      <TituloTexto {...args} />
+      <TituloTexto { ...args } />
 
-      <div className={style.Iframe} align="center">
+      <div className={ style.Iframe } align="center">
         <iframe
           width="85%"
           height="2000"
-          src="https://docs.google.com/forms/d/e/1FAIpQLSfaZYOSLz3ka3JgR8uXi20oE5sBKZqvBgAaoMAzlukyXeNXKw/viewform"
+          src="https://docs.google.com/forms/d/e/1FAIpQLSfvNblX7blLAOGkGeAdjSx5m_h_1v0w1MGQwIXKq3kMJ4x_aw/viewform"
           allowFullScreen
         />
       </div>
     </>
-  )
-}
+  );
+};
 
 export default Index;
