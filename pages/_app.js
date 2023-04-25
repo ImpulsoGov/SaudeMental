@@ -122,7 +122,7 @@ function MyApp(props) {
                   },
                   botaoAjuda: {
                     label: "ESTOU COM PROBLEMAS NO LOGIN",
-                    link: ""
+                    link: "https://wa.me/message/HAR5RB43UWVEG1"
                   }
                 } }
                 primeiroAcesso={ {
