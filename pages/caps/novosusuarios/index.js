@@ -104,7 +104,7 @@ const NovoUsuario = () => {
         periodo === "Último período"
         && estabelecimento !== "Todos"
         && linhaPerfil !== "Todos"
-        // && linhaIdade === "Todos"
+        && linhaIdade === "Todos"
       );
 
     const usuariosAgregados = agregarPorLinhaPerfil(novosUsuariosUltimoPeriodo);
@@ -142,8 +142,8 @@ const NovoUsuario = () => {
     return dados
       .filter((item) =>
         item.estabelecimento === filtroEstabelecimento.value
-        // && item.estabelecimento_linha_perfil === "Todos"
-        // && item.estabelecimento_linha_idade === "Todos"
+        && item.estabelecimento_linha_perfil === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
       );
   };
 
