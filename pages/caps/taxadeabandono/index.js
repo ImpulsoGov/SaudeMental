@@ -37,9 +37,9 @@ const TaxaAbandono = () => {
     value: "Todos", label: "Todos"
   });
   const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
-  const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState({ value: "", label: "" });
+  const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
-  const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState({ value: "", label: "" });
+  const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoRacaECor, setFiltroEstabelecimentoRacaECor] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
 
@@ -93,18 +93,18 @@ const TaxaAbandono = () => {
 
   const filtrarPorPeriodoEstabelecimento = (dados, filtroEstabelecimento, filtroPeriodo) => {
     const periodosSelecionados = filtroPeriodo.map(({ value }) => value);
-    let estabelecimento = filtroEstabelecimento.value;
+    // let estabelecimento = filtroEstabelecimento.value;
 
-    if (!estabelecimento && dados.length !== 0) {
-      estabelecimento = dados[0].estabelecimento;
+    // if (!estabelecimento && dados.length !== 0) {
+    //   estabelecimento = dados[0].estabelecimento;
 
-      setFiltroEstabelecimentoCID({ value: estabelecimento, label: estabelecimento });
-      setFiltroEstabelecimentoGenero({ value: estabelecimento, label: estabelecimento });
-    }
+    //   setFiltroEstabelecimentoCID({ value: estabelecimento, label: estabelecimento });
+    //   setFiltroEstabelecimentoGenero({ value: estabelecimento, label: estabelecimento });
+    // }
 
     return dados.filter((item) =>
-      // item.estabelecimento === filtroEstabelecimento.value
-      item.estabelecimento === estabelecimento
+      item.estabelecimento === filtroEstabelecimento.value
+      // item.estabelecimento === estabelecimento
       && periodosSelecionados.includes(item.periodo)
       && item.estatus_adesao_mes === "Evadiram no mês"
     );
