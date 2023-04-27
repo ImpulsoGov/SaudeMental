@@ -611,12 +611,10 @@ const PerfilUsuario = () => {
             </div>
           </div>
 
-          <div className={ styles.GraficoCIDContainer }>
-            <ReactEcharts
-              option={ getOpcoesGraficoCID(perfil) }
-              style={ { width: "40%", height: "100%" } }
-            />
-          </div>
+          <ReactEcharts
+            option={ getOpcoesGraficoCID(perfil) }
+            style={ { width: "100%", height: "70vh" } }
+          />
         </>
       }
 
