@@ -247,7 +247,7 @@ const Resumo = () => {
                 descricao={ `das ${internacoesRapsAdmissoes12m["internacoes_total"]} internações iniciadas entre ${internacoesRapsAdmissoes12m["a_partir_de_mes"]}/${internacoesRapsAdmissoes12m["a_partir_de_ano"]} e ${internacoesRapsAdmissoes12m["ate_mes"]}/${internacoesRapsAdmissoes12m["ate_ano"]}` }
                 indicador={ internacoesRapsAdmissoes12m["internacoes_atendimento_raps_antes"] }
                 titulo="Atendidos na RAPS nos últimos 6 meses antes da Internação"
-                tooltip="CAPS que realizaram menos de um matriciamento por mês no ano, até o mês de referência"
+                tooltip="Usuários que tiveram ao menos um procedimento RAAS registrado em serviços RAPS dentro dos 6 meses anteriores a sua internação na rede hospitalar"
                 porcentagemSim={ getPorcentagemInternacoesFeitas(internacoesRapsAdmissoesVertical) }
                 porcentagemNao={ getPorcentagemInternacoesNaoFeitas(internacoesRapsAdmissoesVertical) }
               />
