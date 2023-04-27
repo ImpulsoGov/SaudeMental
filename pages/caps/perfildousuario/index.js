@@ -53,7 +53,7 @@ const PerfilUsuario = () => {
     const perfilAgregado = [];
 
     perfil.forEach((dado) => {
-      const { estabelecimento, competencia, periodo, ativos_mes: usuariosAtivos, usuario_condicao_saude: condicaoSaude } = dado;
+      const { estabelecimento, competencia, periodo, ativos_3meses: usuariosAtivos, usuario_condicao_saude: condicaoSaude } = dado;
       const perfilEncontrado = perfilAgregado
         .find((item) => item.estabelecimento === estabelecimento && item.periodo === periodo);
 
@@ -85,7 +85,7 @@ const PerfilUsuario = () => {
         estabelecimento,
         competencia,
         periodo,
-        ativos_mes: usuariosAtivos,
+        ativos_3meses: usuariosAtivos,
         usuario_faixa_etaria: faixaEtaria,
         usuario_sexo: usuarioSexo
       } = dado;
@@ -125,7 +125,7 @@ const PerfilUsuario = () => {
         estabelecimento,
         competencia,
         periodo,
-        ativos_mes: usuariosAtivos,
+        ativos_3meses: usuariosAtivos,
         usuario_raca_cor: racaCor
       } = dado;
       const perfilEncontrado = perfilAgregado
@@ -159,7 +159,7 @@ const PerfilUsuario = () => {
         estabelecimento,
         competencia,
         periodo,
-        ativos_mes: usuariosAtivos,
+        ativos_3meses: usuariosAtivos,
         usuario_situacao_rua: situacaoRua,
         usuario_abuso_substancias: abusoSubstancias
       } = dado;
