@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getAbandonoCoortes, getPerfilAbandono } from "../../../requests/caps";
+import { getAbandonoCoortes, getAbandonoMensal, getPerfilAbandono } from "../../../requests/caps";
 
 import ReactEcharts from "echarts-for-react";
 import Select from "react-select";
@@ -33,6 +33,7 @@ const TaxaAbandono = () => {
   const { data: session } = useSession();
   const [abandonoCoortes, setAbandonoCoortes] = useState([]);
   const [abandonoPerfil, setAbandonoPerfil] = useState([]);
+  const [abandonoMensal, setAbandonoMensal] = useState([]);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
     value: "Todos", label: "Todos"
   });
@@ -47,6 +48,7 @@ const TaxaAbandono = () => {
     const getDados = async (municipioIdSus) => {
       setAbandonoCoortes(await getAbandonoCoortes(municipioIdSus));
       setAbandonoPerfil(await getPerfilAbandono(municipioIdSus));
+      setAbandonoMensal(await getAbandonoMensal(municipioIdSus));
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -93,18 +95,9 @@ const TaxaAbandono = () => {
 
   const filtrarPorPeriodoEstabelecimento = (dados, filtroEstabelecimento, filtroPeriodo) => {
     const periodosSelecionados = filtroPeriodo.map(({ value }) => value);
-    // let estabelecimento = filtroEstabelecimento.value;
-
-    // if (!estabelecimento && dados.length !== 0) {
-    //   estabelecimento = dados[0].estabelecimento;
-
-    //   setFiltroEstabelecimentoCID({ value: estabelecimento, label: estabelecimento });
-    //   setFiltroEstabelecimentoGenero({ value: estabelecimento, label: estabelecimento });
-    // }
 
     return dados.filter((item) =>
       item.estabelecimento === filtroEstabelecimento.value
-      // item.estabelecimento === estabelecimento
       && periodosSelecionados.includes(item.periodo)
       && item.estatus_adesao_mes === "Evadiram no mês"
     );
@@ -163,12 +156,12 @@ const TaxaAbandono = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { abandonoCoortes.length !== 0 &&
+      { abandonoMensal.length !== 0 &&
         <>
           <div className={ styles.Filtro }>
             <Select {
               ...getPropsFiltroEstabelecimento(
-                abandonoCoortes,
+                abandonoMensal,
                 filtroEstabelecimentoHistorico,
                 setFiltroEstabelecimentoHistorico
               )
@@ -177,8 +170,8 @@ const TaxaAbandono = () => {
 
           <ReactEcharts
             option={ getOpcoesGraficoHistoricoTemporal(
-              filtrarPorEstabelecimento(abandonoCoortes, filtroEstabelecimentoHistorico),
-              "usuarios_coorte_nao_aderiram_perc",
+              filtrarPorEstabelecimento(abandonoMensal, filtroEstabelecimentoHistorico),
+              "usuarios_evasao_perc",
               "Taxa de não adesão mensal (%):"
             ) }
             style={ { width: "100%", height: "70vh" } }
