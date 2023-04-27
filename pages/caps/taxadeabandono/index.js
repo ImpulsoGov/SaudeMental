@@ -1,6 +1,6 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getAbandonoCoortes, getPerfilAbandono } from "../../../requests/caps";
@@ -10,8 +10,6 @@ import Select from "react-select";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import styles from "../Caps.module.css";
-import coortesJSON from "./coortes.json";
-import perfilJSON from "./perfil.json";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
   { value: "Último período", label: "Último período" },
@@ -56,7 +54,7 @@ const TaxaAbandono = () => {
     return (
       <>
         <GraficoInfo
-          titulo="Abandono acumulado"
+          titulo="Taxa de não adesão acumulada"
           tooltip="Dos usuários que entraram no início do período indicado, porcentagem que abandonou o serviço nos seis meses seguintes"
           descricao={ `Conjunto de usuários com 1° procedimento em ${abandonosUltimoPeriodo[0].a_partir_do_mes}/${abandonosUltimoPeriodo[0].a_partir_do_ano} e abandono até ${abandonosUltimoPeriodo[0].ate_mes}/${abandonosUltimoPeriodo[0].ate_ano}` }
           fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
@@ -125,7 +123,7 @@ const TaxaAbandono = () => {
       },
       series: [
         {
-          name: "Taxa de abandono mensal (%):",
+          name: "Taxa de não adesão mensal (%):",
           data: porcentagensNaoAdesaoPorPeriodo,
           type: 'line',
           itemStyle: {
@@ -395,7 +393,7 @@ const TaxaAbandono = () => {
       }
 
       <GraficoInfo
-        titulo="CID dos usuários que abandonaram o serviço"
+        titulo="CID dos usuários que não aderiram ao serviço"
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
