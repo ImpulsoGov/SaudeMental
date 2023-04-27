@@ -1,14 +1,14 @@
-import { ButtonLight, PanelSelectorSM, TituloTexto } from "@impulsogov/design-system";
+import { ButtonLight, TituloTexto } from "@impulsogov/design-system";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
-import { v1 as uuidv1 } from 'uuid';
+// import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 import style from "../duvidas/Duvidas.module.css";
-import Ambulatorio from "./ambulatorio";
-import ConsultorioNaRua from "./consultorio-na-rua";
-import ReducaoDeDanos from "./reducao-de-danos";
-import Resumo from "./resumo";
-
+// import style from "../duvidas/Duvidas.module.css";
+// import Ambulatorio from "./ambulatorio";
+// import ConsultorioNaRua from "./consultorio-na-rua";
+// import ReducaoDeDanos from "./reducao-de-danos";
+// import Resumo from "./resumo";
 
 export async function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -47,7 +47,17 @@ export default function Paineis() {
             link="/central-de-ajuda" />
         </div>
       </div>
+
       <TituloTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        texto="Olá! Nessa parte do painel você encontrará informações relativas ao Ambulatório de Saúde Mental, Consultório na Rua e ações de Redução de Danos do seu município. Lançaremos esses dados nas próximas semanas e, assim que eles estiverem disponíveis, avisaremos você por e-mail e whatsapp."
+        titulo="<strong>EM BREVE</strong>"
+      />
+
+      {/* <TituloTexto
         imagem={ {
           posicao: null,
           url: ''
@@ -91,7 +101,7 @@ export default function Paineis() {
             label: ''
           }
         ] }
-      />
+      /> */}
     </div>
   );
 }
