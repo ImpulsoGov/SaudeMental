@@ -99,9 +99,9 @@ const Resumo = () => {
               <>
                 <CardInfoTipoA
                   indicador={ resumoMunicipio.usuarios_coorte_nao_aderiram }
-                  indice={ resumoMunicipio.dif_usuarios_coorte_nao_aderiram }
-                  indiceDescricao="p.p. semestre anterior"
                   indicadorSimbolo="%"
+                  titulo="Taxa de não adesão acumulada"
+                  fonte="Todos os estabelecimentos"
                 />
               </>,
               <>
