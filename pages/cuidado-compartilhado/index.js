@@ -1,63 +1,98 @@
-import { PanelSelector } from "@impulsogov/design-system";
-import { useContext, useEffect, useState } from "react";
-import { Context } from "../../contexts/Context";
-import { useRouter } from 'next/router'
+import { ButtonLight, PanelSelectorSM, TituloTexto } from "@impulsogov/design-system";
+import { useRouter } from 'next/router';
+import { useEffect, useState } from "react";
+import { v1 as uuidv1 } from 'uuid';
+import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
+import style from "../duvidas/Duvidas.module.css";
+import ApsAmbulatorio from "./aps-ambulatorio";
+import ApsCaps from "./aps-caps";
+import RapsHospitalar from "./raps-hospitalar";
+import Resumo from "./resumo";
 
-export default function Paineis() {
-  const [city] = useContext(Context);
-  const [panelLinks, setPanelLink] = useState([]);
+export async function getServerSideProps(ctx) {
+  const redirect = redirectHomeNotLooged(ctx);
+  if (redirect) return redirect;
+  return { props: {} };
+}
 
-  useEffect(()=> {
-    if(city === "Aracaju - SE"){
-      setPanelLink([
-        "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_3p8joonopc",
-        "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_8kr3t7popc",
-        "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_pidyab2upc",
-        "https://datastudio.google.com/embed/reporting/988e1312-3b59-455a-93c7-5c210f579ac6/page/p_e0msek2upc",
-      ])
-    }
-    if(city === "Recife - PE"){
-      setPanelLink([
-        "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_3p8joonopc",
-        "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_8kr3t7popc",
-        "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_pidyab2upc",
-        "https://datastudio.google.com/embed/reporting/b1aca465-3494-4d99-a932-ec418300fe19/page/p_e0msek2upc",
-      ])
-    }
+const Index = ({ }) => {
+  const router = useRouter();
+  const [activeTabIndex, setActiveTabIndex] = useState(Number(router.query?.painel));
+  const [activeTitleTabIndex, setActiveTitleTabIndex] = useState(0);
+  useEffect(() => {
+    setActiveTabIndex(Number(router.query?.painel));
+  }, [router.query?.painel]);
 
-    if(city === "Aparecida de Goiânia - GO"){
-      setPanelLink([
-        "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_3p8joonopc",
-        "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_8kr3t7popc",
-        "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_pidyab2upc",
-        "https://datastudio.google.com/embed/reporting/6dc71cf6-e428-462a-807f-78e61d33fd57/page/p_e0msek2upc",
-      ])
-    }
-  }, [city]);
-  const labels = [
-    {
-      label: "RESUMO",
+  useEffect(() => {
+    router.push({
+      pathname: router.pathname,
+      query: { painel: activeTabIndex }
     },
-    {
-      label: "APS E CAPS",
-    },
-    {
-      label: "APS E AMBULATÓRIO",
-    },
-    {
-      label: "RAPS E ATENÇÃO HOSPITALAR",
-    },
-  ]
-  const router = useRouter()
-  const panel = router.query?.painel
+      undefined, { shallow: true }
+    );
+  }, [activeTabIndex]);
+
   return (
-    <div style={{fontFamily: "Inter"}}>
-      <PanelSelector
-        panel={Number(panel)}
-        links={[panelLinks]}
-        list={[labels]}
-        titles={[{label:"Cuidado compartilhado de Saúde Mental entre as redes de saúde"}]}
+    <div>
+      <div className={ style.BotaoVoltar }>
+        <ButtonLight
+          icone={ { posicao: 'right', url: 'https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG' } }
+          label="VOLTAR"
+          link="/inicio" />
+        <div style={ { position: "relative", left: "70%" } }>
+          <ButtonLight
+            icone={ { posicao: 'right', url: 'https://media.graphassets.com/yaYuyi0KS3WkqhKPUzro' } }
+            label="CENTRAL DE AJUDA"
+            link="/central-de-ajuda" />
+        </div>
+      </div>
+      <TituloTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        titulo="Cuidado compartilhado de Saúde Mental entre as redes de saúde"
+        texto=""
+      />
+
+      <PanelSelectorSM
+        panel={ Number(router.query?.painel) }
+        states={ {
+          activeTabIndex: Number(activeTabIndex),
+          setActiveTabIndex: setActiveTabIndex,
+          activeTitleTabIndex: activeTitleTabIndex,
+          setActiveTitleTabIndex: setActiveTitleTabIndex
+        } }
+        components={ [[
+          <Resumo key={ uuidv1() }></Resumo>,
+          <ApsCaps key={ uuidv1() }></ApsCaps>,
+          <ApsAmbulatorio key={ uuidv1() }></ApsAmbulatorio>,
+          <RapsHospitalar key={ uuidv1() }></RapsHospitalar>
+        ]] }
+        subtitles={ [
+          [
+            {
+              label: 'RESUMO'
+            },
+            {
+              label: 'APS E CAPS'
+            },
+            {
+              label: 'APS E AMBULATÓRIO'
+            },
+            {
+              label: 'RAPS E ATENÇÃO HOSPITALAR'
+            }
+          ]
+        ] }
+        titles={ [
+          {
+            label: ''
+          }
+        ] }
       />
     </div>
-  )
-}
+  );
+};
+
+export default Index;

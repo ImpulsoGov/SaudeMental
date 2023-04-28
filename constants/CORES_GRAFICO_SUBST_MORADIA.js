@@ -1,0 +1,1 @@
+export const CORES_GRAFICO_SUBST_MORADIA = ["#5367C9", "#CACCFE", "#E0E4F5"];

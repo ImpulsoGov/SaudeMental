@@ -9,7 +9,7 @@ export const GLOSSARIO = `
       label
     }
 
-    toggleLists {
+    toggleLists (orderBy: publishedAt_DESC) {
       title
       blocks {
         ... on Block {

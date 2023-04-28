@@ -5,15 +5,30 @@ import { InfoTab } from "@impulsogov/design-system";
 import { HOME } from "../querys/HOME";
 import { getData } from "../services/getData";
 
-export async function getStaticProps() {
-  const res = [
-    await getData(HOME)
-  ];
+export async function getServerSideProps({req}) {
+  let redirect;
+  const userIsActive = req.cookies['next-auth.session-token'];
+  const userIsActiveSecure = req.cookies['__Secure-next-auth.session-token'];
+  if(userIsActive){
+    redirect=true
+  }else{
+    redirect = userIsActiveSecure ? true : false;
+  }
+  if(redirect) {
+    return {
+      redirect: {
+        destination: "/inicio",
+        permanent: false, // make this true if you want the redirect to be cached by the search engines and clients forever
+      },
+    }
+  }
+
+  const res = [await getData(HOME)];
 
   return {
-    props: {
-      res: res
-    }
+      props: {
+        res
+      }
   }
 }
 
@@ -22,7 +37,9 @@ export default function Home({res}) {
     <>
       <div style={{ backgroundColor: "#1B2D82" }}>
         <HomeBanner
-          titulo={res[0].homeBanners[0].title} texto={res[0].homeBanners[0].text} theme="ColorSM"
+          titulo={res[0].homeBanners[0].title}
+          texto={res[0].homeBanners[0].text}
+          theme="ColorSM"
         />
 
         <ImagemFundo
@@ -38,7 +55,7 @@ export default function Home({res}) {
             }
           }
         />
-        
+
         <section id="sobre">
           <InfoTab contentList={[
             {
@@ -60,11 +77,20 @@ export default function Home({res}) {
 
         <Parcerias
           parceiros={[
-            { alt: "parceiros", src:  res[0].logos[2].logo.url },
-            { alt: "parceiros", src: res[0].logos[5].logo.url },
-            { alt: "parceiros", src: res[0].logos[4].logo.url }
+            { alt: "parceiros", src: res[0].logos[4].logo.url, titulo: "Técnico e financeiro" },
+            { alt: "parceiros", src:  "https://media.graphassets.com/L3pDd52rQSMTxBA0iZCE", titulo: "Financeiro" },
           ]}
           theme="ColorAGP"
+          titulo="Apoio"
+        />
+        <Parcerias
+          parceiros={[
+            { alt: "parceiros", src:  res[0].logos[2].logo.url },
+            { alt: "parceiros", src: "https://media.graphassets.com/aWUhrz97TpWYaM8FZkOO" },
+            { alt: "parceiros", src: "https://media.graphassets.com/w0PeMRhSTMyiAJ6EoHCK" }
+          ]}
+          theme="ColorAGP"
+          titulo="Governos Parceiros"
         />
       </div>
 
