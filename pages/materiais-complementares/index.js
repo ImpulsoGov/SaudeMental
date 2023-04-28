@@ -28,14 +28,14 @@ const Index = ({ res }) => {
         modulos={ [
           { concluido: true, id: 0, liberado: true, tipo: 'MATERIAIS', titulo: 'Guia dos indicadores' },
           { concluido: true, id: 1, liberado: true, tipo: 'MATERIAIS', titulo: 'Gestão de processos de trabalho' },
-          { concluido: true, id: 2, liberado: true, tipo: 'MATERIAIS', titulo: 'Resolução de problemas' },
-          { concluido: true, id: 3, liberado: true, tipo: 'TUTORIAIS', titulo: 'Como usar o painel?' }
+          // { concluido: true, id: 2, liberado: true, tipo: 'MATERIAIS', titulo: 'Resolução de problemas' },
+          // { concluido: true, id: 3, liberado: true, tipo: 'TUTORIAIS', titulo: 'Como usar o painel?' }
         ] }
         modulo={ [
-          { concluido: true, formato: 'PDF', id: 0, link: 'https://media.graphassets.com/SzWf3r2ITFuffA39OyPF', moduloID: 0, titulo: 'Internações', openInNewTab: true },
-          { concluido: false, formato: 'PDF', id: 0, link: 'https://media.graphassets.com/RA8T1VL8Syi3u0rFOLY1', moduloID: 0, titulo: 'Taxa de não adesão', openInNewTab: true },
-          // {concluido: false,formato: 'PDF',id: 1,link: '/',moduloID: 0,titulo: 'Produção'},
-          // {concluido: false,formato: 'PDF',id: 1,link: '/',moduloID: 1,titulo: 'Planilha de plano de ação'},
+          { concluido: true, formato: 'PDF', id: 0, link: 'https://media.graphassets.com/W1tOJ2wAS2qwTRgeIGDF', moduloID: 0, titulo: 'Internações', openInNewTab: true },
+          { concluido: false, formato: 'PDF', id: 0, link: 'https://media.graphassets.com/X6sAJccwTl2CaD375MiY', moduloID: 0, titulo: 'Taxa de não adesão', openInNewTab: true },
+          { concluido: false, formato: 'PDF', id: 1, link: 'https://media.graphassets.com/uyasYncETnaaqFeOoLzb', moduloID: 1, titulo: 'Uso de dados na gestão da RAPS', openInNewTab: true },
+          { concluido: false, formato: 'PDF', id: 1, link: 'https://media.graphassets.com/B5HeOSApTS6vc8YFGkqM', moduloID: 1, titulo: 'Planilha de plano de ação', openInNewTab: true },
           // {concluido: false,formato: 'PDF',id: 1,link: '/',moduloID: 1,titulo: 'Rotinas de trabalho'}
         ] }
         ultimoModulo={ 0 }
