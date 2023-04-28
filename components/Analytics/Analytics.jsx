@@ -1,7 +1,7 @@
 import Script from 'next/script'
 import { GA_TRACKING_ID } from './lib/gtag'
 
-const Analytics = () => {
+const Analytics = ({USER_ID}) => {
     return(
   <>
     <Script
@@ -18,6 +18,10 @@ const Analytics = () => {
             gtag('config', '${GA_TRACKING_ID}', {
               page_path: window.location.pathname,
             });
+            gtag('config', '${GA_TRACKING_ID}', {
+              'user_id' : '${USER_ID}',
+            });
+
           `
       }}
     />

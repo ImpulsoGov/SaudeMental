@@ -167,7 +167,7 @@ function MyApp(props) {
 
           </Auth>
         </SessionProvider>
-        <Analytics />
+        <Analytics USER_ID={props.ses?.user.id}/>
       </Context.Provider>
     </>
   );
