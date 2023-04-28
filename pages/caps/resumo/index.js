@@ -94,7 +94,7 @@ const Resumo = () => {
           />
 
           <Grid12Col
-            proporcao="3-3-3-3"
+            proporcao="4-4-4"
             items={ [
               <>
                 <CardInfoTipoA
@@ -119,13 +119,13 @@ const Resumo = () => {
                   titulo="Perfil do usuário"
                 />
               </>,
-              <>
-                <CardInfoTipoA
-                  indicador={ `${resumoMunicipio.predominio_condicao_grupo_cid10_usuarios} usuários` }
-                  fonte={ resumoMunicipio.predominio_condicao_grupo_descricao_curta_cid10 }
-                  titulo="CID mais frequente"
-                />
-              </>,
+              // <>
+              //   <CardInfoTipoA
+              //     indicador={ `${resumoMunicipio.predominio_condicao_grupo_cid10_usuarios} usuários` }
+              //     fonte={ resumoMunicipio.predominio_condicao_grupo_descricao_curta_cid10 }
+              //     titulo="CID mais frequente"
+              //   />
+              // </>,
             ] }
           />
         </>
