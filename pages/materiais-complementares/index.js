@@ -34,9 +34,9 @@ const Index = ({ res }) => {
         modulo={ [
           { concluido: true, formato: 'PDF', id: 0, link: 'https://media.graphassets.com/W1tOJ2wAS2qwTRgeIGDF', moduloID: 0, titulo: 'Internações', openInNewTab: true },
           { concluido: false, formato: 'PDF', id: 0, link: 'https://media.graphassets.com/X6sAJccwTl2CaD375MiY', moduloID: 0, titulo: 'Taxa de não adesão', openInNewTab: true },
-          { concluido: false, formato: 'PDF', id: 1, link: 'https://media.graphassets.com/uyasYncETnaaqFeOoLzb', moduloID: 1, titulo: 'Uso de dados na gestão da RAPS', openInNewTab: true },
+          // { concluido: false, formato: 'PDF', id: 1, link: 'https://media.graphassets.com/uyasYncETnaaqFeOoLzb', moduloID: 1, titulo: 'Uso de dados na gestão da RAPS', openInNewTab: true },
           { concluido: false, formato: 'PDF', id: 1, link: 'https://media.graphassets.com/B5HeOSApTS6vc8YFGkqM', moduloID: 1, titulo: 'Planilha de plano de ação', openInNewTab: true },
-          // {concluido: false,formato: 'PDF',id: 1,link: '/',moduloID: 1,titulo: 'Rotinas de trabalho'}
+          { concluido: false, formato: 'PDF', id: 1, link: 'https://media.graphassets.com/uyasYncETnaaqFeOoLzb', moduloID: 1, titulo: 'Rotinas de trabalho', openInNewTab: true }
         ] }
         ultimoModulo={ 0 }
       />
