@@ -150,10 +150,11 @@ const TaxaAbandono = () => {
       }
 
       <GraficoInfo
-        titulo="Histórico Temporal - Taxa de não adesão mensal"
+        titulo="Histórico Temporal"
         descricao="Dos usuários acolhidos há menos de 3 meses, quantos não aderiram ao serviço no mês"
         tooltip="Diferente do indicador de não adesão acumulado, que mostra o percentual de usuários que iniciaram o vínculo em um determinado mês e em até 3 meses deixaram de frequentar o CAPS, a taxa de não adesão mensal mostra o percentual de usuários recentes que deixaram de frequentar o serviço em um mês específico. Ou seja, o indicador mensal mostra qual foi o mês que o usuário iniciou o período de inatividade (que precisa ser igual ou superior a 3 meses)."
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
+        destaque="Por que esses valores são diferentes?"
       />
 
       { abandonoMensal.length !== 0 &&
