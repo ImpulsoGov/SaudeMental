@@ -4,9 +4,8 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
 import { API_URL } from "../../../constants/API_URL";
-import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { DataGrid } from '@mui/x-data-grid';
+import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -24,10 +23,10 @@ const ApsCaps = () => {
   const [matriciamentosPorCaps, setMatriciamentosPorCaps] = useState();
 
   const columns = [
-      { field: 'estabelecimento', headerName: 'CAPS',  editable: true, width: 300 },
-      { field: 'quantidade_registrada',headerName: 'Matriciamentos realizados', editable: true, width: 300},
-      { field: 'faltam_no_ano', headerName: 'Faltam no ano', width: 200 },
-      { field: 'media_mensal_para_meta', headerName: 'Média mensal para completar a meta', width: 200 },
+    { field: 'estabelecimento', headerName: 'CAPS', editable: true, width: 300 },
+    { field: 'quantidade_registrada', headerName: 'Matriciamentos realizados', editable: true, width: 300 },
+    { field: 'faltam_no_ano', headerName: 'Faltam no ano', width: 200 },
+    { field: 'media_mensal_para_meta', headerName: 'Média mensal para completar a meta', width: 200 },
   ];
 
   useEffect(() => {
@@ -57,14 +56,14 @@ const ApsCaps = () => {
         + session?.user.municipio_id_ibge;
 
       const urlMatriciamentosPorCaps = API_URL
-      + "saude-mental/matriciamentos/caps?municipio_id_sus="
-      + session?.user.municipio_id_ibge;
-      
+        + "saude-mental/matriciamentos/caps?municipio_id_sus="
+        + session?.user.municipio_id_ibge;
+
       fetch(urlMatriciamentosPorMunicipio, getRequestOptions)
         .then(response => response.json())
         .then(result => setMatriciamentosPorMunicipio(result[0]))
         .catch(error => console.log('error', error));
-      
+
     }
   }, []);
 
@@ -123,18 +122,18 @@ const ApsCaps = () => {
               <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ encaminhamentosApsCapsResumo["atendimentos_sm_aps"] }
-                titulo="Total de atendimentos pela APS"
+                titulo={ `Total de atendimentos pela APS (em ${encaminhamentosApsCapsResumo.nome_mes})` }
               />,
               <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ encaminhamentosApsCapsResumo["encaminhamentos_caps"] }
-                titulo="Encaminhamentos para CAPS"
+                titulo={ `Encaminhamentos para CAPS (em ${encaminhamentosApsCapsResumo.nome_mes})` }
               />,
               <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ encaminhamentosApsCapsResumo["perc_encaminhamentos_caps"] }
                 indicadorSimbolo="%"
-                titulo="Porcentagem"
+                titulo={ `Porcentagem (em ${encaminhamentosApsCapsResumo.nome_mes})` }
               />,
             ] }
             proporcao="4-4-4"
