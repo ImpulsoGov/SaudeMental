@@ -179,6 +179,7 @@ const ApsCaps = () => {
           rows={ getLinhasDataGrid(matriciamentosPorCaps) }
           columns={ colunasDataGrid }
           autoHeight
+          hideFooter
         />
       }
 
