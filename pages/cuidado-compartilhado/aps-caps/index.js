@@ -1,4 +1,5 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import { DataGrid } from '@mui/x-data-grid';
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -21,13 +22,6 @@ const ApsCaps = () => {
   const [encaminhamentosApsCapsResumo, setEncaminhamentosApsCapsResumo] = useState();
   const [matriciamentosPorMunicipio, setMatriciamentosPorMunicipio] = useState();
   const [matriciamentosPorCaps, setMatriciamentosPorCaps] = useState();
-
-  const columns = [
-    { field: 'estabelecimento', headerName: 'CAPS', editable: true, width: 300 },
-    { field: 'quantidade_registrada', headerName: 'Matriciamentos realizados', editable: true, width: 300 },
-    { field: 'faltam_no_ano', headerName: 'Faltam no ano', width: 200 },
-    { field: 'media_mensal_para_meta', headerName: 'Média mensal para completar a meta', width: 200 },
-  ];
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -55,17 +49,75 @@ const ApsCaps = () => {
         + "saude-mental/matriciamentos/municipio?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
-      const urlMatriciamentosPorCaps = API_URL
-        + "saude-mental/matriciamentos/caps?municipio_id_sus="
-        + session?.user.municipio_id_ibge;
-
       fetch(urlMatriciamentosPorMunicipio, getRequestOptions)
         .then(response => response.json())
         .then(result => setMatriciamentosPorMunicipio(result[0]))
         .catch(error => console.log('error', error));
 
+      const urlMatriciamentosPorCaps = API_URL
+        + "saude-mental/matriciamentos/caps?municipio_id_sus="
+        + session?.user.municipio_id_ibge;
+
+      fetch(urlMatriciamentosPorCaps, getRequestOptions)
+        .then(response => response.json())
+        .then(result => setMatriciamentosPorCaps(result))
+        .catch(error => console.log('error', error));
+
     }
   }, []);
+
+  const colunasDataGrid = [
+    {
+      field: 'estabelecimento',
+      headerName: 'CAPS',
+      width: 350
+    },
+    {
+      field: 'quantidadeRegistrada',
+      headerName: 'Matriciamentos realizados',
+      width: 300
+    },
+    {
+      field: 'faltamNoAno',
+      headerName: 'Faltam no ano',
+      width: 200
+    },
+    {
+      field: 'mediaMensalParaMeta',
+      headerName: 'Média mensal para completar a meta',
+      width: 350
+    },
+  ];
+
+  const somaLinhasDeColuna = (linhas, coluna) =>
+    linhas.reduce((acc, cur) => acc + cur[coluna], 0);
+
+  const getLinhasDataGrid = (dados) => {
+    const linhas = dados.map(({
+      estabelecimento,
+      quantidade_registrada: quantidadeRegistrada,
+      faltam_no_ano: faltamNoAno,
+      media_mensal_para_meta: mediaMensalParaMeta,
+    }, index) => ({
+      id: index,
+      estabelecimento,
+      quantidadeRegistrada,
+      faltamNoAno,
+      mediaMensalParaMeta
+    }));
+
+    const ultimaLinha = linhas.slice(-1);
+
+    const linhaTotalGeral = {
+      id: ultimaLinha.id + 1,
+      estabelecimento: 'Total geral',
+      quantidadeRegistrada: somaLinhasDeColuna(linhas, 'quantidadeRegistrada'),
+      faltamNoAno: somaLinhasDeColuna(linhas, 'faltamNoAno'),
+      mediaMensalParaMeta: somaLinhasDeColuna(linhas, 'mediaMensalParaMeta')
+    };
+
+    return [...linhas, linhaTotalGeral];
+  };
 
   return (
     <div>
@@ -107,6 +159,27 @@ const ApsCaps = () => {
             proporcao="4-4-4"
           />
         </>
+      }
+
+      { matriciamentosPorCaps &&
+        <DataGrid
+          sx={ {
+            '& .MuiDataGrid-columnHeaderTitle': {
+              fontWeight: 'bold',
+              fontSize: '16px'
+            },
+            '.MuiDataGrid-row:last-child': {
+              fontWeight: 'bold',
+              color: '#c3c8c9'
+            },
+            '.MuiDataGrid-row': {
+              color: '#9ba4a5'
+            }
+          } }
+          rows={ getLinhasDataGrid(matriciamentosPorCaps) }
+          columns={ colunasDataGrid }
+          autoHeight
+        />
       }
 
       <GraficoInfo
