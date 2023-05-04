@@ -89,7 +89,7 @@ const ApsCaps = () => {
     },
   ];
 
-  const somaLinhasDeColuna = (linhas, coluna) =>
+  const somarLinhasDeColuna = (linhas, coluna) =>
     linhas.reduce((acc, cur) => acc + cur[coluna], 0);
 
   const getLinhasDataGrid = (dados) => {
@@ -111,9 +111,9 @@ const ApsCaps = () => {
     const linhaTotalGeral = {
       id: ultimaLinha.id + 1,
       estabelecimento: 'Total geral',
-      quantidadeRegistrada: somaLinhasDeColuna(linhas, 'quantidadeRegistrada'),
-      faltamNoAno: somaLinhasDeColuna(linhas, 'faltamNoAno'),
-      mediaMensalParaMeta: somaLinhasDeColuna(linhas, 'mediaMensalParaMeta')
+      quantidadeRegistrada: somarLinhasDeColuna(linhas, 'quantidadeRegistrada'),
+      faltamNoAno: somarLinhasDeColuna(linhas, 'faltamNoAno'),
+      mediaMensalParaMeta: somarLinhasDeColuna(linhas, 'mediaMensalParaMeta')
     };
 
     return [...linhas, linhaTotalGeral];
