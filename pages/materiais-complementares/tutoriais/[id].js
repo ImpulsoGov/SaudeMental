@@ -13,7 +13,7 @@ const Tutorial = () => {
         <ButtonLight
           icone={ { posicao: 'right', url: 'https://media.graphassets.com/8NbkQQkyRSiouNfFpLOG' } }
           label="VOLTAR"
-          link="/inicio" />
+          link="/materiais-complementares" />
         <div style={ { position: "relative", left: "70%" } }>
           <ButtonLight
             icone={ { posicao: 'right', url: 'https://media.graphassets.com/yaYuyi0KS3WkqhKPUzro' } }
