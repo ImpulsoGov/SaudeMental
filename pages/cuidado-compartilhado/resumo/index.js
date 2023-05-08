@@ -1,4 +1,4 @@
-import { CardInfoTipoA, CardInfoTipoB, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import { CardInfoTipoA, CardInfoTipoB, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
@@ -177,8 +177,8 @@ const Resumo = () => {
         items={ [
           <>
             { encaminhamentosApsCapsHorizontal &&
-              encaminhamentosApsCapsVertical.length !== 0 &&
-              <CardInfoTipoB
+              encaminhamentosApsCapsVertical.length !== 0
+              ? <CardInfoTipoB
                 key={ uuidv1() }
                 descricao={ `de ${encaminhamentosApsCapsHorizontal["atendimentos_sm_aps"]} atendimentos em saúde mental na APS` }
                 indicador={ encaminhamentosApsCapsHorizontal["encaminhamentos_caps"] }
@@ -189,16 +189,18 @@ const Resumo = () => {
                 porcentagemSim={ getPorcentagemAtendimentosFeitos(encaminhamentosApsCapsVertical) }
                 porcentagemNao={ getPorcentagemAtendimentosNaoFeitos(encaminhamentosApsCapsVertical) }
               />
+              : <Spinner theme="SM" />
             }
           </>,
           <>
-            { matriciamentosPorMunicipio &&
-              <CardInfoTipoA
+            { matriciamentosPorMunicipio
+              ? <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ matriciamentosPorMunicipio["estabelecimentos_fora_meta"] }
                 titulo={ `CAPS fora da meta de matriciamento em 2022 (até ${matriciamentosPorMunicipio["ate_mes"]})` }
                 tooltip="CAPS que realizaram menos de dois matriciamentos por mês no ano, até o mês de referência"
               />
+              : <Spinner theme="SM" />
             }
           </>,
         ] }
@@ -214,8 +216,8 @@ const Resumo = () => {
         items={ [
           <>
             { encaminhamentosApsHorizontal &&
-              encaminhamentosApsVertical.length !== 0 &&
-              <CardInfoTipoB
+              encaminhamentosApsVertical.length !== 0
+              ? <CardInfoTipoB
                 key={ uuidv1() }
                 descricao={ `de ${encaminhamentosApsHorizontal["atendimentos_sm_aps"]} atendimentos em saúde mental na APS` }
                 indicador={ encaminhamentosApsHorizontal["encaminhamentos_especializada"] }
@@ -226,6 +228,7 @@ const Resumo = () => {
                 porcentagemSim={ getPorcentagemAtendimentosFeitos(encaminhamentosApsVertical) }
                 porcentagemNao={ getPorcentagemAtendimentosNaoFeitos(encaminhamentosApsVertical) }
               />
+              : <Spinner theme="SM" />
             }
           </>
         ] }
@@ -241,8 +244,8 @@ const Resumo = () => {
         items={ [
           <>
             { internacoesRapsAdmissoes12m &&
-              internacoesRapsAdmissoesVertical.length !== 0 &&
-              <CardInfoTipoB
+              internacoesRapsAdmissoesVertical.length !== 0
+              ? <CardInfoTipoB
                 key={ uuidv1() }
                 descricao={ `das ${internacoesRapsAdmissoes12m["internacoes_total"]} internações iniciadas entre ${internacoesRapsAdmissoes12m["a_partir_de_mes"]}/${internacoesRapsAdmissoes12m["a_partir_de_ano"]} e ${internacoesRapsAdmissoes12m["ate_mes"]}/${internacoesRapsAdmissoes12m["ate_ano"]}` }
                 indicador={ internacoesRapsAdmissoes12m["internacoes_atendimento_raps_antes"] }
@@ -251,12 +254,13 @@ const Resumo = () => {
                 porcentagemSim={ getPorcentagemInternacoesFeitas(internacoesRapsAdmissoesVertical) }
                 porcentagemNao={ getPorcentagemInternacoesNaoFeitas(internacoesRapsAdmissoesVertical) }
               />
+              : <Spinner theme="SM" />
             }
           </>,
           <>
             { internacoesRapsAltas12m &&
-              internacoesRapsAltasVertical.length !== 0 &&
-              <CardInfoTipoB
+              internacoesRapsAltasVertical.length !== 0
+              ? <CardInfoTipoB
                 key={ uuidv1() }
                 descricao={ `dos ${internacoesRapsAltas12m["altas_total"]} que receberam alta entre ${internacoesRapsAltas12m["a_partir_de_mes"]}/${internacoesRapsAltas12m["a_partir_de_ano"]} e ${internacoesRapsAltas12m["ate_mes"]}/${internacoesRapsAltas12m["ate_ano"]}` }
                 indicador={ internacoesRapsAltas12m["altas_atendimento_raps_1m_apos"] }
@@ -265,6 +269,7 @@ const Resumo = () => {
                 porcentagemSim={ getPorcentagemAltasFeitas(internacoesRapsAltasVertical) }
                 porcentagemNao={ getPorcentagemAltasNaoFeitas(internacoesRapsAltasVertical) }
               />
+              : <Spinner theme="SM" />
             }
           </>
         ] }

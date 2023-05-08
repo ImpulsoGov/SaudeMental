@@ -1,4 +1,4 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -567,33 +567,39 @@ const PerfilUsuario = () => {
         Usuários inativos: Usuários que não tiveram nenhum procedimento registrado no serviço há mais de 3 meses."
       />
 
-      { perfilPorEstabelecimento.length !== 0 &&
-        <GraficoInfo
+      { perfilPorEstabelecimento.length !== 0
+        ? <GraficoInfo
           descricao={ `Última competência disponível: ${filtrarDadosGeraisPorPeriodo(perfilPorEstabelecimento, "Último período").nome_mes
             }` }
         />
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
         titulo="Panorama geral"
       />
 
-      { perfilPorEstabelecimento.length !== 0 &&
-        <div className={ styles.Filtro }>
-          <Select { ...getPropsFiltroPeriodo(
-            perfilPorEstabelecimento,
-            filtroPeriodoPanorama,
-            setFiltroPeriodoPanorama,
-            false
-          ) } />
-        </div>
-      }
+      { perfilPorEstabelecimento.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtro }>
+              <Select { ...getPropsFiltroPeriodo(
+                perfilPorEstabelecimento,
+                filtroPeriodoPanorama,
+                setFiltroPeriodoPanorama,
+                false
+              ) } />
+            </div>
 
-      { perfilPorEstabelecimento.length !== 0 &&
-        getCardsPanoramaGeral(
-          perfilPorEstabelecimento,
-          filtroPeriodoPanorama.value
+            {
+              getCardsPanoramaGeral(
+                perfilPorEstabelecimento,
+                filtroPeriodoPanorama.value
+              )
+            }
+          </>
         )
+        : <Spinner theme="SM" />
       }
 
       {/* <GraficoInfo
@@ -605,37 +611,40 @@ const PerfilUsuario = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfil.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select
-                { ...getPropsFiltroEstabelecimento(
-                  agregarPorEstabelecimentoPeriodoECondicao(perfil),
-                  filtroEstabelecimentoCID,
-                  setFiltroEstabelecimentoCID
-                )
-                }
-              />
+      { perfil.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select
+                  { ...getPropsFiltroEstabelecimento(
+                    agregarPorEstabelecimentoPeriodoECondicao(perfil),
+                    filtroEstabelecimentoCID,
+                    setFiltroEstabelecimentoCID
+                  )
+                  }
+                />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select
+                  { ...getPropsFiltroCompetencia(
+                    agregarPorEstabelecimentoPeriodoECondicao(perfil),
+                    filtroCompetenciaCID,
+                    setFiltroCompetenciaCID,
+                    filtroEstabelecimentoCID
+                  )
+                  }
+                />
+              </div>
             </div>
-            <div className={ styles.Filtro }>
-              <Select
-                { ...getPropsFiltroCompetencia(
-                  agregarPorEstabelecimentoPeriodoECondicao(perfil),
-                  filtroCompetenciaCID,
-                  setFiltroCompetenciaCID,
-                  filtroEstabelecimentoCID
-                )
-                }
-              />
-            </div>
-          </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoCID(perfil) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoCID(perfil) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
@@ -643,37 +652,40 @@ const PerfilUsuario = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfil.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select
-                { ...getPropsFiltroEstabelecimento(
-                  agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfil),
-                  filtroEstabelecimentoGenero,
-                  setFiltroEstabelecimentoGenero
-                )
-                }
-              />
+      { perfil.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select
+                  { ...getPropsFiltroEstabelecimento(
+                    agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfil),
+                    filtroEstabelecimentoGenero,
+                    setFiltroEstabelecimentoGenero
+                  )
+                  }
+                />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select
+                  { ...getPropsFiltroCompetencia(
+                    agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfil),
+                    filtroCompetenciaGenero,
+                    setFiltroCompetenciaGenero,
+                    filtroEstabelecimentoGenero
+                  )
+                  }
+                />
+              </div>
             </div>
-            <div className={ styles.Filtro }>
-              <Select
-                { ...getPropsFiltroCompetencia(
-                  agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfil),
-                  filtroCompetenciaGenero,
-                  setFiltroCompetenciaGenero,
-                  filtroEstabelecimentoGenero
-                )
-                }
-              />
-            </div>
-          </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoGeneroEFaixaEtaria(perfil) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoGeneroEFaixaEtaria(perfil) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
@@ -681,56 +693,59 @@ const PerfilUsuario = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfil.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select
-                { ...getPropsFiltroEstabelecimento(
-                  agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil),
-                  filtroEstabelecimentoUsuariosAtivos,
-                  setFiltroEstabelecimentoUsuariosAtivos
-                )
-                }
-              />
-            </div>
-            <div className={ styles.Filtro }>
-              <Select
-                { ...getPropsFiltroCompetencia(
-                  agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil),
-                  filtroCompetenciaUsuariosAtivos,
-                  setFiltroCompetenciaUsuariosAtivos,
-                  filtroEstabelecimentoUsuariosAtivos
-                )
-                }
-              />
-            </div>
-          </div>
-
-          <div className={ styles.GraficosUsuariosAtivosContainer }>
-            <div className={ styles.GraficoUsuariosAtivos }>
-              <ReactEcharts
-                option={ getOpcoesGraficoUsuariosAtivos(
-                  perfil,
-                  "Fazem uso de substâncias psicoativas?",
-                  "ABUSO_SUBSTANCIAS"
-                ) }
-                style={ { width: "100%", height: "100%" } }
-              />
+      { perfil.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select
+                  { ...getPropsFiltroEstabelecimento(
+                    agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil),
+                    filtroEstabelecimentoUsuariosAtivos,
+                    setFiltroEstabelecimentoUsuariosAtivos
+                  )
+                  }
+                />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select
+                  { ...getPropsFiltroCompetencia(
+                    agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil),
+                    filtroCompetenciaUsuariosAtivos,
+                    setFiltroCompetenciaUsuariosAtivos,
+                    filtroEstabelecimentoUsuariosAtivos
+                  )
+                  }
+                />
+              </div>
             </div>
 
-            <div className={ styles.GraficoUsuariosAtivos }>
-              <ReactEcharts
-                option={ getOpcoesGraficoUsuariosAtivos(
-                  perfil,
-                  "Estão em situação de rua?",
-                  "SITUACAO_RUA"
-                ) }
-                style={ { width: "100%", height: "100%" } }
-              />
+            <div className={ styles.GraficosUsuariosAtivosContainer }>
+              <div className={ styles.GraficoUsuariosAtivos }>
+                <ReactEcharts
+                  option={ getOpcoesGraficoUsuariosAtivos(
+                    perfil,
+                    "Fazem uso de substâncias psicoativas?",
+                    "ABUSO_SUBSTANCIAS"
+                  ) }
+                  style={ { width: "100%", height: "100%" } }
+                />
+              </div>
+
+              <div className={ styles.GraficoUsuariosAtivos }>
+                <ReactEcharts
+                  option={ getOpcoesGraficoUsuariosAtivos(
+                    perfil,
+                    "Estão em situação de rua?",
+                    "SITUACAO_RUA"
+                  ) }
+                  style={ { width: "100%", height: "100%" } }
+                />
+              </div>
             </div>
-          </div>
-        </>
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
@@ -738,37 +753,40 @@ const PerfilUsuario = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfil.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select
-                { ...getPropsFiltroEstabelecimento(
-                  agregarPorEstabelecimentoPeriodoERacaCor(perfil),
-                  filtroEstabelecimentoRacaCor,
-                  setFiltroEstabelecimentoRacaCor
-                )
-                }
-              />
+      { perfil.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select
+                  { ...getPropsFiltroEstabelecimento(
+                    agregarPorEstabelecimentoPeriodoERacaCor(perfil),
+                    filtroEstabelecimentoRacaCor,
+                    setFiltroEstabelecimentoRacaCor
+                  )
+                  }
+                />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select
+                  { ...getPropsFiltroCompetencia(
+                    agregarPorEstabelecimentoPeriodoERacaCor(perfil),
+                    filtroCompetenciaRacaCor,
+                    setFiltroCompetenciaRacaCor,
+                    filtroEstabelecimentoRacaCor
+                  )
+                  }
+                />
+              </div>
             </div>
-            <div className={ styles.Filtro }>
-              <Select
-                { ...getPropsFiltroCompetencia(
-                  agregarPorEstabelecimentoPeriodoERacaCor(perfil),
-                  filtroCompetenciaRacaCor,
-                  setFiltroCompetenciaRacaCor,
-                  filtroEstabelecimentoRacaCor
-                )
-                }
-              />
-            </div>
-          </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoRacaEcor(perfil) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoRacaEcor(perfil) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
