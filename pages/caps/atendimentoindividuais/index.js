@@ -1,4 +1,4 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -191,23 +191,25 @@ const AtendimentoIndividual = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { atendimentosPorCaps.length !== 0 &&
-        <GraficoInfo
-          descricao={ `Última competência disponível: ${atendimentosPorCaps
-            .find((item) =>
-              item.estabelecimento === "Todos"
-              && item.estabelecimento_linha_perfil === "Todos"
-              && item.estabelecimento_linha_idade === "Todos"
-              && item.periodo === "Último período"
-            )
-            .nome_mes
-            }` }
-        />
-      }
+      { atendimentosPorCaps.length !== 0
+        ? (
+          <>
+            <GraficoInfo
+              descricao={ `Última competência disponível: ${atendimentosPorCaps
+                .find((item) =>
+                  item.estabelecimento === "Todos"
+                  && item.estabelecimento_linha_perfil === "Todos"
+                  && item.estabelecimento_linha_idade === "Todos"
+                  && item.periodo === "Último período"
+                )
+                .nome_mes
+                }` }
+            />
 
-      {
-        atendimentosPorCaps.length !== 0
-        && getCardsAtendimentosPorCaps(atendimentosPorCaps)
+            { getCardsAtendimentosPorCaps(atendimentosPorCaps) }
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
@@ -215,25 +217,28 @@ const AtendimentoIndividual = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { atendimentosPorCaps.length !== 0 &&
-        <>
-          <div className={ styles.Filtro }>
-            <Select { ...getPropsFiltroEstabelecimento(
-              atendimentosPorCaps,
-              filtroEstabelecimentoHistorico,
-              setFiltroEstabelecimentoHistorico
-            ) } />
-          </div>
+      { atendimentosPorCaps.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtro }>
+              <Select { ...getPropsFiltroEstabelecimento(
+                atendimentosPorCaps,
+                filtroEstabelecimentoHistorico,
+                setFiltroEstabelecimentoHistorico
+              ) } />
+            </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoHistoricoTemporal(
-              filtrarPorEstabelecimento(atendimentosPorCaps, filtroEstabelecimentoHistorico),
-              "perc_apenas_atendimentos_individuais",
-              "Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):"
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoHistoricoTemporal(
+                filtrarPorEstabelecimento(atendimentosPorCaps, filtroEstabelecimentoHistorico),
+                "perc_apenas_atendimentos_individuais",
+                "Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):"
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
@@ -241,32 +246,35 @@ const AtendimentoIndividual = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfilAtendimentos.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select { ...getPropsFiltroEstabelecimento(
-                perfilAtendimentos,
-                filtroEstabelecimentoCID,
-                setFiltroEstabelecimentoCID
-              ) } />
-            </div>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
+      { perfilAtendimentos.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select { ...getPropsFiltroEstabelecimento(
                   perfilAtendimentos,
-                  filtroPeriodoCID,
-                  setFiltroPeriodoCID
-                )
-              } />
+                  filtroEstabelecimentoCID,
+                  setFiltroEstabelecimentoCID
+                ) } />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    perfilAtendimentos,
+                    filtroPeriodoCID,
+                    setFiltroPeriodoCID
+                  )
+                } />
+              </div>
             </div>
-          </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
@@ -274,35 +282,38 @@ const AtendimentoIndividual = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfilAtendimentos.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select { ...getPropsFiltroEstabelecimento(
-                perfilAtendimentos,
-                filtroEstabelecimentoGenero,
-                setFiltroEstabelecimentoGenero
-              ) } />
-            </div>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
+      { perfilAtendimentos.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select { ...getPropsFiltroEstabelecimento(
                   perfilAtendimentos,
-                  filtroPeriodoGenero,
-                  setFiltroPeriodoGenero
-                )
-              } />
+                  filtroEstabelecimentoGenero,
+                  setFiltroEstabelecimentoGenero
+                ) } />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    perfilAtendimentos,
+                    filtroPeriodoGenero,
+                    setFiltroPeriodoGenero
+                  )
+                } />
+              </div>
             </div>
-          </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoGeneroEFaixaEtaria(
-              agregadosPorGeneroEFaixaEtaria,
-              ""
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoGeneroEFaixaEtaria(
+                agregadosPorGeneroEFaixaEtaria,
+                ""
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
@@ -310,35 +321,38 @@ const AtendimentoIndividual = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfilAtendimentos.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select { ...getPropsFiltroEstabelecimento(
-                perfilAtendimentos,
-                filtroEstabelecimentoRacaECor,
-                setFiltroEstabelecimentoRacaECor
-              ) } />
-            </div>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
+      { perfilAtendimentos.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select { ...getPropsFiltroEstabelecimento(
                   perfilAtendimentos,
-                  filtroPeriodoRacaECor,
-                  setFiltroPeriodoRacaECor
-                )
-              } />
+                  filtroEstabelecimentoRacaECor,
+                  setFiltroEstabelecimentoRacaECor
+                ) } />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    perfilAtendimentos,
+                    filtroPeriodoRacaECor,
+                    setFiltroPeriodoRacaECor
+                  )
+                } />
+              </div>
             </div>
-          </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoRacaEcor(
-              agregadosPorRacaCor,
-              "Usuários que realizaram apenas atendimentos individuais"
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoRacaEcor(
+                agregadosPorRacaCor,
+                "Usuários que realizaram apenas atendimentos individuais"
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
