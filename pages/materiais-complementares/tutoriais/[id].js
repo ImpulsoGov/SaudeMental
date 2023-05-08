@@ -22,7 +22,7 @@ const Tutorial = () => {
         </div>
       </div>
 
-      <div style={ { marginLeft: "80px", marginTop: "40px", marginBottom: "80px" } }>
+      <div style={ { width: "96%" } }>
         <ConteudoVideo url={ `https://www.youtube.com/embed/${tutorialId}?cc_load_policy=1` } />
       </div>
     </>
