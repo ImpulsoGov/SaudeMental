@@ -22,9 +22,7 @@ const Tutorial = () => {
         </div>
       </div>
 
-      <div style={ { width: "96%" } }>
-        <ConteudoVideo url={ `https://www.youtube.com/embed/${tutorialId}?cc_load_policy=1` } />
-      </div>
+      <ConteudoVideo url={ `https://www.youtube.com/embed/${tutorialId}?cc_load_policy=1` } />
     </>
   );
 };
