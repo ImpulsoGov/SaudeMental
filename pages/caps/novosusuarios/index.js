@@ -1,4 +1,4 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -205,23 +205,25 @@ const NovoUsuario = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { resumoNovosUsuarios.length !== 0 &&
-        <GraficoInfo
-          descricao={ `Última competência disponível: ${resumoNovosUsuarios
-            .find((item) =>
-              item.estabelecimento === "Todos"
-              && item.estabelecimento_linha_perfil === "Todos"
-              && item.estabelecimento_linha_idade === "Todos"
-              && item.periodo === "Último período"
-            )
-            .nome_mes
-            }` }
-        />
-      }
+      { resumoNovosUsuarios.length !== 0
+        ? (
+          <>
+            <GraficoInfo
+              descricao={ `Última competência disponível: ${resumoNovosUsuarios
+                .find((item) =>
+                  item.estabelecimento === "Todos"
+                  && item.estabelecimento_linha_perfil === "Todos"
+                  && item.estabelecimento_linha_idade === "Todos"
+                  && item.periodo === "Último período"
+                )
+                .nome_mes
+                }` }
+            />
 
-      {
-        resumoNovosUsuarios.length !== 0
-        && getCardsNovosUsuariosPorEstabelecimento(resumoNovosUsuarios)
+            { getCardsNovosUsuariosPorEstabelecimento(resumoNovosUsuarios) }
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
@@ -229,27 +231,30 @@ const NovoUsuario = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { resumoNovosUsuarios.length !== 0 &&
-        <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroEstabelecimento(
-                resumoNovosUsuarios,
-                filtroEstabelecimentoHistorico,
-                setFiltroEstabelecimentoHistorico
-              )
-            } />
-          </div>
+      { resumoNovosUsuarios.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroEstabelecimento(
+                  resumoNovosUsuarios,
+                  filtroEstabelecimentoHistorico,
+                  setFiltroEstabelecimentoHistorico
+                )
+              } />
+            </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoHistoricoTemporal(
-              filtrarPorEstabelecimento(resumoNovosUsuarios, filtroEstabelecimentoHistorico),
-              "usuarios_novos",
-              "Usuários novos:"
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoHistoricoTemporal(
+                filtrarPorEstabelecimento(resumoNovosUsuarios, filtroEstabelecimentoHistorico),
+                "usuarios_novos",
+                "Usuários novos:"
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
@@ -257,34 +262,37 @@ const NovoUsuario = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { novosUsuarios.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  novosUsuarios,
-                  filtroEstabelecimentoPerfil,
-                  setFiltroEstabelecimentoPerfil
-                )
-              } />
+      { novosUsuarios.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroEstabelecimento(
+                    novosUsuarios,
+                    filtroEstabelecimentoPerfil,
+                    setFiltroEstabelecimentoPerfil
+                  )
+                } />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    novosUsuarios,
+                    filtroPeriodoPerfil,
+                    setFiltroPeriodoPerfil
+                  )
+                } />
+              </div>
             </div>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
-                  novosUsuarios,
-                  filtroPeriodoPerfil,
-                  setFiltroPeriodoPerfil
-                )
-              } />
-            </div>
-          </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
@@ -292,37 +300,40 @@ const NovoUsuario = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { novosUsuarios.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  novosUsuarios,
-                  filtroEstabelecimentoGenero,
-                  setFiltroEstabelecimentoGenero
-                )
-              } />
+      { novosUsuarios.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroEstabelecimento(
+                    novosUsuarios,
+                    filtroEstabelecimentoGenero,
+                    setFiltroEstabelecimentoGenero
+                  )
+                } />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    novosUsuarios,
+                    filtroPeriodoGenero,
+                    setFiltroPeriodoGenero
+                  )
+                } />
+              </div>
             </div>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
-                  novosUsuarios,
-                  filtroPeriodoGenero,
-                  setFiltroPeriodoGenero
-                )
-              } />
-            </div>
-          </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoGeneroEFaixaEtaria(
-              agregadosPorGeneroEFaixaEtaria,
-              "Usuários novos"
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoGeneroEFaixaEtaria(
+                agregadosPorGeneroEFaixaEtaria,
+                "Usuários novos"
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
@@ -330,53 +341,56 @@ const NovoUsuario = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { novosUsuarios.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  novosUsuarios,
-                  filtroEstabelecimentoSubstEMoradia,
-                  setFiltroEstabelecimentoSubstEMoradia
-                )
-              } />
-            </div>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
-                  novosUsuarios,
-                  filtroPeriodoSubstEMoradia,
-                  setFiltroPeriodoSubstEMoradia
-                )
-              } />
-            </div>
-          </div>
-
-          <div className={ styles.GraficosUsuariosAtivosContainer }>
-            <div className={ styles.GraficoUsuariosAtivos }>
-              <ReactEcharts
-                option={ getOpcoesGraficoAbusoESituacao(
-                  agregadosPorAbusoSubstancias,
-                  "Fazem uso de substâncias psicoativas?",
-                  "ABUSO_SUBSTANCIAS",
-                ) }
-                style={ { width: "100%", height: "100%" } }
-              />
+      { novosUsuarios.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroEstabelecimento(
+                    novosUsuarios,
+                    filtroEstabelecimentoSubstEMoradia,
+                    setFiltroEstabelecimentoSubstEMoradia
+                  )
+                } />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    novosUsuarios,
+                    filtroPeriodoSubstEMoradia,
+                    setFiltroPeriodoSubstEMoradia
+                  )
+                } />
+              </div>
             </div>
 
-            <div className={ styles.GraficoUsuariosAtivos }>
-              <ReactEcharts
-                option={ getOpcoesGraficoAbusoESituacao(
-                  agregadosPorSituacaoRua,
-                  "Estão em situação de rua?",
-                  "SITUACAO_RUA",
-                ) }
-                style={ { width: "100%", height: "100%" } }
-              />
+            <div className={ styles.GraficosUsuariosAtivosContainer }>
+              <div className={ styles.GraficoUsuariosAtivos }>
+                <ReactEcharts
+                  option={ getOpcoesGraficoAbusoESituacao(
+                    agregadosPorAbusoSubstancias,
+                    "Fazem uso de substâncias psicoativas?",
+                    "ABUSO_SUBSTANCIAS",
+                  ) }
+                  style={ { width: "100%", height: "100%" } }
+                />
+              </div>
+
+              <div className={ styles.GraficoUsuariosAtivos }>
+                <ReactEcharts
+                  option={ getOpcoesGraficoAbusoESituacao(
+                    agregadosPorSituacaoRua,
+                    "Estão em situação de rua?",
+                    "SITUACAO_RUA",
+                  ) }
+                  style={ { width: "100%", height: "100%" } }
+                />
+              </div>
             </div>
-          </div>
-        </>
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
@@ -384,37 +398,40 @@ const NovoUsuario = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { novosUsuarios.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  novosUsuarios,
-                  filtroEstabelecimentoRacaECor,
-                  setFiltroEstabelecimentoRacaECor
-                )
-              } />
+      { novosUsuarios.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroEstabelecimento(
+                    novosUsuarios,
+                    filtroEstabelecimentoRacaECor,
+                    setFiltroEstabelecimentoRacaECor
+                  )
+                } />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    novosUsuarios,
+                    filtroPeriodoRacaECor,
+                    setFiltroPeriodoRacaECor
+                  )
+                } />
+              </div>
             </div>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
-                  novosUsuarios,
-                  filtroPeriodoRacaECor,
-                  setFiltroPeriodoRacaECor
-                )
-              } />
-            </div>
-          </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoRacaEcor(
-              agregadosPorRacaCor,
-              "Usuários novos no período"
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoRacaEcor(
+                agregadosPorRacaCor,
+                "Usuários novos no período"
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="SM" />
       }
 
       <GraficoInfo
