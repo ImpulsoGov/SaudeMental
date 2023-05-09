@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cypress": "cypress open"
   },
   "dependencies": {
     "@emotion/styled": "^11.10.6",
@@ -30,6 +31,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "cypress": "^12.11.0",
     "eslint": "8.24.0",
     "eslint-config-next": "12.3.1"
   }
