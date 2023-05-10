@@ -34,7 +34,7 @@ const Index = ({ res }) => {
         modulo={ [
           { concluido: true, formato: 'PDF', id: 0, link: 'https://media.graphassets.com/W1tOJ2wAS2qwTRgeIGDF', moduloID: 0, titulo: 'Fluxo entre internações e RAPS', openInNewTab: true },
           { concluido: false, formato: 'PDF', id: 0, link: 'https://media.graphassets.com/X6sAJccwTl2CaD375MiY', moduloID: 0, titulo: 'Taxa de não adesão ao serviço', openInNewTab: true },
-          { concluido: false, formato: 'PDF', id: 1, link: 'https://media.graphassets.com/B5HeOSApTS6vc8YFGkqM', moduloID: 1, titulo: 'Planilha de plano de ação', openInNewTab: true },
+          { concluido: false, formato: 'PDF', id: 1, link: 'https://media.graphassets.com/oSGSlImYQEqXanOaGbQT', moduloID: 1, titulo: 'Planilha de plano de ação', openInNewTab: true },
           { concluido: false, formato: 'PDF', id: 1, link: 'https://media.graphassets.com/uyasYncETnaaqFeOoLzb', moduloID: 1, titulo: 'Uso de dados na rotina da RAPS', openInNewTab: true },
           { concluido: false, formato: 'VIDEO', id: 1, link: '/materiais-complementares/tutoriais/X4mVkaS-C5Q', moduloID: 3, titulo: '1. Como navegar nos indicadores' },
           { concluido: false, formato: 'VIDEO', id: 1, link: '/materiais-complementares/tutoriais/YVspQO4nXSA', moduloID: 3, titulo: '2.  Mais informações sobre o indicador' },
