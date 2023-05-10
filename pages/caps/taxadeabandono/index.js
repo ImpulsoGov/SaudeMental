@@ -149,7 +149,7 @@ const TaxaAbandono = () => {
             { getCardsAbandonoAcumulado(abandonoCoortes) }
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -183,7 +183,7 @@ const TaxaAbandono = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -221,7 +221,7 @@ const TaxaAbandono = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -262,7 +262,7 @@ const TaxaAbandono = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       {/* <GraficoInfo

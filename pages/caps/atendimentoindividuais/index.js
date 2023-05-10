@@ -209,7 +209,7 @@ const AtendimentoIndividual = () => {
             { getCardsAtendimentosPorCaps(atendimentosPorCaps) }
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -238,7 +238,7 @@ const AtendimentoIndividual = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -274,7 +274,7 @@ const AtendimentoIndividual = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -313,7 +313,7 @@ const AtendimentoIndividual = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -352,7 +352,7 @@ const AtendimentoIndividual = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo

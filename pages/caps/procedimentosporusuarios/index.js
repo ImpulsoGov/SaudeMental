@@ -279,7 +279,7 @@ const ProcedimentosPorUsuarios = () => {
             { getCardsProcedimentosPorEstabelecimento(procedimentosPorEstabelecimento) }
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -310,7 +310,7 @@ const ProcedimentosPorUsuarios = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -351,7 +351,7 @@ const ProcedimentosPorUsuarios = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
     </div>
   );
