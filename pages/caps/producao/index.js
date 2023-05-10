@@ -309,7 +309,7 @@ const Producao = () => {
             { getCardsProcedimentosHoraPorEstabelecimento(procedimentosPorHora) }
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -353,7 +353,7 @@ const Producao = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -397,7 +397,7 @@ const Producao = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -441,7 +441,7 @@ const Producao = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -483,7 +483,7 @@ const Producao = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
     </div>
   );

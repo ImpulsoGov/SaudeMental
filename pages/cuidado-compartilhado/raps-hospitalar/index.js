@@ -60,7 +60,7 @@ const RapsHospitalar = ({ }) => {
           fonte="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS - Elaboração Impulso Gov"
           titulo="Usuários que foram atendidos na RAPS antes ou após a internação - ANUAL"
         />
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <Grid12Col
@@ -72,7 +72,7 @@ const RapsHospitalar = ({ }) => {
                 indicador={ InternacoesRapsAltas12m["altas_atendimento_raps_antes_nao_apos_nao"] }
                 indicadorDescricao="Usuários"
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>,
           <>
@@ -83,7 +83,7 @@ const RapsHospitalar = ({ }) => {
                 indicadorDescricao="Usuários"
                 statusAntes
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>,
           <>
@@ -95,7 +95,7 @@ const RapsHospitalar = ({ }) => {
                 statusAntes
                 statusDepois
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>,
           <>
@@ -106,7 +106,7 @@ const RapsHospitalar = ({ }) => {
                 indicadorDescricao="Usuários"
                 statusDepois
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>,
         ] }
@@ -177,7 +177,7 @@ const RapsHospitalar = ({ }) => {
           fonte="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS - Elaboração Impulso Gov"
           titulo="Novas internações e acolhimentos noturnos"
         />
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <Grid12Col
@@ -187,7 +187,7 @@ const RapsHospitalar = ({ }) => {
               ? <CardInfoTipoA indicador={ InternacoesRapsAdmissoes["internacoes_transtornos"] }
                 titulo="Novas internações da linha geral em hospitais"
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>,
           <>
@@ -195,7 +195,7 @@ const RapsHospitalar = ({ }) => {
               ? <CardInfoTipoA indicador={ InternacoesRapsAdmissoes["internacoes_alcool_drogas"] }
                 titulo="Novas internações da linha AD em hospitais"
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>,
           <>
@@ -203,7 +203,7 @@ const RapsHospitalar = ({ }) => {
               ? <CardInfoTipoA indicador={ InternacoesRapsAdmissoes["internacoes_total"] }
                 titulo="Novas internações em hospitais - total"
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>,
           <>
@@ -211,7 +211,7 @@ const RapsHospitalar = ({ }) => {
               ? <CardInfoTipoA indicador={ CAPSAcolhimentoNorturno["acolhimentos_noturnos"] }
                 titulo="Quantidade de usuários que passaram por acolhimentos noturnos em CAPS"
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>,
         ] }

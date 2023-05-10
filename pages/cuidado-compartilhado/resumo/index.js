@@ -189,7 +189,7 @@ const Resumo = () => {
                 porcentagemSim={ getPorcentagemAtendimentosFeitos(encaminhamentosApsCapsVertical) }
                 porcentagemNao={ getPorcentagemAtendimentosNaoFeitos(encaminhamentosApsCapsVertical) }
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>,
           <>
@@ -200,7 +200,7 @@ const Resumo = () => {
                 titulo={ `CAPS fora da meta de matriciamento em 2022 (até ${matriciamentosPorMunicipio["ate_mes"]})` }
                 tooltip="CAPS que realizaram menos de dois matriciamentos por mês no ano, até o mês de referência"
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>,
         ] }
@@ -228,7 +228,7 @@ const Resumo = () => {
                 porcentagemSim={ getPorcentagemAtendimentosFeitos(encaminhamentosApsVertical) }
                 porcentagemNao={ getPorcentagemAtendimentosNaoFeitos(encaminhamentosApsVertical) }
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>
         ] }
@@ -254,7 +254,7 @@ const Resumo = () => {
                 porcentagemSim={ getPorcentagemInternacoesFeitas(internacoesRapsAdmissoesVertical) }
                 porcentagemNao={ getPorcentagemInternacoesNaoFeitas(internacoesRapsAdmissoesVertical) }
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>,
           <>
@@ -269,7 +269,7 @@ const Resumo = () => {
                 porcentagemSim={ getPorcentagemAltasFeitas(internacoesRapsAltasVertical) }
                 porcentagemNao={ getPorcentagemAltasNaoFeitas(internacoesRapsAltasVertical) }
               />
-              : <Spinner theme="SM" />
+              : <Spinner theme="ColorSM" />
             }
           </>
         ] }

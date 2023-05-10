@@ -223,7 +223,7 @@ const NovoUsuario = () => {
             { getCardsNovosUsuariosPorEstabelecimento(resumoNovosUsuarios) }
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -254,7 +254,7 @@ const NovoUsuario = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -292,7 +292,7 @@ const NovoUsuario = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -333,7 +333,7 @@ const NovoUsuario = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -390,7 +390,7 @@ const NovoUsuario = () => {
             </div>
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -431,7 +431,7 @@ const NovoUsuario = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
