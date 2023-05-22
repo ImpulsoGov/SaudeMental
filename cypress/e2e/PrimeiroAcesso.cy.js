@@ -11,10 +11,10 @@ describe('Primeiro acesso', () => {
 
       cy.contains('Entrar').click();
 
-      cy.get('button')
-        .contains('PRIMEIRO ACESSO', { matchCase: true })
-        .debug()
-        .should('be.visible');
+      cy.get('.NavBar_NavBarModalContainer__tePj9')
+        .find('.ButtonLight_ButtonLightContainer__w0rNI')
+        .should('be.visible')
+        .and('have.text', 'PRIMEIRO ACESSO');
     });
   });
 });
