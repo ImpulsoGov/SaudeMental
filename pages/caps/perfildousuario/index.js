@@ -2,13 +2,13 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import Select, { components } from "react-select";
+import Select from "react-select";
 import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import styles from "../Caps.module.css";
 
 import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
-import { getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
+import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
@@ -194,69 +194,6 @@ const PerfilUsuario = () => {
     return perfilAgregado;
   };
 
-  const getPropsFiltroEstabelecimento = (perfil, estadoFiltro, funcaoSetFiltro) => {
-    const optionsSemDuplicadas = [];
-
-    perfil.forEach(({ estabelecimento }) => {
-      const perfilEncontrado = optionsSemDuplicadas
-        .find((item) => item.value === estabelecimento);
-
-      if (!perfilEncontrado) {
-        optionsSemDuplicadas.push({ value: estabelecimento, label: estabelecimento });
-      }
-    });
-
-    const optionPersonalizada = ({ children, ...props }) => (
-      <components.Control { ...props }>
-        Estabelecimento: { children }
-      </components.Control>
-    );
-
-    return {
-      options: optionsSemDuplicadas,
-      defaultValue: estadoFiltro,
-      selectedValue: estadoFiltro,
-      onChange: (selected) => funcaoSetFiltro({
-        value: selected.value,
-        label: selected.value
-      }),
-      isMulti: false,
-      isSearchable: false,
-      components: { Control: optionPersonalizada },
-      styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
-    };
-  };
-
-  const getPropsFiltroCompetencia = (perfil, estadoFiltro, funcaoSetFiltro, estadoFiltroEstabelecimento) => {
-    const options = perfil
-      .filter(({ estabelecimento }) => estabelecimento === estadoFiltroEstabelecimento.value)
-      .sort((a, b) => new Date(b.competencia) - new Date(a.competencia))
-      .map(({ periodo }) => ({
-        value: periodo,
-        label: periodo
-      }));
-
-    const optionPersonalizada = ({ children, ...props }) => (
-      <components.Control { ...props }>
-        Competência: { children }
-      </components.Control>
-    );
-
-    return {
-      options,
-      defaultValue: estadoFiltro,
-      selectedValue: estadoFiltro,
-      onChange: (selected) => funcaoSetFiltro({
-        value: selected.value,
-        label: selected.value
-      }),
-      isMulti: false,
-      isSearchable: false,
-      components: { Control: optionPersonalizada },
-      styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
-    };
-  };
-
   const getOpcoesGraficoCID = (perfil) => {
     const perfilFiltrado = perfil
       .filter((item) =>
@@ -265,6 +202,7 @@ const PerfilUsuario = () => {
         && item.estabelecimento_linha_perfil === "Todos"
         && item.estabelecimento_linha_idade === "Todos"
       );
+
     const [perfilAgregado] = agregarPorEstabelecimentoPeriodoECondicao(perfilFiltrado);
 
     return {
@@ -618,7 +556,7 @@ const PerfilUsuario = () => {
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroEstabelecimento(
-                    agregarPorEstabelecimentoPeriodoECondicao(perfil),
+                    perfil,
                     filtroEstabelecimentoCID,
                     setFiltroEstabelecimentoCID
                   )
@@ -627,11 +565,11 @@ const PerfilUsuario = () => {
               </div>
               <div className={ styles.Filtro }>
                 <Select
-                  { ...getPropsFiltroCompetencia(
-                    agregarPorEstabelecimentoPeriodoECondicao(perfil),
+                  { ...getPropsFiltroPeriodo(
+                    perfil,
                     filtroCompetenciaCID,
                     setFiltroCompetenciaCID,
-                    filtroEstabelecimentoCID
+                    false
                   )
                   }
                 />
@@ -659,7 +597,7 @@ const PerfilUsuario = () => {
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroEstabelecimento(
-                    agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfil),
+                    perfil,
                     filtroEstabelecimentoGenero,
                     setFiltroEstabelecimentoGenero
                   )
@@ -668,11 +606,11 @@ const PerfilUsuario = () => {
               </div>
               <div className={ styles.Filtro }>
                 <Select
-                  { ...getPropsFiltroCompetencia(
-                    agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfil),
+                  { ...getPropsFiltroPeriodo(
+                    perfil,
                     filtroCompetenciaGenero,
                     setFiltroCompetenciaGenero,
-                    filtroEstabelecimentoGenero
+                    false
                   )
                   }
                 />
@@ -700,7 +638,7 @@ const PerfilUsuario = () => {
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroEstabelecimento(
-                    agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil),
+                    perfil,
                     filtroEstabelecimentoUsuariosAtivos,
                     setFiltroEstabelecimentoUsuariosAtivos
                   )
@@ -709,11 +647,11 @@ const PerfilUsuario = () => {
               </div>
               <div className={ styles.Filtro }>
                 <Select
-                  { ...getPropsFiltroCompetencia(
-                    agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil),
+                  { ...getPropsFiltroPeriodo(
+                    perfil,
                     filtroCompetenciaUsuariosAtivos,
                     setFiltroCompetenciaUsuariosAtivos,
-                    filtroEstabelecimentoUsuariosAtivos
+                    false
                   )
                   }
                 />
@@ -760,7 +698,7 @@ const PerfilUsuario = () => {
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroEstabelecimento(
-                    agregarPorEstabelecimentoPeriodoERacaCor(perfil),
+                    perfil,
                     filtroEstabelecimentoRacaCor,
                     setFiltroEstabelecimentoRacaCor
                   )
@@ -769,11 +707,11 @@ const PerfilUsuario = () => {
               </div>
               <div className={ styles.Filtro }>
                 <Select
-                  { ...getPropsFiltroCompetencia(
-                    agregarPorEstabelecimentoPeriodoERacaCor(perfil),
+                  { ...getPropsFiltroPeriodo(
+                    perfil,
                     filtroCompetenciaRacaCor,
                     setFiltroCompetenciaRacaCor,
-                    filtroEstabelecimentoRacaCor
+                    false
                   )
                   }
                 />
