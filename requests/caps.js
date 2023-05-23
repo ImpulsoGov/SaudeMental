@@ -191,10 +191,9 @@ export const getUsuariosAtivosPorCondicao = async (
   linhaIdade
 ) => {
   try {
-    const endpoint = `/usuarios/perfil/condicao
-      ?municipio_id_sus=${municipioIdSus}
-      &linha_perfil=${linhaPerfil}
-      &linha_idade=${linhaIdade}`;
+    const endpoint = "/usuarios/perfil/condicao?municipio_id_sus=" + municipioIdSus
+      + "&linha_perfil=" + linhaPerfil
+      + "&linha_idade=" + linhaIdade;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -210,10 +209,9 @@ export const getUsuariosAtivosPorGeneroEIdade = async (
   linhaIdade
 ) => {
   try {
-    const endpoint = `/usuarios/perfil/genero-e-idade
-      ?municipio_id_sus=${municipioIdSus}
-      &linha_perfil=${linhaPerfil}
-      &linha_idade=${linhaIdade}`;
+    const endpoint = "/usuarios/perfil/genero-e-idade?municipio_id_sus=" + municipioIdSus
+      + "&linha_perfil=" + linhaPerfil
+      + "&linha_idade=" + linhaIdade;
 
     const { data } = await axiosInstance.get(endpoint);
 
