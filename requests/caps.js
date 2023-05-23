@@ -185,7 +185,24 @@ export const getProcedimentosPorHora = async (municipioIdSus) => {
   }
 };
 
-export const getUsuariosAtivosPorCondicao = async (municipioIdSus, linhaPerfil, linhaIdade) => {
+export const getUsuariosAtivosPorCondicao = async (
+  municipioIdSus,
+  linhaPerfil,
+  linhaIdade
+) => {
+  try {
+    const endpoint = `/usuarios/perfil/condicao
+      ?municipio_id_sus=${municipioIdSus}
+      &linha_perfil=${linhaPerfil}
+      &linha_idade=${linhaIdade}`;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
   try {
     const endpoint = `/usuarios/perfil/condicao?municipio_id_sus=${municipioIdSus}&linha_perfil=${linhaPerfil}&linha_idade=${linhaIdade}`;
 
