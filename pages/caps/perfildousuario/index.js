@@ -7,10 +7,10 @@ import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import styles from "../Caps.module.css";
 
-import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from "../../../helpers/graficoAbusoESituacao";
-import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento, getUsuariosAtivosPorCondicao } from "../../../requests/caps";
+import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
+import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade } from "../../../requests/caps";
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
@@ -29,6 +29,7 @@ const PerfilUsuario = () => {
   const { data: session } = useSession();
   const [perfil, setPerfil] = useState([]);
   const [usuariosPorCondicao, setUsuariosPorCondicao] = useState([]);
+  const [usuariosPorGeneroEIdade, setUsuariosPorGeneroEIdade] = useState([]);
   const [perfilPorEstabelecimento, setPerfilPorEstabelecimento] = useState([]);
   const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
   const [filtroCompetenciaCID, setFiltroCompetenciaCID] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
@@ -46,6 +47,12 @@ const PerfilUsuario = () => {
       setPerfilPorEstabelecimento(
         await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
       );
+      setUsuariosPorCondicao(await getUsuariosAtivosPorCondicao(
+        municipioIdSus, LINHA_PERFIL, LINHA_IDADE
+      ));
+      setUsuariosPorGeneroEIdade(await getUsuariosAtivosPorGeneroEIdade(
+        municipioIdSus, LINHA_PERFIL, LINHA_IDADE
+      ));
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -75,46 +82,6 @@ const PerfilUsuario = () => {
         condicaoEncontrada
           ? condicaoEncontrada.usuariosAtivos += usuariosAtivos
           : perfilEncontrado.ativosPorCondicao.push({ condicaoSaude, usuariosAtivos });
-      }
-    });
-
-    return perfilAgregado;
-  };
-
-  const agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero = (perfil) => {
-    const perfilAgregado = [];
-
-    perfil.forEach((dado) => {
-      const {
-        estabelecimento,
-        competencia,
-        periodo,
-        ativos_3meses: usuariosAtivos,
-        usuario_faixa_etaria: faixaEtaria,
-        usuario_sexo: usuarioSexo
-      } = dado;
-      const genero = usuarioSexo.toLowerCase();
-      const perfilEncontrado = perfilAgregado
-        .find((item) => item.estabelecimento === estabelecimento && item.periodo === periodo);
-
-      if (!perfilEncontrado) {
-        perfilAgregado.push({
-          periodo,
-          competencia,
-          estabelecimento,
-          ativosPorFaixaEtariaEGenero: [{ faixaEtaria, [genero]: usuariosAtivos }]
-        });
-      } else {
-        const ativos = perfilEncontrado.ativosPorFaixaEtariaEGenero
-          .find((item) => item.faixaEtaria === faixaEtaria);
-
-        if (!ativos) {
-          perfilEncontrado.ativosPorFaixaEtariaEGenero.push({ faixaEtaria, [genero]: usuariosAtivos });
-        } else {
-          ativos[genero]
-            ? ativos[genero] += usuariosAtivos
-            : ativos[genero] = usuariosAtivos;
-        }
       }
     });
 
@@ -196,74 +163,6 @@ const PerfilUsuario = () => {
               color: CORES_GRAFICO_DONUT[index]
             },
           }))
-        }
-      ]
-    };
-  };
-
-  const getOpcoesGraficoGeneroEFaixaEtaria = (perfil) => {
-    const NOME_DIMENSAO = "genero";
-    const LABELS_DIMENSAO = ["Masculino", "Feminino"];
-
-    const perfilFiltrado = perfil
-      .filter((item) =>
-        item.estabelecimento === filtroEstabelecimentoGenero.value
-        && item.periodo === filtroCompetenciaGenero.value
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
-      );
-    const [perfilAgregado] = agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfilFiltrado);
-
-    return {
-      legend: {
-        itemGap: 25,
-      },
-      tooltip: {},
-      dataset: {
-        dimensions: [NOME_DIMENSAO, ...LABELS_DIMENSAO],
-        source: perfilAgregado.ativosPorFaixaEtariaEGenero
-          .sort((a, b) => a.faixaEtaria.localeCompare(b.faixaEtaria))
-          .map((item) => ({
-            [NOME_DIMENSAO]: item.faixaEtaria,
-            [LABELS_DIMENSAO[0]]: item[LABELS_DIMENSAO[0].toLowerCase()],
-            [LABELS_DIMENSAO[1]]: item[LABELS_DIMENSAO[1].toLowerCase()],
-          })),
-      },
-      xAxis: {
-        type: 'category',
-        name: "Faixa etária (em anos)",
-        nameLocation: "center",
-        nameGap: 45,
-      },
-      yAxis: {
-        name: "Usuários ativos",
-        nameLocation: "center",
-        nameGap: 55,
-      },
-      series: [
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#FA81E6"
-          },
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: `{@${LABELS_DIMENSAO[0]}}`,
-            color: "#FFFFFF",
-          },
-        },
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#5367C9"
-          },
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: `{@${LABELS_DIMENSAO[1]}}`,
-            color: "#FFFFFF",
-          },
         }
       ]
     };
@@ -401,6 +300,15 @@ const PerfilUsuario = () => {
     );
   }, [usuariosPorCondicao, filtroEstabelecimentoUsuariosAtivos, filtroCompetenciaUsuariosAtivos]);
 
+  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
+    return agregarPorFaixaEtariaEGenero(
+      filtrarPorPeriodoEEstabelecimento(usuariosPorGeneroEIdade, filtroEstabelecimentoGenero, filtroCompetenciaGenero),
+      "usuario_faixa_etaria",
+      "usuario_sexo",
+      "ativos_3meses"
+    );
+  }, [usuariosPorGeneroEIdade, filtroEstabelecimentoGenero, filtroCompetenciaGenero]);
+
   return (
     <div>
       <TituloSmallTexto
@@ -504,14 +412,14 @@ const PerfilUsuario = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfil.length !== 0
+      { usuariosPorGeneroEIdade.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroEstabelecimento(
-                    perfil,
+                    usuariosPorGeneroEIdade,
                     filtroEstabelecimentoGenero,
                     setFiltroEstabelecimentoGenero
                   )
@@ -521,7 +429,7 @@ const PerfilUsuario = () => {
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroPeriodo(
-                    perfil,
+                    usuariosPorGeneroEIdade,
                     filtroCompetenciaGenero,
                     setFiltroCompetenciaGenero,
                     false
@@ -532,7 +440,10 @@ const PerfilUsuario = () => {
             </div>
 
             <ReactEcharts
-              option={ getOpcoesGraficoGeneroEFaixaEtaria(perfil) }
+              option={ getOpcoesGraficoGeneroEFaixaEtaria(
+                agregadosPorGeneroEFaixaEtaria,
+                "Usuários ativos"
+              ) }
               style={ { width: "100%", height: "70vh" } }
             />
           </>
