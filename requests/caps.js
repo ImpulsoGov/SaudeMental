@@ -203,8 +203,17 @@ export const getUsuariosAtivosPorCondicao = async (
     console.log('error', error.response.data);
   }
 };
+
+export const getUsuariosAtivosPorGeneroEIdade = async (
+  municipioIdSus,
+  linhaPerfil,
+  linhaIdade
+) => {
   try {
-    const endpoint = `/usuarios/perfil/condicao?municipio_id_sus=${municipioIdSus}&linha_perfil=${linhaPerfil}&linha_idade=${linhaIdade}`;
+    const endpoint = `/usuarios/perfil/genero-e-idade
+      ?municipio_id_sus=${municipioIdSus}
+      &linha_perfil=${linhaPerfil}
+      &linha_idade=${linhaIdade}`;
 
     const { data } = await axiosInstance.get(endpoint);
 
