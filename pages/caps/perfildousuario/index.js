@@ -572,7 +572,7 @@ const PerfilUsuario = () => {
           descricao={ `Última competência disponível: ${filtrarDadosGeraisPorPeriodo(perfilPorEstabelecimento, "Último período").nome_mes
             }` }
         />
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -599,7 +599,7 @@ const PerfilUsuario = () => {
             }
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       {/* <GraficoInfo
@@ -644,7 +644,7 @@ const PerfilUsuario = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -685,7 +685,7 @@ const PerfilUsuario = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -745,7 +745,7 @@ const PerfilUsuario = () => {
             </div>
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -786,7 +786,7 @@ const PerfilUsuario = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo

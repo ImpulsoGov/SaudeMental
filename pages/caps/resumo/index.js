@@ -83,7 +83,7 @@ const Resumo = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       { resumoMunicipio
@@ -134,7 +134,7 @@ const Resumo = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       { resumoMunicipio
@@ -186,7 +186,7 @@ const Resumo = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       {
@@ -230,7 +230,7 @@ const Resumo = () => {
               />
             </>
           )
-          : <Spinner theme="SM" />
+          : <Spinner theme="ColorSM" />
       }
 
       { resumoMunicipio
@@ -274,7 +274,7 @@ const Resumo = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
     </div>
   );

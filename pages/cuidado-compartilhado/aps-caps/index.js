@@ -109,7 +109,7 @@ const ApsCaps = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -144,7 +144,7 @@ const ApsCaps = () => {
             />
           </>
         )
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -155,7 +155,7 @@ const ApsCaps = () => {
           option={ getEncaminhamentosChartOptions(encaminhamentosApsCaps) }
           style={ { width: "100%", height: "70vh" } }
         />
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
     </div>
   );

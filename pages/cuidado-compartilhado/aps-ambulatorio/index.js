@@ -87,7 +87,7 @@ const ApsAmbulatorio = () => {
               proporcao="4-4-4"
             />
           </>
-          : <Spinner theme="SM" />
+          : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -99,7 +99,7 @@ const ApsAmbulatorio = () => {
           option={ getEncaminhamentosChartOptions(encaminhamentosAps) }
           style={ { width: "100%", height: "70vh" } }
         />
-        : <Spinner theme="SM" />
+        : <Spinner theme="ColorSM" />
       }
     </div>
   );
