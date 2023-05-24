@@ -10,7 +10,8 @@ import styles from "../Caps.module.css";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from "../../../helpers/graficoAbusoESituacao";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
-import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade } from "../../../requests/caps";
+import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
+import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from "../../../requests/caps";
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
@@ -30,6 +31,7 @@ const PerfilUsuario = () => {
   const [perfil, setPerfil] = useState([]);
   const [usuariosPorCondicao, setUsuariosPorCondicao] = useState([]);
   const [usuariosPorGeneroEIdade, setUsuariosPorGeneroEIdade] = useState([]);
+  const [usuariosPorRacaECor, setUsuariosPorRacaECor] = useState([]);
   const [perfilPorEstabelecimento, setPerfilPorEstabelecimento] = useState([]);
   const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
   const [filtroCompetenciaCID, setFiltroCompetenciaCID] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
@@ -51,6 +53,9 @@ const PerfilUsuario = () => {
         municipioIdSus, LINHA_PERFIL, LINHA_IDADE
       ));
       setUsuariosPorGeneroEIdade(await getUsuariosAtivosPorGeneroEIdade(
+        municipioIdSus, LINHA_PERFIL, LINHA_IDADE
+      ));
+      setUsuariosPorRacaECor(await getUsuariosAtivosPorRacaECor(
         municipioIdSus, LINHA_PERFIL, LINHA_IDADE
       ));
     };
@@ -82,40 +87,6 @@ const PerfilUsuario = () => {
         condicaoEncontrada
           ? condicaoEncontrada.usuariosAtivos += usuariosAtivos
           : perfilEncontrado.ativosPorCondicao.push({ condicaoSaude, usuariosAtivos });
-      }
-    });
-
-    return perfilAgregado;
-  };
-
-  const agregarPorEstabelecimentoPeriodoERacaCor = (perfil) => {
-    const perfilAgregado = [];
-
-    perfil.forEach((dado) => {
-      const {
-        estabelecimento,
-        competencia,
-        periodo,
-        ativos_3meses: usuariosAtivos,
-        usuario_raca_cor: racaCor
-      } = dado;
-      const perfilEncontrado = perfilAgregado
-        .find((item) => item.estabelecimento === estabelecimento && item.periodo === periodo);
-
-      if (!perfilEncontrado) {
-        perfilAgregado.push({
-          periodo,
-          competencia,
-          estabelecimento,
-          ativosPorRacaCor: [{ racaCor, usuariosAtivos }]
-        });
-      } else {
-        const racaCorEncontrada = perfilEncontrado.ativosPorRacaCor
-          .find((item) => item.racaCor === racaCor);
-
-        racaCorEncontrada
-          ? racaCorEncontrada.usuariosAtivos += usuariosAtivos
-          : perfilEncontrado.ativosPorRacaCor.push({ racaCor, usuariosAtivos });
       }
     });
 
@@ -164,46 +135,6 @@ const PerfilUsuario = () => {
             },
           }))
         }
-      ]
-    };
-  };
-
-  const getOpcoesGraficoRacaEcor = (perfil) => {
-    const NOME_DIMENSAO = "usuariosAtivos";
-    const LABEL_DIMENSAO = "Usuários ativos";
-
-    const perfilFiltrado = perfil
-      .filter((item) =>
-        item.estabelecimento === filtroEstabelecimentoRacaCor.value
-        && item.periodo === filtroCompetenciaRacaCor.value
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
-      );
-    const [perfilAgregado] = agregarPorEstabelecimentoPeriodoERacaCor(perfilFiltrado);
-
-    return {
-      legend: {},
-      tooltip: {},
-      dataset: {
-        dimensions: [NOME_DIMENSAO, LABEL_DIMENSAO],
-        source: perfilAgregado.ativosPorRacaCor
-          .sort((a, b) => b.racaCor.localeCompare(a.racaCor))
-          .map((item) => ({
-            [NOME_DIMENSAO]: item.racaCor,
-            [LABEL_DIMENSAO]: item.usuariosAtivos,
-          })),
-      },
-      xAxis: {
-        type: 'category',
-      },
-      yAxis: {},
-      series: [
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#5367C9"
-          },
-        },
       ]
     };
   };
@@ -308,6 +239,14 @@ const PerfilUsuario = () => {
       "ativos_3meses"
     );
   }, [usuariosPorGeneroEIdade, filtroEstabelecimentoGenero, filtroCompetenciaGenero]);
+
+  const agregadosPorRacaCor = useMemo(() => {
+    return agregarPorRacaCor(
+      filtrarPorPeriodoEEstabelecimento(usuariosPorRacaECor, filtroEstabelecimentoRacaCor, filtroCompetenciaRacaCor),
+      "usuario_raca_cor",
+      "ativos_3meses"
+    );
+  }, [usuariosPorRacaECor, filtroEstabelecimentoRacaCor, filtroCompetenciaRacaCor]);
 
   return (
     <div>
@@ -516,14 +455,14 @@ const PerfilUsuario = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfil.length !== 0
+      { usuariosPorRacaECor.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroEstabelecimento(
-                    perfil,
+                    usuariosPorRacaECor,
                     filtroEstabelecimentoRacaCor,
                     setFiltroEstabelecimentoRacaCor
                   )
@@ -533,7 +472,7 @@ const PerfilUsuario = () => {
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroPeriodo(
-                    perfil,
+                    usuariosPorRacaECor,
                     filtroCompetenciaRacaCor,
                     setFiltroCompetenciaRacaCor,
                     false
@@ -544,7 +483,10 @@ const PerfilUsuario = () => {
             </div>
 
             <ReactEcharts
-              option={ getOpcoesGraficoRacaEcor(perfil) }
+              option={ getOpcoesGraficoRacaEcor(
+                agregadosPorRacaCor,
+                "Usuários ativos"
+              ) }
               style={ { width: "100%", height: "70vh" } }
             />
           </>
