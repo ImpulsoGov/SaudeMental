@@ -3,15 +3,15 @@ import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
-import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import styles from "../Caps.module.css";
 
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from "../../../helpers/graficoAbusoESituacao";
+import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
-import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from "../../../requests/caps";
+import { getPerfilUsuariosPorEstabelecimento, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from "../../../requests/caps";
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
@@ -28,10 +28,10 @@ export function getServerSideProps(ctx) {
 
 const PerfilUsuario = () => {
   const { data: session } = useSession();
-  const [perfil, setPerfil] = useState([]);
   const [usuariosPorCondicao, setUsuariosPorCondicao] = useState([]);
   const [usuariosPorGeneroEIdade, setUsuariosPorGeneroEIdade] = useState([]);
   const [usuariosPorRacaECor, setUsuariosPorRacaECor] = useState([]);
+  const [usuariosPorCID, setUsuariosPorCID] = useState([]);
   const [perfilPorEstabelecimento, setPerfilPorEstabelecimento] = useState([]);
   const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
   const [filtroCompetenciaCID, setFiltroCompetenciaCID] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
@@ -45,7 +45,6 @@ const PerfilUsuario = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setPerfil(await getPerfilUsuarios(municipioIdSus));
       setPerfilPorEstabelecimento(
         await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
       );
@@ -58,86 +57,15 @@ const PerfilUsuario = () => {
       setUsuariosPorRacaECor(await getUsuariosAtivosPorRacaECor(
         municipioIdSus, LINHA_PERFIL, LINHA_IDADE
       ));
+      setUsuariosPorCID(await getUsuariosAtivosPorCID(
+        520140, LINHA_PERFIL, LINHA_IDADE
+      ));
     };
 
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
-
-  const agregarPorEstabelecimentoPeriodoECondicao = (perfil) => {
-    const perfilAgregado = [];
-
-    perfil.forEach((dado) => {
-      const { estabelecimento, competencia, periodo, ativos_3meses: usuariosAtivos, usuario_condicao_saude: condicaoSaude } = dado;
-      const perfilEncontrado = perfilAgregado
-        .find((item) => item.estabelecimento === estabelecimento && item.periodo === periodo);
-
-      if (!perfilEncontrado) {
-        perfilAgregado.push({
-          periodo,
-          competencia,
-          estabelecimento,
-          ativosPorCondicao: [{ condicaoSaude, usuariosAtivos }]
-        });
-      } else {
-        const condicaoEncontrada = perfilEncontrado.ativosPorCondicao
-          .find((item) => item.condicaoSaude === condicaoSaude);
-
-        condicaoEncontrada
-          ? condicaoEncontrada.usuariosAtivos += usuariosAtivos
-          : perfilEncontrado.ativosPorCondicao.push({ condicaoSaude, usuariosAtivos });
-      }
-    });
-
-    return perfilAgregado;
-  };
-
-  const getOpcoesGraficoCID = (perfil) => {
-    const perfilFiltrado = perfil
-      .filter((item) =>
-        item.estabelecimento === filtroEstabelecimentoCID.value
-        && item.periodo === filtroCompetenciaCID.value
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
-      );
-
-    const [perfilAgregado] = agregarPorEstabelecimentoPeriodoECondicao(perfilFiltrado);
-
-    return {
-      tooltip: {
-        trigger: 'item',
-      },
-      series: [
-        {
-          type: 'pie',
-          radius: ['40%', '80%'],
-          avoidLabelOverlap: false,
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: "{d}%",
-            color: "#000000"
-          },
-          emphasis: {
-            label: {
-              show: true,
-            }
-          },
-          labelLine: {
-            show: false
-          },
-          data: perfilAgregado.ativosPorCondicao.map(({ condicaoSaude, usuariosAtivos }, index) => ({
-            value: usuariosAtivos,
-            name: !condicaoSaude ? "Sem informação" : condicaoSaude,
-            itemStyle: {
-              color: CORES_GRAFICO_DONUT[index]
-            },
-          }))
-        }
-      ]
-    };
-  };
 
   const filtrarDadosGeraisPorPeriodo = (dados, filtroPeriodo) => {
     return dados.find((item) =>
@@ -216,24 +144,36 @@ const PerfilUsuario = () => {
   };
 
   const agregadosPorAbusoSubstancias = useMemo(() => {
+    const dadosFiltrados = filtrarPorPeriodoEEstabelecimento(
+      usuariosPorCondicao, filtroEstabelecimentoUsuariosAtivos, filtroCompetenciaUsuariosAtivos
+    );
+
     return agregarPorAbusoSubstancias(
-      filtrarPorPeriodoEEstabelecimento(usuariosPorCondicao, filtroEstabelecimentoUsuariosAtivos, filtroCompetenciaUsuariosAtivos),
+      dadosFiltrados,
       "usuario_abuso_substancias",
       "ativos_3meses"
     );
   }, [usuariosPorCondicao, filtroEstabelecimentoUsuariosAtivos, filtroCompetenciaUsuariosAtivos]);
 
   const agregadosPorSituacaoRua = useMemo(() => {
+    const dadosFiltrados = filtrarPorPeriodoEEstabelecimento(
+      usuariosPorCondicao, filtroEstabelecimentoUsuariosAtivos, filtroCompetenciaUsuariosAtivos
+    );
+
     return agregarPorSituacaoRua(
-      filtrarPorPeriodoEEstabelecimento(usuariosPorCondicao, filtroEstabelecimentoUsuariosAtivos, filtroCompetenciaUsuariosAtivos),
+      dadosFiltrados,
       "usuario_situacao_rua",
       "ativos_3meses"
     );
   }, [usuariosPorCondicao, filtroEstabelecimentoUsuariosAtivos, filtroCompetenciaUsuariosAtivos]);
 
   const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
+    const dadosFiltrados = filtrarPorPeriodoEEstabelecimento(
+      usuariosPorGeneroEIdade, filtroEstabelecimentoGenero, filtroCompetenciaGenero
+    );
+
     return agregarPorFaixaEtariaEGenero(
-      filtrarPorPeriodoEEstabelecimento(usuariosPorGeneroEIdade, filtroEstabelecimentoGenero, filtroCompetenciaGenero),
+      dadosFiltrados,
       "usuario_faixa_etaria",
       "usuario_sexo",
       "ativos_3meses"
@@ -241,12 +181,28 @@ const PerfilUsuario = () => {
   }, [usuariosPorGeneroEIdade, filtroEstabelecimentoGenero, filtroCompetenciaGenero]);
 
   const agregadosPorRacaCor = useMemo(() => {
+    const dadosFiltrados = filtrarPorPeriodoEEstabelecimento(
+      usuariosPorRacaECor, filtroEstabelecimentoRacaCor, filtroCompetenciaRacaCor
+    );
+
     return agregarPorRacaCor(
-      filtrarPorPeriodoEEstabelecimento(usuariosPorRacaECor, filtroEstabelecimentoRacaCor, filtroCompetenciaRacaCor),
+      dadosFiltrados,
       "usuario_raca_cor",
       "ativos_3meses"
     );
   }, [usuariosPorRacaECor, filtroEstabelecimentoRacaCor, filtroCompetenciaRacaCor]);
+
+  const agregadosPorCondicaoSaude = useMemo(() => {
+    const dadosFiltrados = filtrarPorPeriodoEEstabelecimento(
+      usuariosPorCID, filtroEstabelecimentoCID, filtroCompetenciaCID
+    );
+
+    return agregarPorCondicaoSaude(
+      dadosFiltrados,
+      "usuario_condicao_saude",
+      "ativos_3meses"
+    );
+  }, [usuariosPorCID, filtroEstabelecimentoCID, filtroCompetenciaCID]);
 
   return (
     <div>
@@ -310,14 +266,14 @@ const PerfilUsuario = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfil.length !== 0
+      { usuariosPorCID.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroEstabelecimento(
-                    perfil,
+                    usuariosPorCID,
                     filtroEstabelecimentoCID,
                     setFiltroEstabelecimentoCID
                   )
@@ -327,7 +283,7 @@ const PerfilUsuario = () => {
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroPeriodo(
-                    perfil,
+                    usuariosPorCID,
                     filtroCompetenciaCID,
                     setFiltroCompetenciaCID,
                     false
@@ -338,7 +294,7 @@ const PerfilUsuario = () => {
             </div>
 
             <ReactEcharts
-              option={ getOpcoesGraficoCID(perfil) }
+              option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
               style={ { width: "100%", height: "70vh" } }
             />
           </>
