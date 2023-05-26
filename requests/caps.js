@@ -187,13 +187,13 @@ export const getProcedimentosPorHora = async (municipioIdSus) => {
 
 export const getUsuariosAtivosPorCondicao = async (
   municipioIdSus,
-  linhaPerfil,
-  linhaIdade
+  // linhaPerfil,
+  // linhaIdade
 ) => {
   try {
-    const endpoint = "/usuarios/perfil/condicao?municipio_id_sus=" + municipioIdSus
-      + "&linha_perfil=" + linhaPerfil
-      + "&linha_idade=" + linhaIdade;
+    const endpoint = "/usuarios/perfil/condicao?municipio_id_sus=" + municipioIdSus;
+    // + "&linha_perfil=" + linhaPerfil
+    // + "&linha_idade=" + linhaIdade;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -205,13 +205,13 @@ export const getUsuariosAtivosPorCondicao = async (
 
 export const getUsuariosAtivosPorGeneroEIdade = async (
   municipioIdSus,
-  linhaPerfil,
-  linhaIdade
+  // linhaPerfil,
+  // linhaIdade
 ) => {
   try {
-    const endpoint = "/usuarios/perfil/genero-e-idade?municipio_id_sus=" + municipioIdSus
-      + "&linha_perfil=" + linhaPerfil
-      + "&linha_idade=" + linhaIdade;
+    const endpoint = "/usuarios/perfil/genero-e-idade?municipio_id_sus=" + municipioIdSus;
+    // + "&linha_perfil=" + linhaPerfil
+    // + "&linha_idade=" + linhaIdade;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -223,13 +223,13 @@ export const getUsuariosAtivosPorGeneroEIdade = async (
 
 export const getUsuariosAtivosPorRacaECor = async (
   municipioIdSus,
-  linhaPerfil,
-  linhaIdade
+  // linhaPerfil,
+  // linhaIdade
 ) => {
   try {
-    const endpoint = "/usuarios/perfil/raca?municipio_id_sus=" + municipioIdSus
-      + "&linha_perfil=" + linhaPerfil
-      + "&linha_idade=" + linhaIdade;
+    const endpoint = "/usuarios/perfil/raca?municipio_id_sus=" + municipioIdSus;
+    // + "&linha_perfil=" + linhaPerfil
+    // + "&linha_idade=" + linhaIdade;
 
     const { data } = await axiosInstance.get(endpoint);
 
