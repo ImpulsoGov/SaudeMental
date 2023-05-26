@@ -280,7 +280,6 @@ const PerfilUsuario = () => {
       { usuariosPorCID.length !== 0
         && competencias.length !== 0
         && estabelecimentos.length !== 0
-        && !loading
         ? (
           <>
             <div className={ styles.Filtros }>
@@ -307,10 +306,13 @@ const PerfilUsuario = () => {
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
-              style={ { width: "100%", height: "70vh" } }
-            />
+            { !loading
+              ? <ReactEcharts
+                option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
+                style={ { width: "100%", height: "70vh" } }
+              />
+              : <Spinner theme="ColorSM" height="70vh" />
+            }
           </>
         )
         : <Spinner theme="ColorSM" />
