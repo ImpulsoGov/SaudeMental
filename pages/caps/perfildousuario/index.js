@@ -11,12 +11,10 @@ import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbus
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
-import { getPerfilUsuariosPorEstabelecimento, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from "../../../requests/caps";
+import { getEstabelecimentosPerfil, getPerfilUsuariosPorEstabelecimento, getPeriodosPerfil, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from "../../../requests/caps";
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
-const LINHA_PERFIL = "Todos";
-const LINHA_IDADE = "Todos";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -28,6 +26,8 @@ export function getServerSideProps(ctx) {
 
 const PerfilUsuario = () => {
   const { data: session } = useSession();
+  const [estabelecimentos, setEstabelecimentos] = useState([]);
+  const [competencias, setCompetencias] = useState([]);
   const [usuariosPorCondicao, setUsuariosPorCondicao] = useState([]);
   const [usuariosPorGeneroEIdade, setUsuariosPorGeneroEIdade] = useState([]);
   const [usuariosPorRacaECor, setUsuariosPorRacaECor] = useState([]);
@@ -42,30 +42,45 @@ const PerfilUsuario = () => {
   const [filtroEstabelecimentoUsuariosAtivos, setFiltroEstabelecimentoUsuariosAtivos] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
   const [filtroCompetenciaUsuariosAtivos, setFiltroCompetenciaUsuariosAtivos] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
   const [filtroPeriodoPanorama, setFiltroPeriodoPanorama] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setPerfilPorEstabelecimento(
-        await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
-      );
-      setUsuariosPorCondicao(await getUsuariosAtivosPorCondicao(
-        municipioIdSus, LINHA_PERFIL, LINHA_IDADE
-      ));
-      setUsuariosPorGeneroEIdade(await getUsuariosAtivosPorGeneroEIdade(
-        municipioIdSus, LINHA_PERFIL, LINHA_IDADE
-      ));
-      setUsuariosPorRacaECor(await getUsuariosAtivosPorRacaECor(
-        municipioIdSus, LINHA_PERFIL, LINHA_IDADE
-      ));
-      setUsuariosPorCID(await getUsuariosAtivosPorCID(
-        520140, LINHA_PERFIL, LINHA_IDADE
-      ));
+      setPerfilPorEstabelecimento(await getPerfilUsuariosPorEstabelecimento(municipioIdSus));
+      setUsuariosPorCondicao(await getUsuariosAtivosPorCondicao(municipioIdSus));
+      setUsuariosPorGeneroEIdade(await getUsuariosAtivosPorGeneroEIdade(municipioIdSus));
+      setUsuariosPorRacaECor(await getUsuariosAtivosPorRacaECor(municipioIdSus));
     };
 
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
+
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      getEstabelecimentosPerfil(session?.user.municipio_id_ibge)
+        .then((estabelecimentos) => setEstabelecimentos(estabelecimentos));
+
+      getPeriodosPerfil(session?.user.municipio_id_ibge)
+        .then((periodos) => setCompetencias(periodos));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoading(true);
+
+      getUsuariosAtivosPorCID(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoCID.value,
+        filtroCompetenciaCID.value
+      ).then((dadosFiltrados) => {
+        setUsuariosPorCID(dadosFiltrados);
+        setLoading(false);
+      });
+    }
+  }, [session?.user.municipio_id_ibge, filtroEstabelecimentoCID.value, filtroCompetenciaCID.value]);
 
   const filtrarDadosGeraisPorPeriodo = (dados, filtroPeriodo) => {
     return dados.find((item) =>
@@ -193,16 +208,12 @@ const PerfilUsuario = () => {
   }, [usuariosPorRacaECor, filtroEstabelecimentoRacaCor, filtroCompetenciaRacaCor]);
 
   const agregadosPorCondicaoSaude = useMemo(() => {
-    const dadosFiltrados = filtrarPorPeriodoEEstabelecimento(
-      usuariosPorCID, filtroEstabelecimentoCID, filtroCompetenciaCID
-    );
-
     return agregarPorCondicaoSaude(
-      dadosFiltrados,
+      usuariosPorCID,
       "usuario_condicao_saude",
       "ativos_3meses"
     );
-  }, [usuariosPorCID, filtroEstabelecimentoCID, filtroCompetenciaCID]);
+  }, [usuariosPorCID]);
 
   return (
     <div>
@@ -267,13 +278,16 @@ const PerfilUsuario = () => {
       />
 
       { usuariosPorCID.length !== 0
+        && competencias.length !== 0
+        && estabelecimentos.length !== 0
+        && !loading
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroEstabelecimento(
-                    usuariosPorCID,
+                    estabelecimentos,
                     filtroEstabelecimentoCID,
                     setFiltroEstabelecimentoCID
                   )
@@ -283,7 +297,7 @@ const PerfilUsuario = () => {
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroPeriodo(
-                    usuariosPorCID,
+                    competencias,
                     filtroCompetenciaCID,
                     setFiltroCompetenciaCID,
                     false
