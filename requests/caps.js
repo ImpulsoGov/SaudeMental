@@ -241,13 +241,21 @@ export const getUsuariosAtivosPorRacaECor = async (
 
 export const getUsuariosAtivosPorCID = async (
   municipioIdSus,
-  linhaPerfil,
-  linhaIdade
+  estabelecimento,
+  periodo
 ) => {
   try {
     const endpoint = "/usuarios/perfil/cid?municipio_id_sus=" + municipioIdSus
-      + "&linha_perfil=" + linhaPerfil
-      + "&linha_idade=" + linhaIdade;
+      + "&estabelecimento=" + estabelecimento
+      + "&periodo=" + periodo;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
 
     const { data } = await axiosInstance.get(endpoint);
 
