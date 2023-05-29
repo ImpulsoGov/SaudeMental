@@ -1,15 +1,17 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import Select, { components } from "react-select";
-import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
+import { useEffect, useMemo, useState } from "react";
+import Select from "react-select";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import styles from "../Caps.module.css";
 
-import { CORES_GRAFICO_SUBST_MORADIA } from "../../../constants/CORES_GRAFICO_SUBST_MORADIA";
-import { getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
-import { getPerfilUsuarios, getPerfilUsuariosPorEstabelecimento } from "../../../requests/caps";
+import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
+import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from "../../../helpers/graficoAbusoESituacao";
+import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
+import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
+import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
+import { getEstabelecimentosPerfil, getPerfilUsuariosPorEstabelecimento, getPeriodosPerfil, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from "../../../requests/caps";
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
@@ -24,7 +26,12 @@ export function getServerSideProps(ctx) {
 
 const PerfilUsuario = () => {
   const { data: session } = useSession();
-  const [perfil, setPerfil] = useState([]);
+  const [estabelecimentos, setEstabelecimentos] = useState([]);
+  const [competencias, setCompetencias] = useState([]);
+  const [usuariosPorCondicao, setUsuariosPorCondicao] = useState([]);
+  const [usuariosPorGeneroEIdade, setUsuariosPorGeneroEIdade] = useState([]);
+  const [usuariosPorRacaECor, setUsuariosPorRacaECor] = useState([]);
+  const [usuariosPorCID, setUsuariosPorCID] = useState([]);
   const [perfilPorEstabelecimento, setPerfilPorEstabelecimento] = useState([]);
   const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
   const [filtroCompetenciaCID, setFiltroCompetenciaCID] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
@@ -35,450 +42,83 @@ const PerfilUsuario = () => {
   const [filtroEstabelecimentoUsuariosAtivos, setFiltroEstabelecimentoUsuariosAtivos] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
   const [filtroCompetenciaUsuariosAtivos, setFiltroCompetenciaUsuariosAtivos] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
   const [filtroPeriodoPanorama, setFiltroPeriodoPanorama] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
+  const [loadingCID, setLoadingCID] = useState(false);
+  const [loadingGenero, setLoadingGenero] = useState(false);
+  const [loadingCondicao, setLoadingCondicao] = useState(false);
+  const [loadingRaca, setLoadingRaca] = useState(false);
 
   useEffect(() => {
-    const getDados = async (municipioIdSus) => {
-      setPerfil(await getPerfilUsuarios(municipioIdSus));
-      setPerfilPorEstabelecimento(
-        await getPerfilUsuariosPorEstabelecimento(municipioIdSus)
-      );
-    };
-
     if (session?.user.municipio_id_ibge) {
-      getDados(session?.user.municipio_id_ibge);
+      getPerfilUsuariosPorEstabelecimento(session?.user.municipio_id_ibge)
+        .then((dados) => setPerfilPorEstabelecimento(dados));
+
+      getEstabelecimentosPerfil(session?.user.municipio_id_ibge)
+        .then((estabelecimentos) => setEstabelecimentos(estabelecimentos));
+
+      getPeriodosPerfil(session?.user.municipio_id_ibge)
+        .then((periodos) => setCompetencias(periodos));
     }
   }, []);
 
-  const agregarPorEstabelecimentoPeriodoECondicao = (perfil) => {
-    const perfilAgregado = [];
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingCID(true);
 
-    perfil.forEach((dado) => {
-      const { estabelecimento, competencia, periodo, ativos_3meses: usuariosAtivos, usuario_condicao_saude: condicaoSaude } = dado;
-      const perfilEncontrado = perfilAgregado
-        .find((item) => item.estabelecimento === estabelecimento && item.periodo === periodo);
+      getUsuariosAtivosPorCID(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoCID.value,
+        filtroCompetenciaCID.value
+      ).then((dadosFiltrados) => {
+        setUsuariosPorCID(dadosFiltrados);
+        setLoadingCID(false);
+      });
+    }
+  }, [session?.user.municipio_id_ibge, filtroEstabelecimentoCID.value, filtroCompetenciaCID.value]);
 
-      if (!perfilEncontrado) {
-        perfilAgregado.push({
-          periodo,
-          competencia,
-          estabelecimento,
-          ativosPorCondicao: [{ condicaoSaude, usuariosAtivos }]
-        });
-      } else {
-        const condicaoEncontrada = perfilEncontrado.ativosPorCondicao
-          .find((item) => item.condicaoSaude === condicaoSaude);
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingCondicao(true);
 
-        condicaoEncontrada
-          ? condicaoEncontrada.usuariosAtivos += usuariosAtivos
-          : perfilEncontrado.ativosPorCondicao.push({ condicaoSaude, usuariosAtivos });
-      }
-    });
+      getUsuariosAtivosPorCondicao(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoUsuariosAtivos.value,
+        filtroCompetenciaUsuariosAtivos.value
+      ).then((dadosFiltrados) => {
+        setUsuariosPorCondicao(dadosFiltrados);
+        setLoadingCondicao(false);
+      });
+    }
+  }, [session?.user.municipio_id_ibge, filtroEstabelecimentoUsuariosAtivos.value, filtroCompetenciaUsuariosAtivos.value]);
 
-    return perfilAgregado;
-  };
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingGenero(true);
 
-  const agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero = (perfil) => {
-    const perfilAgregado = [];
+      getUsuariosAtivosPorGeneroEIdade(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoGenero.value,
+        filtroCompetenciaGenero.value
+      ).then((dadosFiltrados) => {
+        setUsuariosPorGeneroEIdade(dadosFiltrados);
+        setLoadingGenero(false);
+      });
+    }
+  }, [session?.user.municipio_id_ibge, filtroEstabelecimentoGenero.value, filtroCompetenciaGenero.value]);
 
-    perfil.forEach((dado) => {
-      const {
-        estabelecimento,
-        competencia,
-        periodo,
-        ativos_3meses: usuariosAtivos,
-        usuario_faixa_etaria: faixaEtaria,
-        usuario_sexo: usuarioSexo
-      } = dado;
-      const genero = usuarioSexo.toLowerCase();
-      const perfilEncontrado = perfilAgregado
-        .find((item) => item.estabelecimento === estabelecimento && item.periodo === periodo);
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingRaca(true);
 
-      if (!perfilEncontrado) {
-        perfilAgregado.push({
-          periodo,
-          competencia,
-          estabelecimento,
-          ativosPorFaixaEtariaEGenero: [{ faixaEtaria, [genero]: usuariosAtivos }]
-        });
-      } else {
-        const ativos = perfilEncontrado.ativosPorFaixaEtariaEGenero
-          .find((item) => item.faixaEtaria === faixaEtaria);
-
-        if (!ativos) {
-          perfilEncontrado.ativosPorFaixaEtariaEGenero.push({ faixaEtaria, [genero]: usuariosAtivos });
-        } else {
-          ativos[genero]
-            ? ativos[genero] += usuariosAtivos
-            : ativos[genero] = usuariosAtivos;
-        }
-      }
-    });
-
-    return perfilAgregado;
-  };
-
-  const agregarPorEstabelecimentoPeriodoERacaCor = (perfil) => {
-    const perfilAgregado = [];
-
-    perfil.forEach((dado) => {
-      const {
-        estabelecimento,
-        competencia,
-        periodo,
-        ativos_3meses: usuariosAtivos,
-        usuario_raca_cor: racaCor
-      } = dado;
-      const perfilEncontrado = perfilAgregado
-        .find((item) => item.estabelecimento === estabelecimento && item.periodo === periodo);
-
-      if (!perfilEncontrado) {
-        perfilAgregado.push({
-          periodo,
-          competencia,
-          estabelecimento,
-          ativosPorRacaCor: [{ racaCor, usuariosAtivos }]
-        });
-      } else {
-        const racaCorEncontrada = perfilEncontrado.ativosPorRacaCor
-          .find((item) => item.racaCor === racaCor);
-
-        racaCorEncontrada
-          ? racaCorEncontrada.usuariosAtivos += usuariosAtivos
-          : perfilEncontrado.ativosPorRacaCor.push({ racaCor, usuariosAtivos });
-      }
-    });
-
-    return perfilAgregado;
-  };
-
-  const agregarPorEstabelecimentoPeriodoSituacaoESubstancias = (perfil) => {
-    const perfilAgregado = [];
-
-    perfil.forEach((dado) => {
-      const {
-        estabelecimento,
-        competencia,
-        periodo,
-        ativos_3meses: usuariosAtivos,
-        usuario_situacao_rua: situacaoRua,
-        usuario_abuso_substancias: abusoSubstancias
-      } = dado;
-      const perfilEncontrado = perfilAgregado
-        .find((item) => item.estabelecimento === estabelecimento && item.periodo === periodo);
-
-      if (!perfilEncontrado) {
-        perfilAgregado.push({
-          periodo,
-          competencia,
-          estabelecimento,
-          ativosPorSituacaoDeRua: [{ situacaoRua, usuariosAtivos }],
-          ativosPorAbusoSubstancias: [{ abusoSubstancias, usuariosAtivos }]
-        });
-      } else {
-        const situacaoDeRuaEncontrada = perfilEncontrado.ativosPorSituacaoDeRua
-          .find((item) => item.situacaoRua === situacaoRua);
-
-        const abusoSubtanciasEncontrado = perfilEncontrado.ativosPorAbusoSubstancias
-          .find((item) => item.abusoSubstancias === abusoSubstancias);
-
-        situacaoDeRuaEncontrada
-          ? situacaoDeRuaEncontrada.usuariosAtivos += usuariosAtivos
-          : perfilEncontrado.ativosPorSituacaoDeRua.push({ situacaoRua, usuariosAtivos });
-
-        abusoSubtanciasEncontrado
-          ? abusoSubtanciasEncontrado.usuariosAtivos += usuariosAtivos
-          : perfilEncontrado.ativosPorAbusoSubstancias.push({ abusoSubstancias, usuariosAtivos });
-      }
-    });
-
-    return perfilAgregado;
-  };
-
-  const getPropsFiltroEstabelecimento = (perfil, estadoFiltro, funcaoSetFiltro) => {
-    const optionsSemDuplicadas = [];
-
-    perfil.forEach(({ estabelecimento }) => {
-      const perfilEncontrado = optionsSemDuplicadas
-        .find((item) => item.value === estabelecimento);
-
-      if (!perfilEncontrado) {
-        optionsSemDuplicadas.push({ value: estabelecimento, label: estabelecimento });
-      }
-    });
-
-    const optionPersonalizada = ({ children, ...props }) => (
-      <components.Control { ...props }>
-        Estabelecimento: { children }
-      </components.Control>
-    );
-
-    return {
-      options: optionsSemDuplicadas,
-      defaultValue: estadoFiltro,
-      selectedValue: estadoFiltro,
-      onChange: (selected) => funcaoSetFiltro({
-        value: selected.value,
-        label: selected.value
-      }),
-      isMulti: false,
-      isSearchable: false,
-      components: { Control: optionPersonalizada },
-      styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
-    };
-  };
-
-  const getPropsFiltroCompetencia = (perfil, estadoFiltro, funcaoSetFiltro, estadoFiltroEstabelecimento) => {
-    const options = perfil
-      .filter(({ estabelecimento }) => estabelecimento === estadoFiltroEstabelecimento.value)
-      .sort((a, b) => new Date(b.competencia) - new Date(a.competencia))
-      .map(({ periodo }) => ({
-        value: periodo,
-        label: periodo
-      }));
-
-    const optionPersonalizada = ({ children, ...props }) => (
-      <components.Control { ...props }>
-        Competência: { children }
-      </components.Control>
-    );
-
-    return {
-      options,
-      defaultValue: estadoFiltro,
-      selectedValue: estadoFiltro,
-      onChange: (selected) => funcaoSetFiltro({
-        value: selected.value,
-        label: selected.value
-      }),
-      isMulti: false,
-      isSearchable: false,
-      components: { Control: optionPersonalizada },
-      styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
-    };
-  };
-
-  const getOpcoesGraficoCID = (perfil) => {
-    const perfilFiltrado = perfil
-      .filter((item) =>
-        item.estabelecimento === filtroEstabelecimentoCID.value
-        && item.periodo === filtroCompetenciaCID.value
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
-      );
-    const [perfilAgregado] = agregarPorEstabelecimentoPeriodoECondicao(perfilFiltrado);
-
-    return {
-      tooltip: {
-        trigger: 'item',
-      },
-      series: [
-        {
-          type: 'pie',
-          radius: ['40%', '80%'],
-          avoidLabelOverlap: false,
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: "{d}%",
-            color: "#000000"
-          },
-          emphasis: {
-            label: {
-              show: true,
-            }
-          },
-          labelLine: {
-            show: false
-          },
-          data: perfilAgregado.ativosPorCondicao.map(({ condicaoSaude, usuariosAtivos }, index) => ({
-            value: usuariosAtivos,
-            name: !condicaoSaude ? "Sem informação" : condicaoSaude,
-            itemStyle: {
-              color: CORES_GRAFICO_DONUT[index]
-            },
-          }))
-        }
-      ]
-    };
-  };
-
-  const getOpcoesGraficoGeneroEFaixaEtaria = (perfil) => {
-    const NOME_DIMENSAO = "genero";
-    const LABELS_DIMENSAO = ["Masculino", "Feminino"];
-
-    const perfilFiltrado = perfil
-      .filter((item) =>
-        item.estabelecimento === filtroEstabelecimentoGenero.value
-        && item.periodo === filtroCompetenciaGenero.value
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
-      );
-    const [perfilAgregado] = agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfilFiltrado);
-
-    return {
-      legend: {
-        itemGap: 25,
-      },
-      tooltip: {},
-      dataset: {
-        dimensions: [NOME_DIMENSAO, ...LABELS_DIMENSAO],
-        source: perfilAgregado.ativosPorFaixaEtariaEGenero
-          .sort((a, b) => a.faixaEtaria.localeCompare(b.faixaEtaria))
-          .map((item) => ({
-            [NOME_DIMENSAO]: item.faixaEtaria,
-            [LABELS_DIMENSAO[0]]: item[LABELS_DIMENSAO[0].toLowerCase()],
-            [LABELS_DIMENSAO[1]]: item[LABELS_DIMENSAO[1].toLowerCase()],
-          })),
-      },
-      xAxis: {
-        type: 'category',
-        name: "Faixa etária (em anos)",
-        nameLocation: "center",
-        nameGap: 45,
-      },
-      yAxis: {
-        name: "Usuários ativos",
-        nameLocation: "center",
-        nameGap: 55,
-      },
-      series: [
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#FA81E6"
-          },
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: `{@${LABELS_DIMENSAO[0]}}`,
-            color: "#FFFFFF",
-          },
-        },
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#5367C9"
-          },
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: `{@${LABELS_DIMENSAO[1]}}`,
-            color: "#FFFFFF",
-          },
-        }
-      ]
-    };
-  };
-
-  const getOpcoesGraficoRacaEcor = (perfil) => {
-    const NOME_DIMENSAO = "usuariosAtivos";
-    const LABEL_DIMENSAO = "Usuários ativos";
-
-    const perfilFiltrado = perfil
-      .filter((item) =>
-        item.estabelecimento === filtroEstabelecimentoRacaCor.value
-        && item.periodo === filtroCompetenciaRacaCor.value
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
-      );
-    const [perfilAgregado] = agregarPorEstabelecimentoPeriodoERacaCor(perfilFiltrado);
-
-    return {
-      legend: {},
-      tooltip: {},
-      dataset: {
-        dimensions: [NOME_DIMENSAO, LABEL_DIMENSAO],
-        source: perfilAgregado.ativosPorRacaCor
-          .sort((a, b) => b.racaCor.localeCompare(a.racaCor))
-          .map((item) => ({
-            [NOME_DIMENSAO]: item.racaCor,
-            [LABEL_DIMENSAO]: item.usuariosAtivos,
-          })),
-      },
-      xAxis: {
-        type: 'category',
-      },
-      yAxis: {},
-      series: [
-        {
-          type: 'bar',
-          itemStyle: {
-            color: "#5367C9"
-          },
-        },
-      ]
-    };
-  };
-
-  const getOpcoesGraficoUsuariosAtivos = (perfil, titulo, tipo) => {
-    const PROPIEDADES_POR_TIPO = {
-      SITUACAO_RUA: {
-        prop_agregacao: "ativosPorSituacaoDeRua",
-        prop_nome: "situacaoRua"
-      },
-      ABUSO_SUBSTANCIAS: {
-        prop_agregacao: "ativosPorAbusoSubstancias",
-        prop_nome: "abusoSubstancias"
-      }
-    };
-
-    const perfilFiltrado = perfil
-      .filter((item) =>
-        item.estabelecimento === filtroEstabelecimentoUsuariosAtivos.value
-        && item.periodo === filtroCompetenciaUsuariosAtivos.value
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
-      );
-    const [perfilAgregado] = agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfilFiltrado);
-
-    const dadosUsuariosAtivos = perfilAgregado[PROPIEDADES_POR_TIPO[tipo].prop_agregacao];
-
-    return {
-      title: {
-        text: titulo,
-        textStyle: {
-          fontSize: 14
-        },
-      },
-      tooltip: {
-        trigger: 'item',
-      },
-      legend: {
-        bottom: 0
-      },
-      series: [
-        {
-          top: 30,
-          bottom: 30,
-          name: titulo,
-          type: 'pie',
-          radius: ['40%', '80%'],
-          avoidLabelOverlap: false,
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: "{d}%",
-            color: "#000000"
-          },
-          emphasis: {
-            label: {
-              show: true,
-            }
-          },
-          labelLine: {
-            show: false
-          },
-          data: dadosUsuariosAtivos.map((item, index) => ({
-            value: item.usuariosAtivos,
-            name: item[PROPIEDADES_POR_TIPO[tipo].prop_nome],
-            itemStyle: {
-              color: CORES_GRAFICO_SUBST_MORADIA[index]
-            },
-          }))
-        }
-      ]
-    };
-  };
+      getUsuariosAtivosPorRacaECor(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoRacaCor.value,
+        filtroCompetenciaRacaCor.value
+      ).then((dadosFiltrados) => {
+        setUsuariosPorRacaECor(dadosFiltrados);
+        setLoadingRaca(false);
+      });
+    }
+  }, [session?.user.municipio_id_ibge, filtroEstabelecimentoRacaCor.value, filtroCompetenciaRacaCor.value]);
 
   const filtrarDadosGeraisPorPeriodo = (dados, filtroPeriodo) => {
     return dados.find((item) =>
@@ -549,6 +189,47 @@ const PerfilUsuario = () => {
     );
   };
 
+  const agregadosPorAbusoSubstancias = useMemo(() => {
+    return agregarPorAbusoSubstancias(
+      usuariosPorCondicao,
+      "usuario_abuso_substancias",
+      "ativos_3meses"
+    );
+  }, [usuariosPorCondicao]);
+
+  const agregadosPorSituacaoRua = useMemo(() => {
+    return agregarPorSituacaoRua(
+      usuariosPorCondicao,
+      "usuario_situacao_rua",
+      "ativos_3meses"
+    );
+  }, [usuariosPorCondicao]);
+
+  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
+    return agregarPorFaixaEtariaEGenero(
+      usuariosPorGeneroEIdade,
+      "usuario_faixa_etaria",
+      "usuario_sexo",
+      "ativos_3meses"
+    );
+  }, [usuariosPorGeneroEIdade]);
+
+  const agregadosPorRacaCor = useMemo(() => {
+    return agregarPorRacaCor(
+      usuariosPorRacaECor,
+      "usuario_raca_cor",
+      "ativos_3meses"
+    );
+  }, [usuariosPorRacaECor]);
+
+  const agregadosPorCondicaoSaude = useMemo(() => {
+    return agregarPorCondicaoSaude(
+      usuariosPorCID,
+      "usuario_condicao_saude",
+      "ativos_3meses"
+    );
+  }, [usuariosPorCID]);
+
   return (
     <div>
       <TituloSmallTexto
@@ -611,14 +292,16 @@ const PerfilUsuario = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfil.length !== 0
+      { usuariosPorCID.length !== 0
+        && competencias.length !== 0
+        && estabelecimentos.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroEstabelecimento(
-                    agregarPorEstabelecimentoPeriodoECondicao(perfil),
+                    estabelecimentos,
                     filtroEstabelecimentoCID,
                     setFiltroEstabelecimentoCID
                   )
@@ -627,21 +310,24 @@ const PerfilUsuario = () => {
               </div>
               <div className={ styles.Filtro }>
                 <Select
-                  { ...getPropsFiltroCompetencia(
-                    agregarPorEstabelecimentoPeriodoECondicao(perfil),
+                  { ...getPropsFiltroPeriodo(
+                    competencias,
                     filtroCompetenciaCID,
                     setFiltroCompetenciaCID,
-                    filtroEstabelecimentoCID
+                    false
                   )
                   }
                 />
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoCID(perfil) }
-              style={ { width: "100%", height: "70vh" } }
-            />
+            { loadingCID
+              ? <Spinner theme="ColorSM" height="70vh" />
+              : <ReactEcharts
+                option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
+                style={ { width: "100%", height: "70vh" } }
+              />
+            }
           </>
         )
         : <Spinner theme="ColorSM" />
@@ -652,14 +338,16 @@ const PerfilUsuario = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfil.length !== 0
+      { usuariosPorGeneroEIdade.length !== 0
+        && competencias.length !== 0
+        && estabelecimentos.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroEstabelecimento(
-                    agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfil),
+                    estabelecimentos,
                     filtroEstabelecimentoGenero,
                     setFiltroEstabelecimentoGenero
                   )
@@ -668,21 +356,27 @@ const PerfilUsuario = () => {
               </div>
               <div className={ styles.Filtro }>
                 <Select
-                  { ...getPropsFiltroCompetencia(
-                    agregarPorEstabelecimentoPeriodoFaixaEtariaEGenero(perfil),
+                  { ...getPropsFiltroPeriodo(
+                    competencias,
                     filtroCompetenciaGenero,
                     setFiltroCompetenciaGenero,
-                    filtroEstabelecimentoGenero
+                    false
                   )
                   }
                 />
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoGeneroEFaixaEtaria(perfil) }
-              style={ { width: "100%", height: "70vh" } }
-            />
+            { loadingGenero
+              ? <Spinner theme="ColorSM" height="70vh" />
+              : <ReactEcharts
+                option={ getOpcoesGraficoGeneroEFaixaEtaria(
+                  agregadosPorGeneroEFaixaEtaria,
+                  "Usuários ativos"
+                ) }
+                style={ { width: "100%", height: "70vh" } }
+              />
+            }
           </>
         )
         : <Spinner theme="ColorSM" />
@@ -693,14 +387,16 @@ const PerfilUsuario = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfil.length !== 0
+      { usuariosPorCondicao.length !== 0
+        && competencias.length !== 0
+        && estabelecimentos.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroEstabelecimento(
-                    agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil),
+                    estabelecimentos,
                     filtroEstabelecimentoUsuariosAtivos,
                     setFiltroEstabelecimentoUsuariosAtivos
                   )
@@ -709,40 +405,43 @@ const PerfilUsuario = () => {
               </div>
               <div className={ styles.Filtro }>
                 <Select
-                  { ...getPropsFiltroCompetencia(
-                    agregarPorEstabelecimentoPeriodoSituacaoESubstancias(perfil),
+                  { ...getPropsFiltroPeriodo(
+                    competencias,
                     filtroCompetenciaUsuariosAtivos,
                     setFiltroCompetenciaUsuariosAtivos,
-                    filtroEstabelecimentoUsuariosAtivos
+                    false
                   )
                   }
                 />
               </div>
             </div>
 
-            <div className={ styles.GraficosUsuariosAtivosContainer }>
-              <div className={ styles.GraficoUsuariosAtivos }>
-                <ReactEcharts
-                  option={ getOpcoesGraficoUsuariosAtivos(
-                    perfil,
-                    "Fazem uso de substâncias psicoativas?",
-                    "ABUSO_SUBSTANCIAS"
-                  ) }
-                  style={ { width: "100%", height: "100%" } }
-                />
-              </div>
+            { loadingCondicao
+              ? <Spinner theme="ColorSM" height="70vh" />
+              : <div className={ styles.GraficosUsuariosAtivosContainer }>
+                <div className={ styles.GraficoUsuariosAtivos }>
+                  <ReactEcharts
+                    option={ getOpcoesGraficoAbusoESituacao(
+                      agregadosPorAbusoSubstancias,
+                      "Fazem uso de substâncias psicoativas?",
+                      "ABUSO_SUBSTANCIAS"
+                    ) }
+                    style={ { width: "100%", height: "100%" } }
+                  />
+                </div>
 
-              <div className={ styles.GraficoUsuariosAtivos }>
-                <ReactEcharts
-                  option={ getOpcoesGraficoUsuariosAtivos(
-                    perfil,
-                    "Estão em situação de rua?",
-                    "SITUACAO_RUA"
-                  ) }
-                  style={ { width: "100%", height: "100%" } }
-                />
+                <div className={ styles.GraficoUsuariosAtivos }>
+                  <ReactEcharts
+                    option={ getOpcoesGraficoAbusoESituacao(
+                      agregadosPorSituacaoRua,
+                      "Estão em situação de rua?",
+                      "SITUACAO_RUA"
+                    ) }
+                    style={ { width: "100%", height: "100%" } }
+                  />
+                </div>
               </div>
-            </div>
+            }
           </>
         )
         : <Spinner theme="ColorSM" />
@@ -753,14 +452,16 @@ const PerfilUsuario = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfil.length !== 0
+      { usuariosPorRacaECor.length !== 0
+        && competencias.length !== 0
+        && estabelecimentos.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select
                   { ...getPropsFiltroEstabelecimento(
-                    agregarPorEstabelecimentoPeriodoERacaCor(perfil),
+                    estabelecimentos,
                     filtroEstabelecimentoRacaCor,
                     setFiltroEstabelecimentoRacaCor
                   )
@@ -769,21 +470,27 @@ const PerfilUsuario = () => {
               </div>
               <div className={ styles.Filtro }>
                 <Select
-                  { ...getPropsFiltroCompetencia(
-                    agregarPorEstabelecimentoPeriodoERacaCor(perfil),
+                  { ...getPropsFiltroPeriodo(
+                    competencias,
                     filtroCompetenciaRacaCor,
                     setFiltroCompetenciaRacaCor,
-                    filtroEstabelecimentoRacaCor
+                    false
                   )
                   }
                 />
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoRacaEcor(perfil) }
-              style={ { width: "100%", height: "70vh" } }
-            />
+            { loadingRaca
+              ? <Spinner theme="ColorSM" height="70vh" />
+              : <ReactEcharts
+                option={ getOpcoesGraficoRacaEcor(
+                  agregadosPorRacaCor,
+                  "Usuários ativos"
+                ) }
+                style={ { width: "100%", height: "70vh" } }
+              />
+            }
           </>
         )
         : <Spinner theme="ColorSM" />
