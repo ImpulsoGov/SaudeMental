@@ -1,4 +1,4 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -83,29 +83,32 @@ const ApsCaps = () => {
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
       />
 
-      { matriciamentosPorMunicipio &&
-        <>
-          <Grid12Col
-            items={ [
-              <CardInfoTipoA
-                key={ uuidv1() }
-                indicador={ matriciamentosPorMunicipio["estabelecimentos_fora_meta"] }
-                titulo="CAPS fora da meta"
-              />,
-              <CardInfoTipoA
-                key={ uuidv1() }
-                indicador={ matriciamentosPorMunicipio["estabelecimentos_na_meta"] }
-                titulo="CAPS dentro da meta"
-              />,
-              <CardInfoTipoA
-                key={ uuidv1() }
-                indicador={ matriciamentosPorMunicipio["quantidade_registrada"] }
-                titulo={ `Total de matriciamentos (até ${matriciamentosPorMunicipio["ate_mes"]})` }
-              />,
-            ] }
-            proporcao="4-4-4"
-          />
-        </>
+      { matriciamentosPorMunicipio
+        ? (
+          <>
+            <Grid12Col
+              items={ [
+                <CardInfoTipoA
+                  key={ uuidv1() }
+                  indicador={ matriciamentosPorMunicipio["estabelecimentos_fora_meta"] }
+                  titulo="CAPS fora da meta"
+                />,
+                <CardInfoTipoA
+                  key={ uuidv1() }
+                  indicador={ matriciamentosPorMunicipio["estabelecimentos_na_meta"] }
+                  titulo="CAPS dentro da meta"
+                />,
+                <CardInfoTipoA
+                  key={ uuidv1() }
+                  indicador={ matriciamentosPorMunicipio["quantidade_registrada"] }
+                  titulo={ `Total de matriciamentos (até ${matriciamentosPorMunicipio["ate_mes"]})` }
+                />,
+              ] }
+              proporcao="4-4-4"
+            />
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
 
       { matriciamentosPorCaps.length !== 0 &&
@@ -120,40 +123,44 @@ const ApsCaps = () => {
         descricao="Quantidade de atendimentos de Saúde Mental realizados pela APS que resultarem em Encaminhamentos para CAPS."
       />
 
-      { encaminhamentosApsCapsResumo &&
-        <>
-          <Grid12Col
-            items={ [
-              <CardInfoTipoA
-                key={ uuidv1() }
-                indicador={ encaminhamentosApsCapsResumo["atendimentos_sm_aps"] }
-                titulo={ `Total de atendimentos pela APS (em ${encaminhamentosApsCapsResumo.nome_mes})` }
-              />,
-              <CardInfoTipoA
-                key={ uuidv1() }
-                indicador={ encaminhamentosApsCapsResumo["encaminhamentos_caps"] }
-                titulo={ `Encaminhamentos para CAPS (em ${encaminhamentosApsCapsResumo.nome_mes})` }
-              />,
-              <CardInfoTipoA
-                key={ uuidv1() }
-                indicador={ encaminhamentosApsCapsResumo["perc_encaminhamentos_caps"] }
-                indicadorSimbolo="%"
-                titulo={ `Porcentagem (em ${encaminhamentosApsCapsResumo.nome_mes})` }
-              />,
-            ] }
-            proporcao="4-4-4"
-          />
-        </>
+      { encaminhamentosApsCapsResumo
+        ? (
+          <>
+            <Grid12Col
+              items={ [
+                <CardInfoTipoA
+                  key={ uuidv1() }
+                  indicador={ encaminhamentosApsCapsResumo["atendimentos_sm_aps"] }
+                  titulo={ `Total de atendimentos pela APS (em ${encaminhamentosApsCapsResumo.nome_mes})` }
+                />,
+                <CardInfoTipoA
+                  key={ uuidv1() }
+                  indicador={ encaminhamentosApsCapsResumo["encaminhamentos_caps"] }
+                  titulo={ `Encaminhamentos para CAPS (em ${encaminhamentosApsCapsResumo.nome_mes})` }
+                />,
+                <CardInfoTipoA
+                  key={ uuidv1() }
+                  indicador={ encaminhamentosApsCapsResumo["perc_encaminhamentos_caps"] }
+                  indicadorSimbolo="%"
+                  titulo={ `Porcentagem (em ${encaminhamentosApsCapsResumo.nome_mes})` }
+                />,
+              ] }
+              proporcao="4-4-4"
+            />
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
         descricao="<strong>Atenção:</strong> o número de atendimentos no gráfico a seguir está em escala logarítmica, que reforça as variações mês a mês quando os números são pequenos, e diminui a variação aparente quando os números são muito grandes."
       />
-      { encaminhamentosApsCaps.length !== 0 &&
-        <ReactEcharts
+      { encaminhamentosApsCaps.length !== 0
+        ? <ReactEcharts
           option={ getEncaminhamentosChartOptions(encaminhamentosApsCaps) }
           style={ { width: "100%", height: "70vh" } }
         />
+        : <Spinner theme="ColorSM" />
       }
     </div>
   );

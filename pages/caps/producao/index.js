@@ -1,4 +1,4 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -291,23 +291,25 @@ const Producao = () => {
         fonte="Fonte: BPA-c, BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { procedimentosPorHora.length !== 0 &&
-        <GraficoInfo
-          descricao={ `Última competência disponível: ${procedimentosPorHora
-            .find((item) =>
-              item.estabelecimento === "Todos"
-              && item.estabelecimento_linha_perfil === "Todos"
-              && item.estabelecimento_linha_idade === "Todos"
-              && item.periodo === "Último período"
-            )
-            .nome_mes
-            }` }
-        />
-      }
+      { procedimentosPorHora.length !== 0
+        ? (
+          <>
+            <GraficoInfo
+              descricao={ `Última competência disponível: ${procedimentosPorHora
+                .find((item) =>
+                  item.estabelecimento === "Todos"
+                  && item.estabelecimento_linha_perfil === "Todos"
+                  && item.estabelecimento_linha_idade === "Todos"
+                  && item.periodo === "Último período"
+                )
+                .nome_mes
+                }` }
+            />
 
-      {
-        procedimentosPorHora.length !== 0
-        && getCardsProcedimentosHoraPorEstabelecimento(procedimentosPorHora)
+            { getCardsProcedimentosHoraPorEstabelecimento(procedimentosPorHora) }
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -316,39 +318,42 @@ const Producao = () => {
         fonte="Fonte: BPA-c, BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { procedimentosPorHora.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  procedimentosPorHora,
-                  filtroEstabelecimentoCBO,
-                  setFiltroEstabelecimentoCBO
-                )
-              } />
+      { procedimentosPorHora.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroEstabelecimento(
+                    procedimentosPorHora,
+                    filtroEstabelecimentoCBO,
+                    setFiltroEstabelecimentoCBO
+                  )
+                } />
+              </div>
+
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    procedimentosPorHora,
+                    filtroPeriodoCBO,
+                    setFiltroPeriodoCBO,
+                    false
+                  )
+                } />
+              </div>
             </div>
 
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
-                  procedimentosPorHora,
-                  filtroPeriodoCBO,
-                  setFiltroPeriodoCBO,
-                  false
-                )
-              } />
-            </div>
-          </div>
-
-          <ReactEcharts
-            option={ getOpcoesGraficoBarrasProducao(
-              agregadosPorCBO,
-              "Procedimentos por hora"
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoBarrasProducao(
+                agregadosPorCBO,
+                "Procedimentos por hora"
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -356,40 +361,43 @@ const Producao = () => {
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
       />
 
-      { procedimentosPorTipo.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  procedimentosPorTipo,
-                  filtroEstabelecimentoBPA,
-                  setFiltroEstabelecimentoBPA
-                )
-              } />
+      { procedimentosPorTipo.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroEstabelecimento(
+                    procedimentosPorTipo,
+                    filtroEstabelecimentoBPA,
+                    setFiltroEstabelecimentoBPA
+                  )
+                } />
+              </div>
+
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    procedimentosPorTipo,
+                    filtroPeriodoBPA,
+                    setFiltroPeriodoBPA
+                  )
+                } />
+              </div>
             </div>
 
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
-                  procedimentosPorTipo,
-                  filtroPeriodoBPA,
-                  setFiltroPeriodoBPA
-                )
-              } />
-            </div>
-          </div>
-
-          <ReactEcharts
-            option={ getOpcoesGraficoTiposProcedimento(
-              procedimentosPorTipo,
-              "BPA",
-              filtroEstabelecimentoBPA,
-              filtroPeriodoBPA
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoTiposProcedimento(
+                procedimentosPorTipo,
+                "BPA",
+                filtroEstabelecimentoBPA,
+                filtroPeriodoBPA
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -397,40 +405,43 @@ const Producao = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { procedimentosPorTipo.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  procedimentosPorTipo,
-                  filtroEstabelecimentoRAAS,
-                  setFiltroEstabelecimentoRAAS
-                )
-              } />
+      { procedimentosPorTipo.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroEstabelecimento(
+                    procedimentosPorTipo,
+                    filtroEstabelecimentoRAAS,
+                    setFiltroEstabelecimentoRAAS
+                  )
+                } />
+              </div>
+
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    procedimentosPorTipo,
+                    filtroPeriodoRAAS,
+                    setFiltroPeriodoRAAS
+                  )
+                } />
+              </div>
             </div>
 
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
-                  procedimentosPorTipo,
-                  filtroPeriodoRAAS,
-                  setFiltroPeriodoRAAS
-                )
-              } />
-            </div>
-          </div>
-
-          <ReactEcharts
-            option={ getOpcoesGraficoTiposProcedimento(
-              procedimentosPorTipo,
-              "RAAS",
-              filtroEstabelecimentoRAAS,
-              filtroPeriodoRAAS
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoTiposProcedimento(
+                procedimentosPorTipo,
+                "RAAS",
+                filtroEstabelecimentoRAAS,
+                filtroPeriodoRAAS
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -438,38 +449,41 @@ const Producao = () => {
         fonte="Fonte: BPA-c, BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { procedimentosPorTipo.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  procedimentosPorTipo,
-                  filtroEstabelecimentoProducao,
-                  setFiltroEstabelecimentoProducao
-                )
-              } />
+      { procedimentosPorTipo.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroEstabelecimento(
+                    procedimentosPorTipo,
+                    filtroEstabelecimentoProducao,
+                    setFiltroEstabelecimentoProducao
+                  )
+                } />
+              </div>
+
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    procedimentosPorTipo,
+                    filtroPeriodoProducao,
+                    setFiltroPeriodoProducao,
+                  )
+                } />
+              </div>
             </div>
 
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
-                  procedimentosPorTipo,
-                  filtroPeriodoProducao,
-                  setFiltroPeriodoProducao,
-                )
-              } />
-            </div>
-          </div>
-
-          <ReactEcharts
-            option={ getOpcoesGraficoBarrasProducao(
-              agregadosPorProducao,
-              "Quantidade registrada"
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoBarrasProducao(
+                agregadosPorProducao,
+                "Quantidade registrada"
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
     </div>
   );

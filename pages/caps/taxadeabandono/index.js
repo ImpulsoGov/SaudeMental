@@ -1,4 +1,4 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from "uuid";
@@ -133,20 +133,23 @@ const TaxaAbandono = () => {
         titulo="<strong>Taxa de não adesão</strong>"
       />
 
-      { abandonoCoortes.length !== 0 &&
-        <GraficoInfo
-          descricao={ `Última competência disponível: ${abandonoCoortes
-            .find((item) =>
-              item.estabelecimento === "Todos"
-              && item.periodo === "Último período"
-            )
-            .nome_mes
-            }` }
-        />
-      }
+      { abandonoCoortes.length !== 0
+        ? (
+          <>
+            <GraficoInfo
+              descricao={ `Última competência disponível: ${abandonoCoortes
+                .find((item) =>
+                  item.estabelecimento === "Todos"
+                  && item.periodo === "Último período"
+                )
+                .nome_mes
+                }` }
+            />
 
-      { abandonoCoortes.length !== 0 &&
-        getCardsAbandonoAcumulado(abandonoCoortes)
+            { getCardsAbandonoAcumulado(abandonoCoortes) }
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -157,27 +160,30 @@ const TaxaAbandono = () => {
         destaque="Por que esses valores são diferentes?"
       />
 
-      { abandonoMensal.length !== 0 &&
-        <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroEstabelecimento(
-                abandonoMensal,
-                filtroEstabelecimentoHistorico,
-                setFiltroEstabelecimentoHistorico
-              )
-            } />
-          </div>
+      { abandonoMensal.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroEstabelecimento(
+                  abandonoMensal,
+                  filtroEstabelecimentoHistorico,
+                  setFiltroEstabelecimentoHistorico
+                )
+              } />
+            </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoHistoricoTemporal(
-              filtrarPorEstabelecimento(abandonoMensal, filtroEstabelecimentoHistorico),
-              "usuarios_evasao_perc",
-              "Taxa de não adesão mensal (%):"
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoHistoricoTemporal(
+                filtrarPorEstabelecimento(abandonoMensal, filtroEstabelecimentoHistorico),
+                "usuarios_evasao_perc",
+                "Taxa de não adesão mensal (%):"
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -185,34 +191,37 @@ const TaxaAbandono = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { abandonoPerfil.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  abandonoPerfil,
-                  filtroEstabelecimentoCID,
-                  setFiltroEstabelecimentoCID
-                )
-              } />
+      { abandonoPerfil.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroEstabelecimento(
+                    abandonoPerfil,
+                    filtroEstabelecimentoCID,
+                    setFiltroEstabelecimentoCID
+                  )
+                } />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    abandonoPerfil,
+                    filtroPeriodoCID,
+                    setFiltroPeriodoCID
+                  )
+                } />
+              </div>
             </div>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
-                  abandonoPerfil,
-                  filtroPeriodoCID,
-                  setFiltroPeriodoCID
-                )
-              } />
-            </div>
-          </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -220,37 +229,40 @@ const TaxaAbandono = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { abandonoPerfil.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  abandonoPerfil,
-                  filtroEstabelecimentoGenero,
-                  setFiltroEstabelecimentoGenero
-                )
-              } />
+      { abandonoPerfil.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroEstabelecimento(
+                    abandonoPerfil,
+                    filtroEstabelecimentoGenero,
+                    setFiltroEstabelecimentoGenero
+                  )
+                } />
+              </div>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroPeriodo(
+                    abandonoPerfil,
+                    filtroPeriodoGenero,
+                    setFiltroPeriodoGenero
+                  )
+                } />
+              </div>
             </div>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
-                  abandonoPerfil,
-                  filtroPeriodoGenero,
-                  setFiltroPeriodoGenero
-                )
-              } />
-            </div>
-          </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoGeneroEFaixaEtaria(
-              agregadosPorGeneroEFaixaEtaria,
-              ""
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoGeneroEFaixaEtaria(
+                agregadosPorGeneroEFaixaEtaria,
+                ""
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
 
       {/* <GraficoInfo

@@ -184,3 +184,99 @@ export const getProcedimentosPorHora = async (municipioIdSus) => {
     console.log('error', error.response.data);
   }
 };
+
+export const getUsuariosAtivosPorCondicao = async (
+  municipioIdSus,
+  estabelecimento,
+  periodo
+) => {
+  try {
+    const endpoint = "/usuarios/perfil/condicao?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodo=" + periodo;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getUsuariosAtivosPorGeneroEIdade = async (
+  municipioIdSus,
+  estabelecimento,
+  periodo
+) => {
+  try {
+    const endpoint = "/usuarios/perfil/genero-e-idade?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodo=" + periodo;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getUsuariosAtivosPorRacaECor = async (
+  municipioIdSus,
+  estabelecimento,
+  periodo
+) => {
+  try {
+    const endpoint = "/usuarios/perfil/raca?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodo=" + periodo;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getUsuariosAtivosPorCID = async (
+  municipioIdSus,
+  estabelecimento,
+  periodo
+) => {
+  try {
+    const endpoint = "/usuarios/perfil/cid?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodo=" + periodo;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getEstabelecimentosPerfil = async (municipioIdSus) => {
+  try {
+    const endpoint = `/usuarios/perfil/estabelecimentos?municipio_id_sus=${municipioIdSus}`;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getPeriodosPerfil = async (municipioIdSus) => {
+  try {
+    const endpoint = `/usuarios/perfil/periodos?municipio_id_sus=${municipioIdSus}`;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};

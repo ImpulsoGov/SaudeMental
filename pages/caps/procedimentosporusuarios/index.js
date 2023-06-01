@@ -1,4 +1,4 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -261,23 +261,25 @@ const ProcedimentosPorUsuarios = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { procedimentosPorEstabelecimento.length !== 0 &&
-        <GraficoInfo
-          descricao={ `Última competência disponível: ${procedimentosPorEstabelecimento
-            .find((item) =>
-              item.estabelecimento === "Todos"
-              && item.estabelecimento_linha_perfil === "Todos"
-              && item.estabelecimento_linha_idade === "Todos"
-              && item.periodo === "Último período"
-            )
-            .nome_mes
-            }` }
-        />
-      }
+      { procedimentosPorEstabelecimento.length !== 0
+        ? (
+          <>
+            <GraficoInfo
+              descricao={ `Última competência disponível: ${procedimentosPorEstabelecimento
+                .find((item) =>
+                  item.estabelecimento === "Todos"
+                  && item.estabelecimento_linha_perfil === "Todos"
+                  && item.estabelecimento_linha_idade === "Todos"
+                  && item.periodo === "Último período"
+                )
+                .nome_mes
+                }` }
+            />
 
-      {
-        procedimentosPorEstabelecimento.length !== 0
-        && getCardsProcedimentosPorEstabelecimento(procedimentosPorEstabelecimento)
+            { getCardsProcedimentosPorEstabelecimento(procedimentosPorEstabelecimento) }
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -285,27 +287,30 @@ const ProcedimentosPorUsuarios = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { procedimentosPorEstabelecimento.length !== 0 &&
-        <>
-          <div className={ styles.Filtro }>
-            <Select {
-              ...getPropsFiltroEstabelecimento(
-                procedimentosPorEstabelecimento,
-                filtroEstabelecimentoHistorico,
-                setFiltroEstabelecimentoHistorico
-              )
-            } />
-          </div>
+      { procedimentosPorEstabelecimento.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtro }>
+              <Select {
+                ...getPropsFiltroEstabelecimento(
+                  procedimentosPorEstabelecimento,
+                  filtroEstabelecimentoHistorico,
+                  setFiltroEstabelecimentoHistorico
+                )
+              } />
+            </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoHistoricoTemporal(
-              filtrarPorEstabelecimento(procedimentosPorEstabelecimento, filtroEstabelecimentoHistorico),
-              "procedimentos_por_usuario",
-              filtroEstabelecimentoHistorico.value
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoHistoricoTemporal(
+                filtrarPorEstabelecimento(procedimentosPorEstabelecimento, filtroEstabelecimentoHistorico),
+                "procedimentos_por_usuario",
+                filtroEstabelecimentoHistorico.value
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
@@ -313,37 +318,40 @@ const ProcedimentosPorUsuarios = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { procedimentosPorTempoServico.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  procedimentosPorTempoServico,
-                  filtroEstabelecimentoProcedimento,
-                  setFiltroEstabelecimentoProcedimento
-                )
-              } />
+      { procedimentosPorTempoServico.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroEstabelecimento(
+                    procedimentosPorTempoServico,
+                    filtroEstabelecimentoProcedimento,
+                    setFiltroEstabelecimentoProcedimento
+                  )
+                } />
+              </div>
+
+              <div className={ styles.Filtro }>
+                <Select {
+                  ...getPropsFiltroCompetencia(
+                    procedimentosPorTempoServico,
+                    filtroPeriodoProcedimento,
+                    setFiltroPeriodoProcedimento
+                  )
+                } />
+              </div>
             </div>
 
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroCompetencia(
-                  procedimentosPorTempoServico,
-                  filtroPeriodoProcedimento,
-                  setFiltroPeriodoProcedimento
-                )
-              } />
-            </div>
-          </div>
-
-          <ReactEcharts
-            option={ getOpcoesGraficoProcedimentoPorTempo(
-              procedimentosPorTempoServico
-            ) }
-            style={ { width: "100%", height: "70vh" } }
-          />
-        </>
+            <ReactEcharts
+              option={ getOpcoesGraficoProcedimentoPorTempo(
+                procedimentosPorTempoServico
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="ColorSM" />
       }
     </div>
   );
