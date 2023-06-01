@@ -17,7 +17,7 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
     {
       field: 'faltamNoAno',
       headerName: 'Faltam no ano',
-      width: 200
+      width: 180
     },
     {
       field: 'mediaMensalParaMeta',
