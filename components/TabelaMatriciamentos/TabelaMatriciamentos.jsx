@@ -12,7 +12,7 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
     {
       field: 'quantidadeRegistrada',
       headerName: 'Matriciamentos realizados',
-      width: 300
+      width: 280
     },
     {
       field: 'faltamNoAno',
@@ -22,7 +22,7 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
     {
       field: 'mediaMensalParaMeta',
       headerName: 'Média mensal para completar a meta',
-      width: 350
+      width: 320
     },
   ], []);
 
