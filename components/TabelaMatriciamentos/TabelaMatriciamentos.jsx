@@ -42,9 +42,7 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
   }, []);
 
   const somarLinhasDeColuna = useCallback((linhas, coluna) => {
-    const soma = linhas.reduce((acc, cur) => acc + cur[coluna], 0);
-
-    return soma.toFixed(2);
+    return linhas.reduce((acc, cur) => acc + cur[coluna], 0);
   }, []);
 
   const linhasCompletas = useMemo(() => {
@@ -55,7 +53,7 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
       estabelecimento: 'Total geral',
       quantidadeRegistrada: somarLinhasDeColuna(linhas, 'quantidadeRegistrada'),
       faltamNoAno: somarLinhasDeColuna(linhas, 'faltamNoAno'),
-      mediaMensalParaMeta: somarLinhasDeColuna(linhas, 'mediaMensalParaMeta')
+      mediaMensalParaMeta: somarLinhasDeColuna(linhas, 'mediaMensalParaMeta').toFixed(2)
     };
 
     return [...linhas, linhaTotalGeral];
