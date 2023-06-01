@@ -68,7 +68,7 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
         },
         '.MuiDataGrid-row:last-child': {
           fontWeight: 'bold',
-          color: '#c3c8c9'
+          color: '#9ba4a5'
         },
         '.MuiDataGrid-row': {
           color: '#9ba4a5'
