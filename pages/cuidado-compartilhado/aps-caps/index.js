@@ -19,8 +19,8 @@ export function getServerSideProps(ctx) {
 const ApsCaps = () => {
   const { data: session } = useSession();
   const [encaminhamentosApsCaps, setEncaminhamentosApsCaps] = useState([]);
-  const [encaminhamentosApsCapsResumo, setEncaminhamentosApsCapsResumo] = useState();
-  const [matriciamentosPorMunicipio, setMatriciamentosPorMunicipio] = useState();
+  const [encaminhamentosApsCapsResumo, setEncaminhamentosApsCapsResumo] = useState(null);
+  const [matriciamentosPorMunicipio, setMatriciamentosPorMunicipio] = useState(null);
   const [matriciamentosPorCaps, setMatriciamentosPorCaps] = useState([]);
 
   useEffect(() => {
@@ -111,10 +111,11 @@ const ApsCaps = () => {
         : <Spinner theme="ColorSM" />
       }
 
-      { matriciamentosPorCaps.length !== 0 &&
-        <TabelaMatriciamentosPorCaps
+      { matriciamentosPorCaps.length !== 0
+        ? <TabelaMatriciamentosPorCaps
           matriciamentos={ matriciamentosPorCaps }
         />
+        : <Spinner theme="ColorSM" />
       }
 
       <GraficoInfo
