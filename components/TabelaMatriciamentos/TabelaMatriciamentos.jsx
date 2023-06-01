@@ -1,5 +1,6 @@
 import { DataGrid } from '@mui/x-data-grid';
 import React, { useCallback, useMemo } from 'react';
+import { v4 as uuidV4 } from 'uuid';
 
 const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
   const colunas = useMemo(() => [
@@ -31,8 +32,8 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
       quantidade_registrada: quantidadeRegistrada,
       faltam_no_ano: faltamNoAno,
       media_mensal_para_meta: mediaMensalParaMeta,
-    }, index) => ({
-      id: index,
+    }) => ({
+      id: uuidV4(),
       estabelecimento,
       quantidadeRegistrada,
       faltamNoAno,
@@ -49,10 +50,8 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
   const linhasCompletas = useMemo(() => {
     const linhas = transformarDadosEmLinhas(matriciamentos);
 
-    const ultimaLinha = linhas.slice(-1);
-
     const linhaTotalGeral = {
-      id: ultimaLinha.id + 1,
+      id: uuidV4(),
       estabelecimento: 'Total geral',
       quantidadeRegistrada: somarLinhasDeColuna(linhas, 'quantidadeRegistrada'),
       faltamNoAno: somarLinhasDeColuna(linhas, 'faltamNoAno'),
