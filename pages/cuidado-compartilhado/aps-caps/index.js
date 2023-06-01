@@ -1,9 +1,9 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
-import { DataGrid } from '@mui/x-data-grid';
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
+import { TabelaMatriciamentosPorCaps } from "../../../components/TabelaMatriciamentos";
 import { API_URL } from "../../../constants/API_URL";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
@@ -21,7 +21,7 @@ const ApsCaps = () => {
   const [encaminhamentosApsCaps, setEncaminhamentosApsCaps] = useState([]);
   const [encaminhamentosApsCapsResumo, setEncaminhamentosApsCapsResumo] = useState();
   const [matriciamentosPorMunicipio, setMatriciamentosPorMunicipio] = useState();
-  const [matriciamentosPorCaps, setMatriciamentosPorCaps] = useState();
+  const [matriciamentosPorCaps, setMatriciamentosPorCaps] = useState([]);
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -66,59 +66,6 @@ const ApsCaps = () => {
     }
   }, []);
 
-  const colunasDataGrid = [
-    {
-      field: 'estabelecimento',
-      headerName: 'CAPS',
-      width: 350
-    },
-    {
-      field: 'quantidadeRegistrada',
-      headerName: 'Matriciamentos realizados',
-      width: 300
-    },
-    {
-      field: 'faltamNoAno',
-      headerName: 'Faltam no ano',
-      width: 200
-    },
-    {
-      field: 'mediaMensalParaMeta',
-      headerName: 'Média mensal para completar a meta',
-      width: 350
-    },
-  ];
-
-  const somarLinhasDeColuna = (linhas, coluna) =>
-    linhas.reduce((acc, cur) => acc + cur[coluna], 0);
-
-  const getLinhasDataGrid = (dados) => {
-    const linhas = dados.map(({
-      estabelecimento,
-      quantidade_registrada: quantidadeRegistrada,
-      faltam_no_ano: faltamNoAno,
-      media_mensal_para_meta: mediaMensalParaMeta,
-    }, index) => ({
-      id: index,
-      estabelecimento,
-      quantidadeRegistrada,
-      faltamNoAno,
-      mediaMensalParaMeta
-    }));
-
-    const ultimaLinha = linhas.slice(-1);
-
-    const linhaTotalGeral = {
-      id: ultimaLinha.id + 1,
-      estabelecimento: 'Total geral',
-      quantidadeRegistrada: somarLinhasDeColuna(linhas, 'quantidadeRegistrada'),
-      faltamNoAno: somarLinhasDeColuna(linhas, 'faltamNoAno'),
-      mediaMensalParaMeta: somarLinhasDeColuna(linhas, 'mediaMensalParaMeta')
-    };
-
-    return [...linhas, linhaTotalGeral];
-  };
-
   return (
     <div>
       <TituloSmallTexto
@@ -161,25 +108,9 @@ const ApsCaps = () => {
         </>
       }
 
-      { matriciamentosPorCaps &&
-        <DataGrid
-          sx={ {
-            '& .MuiDataGrid-columnHeaderTitle': {
-              fontWeight: 'bold',
-              fontSize: '16px'
-            },
-            '.MuiDataGrid-row:last-child': {
-              fontWeight: 'bold',
-              color: '#c3c8c9'
-            },
-            '.MuiDataGrid-row': {
-              color: '#9ba4a5'
-            }
-          } }
-          rows={ getLinhasDataGrid(matriciamentosPorCaps) }
-          columns={ colunasDataGrid }
-          autoHeight
-          hideFooter
+      { matriciamentosPorCaps.length !== 0 &&
+        <TabelaMatriciamentosPorCaps
+          matriciamentos={ matriciamentosPorCaps }
         />
       }
 
