@@ -45,6 +45,12 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
     return linhas.reduce((acc, cur) => acc + cur[coluna], 0);
   }, []);
 
+  const calcularMediaLinhasDeColuna = useCallback((linhas, coluna) => {
+    const soma = somarLinhasDeColuna(linhas, coluna);
+
+    return (soma / linhas.length).toFixed(2);
+  }, [somarLinhasDeColuna]);
+
   const linhasCompletas = useMemo(() => {
     const linhas = transformarDadosEmLinhas(matriciamentos);
 
@@ -53,11 +59,11 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
       estabelecimento: 'Total geral',
       quantidadeRegistrada: somarLinhasDeColuna(linhas, 'quantidadeRegistrada'),
       faltamNoAno: somarLinhasDeColuna(linhas, 'faltamNoAno'),
-      mediaMensalParaMeta: somarLinhasDeColuna(linhas, 'mediaMensalParaMeta').toFixed(2)
+      mediaMensalParaMeta: calcularMediaLinhasDeColuna(linhas, 'mediaMensalParaMeta')
     };
 
     return [...linhas, linhaTotalGeral];
-  }, [matriciamentos, somarLinhasDeColuna, transformarDadosEmLinhas]);
+  }, [matriciamentos, somarLinhasDeColuna, transformarDadosEmLinhas, calcularMediaLinhasDeColuna]);
 
   return (
     <DataGrid
