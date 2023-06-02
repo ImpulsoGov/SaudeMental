@@ -3,6 +3,7 @@ import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
+import { TabelaMatriciamentosPorCaps } from "../../../components/TabelaMatriciamentos";
 import { API_URL } from "../../../constants/API_URL";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
@@ -18,16 +19,9 @@ export function getServerSideProps(ctx) {
 const ApsCaps = () => {
   const { data: session } = useSession();
   const [encaminhamentosApsCaps, setEncaminhamentosApsCaps] = useState([]);
-  const [encaminhamentosApsCapsResumo, setEncaminhamentosApsCapsResumo] = useState();
-  const [matriciamentosPorMunicipio, setMatriciamentosPorMunicipio] = useState();
-  const [matriciamentosPorCaps, setMatriciamentosPorCaps] = useState();
-
-  const columns = [
-    { field: 'estabelecimento', headerName: 'CAPS', editable: true, width: 300 },
-    { field: 'quantidade_registrada', headerName: 'Matriciamentos realizados', editable: true, width: 300 },
-    { field: 'faltam_no_ano', headerName: 'Faltam no ano', width: 200 },
-    { field: 'media_mensal_para_meta', headerName: 'Média mensal para completar a meta', width: 200 },
-  ];
+  const [encaminhamentosApsCapsResumo, setEncaminhamentosApsCapsResumo] = useState(null);
+  const [matriciamentosPorMunicipio, setMatriciamentosPorMunicipio] = useState(null);
+  const [matriciamentosPorCaps, setMatriciamentosPorCaps] = useState([]);
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -55,13 +49,18 @@ const ApsCaps = () => {
         + "saude-mental/matriciamentos/municipio?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
+      fetch(urlMatriciamentosPorMunicipio, getRequestOptions)
+        .then(response => response.json())
+        .then(result => setMatriciamentosPorMunicipio(result[0]))
+        .catch(error => console.log('error', error));
+
       const urlMatriciamentosPorCaps = API_URL
         + "saude-mental/matriciamentos/caps?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
-      fetch(urlMatriciamentosPorMunicipio, getRequestOptions)
+      fetch(urlMatriciamentosPorCaps, getRequestOptions)
         .then(response => response.json())
-        .then(result => setMatriciamentosPorMunicipio(result[0]))
+        .then(result => setMatriciamentosPorCaps(result))
         .catch(error => console.log('error', error));
 
     }
@@ -109,6 +108,13 @@ const ApsCaps = () => {
             />
           </>
         )
+        : <Spinner theme="ColorSM" />
+      }
+
+      { matriciamentosPorCaps.length !== 0
+        ? <TabelaMatriciamentosPorCaps
+          matriciamentos={ matriciamentosPorCaps }
+        />
         : <Spinner theme="ColorSM" />
       }
 
