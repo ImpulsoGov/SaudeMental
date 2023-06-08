@@ -7,7 +7,7 @@ describe('Primeiro acesso', () => {
       cy.visit('https://saudemental.impulsogov.org/');
     });
 
-    it('O botão de primeiro acesso é exibido ao clicar em ENTRAR', () => {
+    it('O botão de primeiro acesso é exibido no modal ao clicar no campo ENTRAR na navbar', () => {
       cy.contains(/entrar/i).click();
 
       cy.get('.NavBar_NavBarModalContainer__tePj9')
