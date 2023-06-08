@@ -15,5 +15,17 @@ describe('Recuperação de senha', () => {
         .should('be.visible')
         .and('have.text', 'ENTRAR');
     });
+
+    it('É exibido o texto "Esqueceu sua senha?" ao clicar no botão ENTRAR do modal', () => {
+      cy.contains(/entrar/i).click();
+
+      cy.get('.NavBar_NavBarModalContainer__tePj9')
+        .find('.ButtonColor_ButtonColorContainer__FZdLO')
+        .click();
+
+      cy.get('.NavBar_NavBarModalContainer__tePj9')
+        .contains(/esqueceu sua senha\?/i)
+        .should('be.visible');
+    });
   });
 });
