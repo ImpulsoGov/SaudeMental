@@ -5,91 +5,72 @@ describe('Recuperação de senha', () => {
     beforeEach(() => {
       cy.viewport(1440, 900);
       cy.visit('https://saudemental.impulsogov.org/');
-    });
 
-    it('O botão de entrar é exibido no modal ao clicar no campo ENTRAR na navbar', () => {
       cy.contains(/entrar/i).click();
 
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .find('.ButtonColor_ButtonColorContainer__FZdLO')
-        .should('be.visible')
-        .and('have.text', 'ENTRAR');
+      cy.get('.NavBar_NavBarModalContainer__tePj9').as('desktopModal');
     });
 
-    it('É exibido o texto "Esqueceu sua senha?" ao clicar no botão ENTRAR do modal', () => {
-      cy.contains(/entrar/i).click();
-
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .find('.ButtonColor_ButtonColorContainer__FZdLO')
-        .click();
-
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .contains(/esqueceu sua senha\?/i)
-        .should('be.visible');
+    it('O modal desktop é exibido ao clicar no campo ENTRAR da navbar', () => {
+      cy.get('@desktopModal').should('be.visible');
     });
 
-    it('É exibido o título "Recuperação de senha" ao clicar no campo "Esqueceu sua senha?"', () => {
-      cy.contains(/entrar/i).click();
+    describe('Dentro do modal desktop', () => {
+      beforeEach(() => {
+        cy.get('@desktopModal')
+          .find('.ButtonColor_ButtonColorContainer__FZdLO')
+          .as('entrarButtonModal');
+      });
 
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .find('.ButtonColor_ButtonColorContainer__FZdLO')
-        .click();
+      it('É exibido o botão de ENTRAR', () => {
+        cy.get('@entrarButtonModal')
+          .should('be.visible')
+          .and('have.text', 'ENTRAR');
+      });
 
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .contains(/esqueceu sua senha\?/i)
-        .click();
+      describe('Ao clicar no botão de ENTRAR do modal desktop', () => {
+        beforeEach(() => {
+          cy.get('@entrarButtonModal').click();
+        });
 
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .contains('Recuperação de senha')
-        .should('be.visible');
-    });
+        it('É exibido o link "Esqueceu sua senha?"', () => {
+          cy.get('@desktopModal')
+            .contains(/esqueceu sua senha\?/i)
+            .should('be.visible');
+        });
 
-    it('É exibida a input de email ao clicar no campo "Esqueceu sua senha?"', () => {
-      cy.contains(/entrar/i).click();
+        describe('Ao clicar no link "Esqueceu sua senha?"', () => {
+          beforeEach(() => {
+            cy.get('@desktopModal')
+              .contains(/esqueceu sua senha\?/i)
+              .click();
+          });
 
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .find('.ButtonColor_ButtonColorContainer__FZdLO')
-        .click();
+          it('É exibido o título "Recuperação de senha"', () => {
+            cy.get('@desktopModal')
+              .contains('Recuperação de senha')
+              .should('be.visible');
+          });
 
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .contains(/esqueceu sua senha\?/i)
-        .click();
+          it('É exibida a input de email', () => {
+            cy.get('input[placeholder*="E-mail"]').should('be.visible');
+          });
 
-      cy.get('input[placeholder*="E-mail"]').should('be.visible');
-    });
+          it('É exibido o botão VOLTAR', () => {
+            cy.get('@desktopModal')
+              .contains(/voltar/i)
+              .should('be.visible');
+            // .and('be.enabled');
+          });
 
-    it('É exibido o botão VOLTAR ao clicar no campo "Esqueceu sua senha?"', () => {
-      cy.contains(/entrar/i).click();
-
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .find('.ButtonColor_ButtonColorContainer__FZdLO')
-        .click();
-
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .contains(/esqueceu sua senha\?/i)
-        .click();
-
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .contains(/voltar/i)
-        .should('be.visible');
-      // .and('be.enabled');
-    });
-
-    it('É exibido o botão PRÓXIMO ao clicar no campo "Esqueceu sua senha?"', () => {
-      cy.contains(/entrar/i).click();
-
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .find('.ButtonColor_ButtonColorContainer__FZdLO')
-        .click();
-
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .contains(/esqueceu sua senha\?/i)
-        .click();
-
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .contains(/próximo/i)
-        .should('be.visible');
-      // .and('be.disabled');
+          it('É exibido o botão PRÓXIMO', () => {
+            cy.get('@desktopModal')
+              .contains(/próximo/i)
+              .should('be.visible');
+            // .and('be.disabled');
+          });
+        });
+      });
     });
   });
 });
