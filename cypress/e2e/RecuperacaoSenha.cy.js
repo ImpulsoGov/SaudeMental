@@ -57,5 +57,22 @@ describe('Recuperação de senha', () => {
 
       cy.get('input[placeholder*="E-mail"]').should('be.visible');
     });
+
+    it('É exibido o botão VOLTAR ao clicar no campo "Esqueceu sua senha?"', () => {
+      cy.contains(/entrar/i).click();
+
+      cy.get('.NavBar_NavBarModalContainer__tePj9')
+        .find('.ButtonColor_ButtonColorContainer__FZdLO')
+        .click();
+
+      cy.get('.NavBar_NavBarModalContainer__tePj9')
+        .contains(/esqueceu sua senha\?/i)
+        .click();
+
+      cy.get('.NavBar_NavBarModalContainer__tePj9')
+        .contains(/voltar/i)
+        .should('be.visible');
+      // .and('be.enabled');
+    });
   });
 });
