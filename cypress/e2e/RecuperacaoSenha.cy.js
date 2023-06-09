@@ -27,5 +27,21 @@ describe('Recuperação de senha', () => {
         .contains(/esqueceu sua senha\?/i)
         .should('be.visible');
     });
+
+    it('É exibido o título "Recuperação de senha" ao clicar no campo "Esqueceu sua senha?"', () => {
+      cy.contains(/entrar/i).click();
+
+      cy.get('.NavBar_NavBarModalContainer__tePj9')
+        .find('.ButtonColor_ButtonColorContainer__FZdLO')
+        .click();
+
+      cy.get('.NavBar_NavBarModalContainer__tePj9')
+        .contains(/esqueceu sua senha\?/i)
+        .click();
+
+      cy.get('.NavBar_NavBarModalContainer__tePj9')
+        .contains('Recuperação de senha')
+        .should('be.visible');
+    });
   });
 });
