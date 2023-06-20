@@ -4,7 +4,7 @@ describe('Primeiro acesso', () => {
   context('resolução 1440 x 900', () => {
     beforeEach(() => {
       cy.viewport(1440, 900);
-      cy.visit('https://saudemental.impulsogov.org/');
+      cy.visit('/');
     });
 
     it('O botão de primeiro acesso é exibido no modal ao clicar no campo ENTRAR na navbar', () => {

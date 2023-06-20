@@ -4,7 +4,7 @@ describe('Recuperação de senha', () => {
   context('resolução 1440 x 900', () => {
     beforeEach(() => {
       cy.viewport(1440, 900);
-      cy.visit('https://saudemental.impulsogov.org/');
+      cy.visit('/');
 
       cy.contains(/entrar/i).click();
 
