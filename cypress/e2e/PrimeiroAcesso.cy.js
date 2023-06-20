@@ -5,51 +5,50 @@ describe('Primeiro acesso', () => {
     beforeEach(() => {
       cy.viewport(1440, 900);
       cy.visit('/');
-    });
 
-    it('O botão de primeiro acesso é exibido no modal ao clicar no campo ENTRAR na navbar', () => {
       cy.contains(/entrar/i).click();
 
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .find('.ButtonLight_ButtonLightContainer__w0rNI')
-        .should('be.visible')
-        .and('have.text', 'PRIMEIRO ACESSO');
+      cy.get('.NavBar_NavBarModalContainer__tePj9').as('desktopModal');
     });
 
-    it('É exibida a input de email ao clicar no botão de PRIMEIRO ACESSO', () => {
-      cy.contains(/entrar/i).click();
-
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .find('.ButtonLight_ButtonLightContainer__w0rNI')
-        .click();
-
-      cy.get('input[placeholder="E-mail"]').should('be.visible');
+    it('O modal desktop é exibido ao clicar no campo ACESSO RESTRITO da navbar', () => {
+      cy.get('@desktopModal').should('be.visible');
     });
 
-    it('É exibido o botão VOLTAR ao clicar no botão de PRIMEIRO ACESSO', () => {
-      cy.contains(/entrar/i).click();
+    describe('Dentro do modal desktop', () => {
+      beforeEach(() => {
+        cy.get('@desktopModal')
+          .find('.ButtonLight_ButtonLightContainer__w0rNI')
+          .as('primeiroAcessoButtonModal');
+      });
 
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .find('.ButtonLight_ButtonLightContainer__w0rNI')
-        .click();
+      it('É exibido o botão de PRIMEIRO ACESSO', () => {
+        cy.get('@primeiroAcessoButtonModal')
+          .should('be.visible')
+          .and('have.text', 'PRIMEIRO ACESSO');
+      });
 
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .contains(/voltar/i)
-        .should('be.visible');
-      // .and('be.enabled');
-    });
+      describe('Ao clicar no botão de PRIMEIRO ACESSO do modal desktop', () => {
+        beforeEach(() => {
+          cy.get('@primeiroAcessoButtonModal').click();
+        });
 
-    it('É exibido o botão PRÓXIMO ao clicar no botão de PRIMEIRO ACESSO', () => {
-      cy.contains(/entrar/i).click();
+        it('É exibida a input de email', () => {
+          cy.get('input[placeholder="E-mail"]').should('be.visible');
+        });
 
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .find('.ButtonLight_ButtonLightContainer__w0rNI')
-        .click();
+        it('É exibido o botão VOLTAR', () => {
+          cy.get('@desktopModal')
+            .contains(/voltar/i)
+            .should('be.visible');
+        });
 
-      cy.get('.NavBar_NavBarModalContainer__tePj9')
-        .contains(/próximo/i)
-        .should('be.visible');
-      // .and('be.disabled');
+        it('É exibido o botão PRÓXIMO', () => {
+          cy.get('@desktopModal')
+            .contains(/próximo/i)
+            .should('be.visible');
+        });
+      });
     });
   });
 });
