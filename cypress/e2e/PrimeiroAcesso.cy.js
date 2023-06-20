@@ -23,7 +23,7 @@ describe('Primeiro acesso', () => {
         .find('.ButtonLight_ButtonLightContainer__w0rNI')
         .click();
 
-      cy.get('input[placeholder*="E-mail"]').should('be.visible');
+      cy.get('input[placeholder="E-mail"]').should('be.visible');
     });
 
     it('É exibido o botão VOLTAR ao clicar no botão de PRIMEIRO ACESSO', () => {
