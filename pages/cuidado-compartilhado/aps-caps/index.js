@@ -3,7 +3,7 @@ import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
-import { TabelaMatriciamentosPorCaps } from "../../../components/TabelaMatriciamentos";
+import { TabelaMatriciamentosPorCaps } from "../../../components/Tabelas";
 import { API_URL } from "../../../constants/API_URL";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
