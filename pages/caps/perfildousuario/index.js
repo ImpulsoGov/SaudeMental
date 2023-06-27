@@ -6,6 +6,7 @@ import Select from "react-select";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import styles from "../Caps.module.css";
 
+import TabelaDetalhamentoPorCaps from "../../../components/Tabelas/DetalhamentoPorCaps";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from "../../../helpers/graficoAbusoESituacao";
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
@@ -126,6 +127,15 @@ const PerfilUsuario = () => {
       && item.estabelecimento_linha_perfil === "Todos"
       && item.estabelecimento_linha_idade === "Todos"
       && item.periodo === filtroPeriodo
+    );
+  };
+
+  const filtrarDadosEstabelecimentosPorPeriodo = (dados, filtroPeriodo) => {
+    return dados.filter((item) =>
+      item.estabelecimento_linha_perfil === "Todos"
+      && item.estabelecimento_linha_idade === "Todos"
+      && item.periodo === filtroPeriodo
+      && item.estabelecimento !== "Todos"
     );
   };
 
@@ -283,9 +293,18 @@ const PerfilUsuario = () => {
         : <Spinner theme="ColorSM" />
       }
 
-      {/* <GraficoInfo
+      <GraficoInfo
         titulo="Detalhamento por estabelecimento"
-      /> */}
+      />
+
+      { perfilPorEstabelecimento.length !== 0
+        ? <TabelaDetalhamentoPorCaps
+          usuariosPorCaps={ filtrarDadosEstabelecimentosPorPeriodo(
+            perfilPorEstabelecimento, filtroPeriodoPanorama.value
+          ) }
+        />
+        : <Spinner theme="ColorSM" />
+      }
 
       <GraficoInfo
         titulo="CID dos usuários ativos"
