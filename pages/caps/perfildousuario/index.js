@@ -121,7 +121,7 @@ const PerfilUsuario = () => {
     }
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoRacaCor.value, filtroCompetenciaRacaCor.value]);
 
-  const filtrarDadosGeraisPorPeriodo = (dados, filtroPeriodo) => {
+  const encontrarDadosGeraisPorPeriodo = (dados, filtroPeriodo) => {
     return dados.find((item) =>
       item.estabelecimento === "Todos"
       && item.estabelecimento_linha_perfil === "Todos"
@@ -140,7 +140,7 @@ const PerfilUsuario = () => {
   };
 
   const getCardsPanoramaGeral = (perfilDeEstabelecimentos, filtroPeriodo) => {
-    const perfilTodosEstabelecimentos = filtrarDadosGeraisPorPeriodo(
+    const perfilTodosEstabelecimentos = encontrarDadosGeraisPorPeriodo(
       perfilDeEstabelecimentos,
       filtroPeriodo
     );
@@ -260,7 +260,7 @@ const PerfilUsuario = () => {
 
       { perfilPorEstabelecimento.length !== 0
         ? <GraficoInfo
-          descricao={ `Última competência disponível: ${filtrarDadosGeraisPorPeriodo(perfilPorEstabelecimento, "Último período").nome_mes
+          descricao={ `Última competência disponível: ${encontrarDadosGeraisPorPeriodo(perfilPorEstabelecimento, "Último período").nome_mes
             }` }
         />
         : <Spinner theme="ColorSM" />
