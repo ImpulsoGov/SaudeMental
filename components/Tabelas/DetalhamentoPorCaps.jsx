@@ -88,6 +88,7 @@ const TabelaDetalhamentoPorCaps = ({ usuariosPorCaps }) => {
         columns={ colunas }
         autoHeight
         hideFooter
+        disableColumnMenu
       />
     </div>
   );
