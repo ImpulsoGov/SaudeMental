@@ -19,35 +19,35 @@ const TabelaDetalhamentoPorCaps = ({ usuariosPorCaps }) => {
     {
       field: 'generoPredominante',
       headerName: 'Gênero predominante',
-      width: 220,
+      width: 190,
       align: 'center',
       headerAlign: 'center',
     },
     {
       field: 'mediaIdade',
       headerName: 'Média de idade',
-      width: 170,
+      width: 140,
       align: 'center',
       headerAlign: 'center',
     },
     {
       field: 'frequentaramMes',
       headerName: 'Frequentaram no mês',
-      width: 220,
+      width: 190,
       align: 'center',
       headerAlign: 'center',
     },
     {
       field: 'usuariosAtivos',
       headerName: 'Usuários ativos',
-      width: 180,
+      width: 150,
       align: 'center',
       headerAlign: 'center',
     },
     {
       field: 'difUsuariosAtivosMesAnterior',
       headerName: 'Dif. usuários ativos no mês anterior',
-      width: 320,
+      width: 200,
       align: 'center',
       headerAlign: 'center',
       renderCell: (params) => {
@@ -85,7 +85,10 @@ const TabelaDetalhamentoPorCaps = ({ usuariosPorCaps }) => {
         sx={ {
           '& .MuiDataGrid-columnHeaderTitle': {
             fontWeight: 'bold',
-            fontSize: '16px'
+            fontSize: '16px',
+            lineHeight: '1.43rem',
+            whiteSpace: 'normal',
+            textAlign: 'center'
           },
         } }
         rows={ linhas }
