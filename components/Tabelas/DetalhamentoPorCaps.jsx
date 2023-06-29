@@ -72,7 +72,7 @@ const TabelaDetalhamentoPorCaps = ({ usuariosPorCaps }) => {
       id: uuidV4(),
       estabelecimento,
       generoPredominante,
-      mediaIdade: Number(parseFloat(mediaIdade).toFixed(2)),
+      mediaIdade: mediaIdade && Number(parseFloat(mediaIdade).toFixed(2)),
       frequentaramMes,
       usuariosAtivos,
       difUsuariosAtivosMesAnterior
