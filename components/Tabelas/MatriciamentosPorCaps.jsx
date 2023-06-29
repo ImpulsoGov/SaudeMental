@@ -1,6 +1,20 @@
+import { styled } from '@mui/material/styles';
 import { DataGrid } from '@mui/x-data-grid';
 import React, { useCallback, useMemo } from 'react';
 import { v4 as uuidV4 } from 'uuid';
+
+const StyledDataGrid = styled(DataGrid)(() => ({
+  '& .MuiDataGrid-columnHeaderTitle': {
+    fontWeight: 'bold',
+    fontSize: '16px'
+  },
+  '.MuiDataGrid-row': {
+    color: '#9ba4a5'
+  },
+  '& .LinhaTotalGeral': {
+    fontWeight: 'bold',
+  }
+}));
 
 const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
   const colunas = useMemo(() => [
@@ -37,7 +51,8 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
       estabelecimento,
       quantidadeRegistrada,
       faltamNoAno,
-      mediaMensalParaMeta
+      mediaMensalParaMeta,
+      total: false
     }));
   }, []);
 
@@ -59,32 +74,21 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
       estabelecimento: 'Total geral',
       quantidadeRegistrada: somarLinhasDeColuna(linhas, 'quantidadeRegistrada'),
       faltamNoAno: somarLinhasDeColuna(linhas, 'faltamNoAno'),
-      mediaMensalParaMeta: calcularMediaLinhasDeColuna(linhas, 'mediaMensalParaMeta')
+      mediaMensalParaMeta: calcularMediaLinhasDeColuna(linhas, 'mediaMensalParaMeta'),
+      total: true
     };
 
     return [...linhas, linhaTotalGeral];
   }, [matriciamentos, somarLinhasDeColuna, transformarDadosEmLinhas, calcularMediaLinhasDeColuna]);
 
   return (
-    <DataGrid
-      sx={ {
-        '& .MuiDataGrid-columnHeaderTitle': {
-          fontWeight: 'bold',
-          fontSize: '16px'
-        },
-        '.MuiDataGrid-row:last-child': {
-          fontWeight: 'bold',
-          color: '#9ba4a5'
-        },
-        '.MuiDataGrid-row': {
-          color: '#9ba4a5'
-        }
-      } }
+    <StyledDataGrid
       rows={ linhasCompletas }
       columns={ colunas }
       autoHeight
       hideFooter
       disableColumnMenu
+      getRowClassName={ (params) => params.row.total && `LinhaTotalGeral` }
     />
   );
 };
