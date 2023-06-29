@@ -86,7 +86,7 @@ const TabelaDetalhamentoPorCaps = ({ usuariosPorCaps }) => {
           '& .MuiDataGrid-columnHeaderTitle': {
             fontWeight: 'bold',
             fontSize: '16px',
-            lineHeight: '1.43rem',
+            lineHeight: '1.2rem',
             whiteSpace: 'normal',
             textAlign: 'center'
           },
