@@ -6,7 +6,9 @@ import { v4 as uuidV4 } from 'uuid';
 const StyledDataGrid = styled(DataGrid)(() => ({
   '& .MuiDataGrid-columnHeaderTitle': {
     fontWeight: 'bold',
-    fontSize: '16px'
+    fontSize: '16px',
+    lineHeight: '1.2rem',
+    whiteSpace: 'normal',
   },
   '.MuiDataGrid-row': {
     color: '#9ba4a5'
