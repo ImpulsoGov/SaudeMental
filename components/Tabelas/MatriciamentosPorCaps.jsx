@@ -84,6 +84,7 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
       columns={ colunas }
       autoHeight
       hideFooter
+      disableColumnMenu
     />
   );
 };
