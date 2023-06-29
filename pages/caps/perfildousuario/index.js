@@ -1,7 +1,7 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import styles from "../Caps.module.css";
@@ -240,6 +240,13 @@ const PerfilUsuario = () => {
     );
   }, [usuariosPorCID]);
 
+  const obterPeriodoPorExtenso = useCallback((dados, periodo) => {
+    const { nome_mes: mes, competencia } = dados.find((dado) => dado.periodo === periodo);
+    const [ano] = `${competencia}`.split('-');
+
+    return `${mes} de ${ano}`;
+  }, []);
+
   return (
     <div>
       <TituloSmallTexto
@@ -295,6 +302,8 @@ const PerfilUsuario = () => {
 
       <GraficoInfo
         titulo="Detalhamento por estabelecimento"
+        descricao={ perfilPorEstabelecimento.length !== 0 && `Dados de ${obterPeriodoPorExtenso(perfilPorEstabelecimento, filtroPeriodoPanorama.value)
+          }` }
       />
 
       { perfilPorEstabelecimento.length !== 0
