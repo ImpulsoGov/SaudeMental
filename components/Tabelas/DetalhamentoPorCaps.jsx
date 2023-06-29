@@ -1,9 +1,15 @@
 import { DataGrid } from '@mui/x-data-grid';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { v4 as uuidV4 } from 'uuid';
 import styles from './Tabelas.module.css';
 
 const TabelaDetalhamentoPorCaps = ({ usuariosPorCaps }) => {
+  const definirCorDoIndicador = useCallback((indicador) => {
+    if (indicador < 0) return styles.TextoVermelho;
+    if (indicador > 0) return styles.TextoVerde;
+    return styles.TextoCinza;
+  }, []);
+
   const colunas = useMemo(() => [
     {
       field: 'estabelecimento',
@@ -46,15 +52,13 @@ const TabelaDetalhamentoPorCaps = ({ usuariosPorCaps }) => {
       headerAlign: 'center',
       renderCell: (params) => {
         return (
-          <div className={
-            params.value < 0 ? styles.TextoVermelho : styles.TextoCinza
-          }>
+          <div className={ definirCorDoIndicador(params.value) }>
             { params.value }
           </div>
         );
       }
     },
-  ], []);
+  ], [definirCorDoIndicador]);
 
   const linhas = useMemo(() => {
     return usuariosPorCaps.map(({
