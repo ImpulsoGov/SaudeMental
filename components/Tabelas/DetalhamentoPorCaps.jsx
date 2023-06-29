@@ -14,7 +14,7 @@ const TabelaDetalhamentoPorCaps = ({ usuariosPorCaps }) => {
     {
       field: 'estabelecimento',
       headerName: 'Estabelecimento',
-      width: 300
+      width: 250
     },
     {
       field: 'generoPredominante',
