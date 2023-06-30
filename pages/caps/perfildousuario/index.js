@@ -316,6 +316,10 @@ const PerfilUsuario = () => {
       }
 
       <GraficoInfo
+        fonte="* Estabelecimentos com valores zerados não aparecerão na tabela"
+      />
+
+      <GraficoInfo
         titulo="CID dos usuários ativos"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
