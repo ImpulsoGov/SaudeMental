@@ -315,9 +315,13 @@ const PerfilUsuario = () => {
         : <Spinner theme="ColorSM" />
       }
 
-      <GraficoInfo
-        fonte="* Estabelecimentos com valores zerados não aparecerão na tabela"
-      />
+      <div style={ {
+        padding: '20px 0',
+        fontSize: '16px',
+        color: '#9ba4a5'
+      } }>
+        * Estabelecimentos com valores zerados não aparecerão na tabela
+      </div>
 
       <GraficoInfo
         titulo="CID dos usuários ativos"
