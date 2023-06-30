@@ -1,11 +1,12 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import styles from "../Caps.module.css";
 
+import TabelaDetalhamentoPorCaps from "../../../components/Tabelas/DetalhamentoPorCaps";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from "../../../helpers/graficoAbusoESituacao";
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
@@ -120,7 +121,7 @@ const PerfilUsuario = () => {
     }
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoRacaCor.value, filtroCompetenciaRacaCor.value]);
 
-  const filtrarDadosGeraisPorPeriodo = (dados, filtroPeriodo) => {
+  const encontrarDadosGeraisPorPeriodo = (dados, filtroPeriodo) => {
     return dados.find((item) =>
       item.estabelecimento === "Todos"
       && item.estabelecimento_linha_perfil === "Todos"
@@ -129,8 +130,17 @@ const PerfilUsuario = () => {
     );
   };
 
+  const filtrarDadosEstabelecimentosPorPeriodo = (dados, filtroPeriodo) => {
+    return dados.filter((item) =>
+      item.estabelecimento_linha_perfil === "Todos"
+      && item.estabelecimento_linha_idade === "Todos"
+      && item.periodo === filtroPeriodo
+      && item.estabelecimento !== "Todos"
+    );
+  };
+
   const getCardsPanoramaGeral = (perfilDeEstabelecimentos, filtroPeriodo) => {
-    const perfilTodosEstabelecimentos = filtrarDadosGeraisPorPeriodo(
+    const perfilTodosEstabelecimentos = encontrarDadosGeraisPorPeriodo(
       perfilDeEstabelecimentos,
       filtroPeriodo
     );
@@ -230,6 +240,13 @@ const PerfilUsuario = () => {
     );
   }, [usuariosPorCID]);
 
+  const obterPeriodoPorExtenso = useCallback((dados, periodo) => {
+    const { nome_mes: mes, competencia } = dados.find((dado) => dado.periodo === periodo);
+    const [ano] = `${competencia}`.split('-');
+
+    return `${mes} de ${ano}`;
+  }, []);
+
   return (
     <div>
       <TituloSmallTexto
@@ -250,7 +267,7 @@ const PerfilUsuario = () => {
 
       { perfilPorEstabelecimento.length !== 0
         ? <GraficoInfo
-          descricao={ `Última competência disponível: ${filtrarDadosGeraisPorPeriodo(perfilPorEstabelecimento, "Último período").nome_mes
+          descricao={ `Última competência disponível: ${encontrarDadosGeraisPorPeriodo(perfilPorEstabelecimento, "Último período").nome_mes
             }` }
         />
         : <Spinner theme="ColorSM" />
@@ -283,9 +300,24 @@ const PerfilUsuario = () => {
         : <Spinner theme="ColorSM" />
       }
 
-      {/* <GraficoInfo
+      <GraficoInfo
         titulo="Detalhamento por estabelecimento"
-      /> */}
+        descricao={ perfilPorEstabelecimento.length !== 0 && `Dados de ${obterPeriodoPorExtenso(perfilPorEstabelecimento, filtroPeriodoPanorama.value)
+          }` }
+      />
+
+      { perfilPorEstabelecimento.length !== 0
+        ? <TabelaDetalhamentoPorCaps
+          usuariosPorCaps={ filtrarDadosEstabelecimentosPorPeriodo(
+            perfilPorEstabelecimento, filtroPeriodoPanorama.value
+          ) }
+        />
+        : <Spinner theme="ColorSM" />
+      }
+
+      <div className={ styles.MensagemTabela }>
+        * Estabelecimentos com valores zerados não aparecerão na tabela
+      </div>
 
       <GraficoInfo
         titulo="CID dos usuários ativos"
