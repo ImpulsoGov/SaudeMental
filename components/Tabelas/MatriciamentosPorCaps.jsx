@@ -23,22 +23,22 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
     {
       field: 'estabelecimento',
       headerName: 'CAPS',
-      width: 350
+      flex: 350,
     },
     {
       field: 'quantidadeRegistrada',
       headerName: 'Matriciamentos realizados',
-      width: 280
+      flex: 280,
     },
     {
       field: 'faltamNoAno',
       headerName: 'Faltam no ano',
-      width: 180
+      flex: 180,
     },
     {
       field: 'mediaMensalParaMeta',
       headerName: 'Média mensal para completar a meta',
-      width: 320
+      flex: 320,
     },
   ], []);
 

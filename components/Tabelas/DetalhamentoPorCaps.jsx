@@ -14,40 +14,40 @@ const TabelaDetalhamentoPorCaps = ({ usuariosPorCaps }) => {
     {
       field: 'estabelecimento',
       headerName: 'Estabelecimento',
-      width: 250
+      flex: 250
     },
     {
       field: 'generoPredominante',
       headerName: 'Gênero predominante',
-      width: 190,
+      flex: 190,
       align: 'center',
       headerAlign: 'center',
     },
     {
       field: 'mediaIdade',
       headerName: 'Média de idade',
-      width: 140,
+      flex: 140,
       align: 'center',
       headerAlign: 'center',
     },
     {
       field: 'frequentaramMes',
       headerName: 'Frequentaram no mês',
-      width: 190,
+      flex: 190,
       align: 'center',
       headerAlign: 'center',
     },
     {
       field: 'usuariosAtivos',
       headerName: 'Usuários ativos',
-      width: 150,
+      flex: 150,
       align: 'center',
       headerAlign: 'center',
     },
     {
       field: 'difUsuariosAtivosMesAnterior',
       headerName: 'Dif. usuários ativos no mês anterior',
-      width: 200,
+      flex: 220,
       align: 'center',
       headerAlign: 'center',
       renderCell: (params) => {
