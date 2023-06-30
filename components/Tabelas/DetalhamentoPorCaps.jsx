@@ -96,6 +96,11 @@ const TabelaDetalhamentoPorCaps = ({ usuariosPorCaps }) => {
         autoHeight
         hideFooter
         disableColumnMenu
+        initialState={ {
+          sorting: {
+            sortModel: [{ field: 'estabelecimento', sort: 'asc' }],
+          },
+        } }
       />
     </div>
   );
