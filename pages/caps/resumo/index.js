@@ -2,8 +2,8 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from "uuid";
-import resumoMunicipiosJSON from "../../../dados/caps_resumo_totais_por_municipio.json";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
+import { getResumoTotaisMunicipio } from "../../../requests/caps";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -19,10 +19,9 @@ const Resumo = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      const resumoFiltrado = resumoMunicipiosJSON.caps_resumo_totais_por_municipio
-        .find((item) => item.unidade_geografica_id_sus === municipioIdSus);
+      const resumo = await getResumoTotaisMunicipio(municipioIdSus);
 
-      setResumoMunicipio(resumoFiltrado);
+      setResumoMunicipio(resumo);
     };
 
     if (session?.user.municipio_id_ibge) {
