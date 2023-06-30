@@ -9,6 +9,7 @@ const StyledDataGrid = styled(DataGrid)(() => ({
     fontSize: '16px',
     lineHeight: '1.2rem',
     whiteSpace: 'normal',
+    textAlign: 'center'
   },
   '.MuiDataGrid-row': {
     color: '#9ba4a5'
@@ -29,16 +30,22 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
       field: 'quantidadeRegistrada',
       headerName: 'Matriciamentos realizados',
       flex: 280,
+      headerAlign: 'center',
+      align: 'center',
     },
     {
       field: 'faltamNoAno',
       headerName: 'Faltam no ano',
       flex: 180,
+      headerAlign: 'center',
+      align: 'center',
     },
     {
       field: 'mediaMensalParaMeta',
       headerName: 'Média mensal para completar a meta',
       flex: 320,
+      headerAlign: 'center',
+      align: 'center',
     },
   ], []);
 
