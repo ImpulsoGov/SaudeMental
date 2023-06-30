@@ -315,11 +315,7 @@ const PerfilUsuario = () => {
         : <Spinner theme="ColorSM" />
       }
 
-      <div style={ {
-        padding: '20px 0',
-        fontSize: '16px',
-        color: '#9ba4a5'
-      } }>
+      <div className={ styles.MensagemTabela }>
         * Estabelecimentos com valores zerados não aparecerão na tabela
       </div>
 
