@@ -12,7 +12,7 @@ import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbus
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
-import { getEstabelecimentosPerfil, getPerfilUsuariosPorEstabelecimento, getPeriodosPerfil, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from "../../../requests/caps";
+import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from "../../../requests/caps";
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
@@ -50,14 +50,14 @@ const PerfilUsuario = () => {
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
+      getEstabelecimentos(session?.user.municipio_id_ibge, 'usuarios_ativos_perfil')
+        .then((dados) => setEstabelecimentos(dados));
+
+      getPeriodos(session?.user.municipio_id_ibge, 'usuarios_ativos_perfil')
+        .then((dados) => setCompetencias(dados));
+
       getPerfilUsuariosPorEstabelecimento(session?.user.municipio_id_ibge)
         .then((dados) => setPerfilPorEstabelecimento(dados));
-
-      getEstabelecimentosPerfil(session?.user.municipio_id_ibge)
-        .then((estabelecimentos) => setEstabelecimentos(estabelecimentos));
-
-      getPeriodosPerfil(session?.user.municipio_id_ibge)
-        .then((periodos) => setCompetencias(periodos));
     }
   }, []);
 

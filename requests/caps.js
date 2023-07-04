@@ -257,30 +257,6 @@ export const getUsuariosAtivosPorCID = async (
   }
 };
 
-export const getEstabelecimentosPerfil = async (municipioIdSus) => {
-  try {
-    const endpoint = `/usuarios/perfil/estabelecimentos?municipio_id_sus=${municipioIdSus}`;
-
-    const { data } = await axiosInstance.get(endpoint);
-
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-};
-
-export const getPeriodosPerfil = async (municipioIdSus) => {
-  try {
-    const endpoint = `/usuarios/perfil/periodos?municipio_id_sus=${municipioIdSus}`;
-
-    const { data } = await axiosInstance.get(endpoint);
-
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-};
-
 export const getResumoTotaisMunicipio = async (municipioIdSus) => {
   try {
     const endpoint = `/resumo/caps?municipio_id_sus=${municipioIdSus}`;
