@@ -292,3 +292,75 @@ export const getResumoTotaisMunicipio = async (municipioIdSus) => {
     console.log('error', error.response.data);
   }
 };
+
+export const getUsuariosNovosPorCondicao = async (
+  municipioIdSus,
+  estabelecimento,
+  periodos
+) => {
+  try {
+    const endpoint = "/usuarios/novos/condicao?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodos=" + periodos;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getUsuariosNovosPorGeneroEIdade = async (
+  municipioIdSus,
+  estabelecimento,
+  periodos
+) => {
+  try {
+    const endpoint = "/usuarios/novos/genero-e-idade?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodos=" + periodos;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getUsuariosNovosPorRacaECor = async (
+  municipioIdSus,
+  estabelecimento,
+  periodos
+) => {
+  try {
+    const endpoint = "/usuarios/novos/raca?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodos=" + periodos;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getUsuariosNovosPorCID = async (
+  municipioIdSus,
+  estabelecimento,
+  periodos
+) => {
+  try {
+    const endpoint = "/usuarios/novos/cid?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodos=" + periodos;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
