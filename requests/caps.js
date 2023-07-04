@@ -364,3 +364,27 @@ export const getUsuariosNovosPorCID = async (
     console.log('error', error.response.data);
   }
 };
+
+export const getEstabelecimentos = async (municipioIdSus, entidade) => {
+  try {
+    const endpoint = `/estabelecimentos?municipio_id_sus=${municipioIdSus}&entidade=${entidade}`;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getPeriodos = async (municipioIdSus, entidade) => {
+  try {
+    const endpoint = `/periodos?municipio_id_sus=${municipioIdSus}&entidade=${entidade}`;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
