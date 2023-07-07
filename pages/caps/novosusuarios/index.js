@@ -349,7 +349,7 @@ const NovoUsuario = () => {
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { usuariosNovosPorCID.length !== 0
+      { usuariosNovosPorCID
         && periodos.length !== 0
         && estabelecimentos.length !== 0
         ? (
@@ -392,7 +392,7 @@ const NovoUsuario = () => {
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { usuariosNovosPorGeneroEIdade.length !== 0
+      { usuariosNovosPorGeneroEIdade
         && periodos.length !== 0
         && estabelecimentos.length !== 0
         ? (
@@ -438,7 +438,7 @@ const NovoUsuario = () => {
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { usuariosNovosPorCondicao.length !== 0
+      { usuariosNovosPorCondicao
         && periodos.length !== 0
         && estabelecimentos.length !== 0
         ? (
@@ -500,7 +500,7 @@ const NovoUsuario = () => {
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { usuariosNovosPorRaca.length !== 0
+      { usuariosNovosPorRaca
         && periodos.length !== 0
         && estabelecimentos.length !== 0
         ? (
