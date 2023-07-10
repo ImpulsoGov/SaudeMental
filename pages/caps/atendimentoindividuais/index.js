@@ -10,7 +10,7 @@ import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/g
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
-import { getAtendimentosPorCID, getAtendimentosPorCaps, getEstabelecimentos, getPerfilDeAtendimentos, getPeriodos } from "../../../requests/caps";
+import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getEstabelecimentos, getPerfilDeAtendimentos, getPeriodos } from "../../../requests/caps";
 import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
 import styles from "../Caps.module.css";
 
@@ -80,6 +80,24 @@ const AtendimentoIndividual = () => {
       });
     }
   }, [filtroEstabelecimentoCID.value, filtroPeriodoCID, session?.user.municipio_id_ibge]);
+
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingGenero(true);
+
+      const valoresPeriodos = filtroPeriodoGenero.map(({ value }) => value);
+      const periodosConcatenados = concatenarPeriodos(valoresPeriodos, '-');
+
+      getAtendimentosPorGeneroEIdade(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoGenero.value,
+        periodosConcatenados
+      ).then((dadosFiltrados) => {
+        setAtendimentosPorGenero(dadosFiltrados);
+        setLoadingGenero(false);
+      });
+    }
+  }, [filtroEstabelecimentoGenero.value, filtroPeriodoGenero, session?.user.municipio_id_ibge]);
 
   const agregarPorLinhaPerfil = (atendimentos) => {
     const atendimentosAgregados = [];
@@ -193,12 +211,14 @@ const AtendimentoIndividual = () => {
     );
   }, [atendimentosPorCID]);
 
-  const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(
-    filtrarPorPeriodoEstabelecimento(perfilAtendimentos, filtroEstabelecimentoGenero, filtroPeriodoGenero),
-    "usuario_faixa_etaria_descricao",
-    "usuario_sexo",
-    "usuarios_apenas_atendimento_individual"
-  );
+  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
+    return agregarPorFaixaEtariaEGenero(
+      atendimentosPorGenero,
+      "usuario_faixa_etaria",
+      "usuario_sexo",
+      "usuarios_apenas_atendimento_individual"
+    );
+  }, [atendimentosPorGenero]);
 
   const agregadosPorRacaCor = agregarPorRacaCor(
     filtrarPorPeriodoEstabelecimento(perfilAtendimentos, filtroEstabelecimentoRacaECor, filtroPeriodoRacaECor),
@@ -318,7 +338,9 @@ const AtendimentoIndividual = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfilAtendimentos.length !== 0
+      { atendimentosPorGenero
+        && estabelecimentos.length !== 0
+        && periodos.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
@@ -340,13 +362,16 @@ const AtendimentoIndividual = () => {
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                agregadosPorGeneroEFaixaEtaria,
-                ""
-              ) }
-              style={ { width: "100%", height: "70vh" } }
-            />
+            { loadingGenero
+              ? <Spinner theme="ColorSM" height="70vh" />
+              : <ReactEcharts
+                option={ getOpcoesGraficoGeneroEFaixaEtaria(
+                  agregadosPorGeneroEFaixaEtaria,
+                  ""
+                ) }
+                style={ { width: "100%", height: "70vh" } }
+              />
+            }
           </>
         )
         : <Spinner theme="ColorSM" />
