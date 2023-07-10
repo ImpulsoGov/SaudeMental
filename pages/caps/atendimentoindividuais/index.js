@@ -1,7 +1,7 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
@@ -10,7 +10,8 @@ import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/g
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
-import { getAtendimentosPorCaps, getPerfilDeAtendimentos } from "../../../requests/caps";
+import { getAtendimentosPorCID, getAtendimentosPorCaps, getEstabelecimentos, getPerfilDeAtendimentos, getPeriodos } from "../../../requests/caps";
+import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
 import styles from "../Caps.module.css";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -31,7 +32,10 @@ export function getServerSideProps(ctx) {
 const AtendimentoIndividual = () => {
   const { data: session } = useSession();
   const [perfilAtendimentos, setPerfilAtendimentos] = useState([]);
-  const [resumoPerfilAtendimentos, setResumoPerfilAtendimentos] = useState();
+  // const [resumoPerfilAtendimentos, setResumoPerfilAtendimentos] = useState();
+  const [atendimentosPorCID, setAtendimentosPorCID] = useState([]);
+  const [atendimentosPorGenero, setAtendimentosPorGenero] = useState([]);
+  const [atendimentosPorRacaECor, setAtendimentosPorRacaECor] = useState([]);
   const [atendimentosPorCaps, setAtendimentosPorCaps] = useState([]);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
@@ -40,17 +44,42 @@ const AtendimentoIndividual = () => {
   const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoRacaECor, setFiltroEstabelecimentoRacaECor] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [estabelecimentos, setEstabelecimentos] = useState([]);
+  const [periodos, setPeriodos] = useState([]);
+  const [loadingCID, setLoadingCID] = useState(false);
+  const [loadingGenero, setLoadingGenero] = useState(false);
+  const [loadingRaca, setLoadingRaca] = useState(false);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       setPerfilAtendimentos(await getPerfilDeAtendimentos(municipioIdSus));
       setAtendimentosPorCaps(await getAtendimentosPorCaps(municipioIdSus));
+      setEstabelecimentos(await getEstabelecimentos(municipioIdSus, 'atendimentos_inidividuais_perfil'));
+      setPeriodos(await getPeriodos(municipioIdSus, 'atendimentos_inidividuais_perfil'));
     };
 
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
+
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingCID(true);
+
+      const valoresPeriodos = filtroPeriodoCID.map(({ value }) => value);
+      const periodosConcatenados = concatenarPeriodos(valoresPeriodos, '-');
+
+      getAtendimentosPorCID(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoCID.value,
+        periodosConcatenados
+      ).then((dadosFiltrados) => {
+        setAtendimentosPorCID(dadosFiltrados);
+        setLoadingCID(false);
+      });
+    }
+  }, [filtroEstabelecimentoCID.value, filtroPeriodoCID, session?.user.municipio_id_ibge]);
 
   const agregarPorLinhaPerfil = (atendimentos) => {
     const atendimentosAgregados = [];
@@ -156,11 +185,13 @@ const AtendimentoIndividual = () => {
     );
   };
 
-  const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(
-    filtrarPorPeriodoEstabelecimento(perfilAtendimentos, filtroEstabelecimentoCID, filtroPeriodoCID),
-    "usuario_condicao_saude",
-    "usuarios_apenas_atendimento_individual"
-  );
+  const agregadosPorCID = useMemo(() => {
+    return agregarPorCondicaoSaude(
+      atendimentosPorCID,
+      "usuario_condicao_saude",
+      "usuarios_apenas_atendimento_individual"
+    );
+  }, [atendimentosPorCID]);
 
   const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(
     filtrarPorPeriodoEstabelecimento(perfilAtendimentos, filtroEstabelecimentoGenero, filtroPeriodoGenero),
@@ -246,7 +277,9 @@ const AtendimentoIndividual = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfilAtendimentos.length !== 0
+      { atendimentosPorCID
+        && estabelecimentos.length !== 0
+        && periodos.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
@@ -268,10 +301,13 @@ const AtendimentoIndividual = () => {
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
-              style={ { width: "100%", height: "70vh" } }
-            />
+            { loadingCID
+              ? <Spinner theme="ColorSM" height="70vh" />
+              : <ReactEcharts
+                option={ getOpcoesGraficoCID(agregadosPorCID) }
+                style={ { width: "100%", height: "70vh" } }
+              />
+            }
           </>
         )
         : <Spinner theme="ColorSM" />
