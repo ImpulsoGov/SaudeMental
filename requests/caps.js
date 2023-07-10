@@ -364,3 +364,57 @@ export const getPeriodos = async (municipioIdSus, entidade) => {
     console.log('error', error.response.data);
   }
 };
+
+export const getAtendimentosPorGeneroEIdade = async (
+  municipioIdSus,
+  estabelecimento,
+  periodos
+) => {
+  try {
+    const endpoint = "/atendimentosindividuais/genero-e-idade?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodos=" + periodos;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getAtendimentosPorRacaECor = async (
+  municipioIdSus,
+  estabelecimento,
+  periodos
+) => {
+  try {
+    const endpoint = "/atendimentosindividuais/raca?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodos=" + periodos;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getAtendimentosPorCID = async (
+  municipioIdSus,
+  estabelecimento,
+  periodos
+) => {
+  try {
+    const endpoint = "/atendimentosindividuais/cid?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodos=" + periodos;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
