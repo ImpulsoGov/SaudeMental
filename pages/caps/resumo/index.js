@@ -201,7 +201,7 @@ const Resumo = () => {
               />
 
               <Grid12Col
-                proporcao="4-4-4"
+                proporcao="6-6"
                 items={ [
                   <>
                     <CardInfoTipoA
@@ -218,13 +218,13 @@ const Resumo = () => {
                       titulo="CAPS com maior número"
                     />
                   </>,
-                  <>
-                    <CardInfoTipoA
-                      indicador={ `${resumoMunicipio.tempo_servico_maior_taxa} no serviço` }
-                      fonte={ `Média de ${resumoMunicipio.maior_taxa_procedimentos_tempo_servico} procedimentos no mês` }
-                      titulo="Usuários que mais realizam procedimentos são os que estão há"
-                    />
-                  </>,
+                  // <>
+                  //   <CardInfoTipoA
+                  //     indicador={ `${resumoMunicipio.tempo_servico_maior_taxa} no serviço` }
+                  //     fonte={ `Média de ${resumoMunicipio.maior_taxa_procedimentos_tempo_servico} procedimentos no mês` }
+                  //     titulo="Usuários que mais realizam procedimentos são os que estão há"
+                  //   />
+                  // </>,
                 ] }
               />
             </>
