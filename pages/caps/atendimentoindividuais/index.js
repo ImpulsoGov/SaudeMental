@@ -10,7 +10,7 @@ import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/g
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
-import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPerfilDeAtendimentos, getPeriodos } from "../../../requests/caps";
+import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from "../../../requests/caps";
 import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
 import styles from "../Caps.module.css";
 
@@ -31,8 +31,6 @@ export function getServerSideProps(ctx) {
 
 const AtendimentoIndividual = () => {
   const { data: session } = useSession();
-  const [perfilAtendimentos, setPerfilAtendimentos] = useState([]);
-  // const [resumoPerfilAtendimentos, setResumoPerfilAtendimentos] = useState();
   const [atendimentosPorCID, setAtendimentosPorCID] = useState([]);
   const [atendimentosPorGenero, setAtendimentosPorGenero] = useState([]);
   const [atendimentosPorRacaECor, setAtendimentosPorRacaECor] = useState([]);
@@ -52,7 +50,6 @@ const AtendimentoIndividual = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setPerfilAtendimentos(await getPerfilDeAtendimentos(municipioIdSus));
       setAtendimentosPorCaps(await getAtendimentosPorCaps(municipioIdSus));
       setEstabelecimentos(await getEstabelecimentos(municipioIdSus, 'atendimentos_inidividuais_perfil'));
       setPeriodos(await getPeriodos(municipioIdSus, 'atendimentos_inidividuais_perfil'));
@@ -208,17 +205,6 @@ const AtendimentoIndividual = () => {
         && item.estabelecimento_linha_perfil === "Todos"
         && item.estabelecimento_linha_idade === "Todos"
       );
-  };
-
-  const filtrarPorPeriodoEstabelecimento = (dados, filtroEstabelecimento, filtroPeriodo) => {
-    const periodosSelecionados = filtroPeriodo.map(({ value }) => value);
-
-    return dados.filter((item) =>
-      item.estabelecimento === filtroEstabelecimento.value
-      && periodosSelecionados.includes(item.periodo)
-      && item.estabelecimento_linha_perfil === "Todos"
-      && item.estabelecimento_linha_idade === "Todos"
-    );
   };
 
   const agregadosPorCID = useMemo(() => {
