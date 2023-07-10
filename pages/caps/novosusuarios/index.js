@@ -12,6 +12,7 @@ import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
 import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor } from '../../../requests/caps';
+import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import styles from '../Caps.module.css';
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -161,14 +162,12 @@ const NovoUsuario = () => {
       );
   };
 
-  const concatenarPeriodos = (periodos) => periodos.join('-');
-
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
       setLoadingCondicao(true);
 
       const valoresPeriodos = filtroPeriodoCondicao.map(({ value }) => value);
-      const periodosConcatenados = concatenarPeriodos(valoresPeriodos);
+      const periodosConcatenados = concatenarPeriodos(valoresPeriodos, '-');
 
       getUsuariosNovosPorCondicao(
         session?.user.municipio_id_ibge,
@@ -186,7 +185,7 @@ const NovoUsuario = () => {
       setLoadingGenero(true);
 
       const valoresPeriodos = filtroPeriodoGenero.map(({ value }) => value);
-      const periodosConcatenados = concatenarPeriodos(valoresPeriodos);
+      const periodosConcatenados = concatenarPeriodos(valoresPeriodos, '-');
 
       getUsuariosNovosPorGeneroEIdade(
         session?.user.municipio_id_ibge,
@@ -204,7 +203,7 @@ const NovoUsuario = () => {
       setLoadingRaca(true);
 
       const valoresPeriodos = filtroPeriodoRacaECor.map(({ value }) => value);
-      const periodosConcatenados = concatenarPeriodos(valoresPeriodos);
+      const periodosConcatenados = concatenarPeriodos(valoresPeriodos, '-');
 
       getUsuariosNovosPorRacaECor(
         session?.user.municipio_id_ibge,
@@ -222,7 +221,7 @@ const NovoUsuario = () => {
       setLoadingCID(true);
 
       const valoresPeriodos = filtroPeriodoCID.map(({ value }) => value);
-      const periodosConcatenados = concatenarPeriodos(valoresPeriodos);
+      const periodosConcatenados = concatenarPeriodos(valoresPeriodos, '-');
 
       getUsuariosNovosPorCID(
         session?.user.municipio_id_ibge,

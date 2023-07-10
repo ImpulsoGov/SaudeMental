@@ -1,7 +1,7 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
@@ -10,7 +10,8 @@ import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/g
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
-import { getAtendimentosPorCaps, getPerfilDeAtendimentos } from "../../../requests/caps";
+import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from "../../../requests/caps";
+import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
 import styles from "../Caps.module.css";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -30,8 +31,9 @@ export function getServerSideProps(ctx) {
 
 const AtendimentoIndividual = () => {
   const { data: session } = useSession();
-  const [perfilAtendimentos, setPerfilAtendimentos] = useState([]);
-  const [resumoPerfilAtendimentos, setResumoPerfilAtendimentos] = useState();
+  const [atendimentosPorCID, setAtendimentosPorCID] = useState([]);
+  const [atendimentosPorGenero, setAtendimentosPorGenero] = useState([]);
+  const [atendimentosPorRacaECor, setAtendimentosPorRacaECor] = useState([]);
   const [atendimentosPorCaps, setAtendimentosPorCaps] = useState([]);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
@@ -40,17 +42,77 @@ const AtendimentoIndividual = () => {
   const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoRacaECor, setFiltroEstabelecimentoRacaECor] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [estabelecimentos, setEstabelecimentos] = useState([]);
+  const [periodos, setPeriodos] = useState([]);
+  const [loadingCID, setLoadingCID] = useState(false);
+  const [loadingGenero, setLoadingGenero] = useState(false);
+  const [loadingRaca, setLoadingRaca] = useState(false);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setPerfilAtendimentos(await getPerfilDeAtendimentos(municipioIdSus));
       setAtendimentosPorCaps(await getAtendimentosPorCaps(municipioIdSus));
+      setEstabelecimentos(await getEstabelecimentos(municipioIdSus, 'atendimentos_inidividuais_perfil'));
+      setPeriodos(await getPeriodos(municipioIdSus, 'atendimentos_inidividuais_perfil'));
     };
 
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
+
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingCID(true);
+
+      const valoresPeriodos = filtroPeriodoCID.map(({ value }) => value);
+      const periodosConcatenados = concatenarPeriodos(valoresPeriodos, '-');
+
+      getAtendimentosPorCID(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoCID.value,
+        periodosConcatenados
+      ).then((dadosFiltrados) => {
+        setAtendimentosPorCID(dadosFiltrados);
+        setLoadingCID(false);
+      });
+    }
+  }, [filtroEstabelecimentoCID.value, filtroPeriodoCID, session?.user.municipio_id_ibge]);
+
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingGenero(true);
+
+      const valoresPeriodos = filtroPeriodoGenero.map(({ value }) => value);
+      const periodosConcatenados = concatenarPeriodos(valoresPeriodos, '-');
+
+      getAtendimentosPorGeneroEIdade(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoGenero.value,
+        periodosConcatenados
+      ).then((dadosFiltrados) => {
+        setAtendimentosPorGenero(dadosFiltrados);
+        setLoadingGenero(false);
+      });
+    }
+  }, [filtroEstabelecimentoGenero.value, filtroPeriodoGenero, session?.user.municipio_id_ibge]);
+
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingRaca(true);
+
+      const valoresPeriodos = filtroPeriodoRacaECor.map(({ value }) => value);
+      const periodosConcatenados = concatenarPeriodos(valoresPeriodos, '-');
+
+      getAtendimentosPorRacaECor(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoRacaECor.value,
+        periodosConcatenados
+      ).then((dadosFiltrados) => {
+        setAtendimentosPorRacaECor(dadosFiltrados);
+        setLoadingRaca(false);
+      });
+    }
+  }, [filtroEstabelecimentoRacaECor.value, filtroPeriodoRacaECor, session?.user.municipio_id_ibge]);
 
   const agregarPorLinhaPerfil = (atendimentos) => {
     const atendimentosAgregados = [];
@@ -145,35 +207,30 @@ const AtendimentoIndividual = () => {
       );
   };
 
-  const filtrarPorPeriodoEstabelecimento = (dados, filtroEstabelecimento, filtroPeriodo) => {
-    const periodosSelecionados = filtroPeriodo.map(({ value }) => value);
-
-    return dados.filter((item) =>
-      item.estabelecimento === filtroEstabelecimento.value
-      && periodosSelecionados.includes(item.periodo)
-      && item.estabelecimento_linha_perfil === "Todos"
-      && item.estabelecimento_linha_idade === "Todos"
+  const agregadosPorCID = useMemo(() => {
+    return agregarPorCondicaoSaude(
+      atendimentosPorCID,
+      "usuario_condicao_saude",
+      "usuarios_apenas_atendimento_individual"
     );
-  };
+  }, [atendimentosPorCID]);
 
-  const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(
-    filtrarPorPeriodoEstabelecimento(perfilAtendimentos, filtroEstabelecimentoCID, filtroPeriodoCID),
-    "usuario_condicao_saude",
-    "usuarios_apenas_atendimento_individual"
-  );
+  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
+    return agregarPorFaixaEtariaEGenero(
+      atendimentosPorGenero,
+      "usuario_faixa_etaria",
+      "usuario_sexo",
+      "usuarios_apenas_atendimento_individual"
+    );
+  }, [atendimentosPorGenero]);
 
-  const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(
-    filtrarPorPeriodoEstabelecimento(perfilAtendimentos, filtroEstabelecimentoGenero, filtroPeriodoGenero),
-    "usuario_faixa_etaria_descricao",
-    "usuario_sexo",
-    "usuarios_apenas_atendimento_individual"
-  );
-
-  const agregadosPorRacaCor = agregarPorRacaCor(
-    filtrarPorPeriodoEstabelecimento(perfilAtendimentos, filtroEstabelecimentoRacaECor, filtroPeriodoRacaECor),
-    "usuario_raca_cor",
-    "usuarios_apenas_atendimento_individual"
-  );
+  const agregadosPorRacaCor = useMemo(() => {
+    return agregarPorRacaCor(
+      atendimentosPorRacaECor,
+      "usuario_raca_cor",
+      "usuarios_apenas_atendimento_individual"
+    );
+  }, [atendimentosPorRacaECor]);
 
   return (
     <div>
@@ -246,13 +303,15 @@ const AtendimentoIndividual = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfilAtendimentos.length !== 0
+      { atendimentosPorCID
+        && estabelecimentos.length !== 0
+        && periodos.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select { ...getPropsFiltroEstabelecimento(
-                  perfilAtendimentos,
+                  estabelecimentos,
                   filtroEstabelecimentoCID,
                   setFiltroEstabelecimentoCID
                 ) } />
@@ -260,7 +319,7 @@ const AtendimentoIndividual = () => {
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroPeriodo(
-                    perfilAtendimentos,
+                    periodos,
                     filtroPeriodoCID,
                     setFiltroPeriodoCID
                   )
@@ -268,10 +327,13 @@ const AtendimentoIndividual = () => {
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
-              style={ { width: "100%", height: "70vh" } }
-            />
+            { loadingCID
+              ? <Spinner theme="ColorSM" height="70vh" />
+              : <ReactEcharts
+                option={ getOpcoesGraficoCID(agregadosPorCID) }
+                style={ { width: "100%", height: "70vh" } }
+              />
+            }
           </>
         )
         : <Spinner theme="ColorSM" />
@@ -282,13 +344,15 @@ const AtendimentoIndividual = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfilAtendimentos.length !== 0
+      { atendimentosPorGenero
+        && estabelecimentos.length !== 0
+        && periodos.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select { ...getPropsFiltroEstabelecimento(
-                  perfilAtendimentos,
+                  estabelecimentos,
                   filtroEstabelecimentoGenero,
                   setFiltroEstabelecimentoGenero
                 ) } />
@@ -296,7 +360,7 @@ const AtendimentoIndividual = () => {
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroPeriodo(
-                    perfilAtendimentos,
+                    periodos,
                     filtroPeriodoGenero,
                     setFiltroPeriodoGenero
                   )
@@ -304,13 +368,16 @@ const AtendimentoIndividual = () => {
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                agregadosPorGeneroEFaixaEtaria,
-                ""
-              ) }
-              style={ { width: "100%", height: "70vh" } }
-            />
+            { loadingGenero
+              ? <Spinner theme="ColorSM" height="70vh" />
+              : <ReactEcharts
+                option={ getOpcoesGraficoGeneroEFaixaEtaria(
+                  agregadosPorGeneroEFaixaEtaria,
+                  ""
+                ) }
+                style={ { width: "100%", height: "70vh" } }
+              />
+            }
           </>
         )
         : <Spinner theme="ColorSM" />
@@ -321,13 +388,15 @@ const AtendimentoIndividual = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfilAtendimentos.length !== 0
+      { atendimentosPorRacaECor
+        && estabelecimentos.length !== 0
+        && periodos.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select { ...getPropsFiltroEstabelecimento(
-                  perfilAtendimentos,
+                  estabelecimentos,
                   filtroEstabelecimentoRacaECor,
                   setFiltroEstabelecimentoRacaECor
                 ) } />
@@ -335,7 +404,7 @@ const AtendimentoIndividual = () => {
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroPeriodo(
-                    perfilAtendimentos,
+                    periodos,
                     filtroPeriodoRacaECor,
                     setFiltroPeriodoRacaECor
                   )
@@ -343,13 +412,16 @@ const AtendimentoIndividual = () => {
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoRacaEcor(
-                agregadosPorRacaCor,
-                "Usuários que realizaram apenas atendimentos individuais"
-              ) }
-              style={ { width: "100%", height: "70vh" } }
-            />
+            { loadingRaca
+              ? <Spinner theme="ColorSM" height="70vh" />
+              : <ReactEcharts
+                option={ getOpcoesGraficoRacaEcor(
+                  agregadosPorRacaCor,
+                  "Usuários que realizaram apenas atendimentos individuais"
+                ) }
+                style={ { width: "100%", height: "70vh" } }
+              />
+            }
           </>
         )
         : <Spinner theme="ColorSM" />
