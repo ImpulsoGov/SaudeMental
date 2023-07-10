@@ -9,6 +9,7 @@ import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorPropriedadeESomarQuantidade, getOpcoesGraficoBarrasProducao } from "../../../helpers/graficoBarrasProducao";
 import { getProcedimentosPorHora, getProcedimentosPorTipo } from "../../../requests/caps";
+import { ordenarCrescentePorPropriedadeTexto } from "../../../utils/ordenacao";
 import styles from "../Caps.module.css";
 
 const OCUPACOES_NAO_ACEITAS = ["Todas", null];
@@ -112,33 +113,40 @@ const Producao = () => {
 
     const cardsProcedimentosHoraPorEstabelecimento = procedimentosAgregados.map(({
       linhaPerfil, procedimentosPorEstabelecimento, nomeMes
-    }) => (
-      <>
-        <GraficoInfo
-          titulo={ `CAPS ${linhaPerfil}` }
-          descricao="Comparativo de produção por hora de trabalho dos profissionais nos CAPS"
-          fonte={ `Dados de ${nomeMes}` }
-          tooltip="Indicador é calculado a partir da divisão do total de procedimentos registrados pelo total de horas de trabalho estabelecidas em contrato. De tal modo, dados podem apresentar valores subestimados no caso de férias, licenças, feriados e números de finais de semana no mês."
-        />
+    }) => {
+      const procedimentosOrdenados = ordenarCrescentePorPropriedadeTexto(
+        procedimentosPorEstabelecimento,
+        "estabelecimento"
+      );
 
-        <Grid12Col
-          items={
-            procedimentosPorEstabelecimento.map((item) => (
-              <CardInfoTipoA
-                titulo={ item.estabelecimento }
-                indicador={ item.procedimentosPorHora }
-                indicadorDescricao="procedimentos/hora"
-                indice={ item.porcentagemDifProcedimentosPorHoraAnterior }
-                indiceSimbolo="%"
-                indiceDescricao="últ. mês"
-                key={ uuidv1() }
-              />
-            ))
-          }
-          proporcao="3-3-3-3"
-        />
-      </>
-    ));
+      return (
+        <>
+          <GraficoInfo
+            titulo={ `CAPS ${linhaPerfil}` }
+            descricao="Comparativo de produção por hora de trabalho dos profissionais nos CAPS"
+            fonte={ `Dados de ${nomeMes}` }
+            tooltip="Indicador é calculado a partir da divisão do total de procedimentos registrados pelo total de horas de trabalho estabelecidas em contrato. De tal modo, dados podem apresentar valores subestimados no caso de férias, licenças, feriados e números de finais de semana no mês."
+          />
+
+          <Grid12Col
+            items={
+              procedimentosOrdenados.map((item) => (
+                <CardInfoTipoA
+                  titulo={ item.estabelecimento }
+                  indicador={ item.procedimentosPorHora }
+                  indicadorDescricao="procedimentos/hora"
+                  indice={ item.porcentagemDifProcedimentosPorHoraAnterior }
+                  indiceSimbolo="%"
+                  indiceDescricao="últ. mês"
+                  key={ uuidv1() }
+                />
+              ))
+            }
+            proporcao="3-3-3-3"
+          />
+        </>
+      );
+    });
 
     return cardsProcedimentosHoraPorEstabelecimento;
   };
