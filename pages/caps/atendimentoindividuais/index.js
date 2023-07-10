@@ -325,7 +325,7 @@ const AtendimentoIndividual = () => {
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select { ...getPropsFiltroEstabelecimento(
-                  perfilAtendimentos,
+                  estabelecimentos,
                   filtroEstabelecimentoCID,
                   setFiltroEstabelecimentoCID
                 ) } />
@@ -333,7 +333,7 @@ const AtendimentoIndividual = () => {
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroPeriodo(
-                    perfilAtendimentos,
+                    periodos,
                     filtroPeriodoCID,
                     setFiltroPeriodoCID
                   )
@@ -366,7 +366,7 @@ const AtendimentoIndividual = () => {
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select { ...getPropsFiltroEstabelecimento(
-                  perfilAtendimentos,
+                  estabelecimentos,
                   filtroEstabelecimentoGenero,
                   setFiltroEstabelecimentoGenero
                 ) } />
@@ -374,7 +374,7 @@ const AtendimentoIndividual = () => {
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroPeriodo(
-                    perfilAtendimentos,
+                    periodos,
                     filtroPeriodoGenero,
                     setFiltroPeriodoGenero
                   )
