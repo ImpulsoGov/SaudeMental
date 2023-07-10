@@ -10,7 +10,7 @@ import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/g
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
-import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getEstabelecimentos, getPerfilDeAtendimentos, getPeriodos } from "../../../requests/caps";
+import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPerfilDeAtendimentos, getPeriodos } from "../../../requests/caps";
 import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
 import styles from "../Caps.module.css";
 
@@ -98,6 +98,24 @@ const AtendimentoIndividual = () => {
       });
     }
   }, [filtroEstabelecimentoGenero.value, filtroPeriodoGenero, session?.user.municipio_id_ibge]);
+
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingRaca(true);
+
+      const valoresPeriodos = filtroPeriodoRacaECor.map(({ value }) => value);
+      const periodosConcatenados = concatenarPeriodos(valoresPeriodos, '-');
+
+      getAtendimentosPorRacaECor(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoRacaECor.value,
+        periodosConcatenados
+      ).then((dadosFiltrados) => {
+        setAtendimentosPorRacaECor(dadosFiltrados);
+        setLoadingRaca(false);
+      });
+    }
+  }, [filtroEstabelecimentoRacaECor.value, filtroPeriodoRacaECor, session?.user.municipio_id_ibge]);
 
   const agregarPorLinhaPerfil = (atendimentos) => {
     const atendimentosAgregados = [];
@@ -220,11 +238,13 @@ const AtendimentoIndividual = () => {
     );
   }, [atendimentosPorGenero]);
 
-  const agregadosPorRacaCor = agregarPorRacaCor(
-    filtrarPorPeriodoEstabelecimento(perfilAtendimentos, filtroEstabelecimentoRacaECor, filtroPeriodoRacaECor),
-    "usuario_raca_cor",
-    "usuarios_apenas_atendimento_individual"
-  );
+  const agregadosPorRacaCor = useMemo(() => {
+    return agregarPorRacaCor(
+      atendimentosPorRacaECor,
+      "usuario_raca_cor",
+      "usuarios_apenas_atendimento_individual"
+    );
+  }, [atendimentosPorRacaECor]);
 
   return (
     <div>
@@ -382,13 +402,15 @@ const AtendimentoIndividual = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { perfilAtendimentos.length !== 0
+      { atendimentosPorRacaECor
+        && estabelecimentos.length !== 0
+        && periodos.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select { ...getPropsFiltroEstabelecimento(
-                  perfilAtendimentos,
+                  estabelecimentos,
                   filtroEstabelecimentoRacaECor,
                   setFiltroEstabelecimentoRacaECor
                 ) } />
@@ -396,7 +418,7 @@ const AtendimentoIndividual = () => {
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroPeriodo(
-                    perfilAtendimentos,
+                    periodos,
                     filtroPeriodoRacaECor,
                     setFiltroPeriodoRacaECor
                   )
@@ -404,13 +426,16 @@ const AtendimentoIndividual = () => {
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoRacaEcor(
-                agregadosPorRacaCor,
-                "Usuários que realizaram apenas atendimentos individuais"
-              ) }
-              style={ { width: "100%", height: "70vh" } }
-            />
+            { loadingRaca
+              ? <Spinner theme="ColorSM" height="70vh" />
+              : <ReactEcharts
+                option={ getOpcoesGraficoRacaEcor(
+                  agregadosPorRacaCor,
+                  "Usuários que realizaram apenas atendimentos individuais"
+                ) }
+                style={ { width: "100%", height: "70vh" } }
+              />
+            }
           </>
         )
         : <Spinner theme="ColorSM" />
