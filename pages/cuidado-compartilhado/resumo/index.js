@@ -197,7 +197,7 @@ const Resumo = () => {
               ? <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ matriciamentosPorMunicipio["estabelecimentos_fora_meta"] }
-                titulo={ `CAPS fora da meta de matriciamento em 2022 (até ${matriciamentosPorMunicipio["ate_mes"]})` }
+                titulo={ `CAPS fora da meta de matriciamento em ${matriciamentosPorMunicipio["ano"]} (até ${matriciamentosPorMunicipio["ate_mes"]})` }
                 tooltip="CAPS que realizaram menos de dois matriciamentos por mês no ano, até o mês de referência"
               />
               : <Spinner theme="ColorSM" />
