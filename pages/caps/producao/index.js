@@ -9,7 +9,7 @@ import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorPropriedadeESomarQuantidade, getOpcoesGraficoBarrasProducao } from "../../../helpers/graficoBarrasProducao";
 import { getProcedimentosPorHora, getProcedimentosPorTipo } from "../../../requests/caps";
-import { ordenarCrescentePorPropriedadeTexto } from "../../../utils/ordenacao";
+import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
 import styles from "../Caps.module.css";
 
 const OCUPACOES_NAO_ACEITAS = ["Todas", null];
@@ -114,7 +114,7 @@ const Producao = () => {
     const cardsProcedimentosHoraPorEstabelecimento = procedimentosAgregados.map(({
       linhaPerfil, procedimentosPorEstabelecimento, nomeMes
     }) => {
-      const procedimentosOrdenados = ordenarCrescentePorPropriedadeTexto(
+      const procedimentosOrdenados = ordenarCrescentePorPropriedadeDeTexto(
         procedimentosPorEstabelecimento,
         "estabelecimento"
       );
