@@ -18,6 +18,8 @@ const FILTRO_PERIODO_MULTI_DEFAULT = [
 const FILTRO_ESTABELECIMENTO_DEFAULT = {
   value: "Todos", label: "Todos"
 };
+const COMPETENCIA_MARCO_2022 = ["Mar/22"];
+const COMPPETENCIAS_A_REMOVER = [...COMPETENCIA_MARCO_2022, "Abr/22", "Mai/22", "Jun/22", "Jul/22", "Nov/22", "Fev/23"];
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -276,6 +278,10 @@ const Producao = () => {
     };
   };
 
+  const removerCompetencias = (dados, competencias) => {
+    return dados.filter(({ periodo }) => !competencias.includes(periodo));
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -335,7 +341,7 @@ const Producao = () => {
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroPeriodo(
-                    procedimentosPorHora,
+                    removerCompetencias(procedimentosPorHora, COMPPETENCIAS_A_REMOVER),
                     filtroPeriodoCBO,
                     setFiltroPeriodoCBO,
                     false
