@@ -9,7 +9,7 @@ import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } f
 import styles from "../Caps.module.css";
 
 import { getPropsFiltroEstabelecimento } from "../../../helpers/filtrosGraficos";
-import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
+// import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -282,7 +282,7 @@ const ProcedimentosPorUsuarios = () => {
         : <Spinner theme="ColorSM" />
       }
 
-      <GraficoInfo
+      {/* <GraficoInfo
         titulo="Histórico Temporal"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
@@ -311,7 +311,7 @@ const ProcedimentosPorUsuarios = () => {
           </>
         )
         : <Spinner theme="ColorSM" />
-      }
+      } */}
 
       <GraficoInfo
         titulo="Procedimento por usuários x tempo do usuário no serviço"
