@@ -98,6 +98,11 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
       hideFooter
       disableColumnMenu
       getRowClassName={ (params) => params.row.total && `LinhaTotalGeral` }
+      initialState={ {
+        sorting: {
+          sortModel: [{ field: 'quantidadeRegistrada', sort: 'asc' }],
+        },
+      } }
     />
   );
 };
