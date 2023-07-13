@@ -1,4 +1,5 @@
 import { components } from "react-select";
+import { ordenarCrescentePorPropriedadeDeTexto } from "../utils/ordenacao";
 
 export const getPropsFiltroEstabelecimento = (dados, estadoFiltro, funcaoSetFiltro) => {
   const optionsSemDuplicadas = [];
@@ -12,6 +13,8 @@ export const getPropsFiltroEstabelecimento = (dados, estadoFiltro, funcaoSetFilt
     }
   });
 
+  const optionsOrdenadas = ordenarCrescentePorPropriedadeDeTexto(optionsSemDuplicadas, "value");
+
   const optionPersonalizada = ({ children, ...props }) => (
     <components.Control { ...props }>
       Estabelecimento: { children }
@@ -19,7 +22,7 @@ export const getPropsFiltroEstabelecimento = (dados, estadoFiltro, funcaoSetFilt
   );
 
   return {
-    options: optionsSemDuplicadas.sort((a, b) => b.value.localeCompare(a.value)),
+    options: optionsOrdenadas,
     defaultValue: estadoFiltro,
     selectedValue: estadoFiltro,
     onChange: (selected) => funcaoSetFiltro({

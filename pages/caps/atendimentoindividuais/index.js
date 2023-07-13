@@ -12,6 +12,7 @@ import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHisto
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
 import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from "../../../requests/caps";
 import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
+import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
 import styles from "../Caps.module.css";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -169,31 +170,35 @@ const AtendimentoIndividual = () => {
 
     const cardsAtendimentosPorCaps = atendimentosAgregados.map(({
       linhaPerfil, atendimentosPorEstabelecimento, nomeMes
-    }) => (
-      <>
-        <GraficoInfo
-          titulo={ `CAPS ${linhaPerfil}` }
-          descricao={ `Dados de ${nomeMes}` }
-        />
+    }) => {
+      const atendimentosOrdenados = ordenarCrescentePorPropriedadeDeTexto(atendimentosPorEstabelecimento, "estabelecimento");
 
-        <Grid12Col
-          items={
-            atendimentosPorEstabelecimento.map((item) => (
-              <CardInfoTipoA
-                titulo={ item.estabelecimento }
-                indicador={ item.porcentagemAtendimentos }
-                indicadorSimbolo="%"
-                indice={ item.difPorcentagemAtendimentosAnterior }
-                indiceSimbolo="p.p."
-                indiceDescricao="últ. mês"
-                key={ uuidv1() }
-              />
-            ))
-          }
-          proporcao="3-3-3-3"
-        />
-      </>
-    ));
+      return (
+        <>
+          <GraficoInfo
+            titulo={ `CAPS ${linhaPerfil}` }
+            descricao={ `Dados de ${nomeMes}` }
+          />
+
+          <Grid12Col
+            items={
+              atendimentosOrdenados.map((item) => (
+                <CardInfoTipoA
+                  titulo={ item.estabelecimento }
+                  indicador={ item.porcentagemAtendimentos }
+                  indicadorSimbolo="%"
+                  indice={ item.difPorcentagemAtendimentosAnterior }
+                  indiceSimbolo="p.p."
+                  indiceDescricao="últ. mês"
+                  key={ uuidv1() }
+                />
+              ))
+            }
+            proporcao="3-3-3-3"
+          />
+        </>
+      );
+    });
 
     return cardsAtendimentosPorCaps;
   };

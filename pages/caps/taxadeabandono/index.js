@@ -12,6 +12,8 @@ import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/g
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
+import { agregarPorRacaCor } from "../../../helpers/graficoRacaECor";
+import { ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
 import styles from "../Caps.module.css";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -105,6 +107,10 @@ const TaxaAbandono = () => {
   const getCardsAbandonoAcumulado = (abandonos) => {
     const abandonosUltimoPeriodo = abandonos
       .filter(({ periodo, estabelecimento }) => periodo === "Último período" && estabelecimento !== "Todos");
+    const abandonosOrdenadosPorValor = ordenarDecrescentePorPropriedadeNumerica(
+      abandonosUltimoPeriodo,
+      "usuarios_coorte_nao_aderiram_perc"
+    );
 
     return (
       <>
@@ -117,7 +123,7 @@ const TaxaAbandono = () => {
 
         <Grid12Col
           items={
-            abandonosUltimoPeriodo.map((item) => (
+            abandonosOrdenadosPorValor.map((item) => (
               <CardInfoTipoA
                 titulo={ item.estabelecimento }
                 indicador={ item.usuarios_coorte_nao_aderiram_perc }
