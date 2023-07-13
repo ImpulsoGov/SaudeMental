@@ -23,11 +23,13 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
   const colunas = useMemo(() => [
     {
       field: 'estabelecimento',
+      sortable: false,
       headerName: 'CAPS',
       flex: 350,
     },
     {
       field: 'quantidadeRegistrada',
+      sortable: false,
       headerName: 'Matriciamentos realizados',
       flex: 280,
       headerAlign: 'center',
@@ -35,6 +37,7 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
     },
     {
       field: 'faltamNoAno',
+      sortable: false,
       headerName: 'Faltam no ano',
       flex: 180,
       headerAlign: 'center',
@@ -42,6 +45,7 @@ const TabelaMatriciamentosPorCaps = ({ matriciamentos }) => {
     },
     {
       field: 'mediaMensalParaMeta',
+      sortable: false,
       headerName: 'Média mensal para completar a meta',
       flex: 320,
       headerAlign: 'center',
