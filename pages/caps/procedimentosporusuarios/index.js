@@ -335,7 +335,7 @@ const ProcedimentosPorUsuarios = () => {
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroCompetencia(
-                    procedimentosPorTempoServico,
+                    procedimentosPorTempoServico.filter(({ periodo }) => periodo !== "Fev/23"),
                     filtroPeriodoProcedimento,
                     setFiltroPeriodoProcedimento
                   )
