@@ -428,7 +428,7 @@ const Producao = () => {
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroPeriodo(
-                    procedimentosPorTipo,
+                    removerCompetencias(procedimentosPorTipo, COMPETENCIA_MARCO_2022),
                     filtroPeriodoRAAS,
                     setFiltroPeriodoRAAS
                   )
