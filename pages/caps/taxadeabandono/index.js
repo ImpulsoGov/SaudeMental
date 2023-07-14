@@ -1,9 +1,9 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getAbandonoCoortes, getAbandonoMensal, getPerfilAbandono } from "../../../requests/caps";
+import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesNoMesPorCID, getEvasoesNoMesPorGeneroEIdade, getPeriodos } from "../../../requests/caps";
 
 import ReactEcharts from "echarts-for-react";
 import Select from "react-select";
@@ -11,7 +11,9 @@ import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../h
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
+import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
 import { agregarPorRacaCor } from "../../../helpers/graficoRacaECor";
+import { ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
 import styles from "../Caps.module.css";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -32,7 +34,8 @@ export function getServerSideProps(ctx) {
 const TaxaAbandono = () => {
   const { data: session } = useSession();
   const [abandonoCoortes, setAbandonoCoortes] = useState([]);
-  const [abandonoPerfil, setAbandonoPerfil] = useState([]);
+  const [evasoesNoMesPorCID, setEvasoesNoMesPorCID] = useState([]);
+  const [evasoesNoMesPorGeneroEIdade, setEvasoesNoMesPorGeneroEIdade] = useState([]);
   const [abandonoMensal, setAbandonoMensal] = useState([]);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
     value: "Todos", label: "Todos"
@@ -41,14 +44,23 @@ const TaxaAbandono = () => {
   const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
-  const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
-  const [filtroEstabelecimentoRacaECor, setFiltroEstabelecimentoRacaECor] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  // const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  // const [filtroEstabelecimentoRacaECor, setFiltroEstabelecimentoRacaECor] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [estabelecimentos, setEstabelecimentos] = useState([]);
+  const [periodos, setPeriodos] = useState([]);
+  const [loadingCID, setLoadingCID] = useState(false);
+  const [loadingGenero, setLoadingGenero] = useState(false);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       setAbandonoCoortes(await getAbandonoCoortes(municipioIdSus));
-      setAbandonoPerfil(await getPerfilAbandono(municipioIdSus));
       setAbandonoMensal(await getAbandonoMensal(municipioIdSus));
+      setEstabelecimentos(
+        await getEstabelecimentos(municipioIdSus, 'abandono_perfil')
+      );
+      setPeriodos(
+        await getPeriodos(municipioIdSus, 'abandono_perfil')
+      );
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -56,9 +68,49 @@ const TaxaAbandono = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingCID(true);
+
+      const valoresPeriodos = filtroPeriodoCID.map(({ value }) => value);
+      const periodosConcatenados = concatenarPeriodos(valoresPeriodos, '-');
+
+      getEvasoesNoMesPorCID(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoCID.value,
+        periodosConcatenados
+      ).then((dadosFiltrados) => {
+        setEvasoesNoMesPorCID(dadosFiltrados);
+        setLoadingCID(false);
+      });
+    }
+  }, [session?.user.municipio_id_ibge, filtroEstabelecimentoCID.value, filtroPeriodoCID]);
+
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingGenero(true);
+
+      const valoresPeriodos = filtroPeriodoGenero.map(({ value }) => value);
+      const periodosConcatenados = concatenarPeriodos(valoresPeriodos, '-');
+
+      getEvasoesNoMesPorGeneroEIdade(
+        session?.user.municipio_id_ibge,
+        filtroEstabelecimentoGenero.value,
+        periodosConcatenados
+      ).then((dadosFiltrados) => {
+        setEvasoesNoMesPorGeneroEIdade(dadosFiltrados);
+        setLoadingGenero(false);
+      });
+    }
+  }, [session?.user.municipio_id_ibge, filtroEstabelecimentoGenero.value, filtroPeriodoGenero]);
+
   const getCardsAbandonoAcumulado = (abandonos) => {
     const abandonosUltimoPeriodo = abandonos
       .filter(({ periodo, estabelecimento }) => periodo === "Último período" && estabelecimento !== "Todos");
+    const abandonosOrdenadosPorValor = ordenarDecrescentePorPropriedadeNumerica(
+      abandonosUltimoPeriodo,
+      "usuarios_coorte_nao_aderiram_perc"
+    );
 
     return (
       <>
@@ -71,7 +123,7 @@ const TaxaAbandono = () => {
 
         <Grid12Col
           items={
-            abandonosUltimoPeriodo.map((item) => (
+            abandonosOrdenadosPorValor.map((item) => (
               <CardInfoTipoA
                 titulo={ item.estabelecimento }
                 indicador={ item.usuarios_coorte_nao_aderiram_perc }
@@ -93,34 +145,29 @@ const TaxaAbandono = () => {
       );
   };
 
-  const filtrarPorPeriodoEstabelecimento = (dados, filtroEstabelecimento, filtroPeriodo) => {
-    const periodosSelecionados = filtroPeriodo.map(({ value }) => value);
-
-    return dados.filter((item) =>
-      item.estabelecimento === filtroEstabelecimento.value
-      && periodosSelecionados.includes(item.periodo)
-      && item.estatus_adesao_mes === "Evadiram no mês"
+  const agregadosPorCID = useMemo(() => {
+    return agregarPorCondicaoSaude(
+      evasoesNoMesPorCID,
+      "usuario_condicao_saude",
+      "quantidade_registrada"
     );
-  };
+  }, [evasoesNoMesPorCID]);
 
-  const agregadosPorCondicaoSaude = agregarPorCondicaoSaude(
-    filtrarPorPeriodoEstabelecimento(abandonoPerfil, filtroEstabelecimentoCID, filtroPeriodoCID),
-    "grupo_descricao_curta_cid10",
-    "quantidade_registrada"
-  );
+  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
+    return agregarPorFaixaEtariaEGenero(
+      evasoesNoMesPorGeneroEIdade,
+      "usuario_faixa_etaria",
+      "usuario_sexo",
+      "quantidade_registrada"
+    );
+  }, [evasoesNoMesPorGeneroEIdade]);
 
-  const agregadosPorGeneroEFaixaEtaria = agregarPorFaixaEtariaEGenero(
-    filtrarPorPeriodoEstabelecimento(abandonoPerfil, filtroEstabelecimentoGenero, filtroPeriodoGenero),
-    "usuario_faixa_etaria_descricao",
-    "usuario_sexo",
-    "quantidade_registrada"
-  );
 
-  const agregadosPorRacaCor = agregarPorRacaCor(
-    filtrarPorPeriodoEstabelecimento(abandonoPerfil, filtroEstabelecimentoRacaECor, filtroPeriodoRacaECor),
-    "usuario_raca_cor",
-    "quantidade_registrada"
-  );
+  // const agregadosPorRacaCor = agregarPorRacaCor(
+  //   filtrarPorPeriodoEstabelecimento(abandonoPerfil, filtroEstabelecimentoRacaECor, filtroPeriodoRacaECor),
+  //   "usuario_raca_cor",
+  //   "quantidade_registrada"
+  // );
 
   return (
     <div>
@@ -191,14 +238,16 @@ const TaxaAbandono = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { abandonoPerfil.length !== 0
+      { evasoesNoMesPorCID
+        && periodos.length !== 0
+        && estabelecimentos.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroEstabelecimento(
-                    abandonoPerfil,
+                    estabelecimentos,
                     filtroEstabelecimentoCID,
                     setFiltroEstabelecimentoCID
                   )
@@ -207,7 +256,7 @@ const TaxaAbandono = () => {
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroPeriodo(
-                    abandonoPerfil,
+                    periodos,
                     filtroPeriodoCID,
                     setFiltroPeriodoCID
                   )
@@ -215,10 +264,13 @@ const TaxaAbandono = () => {
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
-              style={ { width: "100%", height: "70vh" } }
-            />
+            { loadingCID
+              ? <Spinner theme='ColorSM' height='70vh' />
+              : <ReactEcharts
+                option={ getOpcoesGraficoCID(agregadosPorCID) }
+                style={ { width: "100%", height: "70vh" } }
+              />
+            }
           </>
         )
         : <Spinner theme="ColorSM" />
@@ -229,14 +281,16 @@ const TaxaAbandono = () => {
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { abandonoPerfil.length !== 0
+      { evasoesNoMesPorGeneroEIdade
+        && periodos.length !== 0
+        && estabelecimentos.length !== 0
         ? (
           <>
             <div className={ styles.Filtros }>
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroEstabelecimento(
-                    abandonoPerfil,
+                    estabelecimentos,
                     filtroEstabelecimentoGenero,
                     setFiltroEstabelecimentoGenero
                   )
@@ -245,7 +299,7 @@ const TaxaAbandono = () => {
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroPeriodo(
-                    abandonoPerfil,
+                    periodos,
                     filtroPeriodoGenero,
                     setFiltroPeriodoGenero
                   )
@@ -253,13 +307,16 @@ const TaxaAbandono = () => {
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                agregadosPorGeneroEFaixaEtaria,
-                ""
-              ) }
-              style={ { width: "100%", height: "70vh" } }
-            />
+            { loadingGenero
+              ? <Spinner theme='ColorSM' height='70vh' />
+              : <ReactEcharts
+                option={ getOpcoesGraficoGeneroEFaixaEtaria(
+                  agregadosPorGeneroEFaixaEtaria,
+                  ""
+                ) }
+                style={ { width: "100%", height: "70vh" } }
+              />
+            }
           </>
         )
         : <Spinner theme="ColorSM" />

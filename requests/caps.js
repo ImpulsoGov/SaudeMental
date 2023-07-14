@@ -418,3 +418,39 @@ export const getAtendimentosPorCID = async (
     console.log('error', error.response.data);
   }
 };
+
+export const getEvasoesNoMesPorCID = async (
+  municipioIdSus,
+  estabelecimento,
+  periodos
+) => {
+  try {
+    const endpoint = "/abandono/evadiram-no-mes/cid?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodos=" + periodos;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getEvasoesNoMesPorGeneroEIdade = async (
+  municipioIdSus,
+  estabelecimento,
+  periodos
+) => {
+  try {
+    const endpoint = "/abandono/evadiram-no-mes/genero-e-idade?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimento=" + estabelecimento
+      + "&periodos=" + periodos;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};

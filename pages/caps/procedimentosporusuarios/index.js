@@ -10,6 +10,8 @@ import styles from "../Caps.module.css";
 
 import { getPropsFiltroEstabelecimento } from "../../../helpers/filtrosGraficos";
 // import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
+import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
+import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -101,30 +103,37 @@ const ProcedimentosPorUsuarios = () => {
 
     const cardsProcedimentosPorEstabelecimento = procedimentosAgregados.map(({
       linhaPerfil, procedimentosPorEstabelecimento, nomeMes
-    }) => (
-      <>
-        <GraficoInfo
-          titulo={ `CAPS ${linhaPerfil}` }
-          descricao={ `Dados de ${nomeMes}` }
-        />
+    }) => {
+      const procedimentosOrdenados = ordenarCrescentePorPropriedadeDeTexto(
+        procedimentosPorEstabelecimento,
+        "estabelecimento"
+      );
 
-        <Grid12Col
-          items={
-            procedimentosPorEstabelecimento.map((item) => (
-              <CardInfoTipoA
-                titulo={ item.estabelecimento }
-                indicador={ item.procedimentosPorUsuario }
-                indice={ item.difPorcentagemProcedimentosAnterior }
-                indiceSimbolo="%"
-                indiceDescricao="últ. mês"
-                key={ uuidv1() }
-              />
-            ))
-          }
-          proporcao="3-3-3-3"
-        />
-      </>
-    ));
+      return (
+        <>
+          <GraficoInfo
+            titulo={ `CAPS ${linhaPerfil}` }
+            descricao={ `Dados de ${nomeMes}` }
+          />
+
+          <Grid12Col
+            items={
+              procedimentosOrdenados.map((item) => (
+                <CardInfoTipoA
+                  titulo={ item.estabelecimento }
+                  indicador={ item.procedimentosPorUsuario }
+                  indice={ item.difPorcentagemProcedimentosAnterior }
+                  indiceSimbolo="%"
+                  indiceDescricao="últ. mês"
+                  key={ uuidv1() }
+                />
+              ))
+            }
+            proporcao="3-3-3-3"
+          />
+        </>
+      );
+    });
 
     return cardsProcedimentosPorEstabelecimento;
   };
