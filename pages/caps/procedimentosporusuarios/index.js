@@ -10,7 +10,6 @@ import styles from "../Caps.module.css";
 
 import { getPropsFiltroEstabelecimento } from "../../../helpers/filtrosGraficos";
 // import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
-import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
 
 export function getServerSideProps(ctx) {
