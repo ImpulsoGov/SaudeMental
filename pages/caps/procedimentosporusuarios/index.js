@@ -9,7 +9,7 @@ import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } f
 import styles from "../Caps.module.css";
 
 import { getPropsFiltroEstabelecimento } from "../../../helpers/filtrosGraficos";
-import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
+// import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
 
 export function getServerSideProps(ctx) {
@@ -290,7 +290,7 @@ const ProcedimentosPorUsuarios = () => {
         : <Spinner theme="ColorSM" />
       }
 
-      <GraficoInfo
+      {/* <GraficoInfo
         titulo="Histórico Temporal"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
@@ -319,7 +319,7 @@ const ProcedimentosPorUsuarios = () => {
           </>
         )
         : <Spinner theme="ColorSM" />
-      }
+      } */}
 
       <GraficoInfo
         titulo="Procedimento por usuários x tempo do usuário no serviço"
@@ -343,7 +343,7 @@ const ProcedimentosPorUsuarios = () => {
               <div className={ styles.Filtro }>
                 <Select {
                   ...getPropsFiltroCompetencia(
-                    procedimentosPorTempoServico,
+                    procedimentosPorTempoServico.filter(({ periodo }) => periodo !== "Fev/23"),
                     filtroPeriodoProcedimento,
                     setFiltroPeriodoProcedimento
                   )
