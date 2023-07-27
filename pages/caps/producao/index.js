@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
-import { CORES_GRAFICO_DONUT } from "../../../constants/CORES_GRAFICO_DONUT";
+import { CORES_GRAFICO_DONUT } from "../../../constants/GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorPropriedadeESomarQuantidade, getOpcoesGraficoBarrasProducao } from "../../../helpers/graficoBarrasProducao";

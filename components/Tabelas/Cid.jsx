@@ -2,7 +2,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { v4 as uuidV4 } from 'uuid';
-import { CORES_GRAFICO_DONUT } from '../../constants/CORES_GRAFICO_DONUT';
+import { CORES_GRAFICO_DONUT } from '../../constants/GRAFICO_DONUT';
 
 const TabelaCid = ({ labels, cids }) => {
   const colunas = useMemo(() => [
