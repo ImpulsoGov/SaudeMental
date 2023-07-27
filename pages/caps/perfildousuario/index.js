@@ -6,7 +6,7 @@ import Select from "react-select";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import styles from "../Caps.module.css";
 
-import TabelaDetalhamentoPorCaps from "../../../components/Tabelas/DetalhamentoPorCaps";
+import { TabelaCid, TabelaDetalhamentoPorCaps } from "../../../components/Tabelas";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from "../../../helpers/graficoAbusoESituacao";
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
@@ -360,10 +360,20 @@ const PerfilUsuario = () => {
 
             { loadingCID
               ? <Spinner theme="ColorSM" height="70vh" />
-              : <ReactEcharts
-                option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
-                style={ { width: "100%", height: "70vh" } }
-              />
+              : <div className={ styles.GraficoCIDContainer }>
+                <ReactEcharts
+                  option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
+                  style={ { width: "50%", height: "70vh" } }
+                />
+
+                <TabelaCid
+                  labels={ {
+                    colunaCid: "Grupo de diagnósticos",
+                    colunaQuantidade: "Usuários ativos",
+                  } }
+                  cids={ agregadosPorCondicaoSaude }
+                />
+              </div>
             }
           </>
         )
