@@ -13,6 +13,7 @@ import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/g
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
 import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from "../../../requests/caps";
+import { ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
@@ -233,11 +234,15 @@ const PerfilUsuario = () => {
   }, [usuariosPorRacaECor]);
 
   const agregadosPorCondicaoSaude = useMemo(() => {
-    return agregarPorCondicaoSaude(
+    const dadosAgregados = agregarPorCondicaoSaude(
       usuariosPorCID,
       "usuario_condicao_saude",
       "ativos_3meses"
     );
+    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
+    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
+
+    return dadosOrdenados;
   }, [usuariosPorCID]);
 
   const obterPeriodoPorExtenso = useCallback((dados, periodo) => {
