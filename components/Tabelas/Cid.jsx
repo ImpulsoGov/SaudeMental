@@ -69,13 +69,13 @@ const TabelaCid = ({ labels, cids }) => {
 
   const obterLinhaParaDadosVazios = useCallback(() => [{
     id: uuidV4(),
-    condicaoSaude: `Sem ${labels.colunaQuantidade.toLowerCase()} nessa competência`,
+    condicaoSaude: 'Sem usuários nessa competência',
     quantidade: {
       posicao: 0,
       valor: 0,
       semDados: true
     }
-  }], [labels.colunaQuantidade]);
+  }], []);
 
   const linhas = useMemo(() => {
     return cids.length !== 0
