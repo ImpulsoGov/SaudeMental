@@ -1,4 +1,8 @@
-import { CORES_GRAFICO_DONUT } from "../constants/CORES_GRAFICO_DONUT";
+import {
+  CORES_GRAFICO_DONUT,
+  QUANTIDADE_CORES_GRAFICO_DONUT,
+  VALOR_LIMITE_FATIA_GRAFICO_DONUT
+} from "../constants/GRAFICO_DONUT";
 
 export const agregarPorCondicaoSaude = (dados, propriedadeCondicao, propriedadeQuantidade) => {
   const dadosAgregados = [];
@@ -25,23 +29,41 @@ export const agregarPorCondicaoSaude = (dados, propriedadeCondicao, propriedadeQ
   return dadosAgregados;
 };
 
+export const agruparCidsPequenos = (dados) => {
+  const dadosAgrupados = [];
+  const cidDeAgrupamento = {
+    condicaoSaude: 'Outros',
+    quantidade: 0
+  };
+
+  dados.forEach((dado) => {
+    if (dado.quantidade <= VALOR_LIMITE_FATIA_GRAFICO_DONUT) {
+      cidDeAgrupamento.quantidade += dado.quantidade;
+    } else {
+      dadosAgrupados.push(dado);
+    }
+  });
+
+  dadosAgrupados.push(cidDeAgrupamento);
+
+  return dadosAgrupados;
+};
+
 export const getOpcoesGraficoCID = (dados) => {
+  let dadosDeCid = dados;
+
+  if (dados.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
+    dadosDeCid = agruparCidsPequenos(dados);
+  }
+
   return {
     tooltip: {
       trigger: 'item',
     },
-    // legend: {
-    //   show: true,
-    //   orient: 'vertical',
-    //   right: 0,
-    //   top: 0
-    // },
     series: [
       {
         type: 'pie',
         radius: ['40%', '80%'],
-        // top: 0,
-        // left: 0,
         avoidLabelOverlap: false,
         label: {
           show: true,
@@ -57,7 +79,7 @@ export const getOpcoesGraficoCID = (dados) => {
         labelLine: {
           show: false
         },
-        data: dados.map(({ condicaoSaude, quantidade }, index) => ({
+        data: dadosDeCid.map(({ condicaoSaude, quantidade }, index) => ({
           value: quantidade,
           name: !condicaoSaude ? "Sem informação" : condicaoSaude,
           itemStyle: {
