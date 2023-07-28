@@ -61,32 +61,36 @@ const TabelaCid = ({ labels, cids }) => {
   }, [cids]);
 
   return (
-    <DataGrid
-      sx={ {
-        '& .MuiDataGrid-columnHeaderTitle': {
-          fontWeight: 'bold',
-          fontSize: '16px',
-          lineHeight: '1.2rem',
-          whiteSpace: 'normal',
-          textAlign: 'center'
-        },
-        '& .MuiDataGrid-cell--textRight': {
-          paddingRight: 0,
-          paddingLeft: 0
-        },
-        height: '70vh',
-        border: 'none'
-      } }
-      rows={ linhas }
-      columns={ colunas }
-      disableColumnMenu
-      autoPageSize
-      initialState={ {
-        sorting: {
-          sortModel: [{ field: 'quantidade', sort: 'desc' }],
-        },
-      } }
-    />
+    <>
+      { cids.length !== 0 &&
+        <DataGrid
+          sx={ {
+            '& .MuiDataGrid-columnHeaderTitle': {
+              fontWeight: 'bold',
+              fontSize: '16px',
+              lineHeight: '1.2rem',
+              whiteSpace: 'normal',
+              textAlign: 'center'
+            },
+            '& .MuiDataGrid-cell--textRight': {
+              paddingRight: 0,
+              paddingLeft: 0
+            },
+            height: '70vh',
+            border: 'none'
+          } }
+          rows={ linhas }
+          columns={ colunas }
+          disableColumnMenu
+          autoPageSize
+          initialState={ {
+            sorting: {
+              sortModel: [{ field: 'quantidade', sort: 'desc' }],
+            },
+          } }
+        />
+      }
+    </>
   );
 };
 
