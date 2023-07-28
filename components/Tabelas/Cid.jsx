@@ -2,7 +2,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { v4 as uuidV4 } from 'uuid';
-import { CORES_GRAFICO_DONUT } from '../../constants/GRAFICO_DONUT';
+import { CORES_GRAFICO_DONUT, QUANTIDADE_CORES_GRAFICO_DONUT } from '../../constants/GRAFICO_DONUT';
+import { agruparCidsPequenos } from '../../helpers/graficoCID';
 
 const TabelaCid = ({ labels, cids }) => {
   const colunas = useMemo(() => [
@@ -38,11 +39,26 @@ const TabelaCid = ({ labels, cids }) => {
     },
   ], [labels]);
 
-  const linhas = useMemo(() => cids.map(({ condicaoSaude, quantidade }, index) => ({
-    id: uuidV4(),
-    condicaoSaude,
-    quantidade: { posicao: index, valor: quantidade }
-  })), [cids]);
+  const linhas = useMemo(() => {
+    let dados = cids;
+    let indiceCidOutros = -1;
+
+    if (cids.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
+      dados = agruparCidsPequenos(cids);
+      indiceCidOutros = dados.findIndex(({ condicaoSaude }) => condicaoSaude === 'Outros');
+    }
+
+    return cids.map(({ condicaoSaude, quantidade }, index) => ({
+      id: uuidV4(),
+      condicaoSaude,
+      quantidade: {
+        posicao: indiceCidOutros >= 0 && index >= indiceCidOutros
+          ? indiceCidOutros
+          : index,
+        valor: quantidade
+      }
+    }));
+  }, [cids]);
 
   return (
     <DataGrid
