@@ -7,7 +7,8 @@ import {
   COR_GRAFICO_DONUT_SEM_DADOS,
   QUANTIDADE_CORES_GRAFICO_DONUT
 } from '../../constants/GRAFICO_DONUT';
-import { agruparCidsPequenos } from '../../helpers/graficoCID';
+import { agruparQuantidadesPequenas } from '../../helpers/graficoCID';
+import styles from './Tabelas.module.css';
 
 const TabelaCid = ({ labels, cids }) => {
   const colunas = useMemo(() => [
@@ -27,17 +28,16 @@ const TabelaCid = ({ labels, cids }) => {
       align: 'right',
       headerAlign: 'right',
       renderCell: (params) => {
-        const { posicao, valor, semDados } = params.value;
+        const { posicao, valor, dadosZerados } = params.value;
         return (
-          <div style={ {
-            backgroundColor: semDados
-              ? COR_GRAFICO_DONUT_SEM_DADOS
-              : CORES_GRAFICO_DONUT[posicao],
-            width: '100%',
-            height: '100%',
-            textAlign: 'right',
-            paddingRight: '12px',
-          } }>
+          <div
+            className={ styles.ColunaQuantidadeTabelaGraficoDonut }
+            style={ {
+              backgroundColor: dadosZerados
+                ? COR_GRAFICO_DONUT_SEM_DADOS
+                : CORES_GRAFICO_DONUT[posicao],
+            } }
+          >
             <p>{ valor }</p>
           </div>
         );
@@ -46,43 +46,42 @@ const TabelaCid = ({ labels, cids }) => {
   ], [labels]);
 
   const formatarDadosEmLinhas = useCallback(() => {
-    let dados = cids;
-    let indiceCidOutros = -1;
+    let indiceDadosAgrupados = -1;
 
     if (cids.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
-      dados = agruparCidsPequenos(cids);
-      indiceCidOutros = dados.findIndex(({ condicaoSaude }) => condicaoSaude === 'Outros');
+      const dadosAgrupados = agruparQuantidadesPequenas(cids);
+
+      indiceDadosAgrupados = dadosAgrupados.findIndex(({ condicaoSaude }) => condicaoSaude === 'Outros');
     }
 
     return cids.map(({ condicaoSaude, quantidade }, index) => ({
       id: uuidV4(),
       condicaoSaude,
       quantidade: {
-        posicao: indiceCidOutros >= 0 && index >= indiceCidOutros
-          ? indiceCidOutros
+        posicao: indiceDadosAgrupados >= 0 && index >= indiceDadosAgrupados
+          ? indiceDadosAgrupados
           : index,
         valor: quantidade,
-        semDados: false
+        dadosZerados: false
       }
     }));
   }, [cids]);
 
-  const obterLinhaParaDadosVazios = useCallback(() => [{
+  const obterLinhaParaDadosZerados = useCallback(() => [{
     id: uuidV4(),
     condicaoSaude: 'Sem usuários nessa competência',
     quantidade: {
       posicao: 0,
       valor: 0,
-      semDados: true
+      dadosZerados: true
     }
   }], []);
 
   const linhas = useMemo(() => {
     return cids.length !== 0
       ? formatarDadosEmLinhas()
-      : obterLinhaParaDadosVazios();
-  }, [formatarDadosEmLinhas, obterLinhaParaDadosVazios, cids]);
-  console.log(linhas);
+      : obterLinhaParaDadosZerados();
+  }, [formatarDadosEmLinhas, obterLinhaParaDadosZerados, cids]);
 
   return (
     <DataGrid

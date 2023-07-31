@@ -29,22 +29,22 @@ export const agregarPorCondicaoSaude = (dados, propriedadeCondicao, propriedadeQ
   return dadosAgregados;
 };
 
-export const agruparCidsPequenos = (dados) => {
+export const agruparQuantidadesPequenas = (dados) => {
   const dadosAgrupados = [];
-  const cidDeAgrupamento = {
+  const fatiaDeAgrupamento = {
     condicaoSaude: 'Outros',
     quantidade: 0
   };
 
   dados.forEach((dado) => {
     if (dado.quantidade <= VALOR_LIMITE_FATIA_GRAFICO_DONUT) {
-      cidDeAgrupamento.quantidade += dado.quantidade;
+      fatiaDeAgrupamento.quantidade += dado.quantidade;
     } else {
       dadosAgrupados.push(dado);
     }
   });
 
-  dadosAgrupados.push(cidDeAgrupamento);
+  dadosAgrupados.push(fatiaDeAgrupamento);
 
   return dadosAgrupados;
 };
@@ -53,7 +53,7 @@ export const getOpcoesGraficoCID = (dados) => {
   let dadosDeCid = dados;
 
   if (dados.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
-    dadosDeCid = agruparCidsPequenos(dados);
+    dadosDeCid = agruparQuantidadesPequenas(dados);
   }
 
   return {
