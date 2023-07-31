@@ -6,13 +6,14 @@ import Select from "react-select";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import styles from "../Caps.module.css";
 
-import TabelaDetalhamentoPorCaps from "../../../components/Tabelas/DetalhamentoPorCaps";
+import { TabelaCid, TabelaDetalhamentoPorCaps } from "../../../components/Tabelas";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from "../../../helpers/graficoAbusoESituacao";
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
 import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from "../../../requests/caps";
+import { ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
@@ -233,11 +234,15 @@ const PerfilUsuario = () => {
   }, [usuariosPorRacaECor]);
 
   const agregadosPorCondicaoSaude = useMemo(() => {
-    return agregarPorCondicaoSaude(
+    const dadosAgregados = agregarPorCondicaoSaude(
       usuariosPorCID,
       "usuario_condicao_saude",
       "ativos_3meses"
     );
+    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
+    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
+
+    return dadosOrdenados;
   }, [usuariosPorCID]);
 
   const obterPeriodoPorExtenso = useCallback((dados, periodo) => {
@@ -355,10 +360,20 @@ const PerfilUsuario = () => {
 
             { loadingCID
               ? <Spinner theme="ColorSM" height="70vh" />
-              : <ReactEcharts
-                option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
-                style={ { width: "100%", height: "70vh" } }
-              />
+              : <div className={ styles.GraficoCIDContainer }>
+                <ReactEcharts
+                  option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
+                  style={ { width: "50%", height: "70vh" } }
+                />
+
+                <TabelaCid
+                  labels={ {
+                    colunaCid: "Grupo de diagnósticos",
+                    colunaQuantidade: "Usuários ativos",
+                  } }
+                  cids={ agregadosPorCondicaoSaude }
+                />
+              </div>
             }
           </>
         )

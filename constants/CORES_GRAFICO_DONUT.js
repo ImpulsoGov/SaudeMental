@@ -1,1 +1,0 @@
-export const CORES_GRAFICO_DONUT = ["#5367C9", "#6577CF", "#7685D4", "#8795DA", "#98A4DF", "#A9B3E4", "#BAC2E9", "#CAD0EE", "#D3D8F1", "#E0E4F5"];

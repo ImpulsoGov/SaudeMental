@@ -1,3 +1,8 @@
+import TabelaCid from './Cid';
+import TabelaDetalhamentoPorCaps from './DetalhamentoPorCaps';
 import TabelaMatriciamentosPorCaps from './MatriciamentosPorCaps';
 
-export { TabelaMatriciamentosPorCaps };
+export {
+  TabelaCid, TabelaDetalhamentoPorCaps, TabelaMatriciamentosPorCaps
+};
+
