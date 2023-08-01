@@ -7,7 +7,7 @@ import {
   COR_GRAFICO_DONUT_SEM_DADOS,
   QUANTIDADE_CORES_GRAFICO_DONUT
 } from '../../constants/GRAFICO_DONUT';
-import { agruparQuantidadesPequenas } from '../../helpers/graficoCID';
+import { agruparItensQueUltrapassamPaleta } from '../../helpers/graficoCID';
 import styles from './Tabelas.module.css';
 
 const TabelaCid = ({ labels, cids }) => {
@@ -49,7 +49,7 @@ const TabelaCid = ({ labels, cids }) => {
     let indiceDadosAgrupados = -1;
 
     if (cids.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
-      const dadosAgrupados = agruparQuantidadesPequenas(cids);
+      const dadosAgrupados = agruparItensQueUltrapassamPaleta(cids);
 
       indiceDadosAgrupados = dadosAgrupados.findIndex(({ condicaoSaude }) => condicaoSaude === 'Outros');
     }

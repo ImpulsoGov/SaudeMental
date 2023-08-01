@@ -28,7 +28,7 @@ export const agregarPorCondicaoSaude = (dados, propriedadeCondicao, propriedadeQ
   return dadosAgregados;
 };
 
-export const agruparQuantidadesPequenas = (dados) => {
+export const agruparItensQueUltrapassamPaleta = (dados) => {
   const dadosAgrupados = [];
   const fatiaDeAgrupamento = {
     condicaoSaude: 'Outros',
@@ -52,7 +52,7 @@ export const getOpcoesGraficoCID = (dados) => {
   let dadosDeCid = dados;
 
   if (dados.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
-    dadosDeCid = agruparQuantidadesPequenas(dados);
+    dadosDeCid = agruparItensQueUltrapassamPaleta(dados);
   }
 
   return {
