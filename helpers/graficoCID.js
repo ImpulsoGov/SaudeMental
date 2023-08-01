@@ -1,7 +1,6 @@
 import {
   CORES_GRAFICO_DONUT,
-  QUANTIDADE_CORES_GRAFICO_DONUT,
-  VALOR_LIMITE_FATIA_GRAFICO_DONUT
+  QUANTIDADE_CORES_GRAFICO_DONUT
 } from "../constants/GRAFICO_DONUT";
 
 export const agregarPorCondicaoSaude = (dados, propriedadeCondicao, propriedadeQuantidade) => {
