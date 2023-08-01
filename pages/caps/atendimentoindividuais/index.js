@@ -338,7 +338,7 @@ const AtendimentoIndividual = () => {
               : <div className={ styles.GraficoCIDContainer }>
                 <ReactEcharts
                   option={ getOpcoesGraficoCID(agregadosPorCID) }
-                  style={ { width: "100%", height: "70vh" } }
+                  style={ { width: "50%", height: "70vh" } }
                 />
 
                 <TabelaCid
