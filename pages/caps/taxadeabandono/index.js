@@ -7,6 +7,7 @@ import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesN
 
 import ReactEcharts from "echarts-for-react";
 import Select from "react-select";
+import { TabelaCid, TabelaDetalhamentoPorCaps } from "../../../components/Tabelas";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
@@ -146,11 +147,15 @@ const TaxaAbandono = () => {
   };
 
   const agregadosPorCID = useMemo(() => {
-    return agregarPorCondicaoSaude(
+    const dadosAgregados = agregarPorCondicaoSaude(
       evasoesNoMesPorCID,
       "usuario_condicao_saude",
       "quantidade_registrada"
     );
+    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
+    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
+
+    return dadosOrdenados;
   }, [evasoesNoMesPorCID]);
 
   const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
@@ -233,6 +238,10 @@ const TaxaAbandono = () => {
         : <Spinner theme="ColorSM" />
       }
 
+      <div className={ styles.MensagemTabela }>
+        * Estabelecimentos com valores zerados não aparecerão na tabela
+      </div>
+
       <GraficoInfo
         titulo="CID dos usuários que não aderiram ao serviço"
         fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
@@ -258,18 +267,29 @@ const TaxaAbandono = () => {
                   ...getPropsFiltroPeriodo(
                     periodos,
                     filtroPeriodoCID,
-                    setFiltroPeriodoCID
+                    setFiltroPeriodoCID,
+                    false
                   )
                 } />
               </div>
             </div>
 
             { loadingCID
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoCID(agregadosPorCID) }
-                style={ { width: "100%", height: "70vh" } }
-              />
+              ? <Spinner theme="ColorSM" height="70vh" />
+              : <div className={ styles.GraficoCIDContainer }>
+                <ReactEcharts
+                  option={ getOpcoesGraficoCID(agregadosPorCID) }
+                  style={ { width: "50%", height: "70vh" } }
+                />
+
+                <TabelaCid
+                  labels={ {
+                    colunaCid: "Grupo de diagnósticos",
+                    colunaQuantidade: "Abandonaram no mês",
+                  } }
+                  cids={ agregadosPorCID }
+                />
+              </div>
             }
           </>
         )

@@ -13,7 +13,7 @@ import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHisto
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
 import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from "../../../requests/caps";
 import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
-import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
+import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
 import styles from "../Caps.module.css";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -214,11 +214,15 @@ const AtendimentoIndividual = () => {
   };
 
   const agregadosPorCID = useMemo(() => {
-    return agregarPorCondicaoSaude(
+    const dadosAgregados = agregarPorCondicaoSaude(
       atendimentosPorCID,
       "usuario_condicao_saude",
       "usuarios_apenas_atendimento_individual"
     );
+    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
+    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
+
+    return dadosOrdenados;
   }, [atendimentosPorCID]);
 
   const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
@@ -303,7 +307,10 @@ const AtendimentoIndividual = () => {
         )
         : <Spinner theme="ColorSM" />
       }
-
+      <div className={ styles.MensagemTabela }>
+        * Estabelecimentos com valores zerados não aparecerão na tabela
+      </div>
+      
       <GraficoInfo
         titulo="CID dos usuários que realizaram apenas atendimentos individuais"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
@@ -327,7 +334,8 @@ const AtendimentoIndividual = () => {
                   ...getPropsFiltroPeriodo(
                     periodos,
                     filtroPeriodoCID,
-                    setFiltroPeriodoCID
+                    setFiltroPeriodoCID,
+                    false
                   )
                 } />
               </div>
@@ -343,7 +351,7 @@ const AtendimentoIndividual = () => {
 
                 <TabelaCid
                   labels={ {
-                    colunaCid: "Grupo de diagnósticos",
+                    colunaCid: "Grupos de diagnósticos",
                     colunaQuantidade: "Realizaram só atv. individual no mês",
                   } }
                   cids={ agregadosPorCID }

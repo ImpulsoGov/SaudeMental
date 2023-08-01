@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { TabelaCid, TabelaDetalhamentoPorCaps } from "../../../components/Tabelas";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from '../../../helpers/graficoCID';
@@ -13,6 +14,7 @@ import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHisto
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
 import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
+import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
 import styles from '../Caps.module.css';
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -235,11 +237,15 @@ const NovoUsuario = () => {
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoCID.value, filtroPeriodoCID]);
 
   const agregadosPorCID = useMemo(() => {
-    return agregarPorCondicaoSaude(
+    const dadosAgregados = agregarPorCondicaoSaude(
       usuariosNovosPorCID,
       'usuario_condicao_saude',
       'usuarios_novos'
     );
+    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
+    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
+
+    return dadosOrdenados;
   }, [usuariosNovosPorCID]);
 
   const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
@@ -343,6 +349,10 @@ const NovoUsuario = () => {
         : <Spinner theme='ColorSM' />
       }
 
+       <div className={ styles.MensagemTabela }>
+        * Estabelecimentos com valores zerados não aparecerão na tabela
+      </div>
+
       <GraficoInfo
         titulo='Perfil dos novos usuários'
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
@@ -368,18 +378,29 @@ const NovoUsuario = () => {
                   ...getPropsFiltroPeriodo(
                     periodos,
                     filtroPeriodoCID,
-                    setFiltroPeriodoCID
+                    setFiltroPeriodoCID,
+                    false
                   )
                 } />
               </div>
             </div>
 
             { loadingCID
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoCID(agregadosPorCID) }
-                style={ { width: '100%', height: '70vh' } }
-              />
+              ? <Spinner theme="ColorSM" height="70vh" />
+              : <div className={ styles.GraficoCIDContainer }>
+                <ReactEcharts
+                  option={ getOpcoesGraficoCID(agregadosPorCID) }
+                  style={ { width: "50%", height: "70vh" } }
+                />
+
+                <TabelaCid
+                  labels={ {
+                    colunaCid: "Grupo de diagnósticos",
+                    colunaQuantidade: "Novos usuários",
+                  } }
+                  cids={ agregadosPorCID }
+                />
+              </div>
             }
           </>
         )
