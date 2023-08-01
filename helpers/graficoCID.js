@@ -36,8 +36,8 @@ export const agruparQuantidadesPequenas = (dados) => {
     quantidade: 0
   };
 
-  dados.forEach((dado) => {
-    if (dado.quantidade <= VALOR_LIMITE_FATIA_GRAFICO_DONUT) {
+  dados.forEach((dado, index) => {
+    if (index >= QUANTIDADE_CORES_GRAFICO_DONUT - 1) {
       fatiaDeAgrupamento.quantidade += dado.quantidade;
     } else {
       dadosAgrupados.push(dado);
