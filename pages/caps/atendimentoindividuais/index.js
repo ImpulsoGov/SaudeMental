@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
+import { TabelaCid, TabelaDetalhamentoPorCaps } from "../../../components/Tabelas";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
@@ -334,10 +335,20 @@ const AtendimentoIndividual = () => {
 
             { loadingCID
               ? <Spinner theme="ColorSM" height="70vh" />
-              : <ReactEcharts
-                option={ getOpcoesGraficoCID(agregadosPorCID) }
-                style={ { width: "100%", height: "70vh" } }
-              />
+              : <div className={ styles.GraficoCIDContainer }>
+                <ReactEcharts
+                  option={ getOpcoesGraficoCID(agregadosPorCID) }
+                  style={ { width: "100%", height: "70vh" } }
+                />
+
+                <TabelaCid
+                  labels={ {
+                    colunaCid: "Grupo de diagnósticos",
+                    colunaQuantidade: "Realizaram só atv. individual no mês",
+                  } }
+                  cids={ agregadosPorCID }
+                />
+              </div>
             }
           </>
         )
