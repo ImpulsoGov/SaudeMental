@@ -349,9 +349,6 @@ const NovoUsuario = () => {
         : <Spinner theme='ColorSM' />
       }
 
-       <div className={ styles.MensagemTabela }>
-        * Estabelecimentos com valores zerados não aparecerão na tabela
-      </div>
 
       <GraficoInfo
         titulo='Perfil dos novos usuários'
