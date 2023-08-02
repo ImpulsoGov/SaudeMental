@@ -376,7 +376,6 @@ const NovoUsuario = () => {
                     periodos,
                     filtroPeriodoCID,
                     setFiltroPeriodoCID,
-                    false
                   )
                 } />
               </div>
