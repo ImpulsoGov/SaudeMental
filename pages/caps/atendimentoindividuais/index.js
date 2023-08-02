@@ -348,7 +348,7 @@ const AtendimentoIndividual = () => {
                 <TabelaCid
                   labels={ {
                     colunaCid: "Grupos de diagnósticos",
-                    colunaQuantidade: "Realizaram só atv. individual no mês",
+                    colunaQuantidade: "Realizaram só at. individual no mês",
                   } }
                   cids={ agregadosPorCID }
                 />
