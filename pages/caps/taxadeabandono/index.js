@@ -238,9 +238,6 @@ const TaxaAbandono = () => {
         : <Spinner theme="ColorSM" />
       }
 
-      <div className={ styles.MensagemTabela }>
-        * Estabelecimentos com valores zerados não aparecerão na tabela
-      </div>
 
       <GraficoInfo
         titulo="CID dos usuários que não aderiram ao serviço"
