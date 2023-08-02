@@ -265,7 +265,6 @@ const TaxaAbandono = () => {
                     periodos,
                     filtroPeriodoCID,
                     setFiltroPeriodoCID,
-                    false
                   )
                 } />
               </div>
