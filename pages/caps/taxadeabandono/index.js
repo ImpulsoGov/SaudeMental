@@ -7,7 +7,7 @@ import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesN
 
 import ReactEcharts from "echarts-for-react";
 import Select from "react-select";
-import { TabelaCid, TabelaDetalhamentoPorCaps } from "../../../components/Tabelas";
+import { TabelaCid } from "../../../components/Tabelas";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
