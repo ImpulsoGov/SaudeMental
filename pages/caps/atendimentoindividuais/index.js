@@ -332,7 +332,6 @@ const AtendimentoIndividual = () => {
                     periodos,
                     filtroPeriodoCID,
                     setFiltroPeriodoCID,
-                    false
                   )
                 } />
               </div>
