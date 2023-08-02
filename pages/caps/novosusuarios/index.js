@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { TabelaCid, TabelaDetalhamentoPorCaps } from "../../../components/Tabelas";
+import { TabelaCid } from "../../../components/Tabelas";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from '../../../helpers/graficoCID';
