@@ -281,7 +281,7 @@ const TaxaAbandono = () => {
                 <TabelaCid
                   labels={ {
                     colunaCid: "Grupo de diagnósticos",
-                    colunaQuantidade: "Abandonaram no mês",
+                    colunaQuantidade: "Evadiram no mês",
                   } }
                   cids={ agregadosPorCID }
                 />
