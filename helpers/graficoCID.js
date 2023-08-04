@@ -1,4 +1,7 @@
-import { CORES_GRAFICO_DONUT } from "../constants/CORES_GRAFICO_DONUT";
+import {
+  CORES_GRAFICO_DONUT,
+  QUANTIDADE_CORES_GRAFICO_DONUT
+} from "../constants/GRAFICO_DONUT";
 
 export const agregarPorCondicaoSaude = (dados, propriedadeCondicao, propriedadeQuantidade) => {
   const dadosAgregados = [];
@@ -25,23 +28,42 @@ export const agregarPorCondicaoSaude = (dados, propriedadeCondicao, propriedadeQ
   return dadosAgregados;
 };
 
+export const agruparItensQueUltrapassamPaleta = (dados) => {
+  const dadosAgrupados = [];
+  const fatiaDeAgrupamento = {
+    condicaoSaude: 'Outros',
+    quantidade: 0
+  };
+
+  dados.forEach((dado, index) => {
+    if (index >= QUANTIDADE_CORES_GRAFICO_DONUT - 1) {
+      fatiaDeAgrupamento.quantidade += dado.quantidade;
+    } else {
+      dadosAgrupados.push(dado);
+    }
+  });
+
+  dadosAgrupados.push(fatiaDeAgrupamento);
+
+  return dadosAgrupados;
+};
+
 export const getOpcoesGraficoCID = (dados) => {
+  let dadosDeCid = dados;
+
+  if (dados.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
+    dadosDeCid = agruparItensQueUltrapassamPaleta(dados);
+  }
+
   return {
     tooltip: {
       trigger: 'item',
+      valueFormatter: (value) => value,
     },
-    // legend: {
-    //   show: true,
-    //   orient: 'vertical',
-    //   right: 0,
-    //   top: 0
-    // },
     series: [
       {
         type: 'pie',
         radius: ['40%', '80%'],
-        // top: 0,
-        // left: 0,
         avoidLabelOverlap: false,
         label: {
           show: true,
@@ -57,7 +79,7 @@ export const getOpcoesGraficoCID = (dados) => {
         labelLine: {
           show: false
         },
-        data: dados.map(({ condicaoSaude, quantidade }, index) => ({
+        data: dadosDeCid.map(({ condicaoSaude, quantidade }, index) => ({
           value: quantidade,
           name: !condicaoSaude ? "Sem informação" : condicaoSaude,
           itemStyle: {

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
+import { TabelaCid, TabelaDetalhamentoPorCaps } from "../../../components/Tabelas";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
@@ -12,7 +13,7 @@ import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHisto
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
 import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from "../../../requests/caps";
 import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
-import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
+import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
 import styles from "../Caps.module.css";
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -213,11 +214,15 @@ const AtendimentoIndividual = () => {
   };
 
   const agregadosPorCID = useMemo(() => {
-    return agregarPorCondicaoSaude(
+    const dadosAgregados = agregarPorCondicaoSaude(
       atendimentosPorCID,
       "usuario_condicao_saude",
       "usuarios_apenas_atendimento_individual"
     );
+    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
+    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
+
+    return dadosOrdenados;
   }, [atendimentosPorCID]);
 
   const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
@@ -302,7 +307,7 @@ const AtendimentoIndividual = () => {
         )
         : <Spinner theme="ColorSM" />
       }
-
+      
       <GraficoInfo
         titulo="CID dos usuários que realizaram apenas atendimentos individuais"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
@@ -326,7 +331,7 @@ const AtendimentoIndividual = () => {
                   ...getPropsFiltroPeriodo(
                     periodos,
                     filtroPeriodoCID,
-                    setFiltroPeriodoCID
+                    setFiltroPeriodoCID,
                   )
                 } />
               </div>
@@ -334,10 +339,20 @@ const AtendimentoIndividual = () => {
 
             { loadingCID
               ? <Spinner theme="ColorSM" height="70vh" />
-              : <ReactEcharts
-                option={ getOpcoesGraficoCID(agregadosPorCID) }
-                style={ { width: "100%", height: "70vh" } }
-              />
+              : <div className={ styles.GraficoCIDContainer }>
+                <ReactEcharts
+                  option={ getOpcoesGraficoCID(agregadosPorCID) }
+                  style={ { width: "50%", height: "70vh" } }
+                />
+
+                <TabelaCid
+                  labels={ {
+                    colunaCid: "Grupos de diagnósticos",
+                    colunaQuantidade: "Realizaram só at. individual no mês",
+                  } }
+                  cids={ agregadosPorCID }
+                />
+              </div>
             }
           </>
         )
