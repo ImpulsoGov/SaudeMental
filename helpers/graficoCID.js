@@ -58,6 +58,7 @@ export const getOpcoesGraficoCID = (dados) => {
   return {
     tooltip: {
       trigger: 'item',
+      valueFormatter: (value) => value,
     },
     series: [
       {
