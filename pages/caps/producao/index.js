@@ -1,15 +1,15 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
-import { CORES_GRAFICO_DONUT } from "../../../constants/GRAFICO_DONUT";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorPropriedadeESomarQuantidade, getOpcoesGraficoBarrasProducao } from "../../../helpers/graficoBarrasProducao";
+import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
 import { getProcedimentosPorHora, getProcedimentosPorTipo } from "../../../requests/caps";
-import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
+import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
 import styles from "../Caps.module.css";
 
 const OCUPACOES_NAO_ACEITAS = ["Todas", null];
@@ -168,7 +168,7 @@ const Producao = () => {
     );
   };
 
-  const filtrarPorTipoEstabelecimentoEPeriodo = (procedimentos, filtroEstabelecimento, filtroPeriodo) => {
+  const filtrarPorTipoEstabelecimentoEPeriodo = useCallback((procedimentos, filtroEstabelecimento, filtroPeriodo) => {
     const periodosSelecionados = getValoresPeriodosSelecionados(filtroPeriodo);
 
     return procedimentos.filter((item) =>
@@ -177,7 +177,7 @@ const Producao = () => {
       && item.estabelecimento_linha_perfil === "Todos"
       && item.estabelecimento_linha_idade === "Todos"
     );
-  };
+  }, []);
 
   const agregadosPorCBO = agregarPorPropriedadeESomarQuantidade(
     filtrarPorHoraEstabelecimentoEPeriodo(procedimentosPorHora, filtroEstabelecimentoCBO, filtroPeriodoCBO),
@@ -191,100 +191,31 @@ const Producao = () => {
     "procedimentos_registrados_total"
   );
 
-  const agregarPorProcedimentoTipo = (procedimentos) => {
-    const procedimentosAgregados = [];
-
-    procedimentos.forEach((item) => {
-      const {
-        procedimento,
-        procedimentos_registrados_bpa: procedimentosBPA,
-        procedimentos_registrados_raas: procedimentosRAAS,
-        procedimentos_registrados_total: procedimentosTotal
-      } = item;
-      const procedimentoEncontrado = procedimentosAgregados
-        .find((item) => item.procedimento === procedimento);
-
-      if (!procedimentoEncontrado) {
-        procedimentosAgregados.push({
-          procedimento,
-          quantidadeBPA: procedimentosBPA,
-          quantidadeRAAS: procedimentosRAAS,
-          quantidadeTotal: procedimentosTotal,
-        });
-      } else {
-        procedimentoEncontrado.quantidadeBPA += procedimentosBPA;
-        procedimentoEncontrado.quantidadeRAAS += procedimentosRAAS;
-        procedimentoEncontrado.quantidadeTotal += procedimentosTotal;
-      }
-    });
-
-    return procedimentosAgregados;
-  };
-
-  const getOpcoesGraficoTiposProcedimento = (procedimentos, tipo, filtroEstabelecimento, filtroPeriodo) => {
-    const PROPIEDADES_POR_TIPO = {
-      BPA: "quantidadeBPA",
-      RAAS: "quantidadeRAAS"
-    };
-
-    const propriedade = PROPIEDADES_POR_TIPO[tipo];
-
-    const procedimentosFiltrados = filtrarPorTipoEstabelecimentoEPeriodo(
-      procedimentos,
-      filtroEstabelecimento,
-      filtroPeriodo
+  const agrupadosPorTipoBPA = useMemo(() => {
+    const dadosFiltrados = filtrarPorTipoEstabelecimentoEPeriodo(
+      procedimentosPorTipo,
+      filtroEstabelecimentoBPA,
+      filtroPeriodoBPA
     );
-    const procedimentosAgregados = agregarPorProcedimentoTipo(procedimentosFiltrados);
+    const dadosAgregados = agregarPorCondicaoSaude(dadosFiltrados, "procedimento", "procedimentos_registrados_bpa");
+    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
+    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
 
-    return {
-      tooltip: {
-        trigger: 'item',
-      },
-      // legend: {
-      //   show: true,
-      //   orient: 'vertical',
-      //   right: 0,
-      //   top: 50,
-      //   textStyle: {
-      //     width: 200,
-      //     overflow: 'break',
-      //   }
-      // },
-      series: [
-        {
-          type: 'pie',
-          radius: ['40%', '80%'],
-          avoidLabelOverlap: false,
-          // top: 0,
-          // left: 0,
-          // width: 500,
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: "{d}%",
-            color: "#000000"
-          },
-          emphasis: {
-            label: {
-              show: true,
-            }
-          },
-          labelLine: {
-            show: false
-          },
-          data: procedimentosAgregados
-            .filter((item) => item[propriedade] !== 0)
-            .map((item, index) => ({
-              value: item[propriedade],
-              name: item.procedimento,
-              itemStyle: {
-                color: CORES_GRAFICO_DONUT[index]
-              }
-            }))
-        }
-      ]
-    };
-  };
+    return dadosOrdenados;
+  }, [filtrarPorTipoEstabelecimentoEPeriodo, filtroEstabelecimentoBPA, filtroPeriodoBPA, procedimentosPorTipo]);
+
+  const agrupadosPorTipoRAAS = useMemo(() => {
+    const dadosFiltrados = filtrarPorTipoEstabelecimentoEPeriodo(
+      procedimentosPorTipo,
+      filtroEstabelecimentoRAAS,
+      filtroPeriodoRAAS
+    );
+    const dadosAgregados = agregarPorCondicaoSaude(dadosFiltrados, "procedimento", "procedimentos_registrados_raas");
+    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
+    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
+
+    return dadosOrdenados;
+  }, [filtrarPorTipoEstabelecimentoEPeriodo, filtroEstabelecimentoRAAS, filtroPeriodoRAAS, procedimentosPorTipo]);
 
   const removerCompetencias = (dados, competencias) => {
     return dados.filter(({ periodo }) => !competencias.includes(periodo));
@@ -401,12 +332,7 @@ const Producao = () => {
             </div>
 
             <ReactEcharts
-              option={ getOpcoesGraficoTiposProcedimento(
-                procedimentosPorTipo,
-                "BPA",
-                filtroEstabelecimentoBPA,
-                filtroPeriodoBPA
-              ) }
+              option={ getOpcoesGraficoCID(agrupadosPorTipoBPA) }
               style={ { width: "100%", height: "70vh" } }
             />
           </>
@@ -445,12 +371,7 @@ const Producao = () => {
             </div>
 
             <ReactEcharts
-              option={ getOpcoesGraficoTiposProcedimento(
-                procedimentosPorTipo,
-                "RAAS",
-                filtroEstabelecimentoRAAS,
-                filtroPeriodoRAAS
-              ) }
+              option={ getOpcoesGraficoCID(agrupadosPorTipoRAAS) }
               style={ { width: "100%", height: "70vh" } }
             />
           </>
