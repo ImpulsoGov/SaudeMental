@@ -9,19 +9,19 @@ export const agregarPorCondicaoSaude = (dados, propriedadeCondicao, propriedadeQ
   dados.forEach((dado) => {
     const {
       [propriedadeQuantidade]: quantidade,
-      [propriedadeCondicao]: condicaoSaude
+      [propriedadeCondicao]: nome
     } = dado;
 
-    const condicaoSaudeDados = dadosAgregados
-      .find((item) => item.condicaoSaude === condicaoSaude);
+    const dadoEncontrado = dadosAgregados
+      .find((item) => item.nome === nome);
 
-    if (!condicaoSaudeDados) {
+    if (!dadoEncontrado) {
       dadosAgregados.push({
-        condicaoSaude,
+        nome,
         quantidade
       });
     } else {
-      condicaoSaudeDados.quantidade += quantidade;
+      dadoEncontrado.quantidade += quantidade;
     }
   });
 
@@ -31,7 +31,7 @@ export const agregarPorCondicaoSaude = (dados, propriedadeCondicao, propriedadeQ
 export const agruparItensQueUltrapassamPaleta = (dados) => {
   const dadosAgrupados = [];
   const fatiaDeAgrupamento = {
-    condicaoSaude: 'Outros',
+    nome: 'Outros',
     quantidade: 0
   };
 
@@ -79,9 +79,9 @@ export const getOpcoesGraficoCID = (dados) => {
         labelLine: {
           show: false
         },
-        data: dadosDeCid.map(({ condicaoSaude, quantidade }, index) => ({
+        data: dadosDeCid.map(({ nome, quantidade }, index) => ({
           value: quantidade,
-          name: !condicaoSaude ? "Sem informação" : condicaoSaude,
+          name: !nome ? "Sem informação" : nome,
           itemStyle: {
             color: CORES_GRAFICO_DONUT[index]
           },

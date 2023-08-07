@@ -13,7 +13,7 @@ import styles from './Tabelas.module.css';
 const TabelaCid = ({ labels, cids }) => {
   const colunas = useMemo(() => [
     {
-      field: 'condicaoSaude',
+      field: 'nome',
       headerName: labels.colunaCid,
       sortable: false,
       flex: 190,
@@ -51,12 +51,12 @@ const TabelaCid = ({ labels, cids }) => {
     if (cids.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
       const dadosAgrupados = agruparItensQueUltrapassamPaleta(cids);
 
-      indiceDadosAgrupados = dadosAgrupados.findIndex(({ condicaoSaude }) => condicaoSaude === 'Outros');
+      indiceDadosAgrupados = dadosAgrupados.findIndex(({ nome }) => nome === 'Outros');
     }
 
-    return cids.map(({ condicaoSaude, quantidade }, index) => ({
+    return cids.map(({ nome, quantidade }, index) => ({
       id: uuidV4(),
-      condicaoSaude,
+      nome,
       quantidade: {
         posicao: indiceDadosAgrupados >= 0 && index >= indiceDadosAgrupados
           ? indiceDadosAgrupados
@@ -69,7 +69,7 @@ const TabelaCid = ({ labels, cids }) => {
 
   const obterLinhaParaDadosZerados = useCallback(() => [{
     id: uuidV4(),
-    condicaoSaude: 'Sem usuários nessa competência',
+    nome: 'Sem usuários nessa competência',
     quantidade: {
       posicao: 0,
       valor: 0,
@@ -119,7 +119,7 @@ TabelaCid.propTypes = {
     colunaQuantidade: PropTypes.string,
   }),
   cids: PropTypes.shape({
-    condicaoSaude: PropTypes.string,
+    nome: PropTypes.string,
     quantidade: PropTypes.number,
   }),
 }.isRequired;
