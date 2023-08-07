@@ -3,13 +3,13 @@ import {
   QUANTIDADE_CORES_GRAFICO_DONUT
 } from "../constants/GRAFICO_DONUT";
 
-export const agregarPorCondicaoSaude = (dados, propriedadeCondicao, propriedadeQuantidade) => {
+export const agregarQuantidadePorPropriedadeNome = (dados, propriedadeNome, propriedadeQuantidade) => {
   const dadosAgregados = [];
 
   dados.forEach((dado) => {
     const {
       [propriedadeQuantidade]: quantidade,
-      [propriedadeCondicao]: nome
+      [propriedadeNome]: nome
     } = dado;
 
     const dadoEncontrado = dadosAgregados
@@ -48,11 +48,11 @@ export const agruparItensQueUltrapassamPaleta = (dados) => {
   return dadosAgrupados;
 };
 
-export const getOpcoesGraficoCID = (dados) => {
-  let dadosDeCid = dados;
+export const getOpcoesGraficoDonut = (dados) => {
+  let dadosGraficoDonut = dados;
 
   if (dados.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
-    dadosDeCid = agruparItensQueUltrapassamPaleta(dados);
+    dadosGraficoDonut = agruparItensQueUltrapassamPaleta(dados);
   }
 
   return {
@@ -79,7 +79,7 @@ export const getOpcoesGraficoCID = (dados) => {
         labelLine: {
           show: false
         },
-        data: dadosDeCid.map(({ nome, quantidade }, index) => ({
+        data: dadosGraficoDonut.map(({ nome, quantidade }, index) => ({
           value: quantidade,
           name: !nome ? "Sem informação" : nome,
           itemStyle: {

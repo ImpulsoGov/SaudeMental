@@ -7,7 +7,7 @@ import {
   COR_GRAFICO_DONUT_SEM_DADOS,
   QUANTIDADE_CORES_GRAFICO_DONUT
 } from '../../constants/GRAFICO_DONUT';
-import { agruparItensQueUltrapassamPaleta } from '../../helpers/graficoCID';
+import { agruparItensQueUltrapassamPaleta } from '../../helpers/graficoDonut';
 import styles from './Tabelas.module.css';
 
 const TabelaCid = ({ labels, cids }) => {

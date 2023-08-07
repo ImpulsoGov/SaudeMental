@@ -9,7 +9,7 @@ import styles from "../Caps.module.css";
 import { TabelaCid, TabelaDetalhamentoPorCaps } from "../../../components/Tabelas";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from "../../../helpers/graficoAbusoESituacao";
-import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
+import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from "../../../helpers/graficoDonut";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
 import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from "../../../requests/caps";
@@ -234,7 +234,7 @@ const PerfilUsuario = () => {
   }, [usuariosPorRacaECor]);
 
   const agregadosPorCondicaoSaude = useMemo(() => {
-    const dadosAgregados = agregarPorCondicaoSaude(
+    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
       usuariosPorCID,
       "usuario_condicao_saude",
       "ativos_3meses"
@@ -362,7 +362,7 @@ const PerfilUsuario = () => {
               ? <Spinner theme="ColorSM" height="70vh" />
               : <div className={ styles.GraficoCIDContainer }>
                 <ReactEcharts
-                  option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
+                  option={ getOpcoesGraficoDonut(agregadosPorCondicaoSaude) }
                   style={ { width: "50%", height: "70vh" } }
                 />
 

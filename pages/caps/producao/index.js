@@ -7,7 +7,7 @@ import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
 import { agregarPorPropriedadeESomarQuantidade, getOpcoesGraficoBarrasProducao } from "../../../helpers/graficoBarrasProducao";
-import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
+import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from "../../../helpers/graficoDonut";
 import { getProcedimentosPorHora, getProcedimentosPorTipo } from "../../../requests/caps";
 import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
 import styles from "../Caps.module.css";
@@ -197,7 +197,7 @@ const Producao = () => {
       filtroEstabelecimentoBPA,
       filtroPeriodoBPA
     );
-    const dadosAgregados = agregarPorCondicaoSaude(dadosFiltrados, "procedimento", "procedimentos_registrados_bpa");
+    const dadosAgregados = agregarQuantidadePorPropriedadeNome(dadosFiltrados, "procedimento", "procedimentos_registrados_bpa");
     const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
     const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
 
@@ -210,7 +210,7 @@ const Producao = () => {
       filtroEstabelecimentoRAAS,
       filtroPeriodoRAAS
     );
-    const dadosAgregados = agregarPorCondicaoSaude(dadosFiltrados, "procedimento", "procedimentos_registrados_raas");
+    const dadosAgregados = agregarQuantidadePorPropriedadeNome(dadosFiltrados, "procedimento", "procedimentos_registrados_raas");
     const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
     const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
 
@@ -332,7 +332,7 @@ const Producao = () => {
             </div>
 
             <ReactEcharts
-              option={ getOpcoesGraficoCID(agrupadosPorTipoBPA) }
+              option={ getOpcoesGraficoDonut(agrupadosPorTipoBPA) }
               style={ { width: "100%", height: "70vh" } }
             />
           </>
@@ -371,7 +371,7 @@ const Producao = () => {
             </div>
 
             <ReactEcharts
-              option={ getOpcoesGraficoCID(agrupadosPorTipoRAAS) }
+              option={ getOpcoesGraficoDonut(agrupadosPorTipoRAAS) }
               style={ { width: "100%", height: "70vh" } }
             />
           </>

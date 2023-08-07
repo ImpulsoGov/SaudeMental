@@ -4,17 +4,17 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { v1 as uuidv1 } from 'uuid';
-import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { TabelaCid } from "../../../components/Tabelas";
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
-import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from '../../../helpers/graficoCID';
+import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
 import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
-import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
+import { ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
 import styles from '../Caps.module.css';
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -237,7 +237,7 @@ const NovoUsuario = () => {
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoCID.value, filtroPeriodoCID]);
 
   const agregadosPorCID = useMemo(() => {
-    const dadosAgregados = agregarPorCondicaoSaude(
+    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
       usuariosNovosPorCID,
       'usuario_condicao_saude',
       'usuarios_novos'
@@ -385,7 +385,7 @@ const NovoUsuario = () => {
               ? <Spinner theme="ColorSM" height="70vh" />
               : <div className={ styles.GraficoCIDContainer }>
                 <ReactEcharts
-                  option={ getOpcoesGraficoCID(agregadosPorCID) }
+                  option={ getOpcoesGraficoDonut(agregadosPorCID) }
                   style={ { width: "50%", height: "70vh" } }
                 />
 

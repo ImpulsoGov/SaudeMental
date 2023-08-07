@@ -9,11 +9,10 @@ import ReactEcharts from "echarts-for-react";
 import Select from "react-select";
 import { TabelaCid } from "../../../components/Tabelas";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
-import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
+import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from "../../../helpers/graficoDonut";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
-import { agregarPorRacaCor } from "../../../helpers/graficoRacaECor";
 import { ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
 import styles from "../Caps.module.css";
 
@@ -147,7 +146,7 @@ const TaxaAbandono = () => {
   };
 
   const agregadosPorCID = useMemo(() => {
-    const dadosAgregados = agregarPorCondicaoSaude(
+    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
       evasoesNoMesPorCID,
       "usuario_condicao_saude",
       "quantidade_registrada"
@@ -274,7 +273,7 @@ const TaxaAbandono = () => {
               ? <Spinner theme="ColorSM" height="70vh" />
               : <div className={ styles.GraficoCIDContainer }>
                 <ReactEcharts
-                  option={ getOpcoesGraficoCID(agregadosPorCID) }
+                  option={ getOpcoesGraficoDonut(agregadosPorCID) }
                   style={ { width: "50%", height: "70vh" } }
                 />
 

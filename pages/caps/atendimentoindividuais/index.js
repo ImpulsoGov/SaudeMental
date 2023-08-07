@@ -4,10 +4,10 @@ import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
+import { TabelaCid } from "../../../components/Tabelas";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { TabelaCid, TabelaDetalhamentoPorCaps } from "../../../components/Tabelas";
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
-import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
+import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from "../../../helpers/graficoDonut";
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
@@ -214,7 +214,7 @@ const AtendimentoIndividual = () => {
   };
 
   const agregadosPorCID = useMemo(() => {
-    const dadosAgregados = agregarPorCondicaoSaude(
+    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
       atendimentosPorCID,
       "usuario_condicao_saude",
       "usuarios_apenas_atendimento_individual"
@@ -307,7 +307,7 @@ const AtendimentoIndividual = () => {
         )
         : <Spinner theme="ColorSM" />
       }
-      
+
       <GraficoInfo
         titulo="CID dos usuários que realizaram apenas atendimentos individuais"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
@@ -341,7 +341,7 @@ const AtendimentoIndividual = () => {
               ? <Spinner theme="ColorSM" height="70vh" />
               : <div className={ styles.GraficoCIDContainer }>
                 <ReactEcharts
-                  option={ getOpcoesGraficoCID(agregadosPorCID) }
+                  option={ getOpcoesGraficoDonut(agregadosPorCID) }
                   style={ { width: "50%", height: "70vh" } }
                 />
 
