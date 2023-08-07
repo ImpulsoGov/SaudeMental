@@ -1,7 +1,7 @@
 import {
   CORES_GRAFICO_DONUT,
   QUANTIDADE_CORES_GRAFICO_DONUT
-} from "../constants/GRAFICO_DONUT";
+} from '../constants/GRAFICO_DONUT';
 
 export const agregarQuantidadePorPropriedadeNome = (dados, propriedadeNome, propriedadeQuantidade) => {
   const dadosAgregados = [];
@@ -68,8 +68,8 @@ export const getOpcoesGraficoDonut = (dados) => {
         label: {
           show: true,
           position: 'inside',
-          formatter: "{d}%",
-          color: "#000000"
+          formatter: '{d}%',
+          color: '#000000'
         },
         emphasis: {
           label: {
@@ -81,7 +81,7 @@ export const getOpcoesGraficoDonut = (dados) => {
         },
         data: dadosGraficoDonut.map(({ nome, quantidade }, index) => ({
           value: quantidade,
-          name: !nome ? "Sem informação" : nome,
+          name: !nome ? 'Sem informação' : nome,
           itemStyle: {
             color: CORES_GRAFICO_DONUT[index]
           },

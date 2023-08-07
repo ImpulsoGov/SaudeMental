@@ -1,26 +1,26 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
-import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
-import { v1 as uuidv1 } from "uuid";
-import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesNoMesPorCID, getEvasoesNoMesPorGeneroEIdade, getPeriodos } from "../../../requests/caps";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
+import { useSession } from 'next-auth/react';
+import { useEffect, useMemo, useState } from 'react';
+import { v1 as uuidv1 } from 'uuid';
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesNoMesPorCID, getEvasoesNoMesPorGeneroEIdade, getPeriodos } from '../../../requests/caps';
 
-import ReactEcharts from "echarts-for-react";
-import Select from "react-select";
-import { TabelaCid } from "../../../components/Tabelas";
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from "../../../helpers/graficoDonut";
-import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
-import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
-import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
-import { ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
-import styles from "../Caps.module.css";
+import ReactEcharts from 'echarts-for-react';
+import Select from 'react-select';
+import { TabelaCid } from '../../../components/Tabelas';
+import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
+import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
+import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
+import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
+import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
+import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
+import styles from '../Caps.module.css';
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
-  { value: "Último período", label: "Último período" },
+  { value: 'Último período', label: 'Último período' },
 ];
 const FILTRO_ESTABELECIMENTO_DEFAULT = {
-  value: "Todos", label: "Todos"
+  value: 'Todos', label: 'Todos'
 };
 
 export function getServerSideProps(ctx) {
@@ -38,7 +38,7 @@ const TaxaAbandono = () => {
   const [evasoesNoMesPorGeneroEIdade, setEvasoesNoMesPorGeneroEIdade] = useState([]);
   const [abandonoMensal, setAbandonoMensal] = useState([]);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
-    value: "Todos", label: "Todos"
+    value: 'Todos', label: 'Todos'
   });
   const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
@@ -106,19 +106,19 @@ const TaxaAbandono = () => {
 
   const getCardsAbandonoAcumulado = (abandonos) => {
     const abandonosUltimoPeriodo = abandonos
-      .filter(({ periodo, estabelecimento }) => periodo === "Último período" && estabelecimento !== "Todos");
+      .filter(({ periodo, estabelecimento }) => periodo === 'Último período' && estabelecimento !== 'Todos');
     const abandonosOrdenadosPorValor = ordenarDecrescentePorPropriedadeNumerica(
       abandonosUltimoPeriodo,
-      "usuarios_coorte_nao_aderiram_perc"
+      'usuarios_coorte_nao_aderiram_perc'
     );
 
     return (
       <>
         <GraficoInfo
-          titulo="Taxa de não adesão acumulada"
-          tooltip="Dos usuários que entraram no início do período indicado, porcentagem que deixou de frequentar nos três meses seguintes (não aderiu ao serviço)"
+          titulo='Taxa de não adesão acumulada'
+          tooltip='Dos usuários que entraram no início do período indicado, porcentagem que deixou de frequentar nos três meses seguintes (não aderiu ao serviço)'
           descricao={ `Conjunto de usuários com 1° procedimento em ${abandonosUltimoPeriodo[0].a_partir_do_mes}/${abandonosUltimoPeriodo[0].a_partir_do_ano} e não adesão até ${abandonosUltimoPeriodo[0].ate_mes}/${abandonosUltimoPeriodo[0].ate_ano}` }
-          fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
+          fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
         />
 
         <Grid12Col
@@ -127,12 +127,12 @@ const TaxaAbandono = () => {
               <CardInfoTipoA
                 titulo={ item.estabelecimento }
                 indicador={ item.usuarios_coorte_nao_aderiram_perc }
-                indicadorSimbolo="%"
+                indicadorSimbolo='%'
                 key={ uuidv1() }
               />
             ))
           }
-          proporcao="4-4-4"
+          proporcao='4-4-4'
         />
       </>
     );
@@ -148,11 +148,11 @@ const TaxaAbandono = () => {
   const agregadosPorCID = useMemo(() => {
     const dadosAgregados = agregarQuantidadePorPropriedadeNome(
       evasoesNoMesPorCID,
-      "usuario_condicao_saude",
-      "quantidade_registrada"
+      'usuario_condicao_saude',
+      'quantidade_registrada'
     );
     const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
+    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
 
     return dadosOrdenados;
   }, [evasoesNoMesPorCID]);
@@ -160,17 +160,16 @@ const TaxaAbandono = () => {
   const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
     return agregarPorFaixaEtariaEGenero(
       evasoesNoMesPorGeneroEIdade,
-      "usuario_faixa_etaria",
-      "usuario_sexo",
-      "quantidade_registrada"
+      'usuario_faixa_etaria',
+      'usuario_sexo',
+      'quantidade_registrada'
     );
   }, [evasoesNoMesPorGeneroEIdade]);
 
-
   // const agregadosPorRacaCor = agregarPorRacaCor(
   //   filtrarPorPeriodoEstabelecimento(abandonoPerfil, filtroEstabelecimentoRacaECor, filtroPeriodoRacaECor),
-  //   "usuario_raca_cor",
-  //   "quantidade_registrada"
+  //   'usuario_raca_cor',
+  //   'quantidade_registrada'
   // );
 
   return (
@@ -180,8 +179,8 @@ const TaxaAbandono = () => {
           posicao: null,
           url: ''
         } }
-        texto=""
-        titulo="<strong>Taxa de não adesão</strong>"
+        texto=''
+        titulo='<strong>Taxa de não adesão</strong>'
       />
 
       { abandonoCoortes.length !== 0
@@ -190,25 +189,25 @@ const TaxaAbandono = () => {
             <GraficoInfo
               descricao={ `Última competência disponível: ${abandonoCoortes
                 .find((item) =>
-                  item.estabelecimento === "Todos"
-                  && item.periodo === "Último período"
+                  item.estabelecimento === 'Todos'
+                  && item.periodo === 'Último período'
                 )
                 .nome_mes
-                }` }
+              }` }
             />
 
             { getCardsAbandonoAcumulado(abandonoCoortes) }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        titulo="Histórico Temporal - Taxa mensal"
-        descricao="Dos usuários acolhidos há menos de 3 meses, quantos não aderiram ao serviço no mês"
-        tooltip="Diferente do indicador de não adesão acumulado, que mostra o percentual de usuários que iniciaram o vínculo em um determinado mês e em até 3 meses deixaram de frequentar o CAPS, a taxa de não adesão mensal mostra o percentual de usuários recentes que deixaram de frequentar o serviço em um mês específico. Ou seja, o indicador mensal mostra qual foi o mês que o usuário iniciou o período de inatividade (que precisa ser igual ou superior a 3 meses)."
-        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
-        destaque="Por que esses valores são diferentes?"
+        titulo='Histórico Temporal - Taxa mensal'
+        descricao='Dos usuários acolhidos há menos de 3 meses, quantos não aderiram ao serviço no mês'
+        tooltip='Diferente do indicador de não adesão acumulado, que mostra o percentual de usuários que iniciaram o vínculo em um determinado mês e em até 3 meses deixaram de frequentar o CAPS, a taxa de não adesão mensal mostra o percentual de usuários recentes que deixaram de frequentar o serviço em um mês específico. Ou seja, o indicador mensal mostra qual foi o mês que o usuário iniciou o período de inatividade (que precisa ser igual ou superior a 3 meses).'
+        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
+        destaque='Por que esses valores são diferentes?'
       />
 
       { abandonoMensal.length !== 0
@@ -227,20 +226,19 @@ const TaxaAbandono = () => {
             <ReactEcharts
               option={ getOpcoesGraficoHistoricoTemporal(
                 filtrarPorEstabelecimento(abandonoMensal, filtroEstabelecimentoHistorico),
-                "usuarios_evasao_perc",
-                "Taxa de não adesão mensal (%):"
+                'usuarios_evasao_perc',
+                'Taxa de não adesão mensal (%):'
               ) }
-              style={ { width: "100%", height: "70vh" } }
+              style={ { width: '100%', height: '70vh' } }
             />
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
-
       <GraficoInfo
-        titulo="CID dos usuários que não aderiram ao serviço"
-        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='CID dos usuários que não aderiram ao serviço'
+        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { evasoesNoMesPorCID
@@ -270,17 +268,17 @@ const TaxaAbandono = () => {
             </div>
 
             { loadingCID
-              ? <Spinner theme="ColorSM" height="70vh" />
+              ? <Spinner theme='ColorSM' height='70vh' />
               : <div className={ styles.GraficoCIDContainer }>
                 <ReactEcharts
                   option={ getOpcoesGraficoDonut(agregadosPorCID) }
-                  style={ { width: "50%", height: "70vh" } }
+                  style={ { width: '50%', height: '70vh' } }
                 />
 
                 <TabelaCid
                   labels={ {
-                    colunaCid: "Grupo de diagnósticos",
-                    colunaQuantidade: "Evadiram no mês",
+                    colunaCid: 'Grupo de diagnósticos',
+                    colunaQuantidade: 'Evadiram no mês',
                   } }
                   cids={ agregadosPorCID }
                 />
@@ -288,12 +286,12 @@ const TaxaAbandono = () => {
             }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        titulo="Gênero e faixa etária"
-        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='Gênero e faixa etária'
+        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { evasoesNoMesPorGeneroEIdade
@@ -327,19 +325,19 @@ const TaxaAbandono = () => {
               : <ReactEcharts
                 option={ getOpcoesGraficoGeneroEFaixaEtaria(
                   agregadosPorGeneroEFaixaEtaria,
-                  ""
+                  ''
                 ) }
-                style={ { width: "100%", height: "70vh" } }
+                style={ { width: '100%', height: '70vh' } }
               />
             }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       {/* <GraficoInfo
-        titulo="Raça/Cor*"
-        fonte="Fonte: RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='Raça/Cor*'
+        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { abandonoPerfil.length !== 0 &&
@@ -368,15 +366,15 @@ const TaxaAbandono = () => {
           <ReactEcharts
             option={ getOpcoesGraficoRacaEcor(
               agregadosPorRacaCor,
-              "Usuários recentes que abandonaram no período"
+              'Usuários recentes que abandonaram no período'
             ) }
-            style={ { width: "100%", height: "70vh" } }
+            style={ { width: '100%', height: '70vh' } }
           />
         </>
       }
 
       <GraficoInfo
-        descricao="*Dados podem ter problemas de coleta, registro e preenchimento"
+        descricao='*Dados podem ter problemas de coleta, registro e preenchimento'
       /> */}
     </div>
   );

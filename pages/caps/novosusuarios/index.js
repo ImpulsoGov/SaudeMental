@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { v1 as uuidv1 } from 'uuid';
-import { TabelaCid } from "../../../components/Tabelas";
+import { TabelaCid } from '../../../components/Tabelas';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
@@ -14,7 +14,7 @@ import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHisto
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
 import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
-import { ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
+import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -243,7 +243,7 @@ const NovoUsuario = () => {
       'usuarios_novos'
     );
     const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
+    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
 
     return dadosOrdenados;
   }, [usuariosNovosPorCID]);
@@ -309,7 +309,7 @@ const NovoUsuario = () => {
                   && item.periodo === 'Último período'
                 )
                 .nome_mes
-                }` }
+              }` }
             />
 
             { getCardsNovosUsuariosPorEstabelecimento(resumoNovosUsuarios) }
@@ -349,7 +349,6 @@ const NovoUsuario = () => {
         : <Spinner theme='ColorSM' />
       }
 
-
       <GraficoInfo
         titulo='Perfil dos novos usuários'
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
@@ -382,17 +381,17 @@ const NovoUsuario = () => {
             </div>
 
             { loadingCID
-              ? <Spinner theme="ColorSM" height="70vh" />
+              ? <Spinner theme='ColorSM' height='70vh' />
               : <div className={ styles.GraficoCIDContainer }>
                 <ReactEcharts
                   option={ getOpcoesGraficoDonut(agregadosPorCID) }
-                  style={ { width: "50%", height: "70vh" } }
+                  style={ { width: '50%', height: '70vh' } }
                 />
 
                 <TabelaCid
                   labels={ {
-                    colunaCid: "Grupo de diagnósticos",
-                    colunaQuantidade: "Novos usuários",
+                    colunaCid: 'Grupo de diagnósticos',
+                    colunaQuantidade: 'Novos usuários',
                   } }
                   cids={ agregadosPorCID }
                 />
