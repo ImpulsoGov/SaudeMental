@@ -221,6 +221,10 @@ const ReducaoDeDanos = () => {
           url: ''
         } }
         texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Ações de Redução de Danos</strong>"
       />
 

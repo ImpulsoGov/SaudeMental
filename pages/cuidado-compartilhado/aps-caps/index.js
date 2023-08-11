@@ -74,6 +74,10 @@ const ApsCaps = () => {
           url: ''
         } }
         texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Cuidado compartilhado entre APS e CAPS</strong>"
       />
 

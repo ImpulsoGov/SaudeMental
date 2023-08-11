@@ -289,6 +289,10 @@ const NovoUsuario = () => {
           url: ''
         } }
         texto=''
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo='<strong>Novos usuários</strong>'
       />
 

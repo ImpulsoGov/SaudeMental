@@ -259,7 +259,11 @@ const PerfilUsuario = () => {
           posicao: null,
           url: ''
         } }
-        texto=""
+        texto=''
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Perfil do usuário</strong>"
       />
 

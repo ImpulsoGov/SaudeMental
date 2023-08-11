@@ -182,6 +182,10 @@ const TaxaAbandono = () => {
           url: ''
         } }
         texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Taxa de não adesão</strong>"
       />
 
