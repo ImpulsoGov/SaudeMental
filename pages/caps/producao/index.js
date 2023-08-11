@@ -1,6 +1,7 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
+import { TabelaCid } from '../../../components/Tabelas';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { v1 as uuidv1 } from 'uuid';
@@ -331,10 +332,20 @@ const Producao = () => {
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoDonut(agrupadosPorTipoBPA) }
-              style={ { width: '100%', height: '70vh' } }
-            />
+            <div className={ styles.GraficoCIDContainer }>
+              <ReactEcharts
+                option={ getOpcoesGraficoDonut(agrupadosPorTipoBPA) }
+                style={ { width: '50%', height: '70vh' } }
+              />
+
+              <TabelaCid
+                labels={ {
+                  colunaCid: 'Nome do procedimento',
+                  colunaQuantidade: 'Quantidade registrada',
+                } }
+                cids={ agrupadosPorTipoBPA }
+              />
+            </div>
           </>
         )
         : <Spinner theme='ColorSM' />
@@ -370,10 +381,20 @@ const Producao = () => {
               </div>
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoDonut(agrupadosPorTipoRAAS) }
-              style={ { width: '100%', height: '70vh' } }
-            />
+            <div className={ styles.GraficoCIDContainer }>
+              <ReactEcharts
+                option={ getOpcoesGraficoDonut(agrupadosPorTipoRAAS) }
+                style={ { width: '50%', height: '70vh' } }
+              />
+
+              <TabelaCid
+                labels={ {
+                  colunaCid: 'Nome do procedimento',
+                  colunaQuantidade: 'Quantidade registrada',
+                } }
+                cids={ agrupadosPorTipoRAAS }
+              />
+            </div>
           </>
         )
         : <Spinner theme='ColorSM' />
