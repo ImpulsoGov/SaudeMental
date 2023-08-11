@@ -7,7 +7,7 @@ import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesN
 
 import ReactEcharts from 'echarts-for-react';
 import Select from 'react-select';
-import { TabelaCid } from '../../../components/Tabelas';
+import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
@@ -275,12 +275,12 @@ const TaxaAbandono = () => {
                   style={ { width: '50%', height: '70vh' } }
                 />
 
-                <TabelaCid
+                <TabelaGraficoDonut
                   labels={ {
-                    colunaCid: 'Grupo de diagnósticos',
+                    colunaHeader: 'Grupo de diagnósticos',
                     colunaQuantidade: 'Evadiram no mês',
                   } }
-                  cids={ agregadosPorCID }
+                  data={ agregadosPorCID }
                 />
               </div>
             }

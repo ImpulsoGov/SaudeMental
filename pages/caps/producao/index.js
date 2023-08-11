@@ -1,7 +1,7 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
-import { TabelaCid } from '../../../components/Tabelas';
+import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { v1 as uuidv1 } from 'uuid';
@@ -338,12 +338,12 @@ const Producao = () => {
                 style={ { width: '50%', height: '70vh' } }
               />
 
-              <TabelaCid
+              <TabelaGraficoDonut
                 labels={ {
-                  colunaCid: 'Nome do procedimento',
+                  colunaHeader: 'Nome do procedimento',
                   colunaQuantidade: 'Quantidade registrada',
                 } }
-                cids={ agrupadosPorTipoBPA }
+                data={ agrupadosPorTipoBPA }
               />
             </div>
           </>
@@ -387,12 +387,12 @@ const Producao = () => {
                 style={ { width: '50%', height: '70vh' } }
               />
 
-              <TabelaCid
+              <TabelaGraficoDonut
                 labels={ {
-                  colunaCid: 'Nome do procedimento',
+                  colunaHeader: 'Nome do procedimento',
                   colunaQuantidade: 'Quantidade registrada',
                 } }
-                cids={ agrupadosPorTipoRAAS }
+                data={ agrupadosPorTipoRAAS }
               />
             </div>
           </>

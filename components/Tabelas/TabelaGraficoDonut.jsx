@@ -10,11 +10,11 @@ import {
 import { agruparItensQueUltrapassamPaleta } from '../../helpers/graficoDonut';
 import styles from './Tabelas.module.css';
 
-const TabelaCid = ({ labels, cids }) => {
+const TabelaGraficoDonut = ({ labels, data }) => {
   const colunas = useMemo(() => [
     {
       field: 'nome',
-      headerName: labels.colunaCid,
+      headerName: labels.colunaHeader,
       sortable: false,
       flex: 190,
       align: 'left',
@@ -48,13 +48,13 @@ const TabelaCid = ({ labels, cids }) => {
   const formatarDadosEmLinhas = useCallback(() => {
     let indiceDadosAgrupados = -1;
 
-    if (cids.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
-      const dadosAgrupados = agruparItensQueUltrapassamPaleta(cids);
+    if (data.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
+      const dadosAgrupados = agruparItensQueUltrapassamPaleta(data);
 
       indiceDadosAgrupados = dadosAgrupados.findIndex(({ nome }) => nome === 'Outros');
     }
 
-    return cids.map(({ nome, quantidade }, index) => ({
+    return data.map(({ nome, quantidade }, index) => ({
       id: uuidV4(),
       nome,
       quantidade: {
@@ -65,7 +65,7 @@ const TabelaCid = ({ labels, cids }) => {
         dadosZerados: false
       }
     }));
-  }, [cids]);
+  }, [data]);
 
   const obterLinhaParaDadosZerados = useCallback(() => [{
     id: uuidV4(),
@@ -78,10 +78,10 @@ const TabelaCid = ({ labels, cids }) => {
   }], []);
 
   const linhas = useMemo(() => {
-    return cids.length !== 0
+    return data.length !== 0
       ? formatarDadosEmLinhas()
       : obterLinhaParaDadosZerados();
-  }, [formatarDadosEmLinhas, obterLinhaParaDadosZerados, cids]);
+  }, [formatarDadosEmLinhas, obterLinhaParaDadosZerados, data]);
 
   return (
     <DataGrid
@@ -113,15 +113,15 @@ const TabelaCid = ({ labels, cids }) => {
   );
 };
 
-TabelaCid.propTypes = {
+TabelaGraficoDonut.propTypes = {
   labels: PropTypes.shape({
-    colunaCid: PropTypes.string,
+    colunaHeader: PropTypes.string,
     colunaQuantidade: PropTypes.string,
   }),
-  cids: PropTypes.shape({
+  data: PropTypes.shape({
     nome: PropTypes.string,
     quantidade: PropTypes.number,
   }),
 }.isRequired;
 
-export default TabelaCid;
+export default TabelaGraficoDonut;

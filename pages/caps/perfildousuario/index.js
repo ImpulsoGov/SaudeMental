@@ -6,7 +6,7 @@ import Select from 'react-select';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import styles from '../Caps.module.css';
 
-import { TabelaCid, TabelaDetalhamentoPorCaps } from '../../../components/Tabelas';
+import { TabelaGraficoDonut, TabelaDetalhamentoPorCaps } from '../../../components/Tabelas';
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
@@ -366,12 +366,12 @@ const PerfilUsuario = () => {
                   style={ { width: '50%', height: '70vh' } }
                 />
 
-                <TabelaCid
+                <TabelaGraficoDonut
                   labels={ {
-                    colunaCid: 'Grupo de diagnósticos',
+                    colunaHeader: 'Grupo de diagnósticos',
                     colunaQuantidade: 'Usuários ativos',
                   } }
-                  cids={ agregadosPorCondicaoSaude }
+                  data={ agregadosPorCondicaoSaude }
                 />
               </div>
             }

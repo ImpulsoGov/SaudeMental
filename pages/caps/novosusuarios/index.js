@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { v1 as uuidv1 } from 'uuid';
-import { TabelaCid } from '../../../components/Tabelas';
+import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
@@ -388,12 +388,12 @@ const NovoUsuario = () => {
                   style={ { width: '50%', height: '70vh' } }
                 />
 
-                <TabelaCid
+                <TabelaGraficoDonut
                   labels={ {
-                    colunaCid: 'Grupo de diagnósticos',
+                    colunaHeader: 'Grupo de diagnósticos',
                     colunaQuantidade: 'Novos usuários',
                   } }
-                  cids={ agregadosPorCID }
+                  data={ agregadosPorCID }
                 />
               </div>
             }
