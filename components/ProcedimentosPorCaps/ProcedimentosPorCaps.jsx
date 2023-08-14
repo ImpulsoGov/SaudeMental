@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { FiltroCompetencia, FiltroTexto } from '../Filtros';
 import { FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../constants/FILTROS';
+import { FiltroCompetencia, FiltroTexto } from '../Filtros';
 import { TabelaProcedimentosPorCaps } from '../Tabelas';
 import styles from './ProcedimentosPorCaps.module.css';
 
@@ -13,29 +13,42 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
     return filtro.map(({ value }) => value);
   }, []);
 
-  const procedimentosFiltrados = useMemo(() => {
+  const procedimentosFiltradosOrdenados = useMemo(() => {
     const periodosSelecionados = obterValoresDeFiltro(filtroPeriodos);
     const estabelecimentosSelecionados = obterValoresDeFiltro(filtroEstabelecimentos);
+    let procedimentosFiltrados = [];
 
     if (filtroProcedimentos.length === 0) {
-      return procedimentos.filter((item) =>
+      procedimentosFiltrados = procedimentos.filter((item) =>
         periodosSelecionados.includes(item.periodo)
         && estabelecimentosSelecionados.includes(item.estabelecimento)
         && item.estabelecimento_linha_perfil === 'Todos'
         && item.estabelecimento_linha_idade === 'Todos'
       );
+
+      return procedimentosFiltrados.sort(ordenar);
     }
 
     const procedimentosSelecionados = obterValoresDeFiltro(filtroProcedimentos);
 
-    return procedimentos.filter((item) =>
+    procedimentosFiltrados = procedimentos.filter((item) =>
       estabelecimentosSelecionados.includes(item.estabelecimento)
       && periodosSelecionados.includes(item.periodo)
       && procedimentosSelecionados.includes(item.procedimento)
       && item.estabelecimento_linha_perfil === 'Todos'
       && item.estabelecimento_linha_idade === 'Todos'
     );
+
+    return procedimentosFiltrados.sort(ordenar);
   }, [filtroEstabelecimentos, filtroPeriodos, filtroProcedimentos, obterValoresDeFiltro, procedimentos]);
+
+  function ordenar(atualProcedimento, proximoProcedimento) {
+    if (proximoProcedimento.procedimentos_registrados_total === atualProcedimento.procedimentos_registrados_total) {
+      return atualProcedimento.estabelecimento.localeCompare(proximoProcedimento.estabelecimento);
+    }
+
+    return proximoProcedimento.procedimentos_registrados_total - atualProcedimento.procedimentos_registrados_total;
+  };
 
   return (
     <>
@@ -71,7 +84,7 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
 
       <div className={ styles.Tabela }>
         <TabelaProcedimentosPorCaps
-          procedimentos={ procedimentosFiltrados }
+          procedimentos={ procedimentosFiltradosOrdenados }
         />
       </div>
     </>

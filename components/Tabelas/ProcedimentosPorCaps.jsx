@@ -65,11 +65,6 @@ const TabelaProcedimentosPorCaps = ({ procedimentos }) => {
       columns={ colunas }
       autoPageSize
       disableColumnMenu
-      initialState={ {
-        sorting: {
-          sortModel: [{ field: 'quantidadeRegistrada', sort: 'desc' }],
-        },
-      } }
     />
   );
 };
