@@ -12,6 +12,7 @@ import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../.
 import { getProcedimentosPorHora, getProcedimentosPorTipo } from '../../../requests/caps';
 import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
+import { ProcedimentosPorCaps } from '../../../components/ProcedimentosPorCaps';
 
 const OCUPACOES_NAO_ACEITAS = ['Todas', null];
 const FILTRO_PERIODO_MULTI_DEFAULT = [
@@ -439,6 +440,18 @@ const Producao = () => {
             />
           </>
         )
+        : <Spinner theme='ColorSM' />
+      }
+
+      <GraficoInfo
+        titulo='Procedimentos por CAPS'
+        fonte='Fonte: BPA-c, BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
+      />
+
+      {procedimentosPorTipo.length !== 0
+        ? <ProcedimentosPorCaps
+          procedimentos={ procedimentosPorTipo }
+        />
         : <Spinner theme='ColorSM' />
       }
     </div>
