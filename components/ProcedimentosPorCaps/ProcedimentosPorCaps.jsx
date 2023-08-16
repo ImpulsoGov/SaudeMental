@@ -13,16 +13,18 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
     return filtro.map(({ value }) => value);
   }, []);
 
-  function agregarPorProcedimentoEEstabelecimento(procedimentos, propriedadeTipoProcedimento, propriedadeQuantidade, propriedadeEstabelecimento){
+  function agregarPorProcedimentoEEstabelecimento(procedimentos, tipoProcedimento, quantidade, estabelecimento){
     const dadosAgregados = [];
 
     procedimentos.forEach((procedimento) => {
-      const {[propriedadeQuantidade]: quantidade, [propriedadeTipoProcedimento]: tipoProcedimento, [propriedadeEstabelecimento]: estabelecimento} = procedimento;
+      const {[propriedadeQuantidade]: quantidade, [propriedadeTipoProcedimento]: procedimento, [propriedadeEstabelecimento]: estabelecimento} = procedimento;
       const procedimentoDados = dadosAgregados.find((item) => item.tipoProcedimento === tipoProcedimento);
       if(!procedimentoDados){
         dadosAgregados.push({
           tipoProcedimento,
-          [estabelecimento]: quantidade
+          estabelecimento,
+          quantidade,
+          id
         });
       }else {
         procedimentoDados[estabelecimento]
