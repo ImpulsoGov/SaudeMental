@@ -29,8 +29,9 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
           ? procedimentoDados[estabelecimento] += quantidade
           : procedimentoDados[estabelecimento] = quantidade;
       }
-      return dadosAgregados;
     });
+
+    return dadosAgregados;
   };
   const procedimentosFiltradosOrdenados = useMemo(() => {
     const periodosSelecionados = obterValoresDeFiltro(filtroPeriodos);
