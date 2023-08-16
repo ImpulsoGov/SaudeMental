@@ -13,28 +13,37 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
     return filtro.map(({ value }) => value);
   }, []);
 
-  function agregarPorProcedimentoEEstabelecimento(procedimentos, tipoProcedimento, quantidade, estabelecimento){
+  function agregarPorProcedimentoEEstabelecimento(procedimentos, propriedadeTipoProcedimento, propriedadeQuantidade, propriedadeEstabelecimento){
     const dadosAgregados = [];
 
     procedimentos.forEach((procedimento) => {
-      const {[propriedadeQuantidade]: quantidade, [propriedadeTipoProcedimento]: procedimento, [propriedadeEstabelecimento]: estabelecimento} = procedimento;
-      const procedimentoDados = dadosAgregados.find((item) => item.tipoProcedimento === tipoProcedimento);
+      const {
+        id,
+        [propriedadeQuantidade]: quantidade,
+        [propriedadeTipoProcedimento]: tipoProcedimento,
+        [propriedadeEstabelecimento]: estabelecimento,
+      } = procedimento;
+
+      const procedimentoDados = dadosAgregados.find((item) =>
+        item.tipoProcedimento === tipoProcedimento
+        && item.estabelecimento === estabelecimento
+      );
+
       if(!procedimentoDados){
         dadosAgregados.push({
+          id,
           tipoProcedimento,
           estabelecimento,
           quantidade,
-          id
         });
       }else {
-        procedimentoDados[estabelecimento]
-          ? procedimentoDados[estabelecimento] += quantidade
-          : procedimentoDados[estabelecimento] = quantidade;
+        procedimentoDados.quantidade += quantidade;
       }
     });
 
     return dadosAgregados;
   };
+
   const procedimentosFiltradosOrdenados = useMemo(() => {
     const periodosSelecionados = obterValoresDeFiltro(filtroPeriodos);
     const estabelecimentosSelecionados = obterValoresDeFiltro(filtroEstabelecimentos);
@@ -71,6 +80,7 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
 
     return proximoProcedimento.procedimentos_registrados_total - atualProcedimento.procedimentos_registrados_total;
   };
+
   const agregadosPorProcedimentoEEestabelecimento = agregarPorProcedimentoEEstabelecimento(procedimentosFiltradosOrdenados, 'procedimento', 'procedimentos_registrados_total', 'estabelecimento');
 
   return (

@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 const TabelaProcedimentosPorCaps = ({ procedimentos }) => {
   const colunas = useMemo(() => [
     {
-      field: 'procedimento',
+      field: 'tipoProcedimento',
       headerName: 'Procedimento',
       flex: 230,
       align: 'left',
@@ -18,7 +18,7 @@ const TabelaProcedimentosPorCaps = ({ procedimentos }) => {
       headerAlign: 'left',
     },
     {
-      field: 'quantidadeRegistrada',
+      field: 'quantidade',
       headerName: 'Quantidade registrada',
       flex: 100,
       align: 'right',
@@ -30,23 +30,13 @@ const TabelaProcedimentosPorCaps = ({ procedimentos }) => {
     if (procedimentos.length === 0) {
       return [{
         id: 1,
-        procedimento: 'Sem procedimentos nesse(s) estabelecimento(s) durante essa(s) competência(s)',
+        tipoProcedimento: 'Sem procedimentos nesse(s) estabelecimento(s) durante essa(s) competência(s)',
         estabelecimento: '',
-        quantidadeRegistrada: 0
+        quantidade: 0
       }];
     }
 
-    return procedimentos.map(({
-      id,
-      procedimento,
-      estabelecimento,
-      procedimentos_registrados_total: quantidadeRegistrada
-    }) => ({
-      id,
-      procedimento,
-      estabelecimento,
-      quantidadeRegistrada
-    }));
+    return procedimentos;
   }, [procedimentos]);
 
   return (
