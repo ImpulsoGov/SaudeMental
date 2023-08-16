@@ -13,6 +13,25 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
     return filtro.map(({ value }) => value);
   }, []);
 
+  function agregarPorProcedimentoEEstabelecimento(procedimentos, propriedadeTipoProcedimento, propriedadeQuantidade, propriedadeEstabelecimento){
+    const dadosAgregados = [];
+
+    procedimentos.forEach((procedimento) => {
+      const {[propriedadeQuantidade]: quantidade, [propriedadeTipoProcedimento]: tipoProcedimento, [propriedadeEstabelecimento]: estabelecimento} = procedimento;
+      const procedimentoDados = dadosAgregados.find((item) => item.tipoProcedimento === tipoProcedimento);
+      if(!procedimentoDados){
+        dadosAgregados.push({
+          tipoProcedimento,
+          [estabelecimento]: quantidade
+        });
+      }else {
+        procedimentoDados[estabelecimento]
+          ? procedimentoDados[estabelecimento] += quantidade
+          : procedimentoDados[estabelecimento] = quantidade;
+      }
+      return dadosAgregados;
+    });
+  };
   const procedimentosFiltradosOrdenados = useMemo(() => {
     const periodosSelecionados = obterValoresDeFiltro(filtroPeriodos);
     const estabelecimentosSelecionados = obterValoresDeFiltro(filtroEstabelecimentos);
@@ -49,6 +68,7 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
 
     return proximoProcedimento.procedimentos_registrados_total - atualProcedimento.procedimentos_registrados_total;
   };
+  const agregadosPorProcedimentoEEestabelecimento = agregarPorProcedimentoEEstabelecimento(procedimentosFiltradosOrdenados, 'procedimento', 'procedimentos_registrados_total', 'estabelecimento');
 
   return (
     <>
@@ -84,7 +104,7 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
 
       <div className={ styles.Tabela }>
         <TabelaProcedimentosPorCaps
-          procedimentos={ procedimentosFiltradosOrdenados }
+          procedimentos={ agregadosPorProcedimentoEEestabelecimento }
         />
       </div>
     </>
