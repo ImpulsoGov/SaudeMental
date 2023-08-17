@@ -122,6 +122,10 @@ const Ambulatorio = () => {
           url: ''
         } }
         texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Em breve.</strong>"
       />
 

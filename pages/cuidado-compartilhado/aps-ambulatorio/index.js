@@ -50,6 +50,10 @@ const ApsAmbulatorio = () => {
           url: ''
         } }
         texto="Dados referentes aos atendimentos em saúde mental realizados na APS que resultaram em encaminhamento para serviços especializados"
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Cuidado compartilhado entre APS e ambulatório</strong>"
       />
 

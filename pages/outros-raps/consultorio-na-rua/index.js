@@ -290,6 +290,10 @@ const ConsultorioNaRua = () => {
           url: ''
         } }
         texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Consultório na Rua</strong>"
       />
 

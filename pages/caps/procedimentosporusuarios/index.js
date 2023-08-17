@@ -261,6 +261,10 @@ const ProcedimentosPorUsuarios = () => {
           url: ''
         } }
         texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Procedimentos por usuários</strong>"
       />
 

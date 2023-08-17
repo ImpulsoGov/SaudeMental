@@ -250,6 +250,10 @@ const AtendimentoIndividual = () => {
           url: ''
         } }
         texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Atendimentos individuais </strong>"
       />
 
