@@ -1,0 +1,9 @@
+.Filtros {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.Tabela {
+  margin-bottom: 30px;
+}

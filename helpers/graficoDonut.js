@@ -1,27 +1,27 @@
 import {
   CORES_GRAFICO_DONUT,
   QUANTIDADE_CORES_GRAFICO_DONUT
-} from "../constants/GRAFICO_DONUT";
+} from '../constants/GRAFICO_DONUT';
 
-export const agregarPorCondicaoSaude = (dados, propriedadeCondicao, propriedadeQuantidade) => {
+export const agregarQuantidadePorPropriedadeNome = (dados, propriedadeNome, propriedadeQuantidade) => {
   const dadosAgregados = [];
 
   dados.forEach((dado) => {
     const {
       [propriedadeQuantidade]: quantidade,
-      [propriedadeCondicao]: condicaoSaude
+      [propriedadeNome]: nome
     } = dado;
 
-    const condicaoSaudeDados = dadosAgregados
-      .find((item) => item.condicaoSaude === condicaoSaude);
+    const dadoEncontrado = dadosAgregados
+      .find((item) => item.nome === nome);
 
-    if (!condicaoSaudeDados) {
+    if (!dadoEncontrado) {
       dadosAgregados.push({
-        condicaoSaude,
+        nome,
         quantidade
       });
     } else {
-      condicaoSaudeDados.quantidade += quantidade;
+      dadoEncontrado.quantidade += quantidade;
     }
   });
 
@@ -31,7 +31,7 @@ export const agregarPorCondicaoSaude = (dados, propriedadeCondicao, propriedadeQ
 export const agruparItensQueUltrapassamPaleta = (dados) => {
   const dadosAgrupados = [];
   const fatiaDeAgrupamento = {
-    condicaoSaude: 'Outros',
+    nome: 'Outros',
     quantidade: 0
   };
 
@@ -48,11 +48,11 @@ export const agruparItensQueUltrapassamPaleta = (dados) => {
   return dadosAgrupados;
 };
 
-export const getOpcoesGraficoCID = (dados) => {
-  let dadosDeCid = dados;
+export const getOpcoesGraficoDonut = (dados) => {
+  let dadosGraficoDonut = dados;
 
   if (dados.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
-    dadosDeCid = agruparItensQueUltrapassamPaleta(dados);
+    dadosGraficoDonut = agruparItensQueUltrapassamPaleta(dados);
   }
 
   return {
@@ -68,8 +68,8 @@ export const getOpcoesGraficoCID = (dados) => {
         label: {
           show: true,
           position: 'inside',
-          formatter: "{d}%",
-          color: "#000000"
+          formatter: '{d}%',
+          color: '#000000'
         },
         emphasis: {
           label: {
@@ -79,9 +79,9 @@ export const getOpcoesGraficoCID = (dados) => {
         labelLine: {
           show: false
         },
-        data: dadosDeCid.map(({ condicaoSaude, quantidade }, index) => ({
+        data: dadosGraficoDonut.map(({ nome, quantidade }, index) => ({
           value: quantidade,
-          name: !condicaoSaude ? "Sem informação" : condicaoSaude,
+          name: !nome ? 'Sem informação' : nome,
           itemStyle: {
             color: CORES_GRAFICO_DONUT[index]
           },
