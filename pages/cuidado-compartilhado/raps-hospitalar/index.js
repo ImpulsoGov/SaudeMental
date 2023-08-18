@@ -51,6 +51,10 @@ const RapsHospitalar = ({ }) => {
           url: ''
         } }
         texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Internações finalizadas desde o início do ano</strong>"
       />
 

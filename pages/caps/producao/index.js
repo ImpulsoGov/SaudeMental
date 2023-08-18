@@ -230,8 +230,12 @@ const Producao = () => {
           posicao: null,
           url: ''
         } }
-        texto=''
-        titulo='<strong>Produção</strong>'
+        texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
+        titulo="<strong>Produção</strong>"
       />
 
       <GraficoInfo

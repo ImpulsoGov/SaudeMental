@@ -179,8 +179,12 @@ const TaxaAbandono = () => {
           posicao: null,
           url: ''
         } }
-        texto=''
-        titulo='<strong>Taxa de não adesão</strong>'
+        texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
+        titulo="<strong>Taxa de não adesão</strong>"
       />
 
       { abandonoCoortes.length !== 0

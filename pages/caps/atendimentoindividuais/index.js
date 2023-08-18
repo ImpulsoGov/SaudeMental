@@ -249,8 +249,12 @@ const AtendimentoIndividual = () => {
           posicao: null,
           url: ''
         } }
-        texto=''
-        titulo='<strong>Atendimentos individuais </strong>'
+        texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
+        titulo="<strong>Atendimentos individuais </strong>"
       />
 
       <GraficoInfo
