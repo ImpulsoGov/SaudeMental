@@ -398,6 +398,7 @@ const NovoUsuario = () => {
                     colunaQuantidade: 'Novos usuários',
                   } }
                   data={ agregadosPorCID }
+                  mensagemDadosZerados='Sem usuários nessa competência'
                 />
               </div>
             }

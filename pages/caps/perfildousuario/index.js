@@ -376,6 +376,7 @@ const PerfilUsuario = () => {
                     colunaQuantidade: 'Usuários ativos',
                   } }
                   data={ agregadosPorCondicaoSaude }
+                  mensagemDadosZerados='Sem usuários nessa competência'
                 />
               </div>
             }

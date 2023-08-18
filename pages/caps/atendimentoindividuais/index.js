@@ -355,6 +355,7 @@ const AtendimentoIndividual = () => {
                     colunaQuantidade: 'Realizaram só at. individual no mês',
                   } }
                   data={ agregadosPorCID }
+                  mensagemDadosZerados='Sem usuários nessa competência'
                 />
               </div>
             }

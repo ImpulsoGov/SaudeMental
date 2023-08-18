@@ -285,6 +285,7 @@ const TaxaAbandono = () => {
                     colunaQuantidade: 'Evadiram no mês',
                   } }
                   data={ agregadosPorCID }
+                  mensagemDadosZerados='Sem usuários nessa competência'
                 />
               </div>
             }

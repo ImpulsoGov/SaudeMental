@@ -10,7 +10,7 @@ import {
 import { agruparItensQueUltrapassamPaleta } from '../../helpers/graficoDonut';
 import styles from './Tabelas.module.css';
 
-const TabelaGraficoDonut = ({ labels, data }) => {
+const TabelaGraficoDonut = ({ labels, data, mensagemDadosZerados }) => {
   const colunas = useMemo(() => [
     {
       field: 'nome',
@@ -69,13 +69,13 @@ const TabelaGraficoDonut = ({ labels, data }) => {
 
   const obterLinhaParaDadosZerados = useCallback(() => [{
     id: uuidV4(),
-    nome: 'Sem usuários nessa competência',
+    nome: mensagemDadosZerados,
     quantidade: {
       posicao: 0,
       valor: 0,
       dadosZerados: true
     }
-  }], []);
+  }], [mensagemDadosZerados]);
 
   const linhas = useMemo(() => {
     return data.length !== 0
@@ -122,6 +122,7 @@ TabelaGraficoDonut.propTypes = {
     nome: PropTypes.string,
     quantidade: PropTypes.number,
   }),
+  mensagemDadosZerados: PropTypes.string
 }.isRequired;
 
 export default TabelaGraficoDonut;

@@ -349,6 +349,7 @@ const Producao = () => {
                   colunaQuantidade: 'Quantidade registrada',
                 } }
                 data={ agrupadosPorTipoBPA }
+                mensagemDadosZerados='Sem procedimentos registrados nessa competência'
               />
             </div>
           </>
@@ -398,6 +399,7 @@ const Producao = () => {
                   colunaQuantidade: 'Quantidade registrada',
                 } }
                 data={ agrupadosPorTipoRAAS }
+                mensagemDadosZerados='Sem procedimentos registrados nessa competência'
               />
             </div>
           </>
