@@ -10,10 +10,10 @@ import { TabelaGraficoDonut, TabelaDetalhamentoPorCaps } from '../../../componen
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
-import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
 import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from '../../../requests/caps';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
+import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: 'Último período', label: 'Último período' };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: 'Todos', label: 'Todos' };
@@ -216,15 +216,6 @@ const PerfilUsuario = () => {
     );
   }, [usuariosPorCondicao]);
 
-  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
-    return agregarPorFaixaEtariaEGenero(
-      usuariosPorGeneroEIdade,
-      'usuario_faixa_etaria',
-      'usuario_sexo',
-      'ativos_3meses'
-    );
-  }, [usuariosPorGeneroEIdade]);
-
   const agregadosPorRacaCor = useMemo(() => {
     return agregarPorRacaCor(
       usuariosPorRacaECor,
@@ -390,49 +381,29 @@ const PerfilUsuario = () => {
         fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { usuariosPorGeneroEIdade.length !== 0
-        && competencias.length !== 0
-        && estabelecimentos.length !== 0
-        ? (
-          <>
-            <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select
-                  { ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoGenero,
-                    setFiltroEstabelecimentoGenero
-                  )
-                  }
-                />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select
-                  { ...getPropsFiltroPeriodo(
-                    competencias,
-                    filtroCompetenciaGenero,
-                    setFiltroCompetenciaGenero,
-                    false
-                  )
-                  }
-                />
-              </div>
-            </div>
-
-            { loadingGenero
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                  agregadosPorGeneroEFaixaEtaria,
-                  'Usuários ativos'
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
-          </>
-        )
-        : <Spinner theme='ColorSM' />
-      }
+      <GraficoGeneroPorFaixaEtaria
+        dados={ usuariosPorGeneroEIdade }
+        loading={ loadingGenero }
+        labels={{
+          eixoY: 'Usuários ativos'
+        }}
+        propriedades={{
+          quantidade: 'ativos_3meses',
+          faixaEtaria: 'usuario_faixa_etaria',
+          sexo: 'usuario_sexo',
+        }}
+        filtroEstabelecimento={{
+          selecionado: filtroEstabelecimentoGenero,
+          setFiltro: setFiltroEstabelecimentoGenero,
+          opcoes: estabelecimentos,
+        }}
+        filtroCompetencia={{
+          selecionado: filtroCompetenciaGenero,
+          setFiltro: setFiltroCompetenciaGenero,
+          opcoes: competencias,
+          multiSelecao: false
+        }}
+      />
 
       <GraficoInfo
         titulo='Usuários ativos'
