@@ -9,13 +9,13 @@ import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
-import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
 import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
+import { GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
   { value: 'Último período', label: 'Último período' },
@@ -248,15 +248,6 @@ const NovoUsuario = () => {
     return dadosOrdenados;
   }, [usuariosNovosPorCID]);
 
-  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
-    return agregarPorFaixaEtariaEGenero(
-      usuariosNovosPorGeneroEIdade,
-      'usuario_faixa_etaria',
-      'usuario_sexo',
-      'usuarios_novos'
-    );
-  }, [usuariosNovosPorGeneroEIdade]);
-
   const agregadosPorAbusoSubstancias = useMemo(() => {
     return agregarPorAbusoSubstancias(
       usuariosNovosPorCondicao,
@@ -412,46 +403,29 @@ const NovoUsuario = () => {
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { usuariosNovosPorGeneroEIdade
-        && periodos.length !== 0
-        && estabelecimentos.length !== 0
-        ? (
-          <>
-            <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoGenero,
-                    setFiltroEstabelecimentoGenero
-                  )
-                } />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoGenero,
-                    setFiltroPeriodoGenero
-                  )
-                } />
-              </div>
-            </div>
-
-            { loadingGenero
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                  agregadosPorGeneroEFaixaEtaria,
-                  'Usuários novos'
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
-          </>
-        )
-        : <Spinner theme='ColorSM' />
-      }
+      <GraficoGeneroPorFaixaEtaria
+        dados={ usuariosNovosPorGeneroEIdade }
+        loading={ loadingGenero }
+        labels={{
+          eixoY: 'Usuários novos'
+        }}
+        propriedades={{
+          faixaEtaria: 'usuario_faixa_etaria',
+          sexo: 'usuario_sexo',
+          quantidade: 'usuarios_novos',
+        }}
+        filtroEstabelecimento={{
+          selecionado: filtroEstabelecimentoGenero,
+          setFiltro: setFiltroEstabelecimentoGenero,
+          opcoes: estabelecimentos,
+        }}
+        filtroCompetencia={{
+          selecionado: filtroPeriodoGenero,
+          setFiltro: setFiltroPeriodoGenero,
+          opcoes: periodos,
+          multiSelecao: true
+        }}
+      />
 
       <GraficoInfo
         titulo='Uso de substâncias e condição de moradia'
