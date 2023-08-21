@@ -1,26 +1,26 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
-import ReactEcharts from "echarts-for-react";
-import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
-import Select from "react-select";
-import { v1 as uuidv1 } from "uuid";
-import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { TabelaCid, TabelaDetalhamentoPorCaps } from "../../../components/Tabelas";
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
-import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
-import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
-import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
-import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
-import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from "../../../requests/caps";
-import { concatenarPeriodos } from "../../../utils/concatenarPeriodos";
-import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
-import styles from "../Caps.module.css";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
+import ReactEcharts from 'echarts-for-react';
+import { useSession } from 'next-auth/react';
+import { useEffect, useMemo, useState } from 'react';
+import Select from 'react-select';
+import { v1 as uuidv1 } from 'uuid';
+import { TabelaGraficoDonut } from '../../../components/Tabelas';
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
+import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
+import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
+import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
+import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
+import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from '../../../requests/caps';
+import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
+import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
+import styles from '../Caps.module.css';
 
 const FILTRO_PERIODO_MULTI_DEFAULT = [
-  { value: "Último período", label: "Último período" },
+  { value: 'Último período', label: 'Último período' },
 ];
 const FILTRO_ESTABELECIMENTO_DEFAULT = {
-  value: "Todos", label: "Todos"
+  value: 'Todos', label: 'Todos'
 };
 
 export function getServerSideProps(ctx) {
@@ -161,10 +161,10 @@ const AtendimentoIndividual = () => {
         estabelecimento_linha_perfil: linhaPerfil,
         estabelecimento_linha_idade: linhaIdade
       }) =>
-        periodo === "Último período"
-        && estabelecimento !== "Todos"
-        && linhaPerfil !== "Todos"
-        && linhaIdade === "Todos"
+        periodo === 'Último período'
+        && estabelecimento !== 'Todos'
+        && linhaPerfil !== 'Todos'
+        && linhaIdade === 'Todos'
       );
 
     const atendimentosAgregados = agregarPorLinhaPerfil(atendimentosPorCapsUltimoPeriodo);
@@ -172,7 +172,7 @@ const AtendimentoIndividual = () => {
     const cardsAtendimentosPorCaps = atendimentosAgregados.map(({
       linhaPerfil, atendimentosPorEstabelecimento, nomeMes
     }) => {
-      const atendimentosOrdenados = ordenarCrescentePorPropriedadeDeTexto(atendimentosPorEstabelecimento, "estabelecimento");
+      const atendimentosOrdenados = ordenarCrescentePorPropriedadeDeTexto(atendimentosPorEstabelecimento, 'estabelecimento');
 
       return (
         <>
@@ -187,15 +187,15 @@ const AtendimentoIndividual = () => {
                 <CardInfoTipoA
                   titulo={ item.estabelecimento }
                   indicador={ item.porcentagemAtendimentos }
-                  indicadorSimbolo="%"
+                  indicadorSimbolo='%'
                   indice={ item.difPorcentagemAtendimentosAnterior }
-                  indiceSimbolo="p.p."
-                  indiceDescricao="últ. mês"
+                  indiceSimbolo='p.p.'
+                  indiceDescricao='últ. mês'
                   key={ uuidv1() }
                 />
               ))
             }
-            proporcao="3-3-3-3"
+            proporcao='3-3-3-3'
           />
         </>
       );
@@ -208,19 +208,19 @@ const AtendimentoIndividual = () => {
     return dados
       .filter((item) =>
         item.estabelecimento === filtroEstabelecimento.value
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
+        && item.estabelecimento_linha_perfil === 'Todos'
+        && item.estabelecimento_linha_idade === 'Todos'
       );
   };
 
   const agregadosPorCID = useMemo(() => {
-    const dadosAgregados = agregarPorCondicaoSaude(
+    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
       atendimentosPorCID,
-      "usuario_condicao_saude",
-      "usuarios_apenas_atendimento_individual"
+      'usuario_condicao_saude',
+      'usuarios_apenas_atendimento_individual'
     );
     const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
+    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
 
     return dadosOrdenados;
   }, [atendimentosPorCID]);
@@ -228,17 +228,17 @@ const AtendimentoIndividual = () => {
   const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
     return agregarPorFaixaEtariaEGenero(
       atendimentosPorGenero,
-      "usuario_faixa_etaria",
-      "usuario_sexo",
-      "usuarios_apenas_atendimento_individual"
+      'usuario_faixa_etaria',
+      'usuario_sexo',
+      'usuarios_apenas_atendimento_individual'
     );
   }, [atendimentosPorGenero]);
 
   const agregadosPorRacaCor = useMemo(() => {
     return agregarPorRacaCor(
       atendimentosPorRacaECor,
-      "usuario_raca_cor",
-      "usuarios_apenas_atendimento_individual"
+      'usuario_raca_cor',
+      'usuarios_apenas_atendimento_individual'
     );
   }, [atendimentosPorRacaECor]);
 
@@ -250,12 +250,16 @@ const AtendimentoIndividual = () => {
           url: ''
         } }
         texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Atendimentos individuais </strong>"
       />
 
       <GraficoInfo
-        descricao="Taxa dos usuários frequentantes no mês que realizaram apenas atendimentos individuais"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+        descricao='Taxa dos usuários frequentantes no mês que realizaram apenas atendimentos individuais'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { atendimentosPorCaps.length !== 0
@@ -264,24 +268,24 @@ const AtendimentoIndividual = () => {
             <GraficoInfo
               descricao={ `Última competência disponível: ${atendimentosPorCaps
                 .find((item) =>
-                  item.estabelecimento === "Todos"
-                  && item.estabelecimento_linha_perfil === "Todos"
-                  && item.estabelecimento_linha_idade === "Todos"
-                  && item.periodo === "Último período"
+                  item.estabelecimento === 'Todos'
+                  && item.estabelecimento_linha_perfil === 'Todos'
+                  && item.estabelecimento_linha_idade === 'Todos'
+                  && item.periodo === 'Último período'
                 )
                 .nome_mes
-                }` }
+              }` }
             />
 
             { getCardsAtendimentosPorCaps(atendimentosPorCaps) }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        titulo="Histórico Temporal"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='Histórico Temporal'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { atendimentosPorCaps.length !== 0
@@ -298,19 +302,19 @@ const AtendimentoIndividual = () => {
             <ReactEcharts
               option={ getOpcoesGraficoHistoricoTemporal(
                 filtrarPorEstabelecimento(atendimentosPorCaps, filtroEstabelecimentoHistorico),
-                "perc_apenas_atendimentos_individuais",
-                "Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):"
+                'perc_apenas_atendimentos_individuais',
+                'Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):'
               ) }
-              style={ { width: "100%", height: "70vh" } }
+              style={ { width: '100%', height: '70vh' } }
             />
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
-      
+
       <GraficoInfo
-        titulo="CID dos usuários que realizaram apenas atendimentos individuais"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='CID dos usuários que realizaram apenas atendimentos individuais'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { atendimentosPorCID
@@ -338,30 +342,31 @@ const AtendimentoIndividual = () => {
             </div>
 
             { loadingCID
-              ? <Spinner theme="ColorSM" height="70vh" />
+              ? <Spinner theme='ColorSM' height='70vh' />
               : <div className={ styles.GraficoCIDContainer }>
                 <ReactEcharts
-                  option={ getOpcoesGraficoCID(agregadosPorCID) }
-                  style={ { width: "50%", height: "70vh" } }
+                  option={ getOpcoesGraficoDonut(agregadosPorCID) }
+                  style={ { width: '50%', height: '70vh' } }
                 />
 
-                <TabelaCid
+                <TabelaGraficoDonut
                   labels={ {
-                    colunaCid: "Grupos de diagnósticos",
-                    colunaQuantidade: "Realizaram só at. individual no mês",
+                    colunaHeader: 'Grupos de diagnósticos',
+                    colunaQuantidade: 'Realizaram só at. individual no mês',
                   } }
-                  cids={ agregadosPorCID }
+                  data={ agregadosPorCID }
+                  mensagemDadosZerados='Sem usuários nessa competência'
                 />
               </div>
             }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        titulo="Gênero e faixa etária"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='Gênero e faixa etária'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { atendimentosPorGenero
@@ -389,23 +394,23 @@ const AtendimentoIndividual = () => {
             </div>
 
             { loadingGenero
-              ? <Spinner theme="ColorSM" height="70vh" />
+              ? <Spinner theme='ColorSM' height='70vh' />
               : <ReactEcharts
                 option={ getOpcoesGraficoGeneroEFaixaEtaria(
                   agregadosPorGeneroEFaixaEtaria,
-                  ""
+                  ''
                 ) }
-                style={ { width: "100%", height: "70vh" } }
+                style={ { width: '100%', height: '70vh' } }
               />
             }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        titulo="Raça/Cor*"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='Raça/Cor*'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { atendimentosPorRacaECor
@@ -433,22 +438,22 @@ const AtendimentoIndividual = () => {
             </div>
 
             { loadingRaca
-              ? <Spinner theme="ColorSM" height="70vh" />
+              ? <Spinner theme='ColorSM' height='70vh' />
               : <ReactEcharts
                 option={ getOpcoesGraficoRacaEcor(
                   agregadosPorRacaCor,
-                  "Usuários que realizaram apenas atendimentos individuais"
+                  'Usuários que realizaram apenas atendimentos individuais'
                 ) }
-                style={ { width: "100%", height: "70vh" } }
+                style={ { width: '100%', height: '70vh' } }
               />
             }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        descricao="*Dados podem ter problemas de coleta, registro e preenchimento"
+        descricao='*Dados podem ter problemas de coleta, registro e preenchimento'
       />
     </div>
   );

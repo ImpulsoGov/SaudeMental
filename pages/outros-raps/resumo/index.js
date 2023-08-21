@@ -84,6 +84,10 @@ const Resumo = () => {
           url: ''
         } }
         texto=""
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Resumo</strong>"
       />
 

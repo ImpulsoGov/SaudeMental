@@ -1,22 +1,22 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
-import ReactEcharts from "echarts-for-react";
-import { useSession } from "next-auth/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import Select from "react-select";
-import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import styles from "../Caps.module.css";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
+import ReactEcharts from 'echarts-for-react';
+import { useSession } from 'next-auth/react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import Select from 'react-select';
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import styles from '../Caps.module.css';
 
-import { TabelaCid, TabelaDetalhamentoPorCaps } from "../../../components/Tabelas";
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from "../../../helpers/filtrosGraficos";
-import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from "../../../helpers/graficoAbusoESituacao";
-import { agregarPorCondicaoSaude, getOpcoesGraficoCID } from "../../../helpers/graficoCID";
-import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from "../../../helpers/graficoGeneroEFaixaEtaria";
-import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from "../../../helpers/graficoRacaECor";
-import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from "../../../requests/caps";
-import { ordenarDecrescentePorPropriedadeNumerica } from "../../../utils/ordenacao";
+import { TabelaGraficoDonut, TabelaDetalhamentoPorCaps } from '../../../components/Tabelas';
+import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
+import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
+import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
+import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
+import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
+import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from '../../../requests/caps';
+import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 
-const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: "Último período", label: "Último período" };
-const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: "Todos", label: "Todos" };
+const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: 'Último período', label: 'Último período' };
+const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: 'Todos', label: 'Todos' };
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -124,19 +124,19 @@ const PerfilUsuario = () => {
 
   const encontrarDadosGeraisPorPeriodo = (dados, filtroPeriodo) => {
     return dados.find((item) =>
-      item.estabelecimento === "Todos"
-      && item.estabelecimento_linha_perfil === "Todos"
-      && item.estabelecimento_linha_idade === "Todos"
+      item.estabelecimento === 'Todos'
+      && item.estabelecimento_linha_perfil === 'Todos'
+      && item.estabelecimento_linha_idade === 'Todos'
       && item.periodo === filtroPeriodo
     );
   };
 
   const filtrarDadosEstabelecimentosPorPeriodo = (dados, filtroPeriodo) => {
     return dados.filter((item) =>
-      item.estabelecimento_linha_perfil === "Todos"
-      && item.estabelecimento_linha_idade === "Todos"
+      item.estabelecimento_linha_perfil === 'Todos'
+      && item.estabelecimento_linha_idade === 'Todos'
       && item.periodo === filtroPeriodo
-      && item.estabelecimento !== "Todos"
+      && item.estabelecimento !== 'Todos'
     );
   };
 
@@ -157,41 +157,41 @@ const PerfilUsuario = () => {
 
     return (
       <Grid12Col
-        proporcao="4-4-4"
+        proporcao='4-4-4'
         items={ [
           <>
             {
               <CardInfoTipoA
-                fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+                fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
                 indicador={ ativos3Meses }
                 indice={ difAtivos3MesesAnterior }
-                indiceDescricao="últ. mês"
-                titulo="Usuários ativos"
-                tooltip="Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) nos três meses anteriores ao mês de referência"
+                indiceDescricao='últ. mês'
+                titulo='Usuários ativos'
+                tooltip='Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) nos três meses anteriores ao mês de referência'
               />
             }
           </>,
           <>
             {
               <CardInfoTipoA
-                fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+                fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
                 indicador={ ativosMes }
                 indice={ difAtivosMesAnterior }
-                indiceDescricao="últ. mês"
-                titulo="Frequentaram no mês"
-                tooltip="Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) durante o mês de referÊncia"
+                indiceDescricao='últ. mês'
+                titulo='Frequentaram no mês'
+                tooltip='Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) durante o mês de referÊncia'
               />
             }
           </>,
           <>
             {
               <CardInfoTipoA
-                fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+                fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
                 indicador={ tornandoInativos }
                 indice={ difTornandoInativosAnterior }
-                indiceDescricao="últ. mês"
-                titulo="Tornaram-se inativos"
-                tooltip="Usuários que, no mês de referência, completaram três meses sem ter procedimentos registrados em BPA-i ou RAAS (exceto acolhimento inicial)"
+                indiceDescricao='últ. mês'
+                titulo='Tornaram-se inativos'
+                tooltip='Usuários que, no mês de referência, completaram três meses sem ter procedimentos registrados em BPA-i ou RAAS (exceto acolhimento inicial)'
               />
             }
           </>,
@@ -203,44 +203,44 @@ const PerfilUsuario = () => {
   const agregadosPorAbusoSubstancias = useMemo(() => {
     return agregarPorAbusoSubstancias(
       usuariosPorCondicao,
-      "usuario_abuso_substancias",
-      "ativos_3meses"
+      'usuario_abuso_substancias',
+      'ativos_3meses'
     );
   }, [usuariosPorCondicao]);
 
   const agregadosPorSituacaoRua = useMemo(() => {
     return agregarPorSituacaoRua(
       usuariosPorCondicao,
-      "usuario_situacao_rua",
-      "ativos_3meses"
+      'usuario_situacao_rua',
+      'ativos_3meses'
     );
   }, [usuariosPorCondicao]);
 
   const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
     return agregarPorFaixaEtariaEGenero(
       usuariosPorGeneroEIdade,
-      "usuario_faixa_etaria",
-      "usuario_sexo",
-      "ativos_3meses"
+      'usuario_faixa_etaria',
+      'usuario_sexo',
+      'ativos_3meses'
     );
   }, [usuariosPorGeneroEIdade]);
 
   const agregadosPorRacaCor = useMemo(() => {
     return agregarPorRacaCor(
       usuariosPorRacaECor,
-      "usuario_raca_cor",
-      "ativos_3meses"
+      'usuario_raca_cor',
+      'ativos_3meses'
     );
   }, [usuariosPorRacaECor]);
 
   const agregadosPorCondicaoSaude = useMemo(() => {
-    const dadosAgregados = agregarPorCondicaoSaude(
+    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
       usuariosPorCID,
-      "usuario_condicao_saude",
-      "ativos_3meses"
+      'usuario_condicao_saude',
+      'ativos_3meses'
     );
     const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, "quantidade");
+    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
 
     return dadosOrdenados;
   }, [usuariosPorCID]);
@@ -259,27 +259,31 @@ const PerfilUsuario = () => {
           posicao: null,
           url: ''
         } }
-        texto=""
+        texto=''
+        botao={{
+          label: '',
+          url: ''
+        }}
         titulo="<strong>Perfil do usuário</strong>"
       />
 
       <GraficoInfo
-        titulo="Perfil dos usuários ativos"
-        descricao="Quantitativo de usuários com RAAS ou BPA movimentada nos últimos meses (exceto acolhimento inicial)."
-        tooltip="Usuários ativos: Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) nos três meses anteriores ao mês de referência.
-        Usuários inativos: Usuários que não tiveram nenhum procedimento registrado no serviço há mais de 3 meses."
+        titulo='Perfil dos usuários ativos'
+        descricao='Quantitativo de usuários com RAAS ou BPA movimentada nos últimos meses (exceto acolhimento inicial).'
+        tooltip='Usuários ativos: Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) nos três meses anteriores ao mês de referência.
+        Usuários inativos: Usuários que não tiveram nenhum procedimento registrado no serviço há mais de 3 meses.'
       />
 
       { perfilPorEstabelecimento.length !== 0
         ? <GraficoInfo
-          descricao={ `Última competência disponível: ${encontrarDadosGeraisPorPeriodo(perfilPorEstabelecimento, "Último período").nome_mes
-            }` }
+          descricao={ `Última competência disponível: ${encontrarDadosGeraisPorPeriodo(perfilPorEstabelecimento, 'Último período').nome_mes
+          }` }
         />
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        titulo="Panorama geral"
+        titulo='Panorama geral'
       />
 
       { perfilPorEstabelecimento.length !== 0
@@ -302,13 +306,13 @@ const PerfilUsuario = () => {
             }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        titulo="Detalhamento por estabelecimento"
+        titulo='Detalhamento por estabelecimento'
         descricao={ perfilPorEstabelecimento.length !== 0 && `Dados de ${obterPeriodoPorExtenso(perfilPorEstabelecimento, filtroPeriodoPanorama.value)
-          }` }
+        }` }
       />
 
       { perfilPorEstabelecimento.length !== 0
@@ -317,7 +321,7 @@ const PerfilUsuario = () => {
             perfilPorEstabelecimento, filtroPeriodoPanorama.value
           ) }
         />
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <div className={ styles.MensagemTabela }>
@@ -325,8 +329,8 @@ const PerfilUsuario = () => {
       </div>
 
       <GraficoInfo
-        titulo="CID dos usuários ativos"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='CID dos usuários ativos'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { usuariosPorCID.length !== 0
@@ -359,30 +363,31 @@ const PerfilUsuario = () => {
             </div>
 
             { loadingCID
-              ? <Spinner theme="ColorSM" height="70vh" />
+              ? <Spinner theme='ColorSM' height='70vh' />
               : <div className={ styles.GraficoCIDContainer }>
                 <ReactEcharts
-                  option={ getOpcoesGraficoCID(agregadosPorCondicaoSaude) }
-                  style={ { width: "50%", height: "70vh" } }
+                  option={ getOpcoesGraficoDonut(agregadosPorCondicaoSaude) }
+                  style={ { width: '50%', height: '70vh' } }
                 />
 
-                <TabelaCid
+                <TabelaGraficoDonut
                   labels={ {
-                    colunaCid: "Grupo de diagnósticos",
-                    colunaQuantidade: "Usuários ativos",
+                    colunaHeader: 'Grupo de diagnósticos',
+                    colunaQuantidade: 'Usuários ativos',
                   } }
-                  cids={ agregadosPorCondicaoSaude }
+                  data={ agregadosPorCondicaoSaude }
+                  mensagemDadosZerados='Sem usuários nessa competência'
                 />
               </div>
             }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        titulo="Gênero e faixa etária"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='Gênero e faixa etária'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { usuariosPorGeneroEIdade.length !== 0
@@ -415,23 +420,23 @@ const PerfilUsuario = () => {
             </div>
 
             { loadingGenero
-              ? <Spinner theme="ColorSM" height="70vh" />
+              ? <Spinner theme='ColorSM' height='70vh' />
               : <ReactEcharts
                 option={ getOpcoesGraficoGeneroEFaixaEtaria(
                   agregadosPorGeneroEFaixaEtaria,
-                  "Usuários ativos"
+                  'Usuários ativos'
                 ) }
-                style={ { width: "100%", height: "70vh" } }
+                style={ { width: '100%', height: '70vh' } }
               />
             }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        titulo="Usuários ativos"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='Usuários ativos'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { usuariosPorCondicao.length !== 0
@@ -464,16 +469,16 @@ const PerfilUsuario = () => {
             </div>
 
             { loadingCondicao
-              ? <Spinner theme="ColorSM" height="70vh" />
+              ? <Spinner theme='ColorSM' height='70vh' />
               : <div className={ styles.GraficosUsuariosAtivosContainer }>
                 <div className={ styles.GraficoUsuariosAtivos }>
                   <ReactEcharts
                     option={ getOpcoesGraficoAbusoESituacao(
                       agregadosPorAbusoSubstancias,
-                      "Fazem uso de substâncias psicoativas?",
-                      "ABUSO_SUBSTANCIAS"
+                      'Fazem uso de substâncias psicoativas?',
+                      'ABUSO_SUBSTANCIAS'
                     ) }
-                    style={ { width: "100%", height: "100%" } }
+                    style={ { width: '100%', height: '100%' } }
                   />
                 </div>
 
@@ -481,22 +486,22 @@ const PerfilUsuario = () => {
                   <ReactEcharts
                     option={ getOpcoesGraficoAbusoESituacao(
                       agregadosPorSituacaoRua,
-                      "Estão em situação de rua?",
-                      "SITUACAO_RUA"
+                      'Estão em situação de rua?',
+                      'SITUACAO_RUA'
                     ) }
-                    style={ { width: "100%", height: "100%" } }
+                    style={ { width: '100%', height: '100%' } }
                   />
                 </div>
               </div>
             }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        titulo="Raça/Cor*"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='Raça/Cor*'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { usuariosPorRacaECor.length !== 0
@@ -529,22 +534,22 @@ const PerfilUsuario = () => {
             </div>
 
             { loadingRaca
-              ? <Spinner theme="ColorSM" height="70vh" />
+              ? <Spinner theme='ColorSM' height='70vh' />
               : <ReactEcharts
                 option={ getOpcoesGraficoRacaEcor(
                   agregadosPorRacaCor,
-                  "Usuários ativos"
+                  'Usuários ativos'
                 ) }
-                style={ { width: "100%", height: "70vh" } }
+                style={ { width: '100%', height: '70vh' } }
               />
             }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        descricao="*Dados podem ter problemas de coleta, registro e preenchimento"
+        descricao='*Dados podem ter problemas de coleta, registro e preenchimento'
       />
     </div>
   );

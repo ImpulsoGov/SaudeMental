@@ -7,14 +7,14 @@ import {
   COR_GRAFICO_DONUT_SEM_DADOS,
   QUANTIDADE_CORES_GRAFICO_DONUT
 } from '../../constants/GRAFICO_DONUT';
-import { agruparItensQueUltrapassamPaleta } from '../../helpers/graficoCID';
+import { agruparItensQueUltrapassamPaleta } from '../../helpers/graficoDonut';
 import styles from './Tabelas.module.css';
 
-const TabelaCid = ({ labels, cids }) => {
+const TabelaGraficoDonut = ({ labels, data, mensagemDadosZerados }) => {
   const colunas = useMemo(() => [
     {
-      field: 'condicaoSaude',
-      headerName: labels.colunaCid,
+      field: 'nome',
+      headerName: labels.colunaHeader,
       sortable: false,
       flex: 190,
       align: 'left',
@@ -48,15 +48,15 @@ const TabelaCid = ({ labels, cids }) => {
   const formatarDadosEmLinhas = useCallback(() => {
     let indiceDadosAgrupados = -1;
 
-    if (cids.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
-      const dadosAgrupados = agruparItensQueUltrapassamPaleta(cids);
+    if (data.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
+      const dadosAgrupados = agruparItensQueUltrapassamPaleta(data);
 
-      indiceDadosAgrupados = dadosAgrupados.findIndex(({ condicaoSaude }) => condicaoSaude === 'Outros');
+      indiceDadosAgrupados = dadosAgrupados.findIndex(({ nome }) => nome === 'Outros');
     }
 
-    return cids.map(({ condicaoSaude, quantidade }, index) => ({
+    return data.map(({ nome, quantidade }, index) => ({
       id: uuidV4(),
-      condicaoSaude,
+      nome,
       quantidade: {
         posicao: indiceDadosAgrupados >= 0 && index >= indiceDadosAgrupados
           ? indiceDadosAgrupados
@@ -65,23 +65,23 @@ const TabelaCid = ({ labels, cids }) => {
         dadosZerados: false
       }
     }));
-  }, [cids]);
+  }, [data]);
 
   const obterLinhaParaDadosZerados = useCallback(() => [{
     id: uuidV4(),
-    condicaoSaude: 'Sem usuários nessa competência',
+    nome: mensagemDadosZerados,
     quantidade: {
       posicao: 0,
       valor: 0,
       dadosZerados: true
     }
-  }], []);
+  }], [mensagemDadosZerados]);
 
   const linhas = useMemo(() => {
-    return cids.length !== 0
+    return data.length !== 0
       ? formatarDadosEmLinhas()
       : obterLinhaParaDadosZerados();
-  }, [formatarDadosEmLinhas, obterLinhaParaDadosZerados, cids]);
+  }, [formatarDadosEmLinhas, obterLinhaParaDadosZerados, data]);
 
   return (
     <DataGrid
@@ -113,15 +113,16 @@ const TabelaCid = ({ labels, cids }) => {
   );
 };
 
-TabelaCid.propTypes = {
+TabelaGraficoDonut.propTypes = {
   labels: PropTypes.shape({
-    colunaCid: PropTypes.string,
+    colunaHeader: PropTypes.string,
     colunaQuantidade: PropTypes.string,
   }),
-  cids: PropTypes.shape({
-    condicaoSaude: PropTypes.string,
+  data: PropTypes.shape({
+    nome: PropTypes.string,
     quantidade: PropTypes.number,
   }),
+  mensagemDadosZerados: PropTypes.string
 }.isRequired;
 
-export default TabelaCid;
+export default TabelaGraficoDonut;

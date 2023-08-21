@@ -1,8 +1,11 @@
-import TabelaCid from './Cid';
+import TabelaGraficoDonut from './TabelaGraficoDonut';
 import TabelaDetalhamentoPorCaps from './DetalhamentoPorCaps';
 import TabelaMatriciamentosPorCaps from './MatriciamentosPorCaps';
+import TabelaProcedimentosPorCaps from './ProcedimentosPorCaps';
 
 export {
-  TabelaCid, TabelaDetalhamentoPorCaps, TabelaMatriciamentosPorCaps
+  TabelaGraficoDonut,
+  TabelaDetalhamentoPorCaps,
+  TabelaMatriciamentosPorCaps,
+  TabelaProcedimentosPorCaps
 };
-
