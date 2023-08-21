@@ -13,7 +13,7 @@ import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../.
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
 import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from '../../../requests/caps';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
-import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
+import { GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
 
 const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: 'Último período', label: 'Último período' };
 const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: 'Todos', label: 'Todos' };
