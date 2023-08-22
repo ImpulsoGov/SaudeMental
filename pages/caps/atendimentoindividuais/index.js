@@ -8,7 +8,7 @@ import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
-import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
+import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
 import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from '../../../requests/caps';
@@ -225,15 +225,6 @@ const AtendimentoIndividual = () => {
     return dadosOrdenados;
   }, [atendimentosPorCID]);
 
-  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
-    return agregarPorFaixaEtariaEGenero(
-      atendimentosPorGenero,
-      'usuario_faixa_etaria',
-      'usuario_sexo',
-      'usuarios_apenas_atendimento_individual'
-    );
-  }, [atendimentosPorGenero]);
-
   const agregadosPorRacaCor = useMemo(() => {
     return agregarPorRacaCor(
       atendimentosPorRacaECor,
@@ -369,44 +360,29 @@ const AtendimentoIndividual = () => {
         fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { atendimentosPorGenero
-        && estabelecimentos.length !== 0
-        && periodos.length !== 0
-        ? (
-          <>
-            <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select { ...getPropsFiltroEstabelecimento(
-                  estabelecimentos,
-                  filtroEstabelecimentoGenero,
-                  setFiltroEstabelecimentoGenero
-                ) } />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoGenero,
-                    setFiltroPeriodoGenero
-                  )
-                } />
-              </div>
-            </div>
-
-            { loadingGenero
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                  agregadosPorGeneroEFaixaEtaria,
-                  ''
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
-          </>
-        )
-        : <Spinner theme='ColorSM' />
-      }
+      <GraficoGeneroPorFaixaEtaria
+        dados={ atendimentosPorGenero}
+        loading={ loadingGenero }
+        labels={{
+          eixoY: 'Nº de usuários que passaram apenas por atendimentos individuais'
+        }}
+        propriedades={{
+          faixaEtaria: 'usuario_faixa_etaria',
+          sexo: 'usuario_sexo',
+          quantidade: 'usuarios_apenas_atendimento_individual',
+        }}
+        filtroEstabelecimento={{
+          selecionado: filtroEstabelecimentoGenero,
+          setFiltro: setFiltroEstabelecimentoGenero,
+          opcoes: estabelecimentos,
+        }}
+        filtroCompetencia={{
+          selecionado: filtroPeriodoGenero,
+          setFiltro: setFiltroPeriodoGenero,
+          opcoes: periodos,
+          multiSelecao: true
+        }}
+      />
 
       <GraficoInfo
         titulo='Raça/Cor*'
