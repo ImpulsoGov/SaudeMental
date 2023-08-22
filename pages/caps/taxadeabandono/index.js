@@ -10,7 +10,7 @@ import Select from 'react-select';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
-import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
+import { GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
@@ -157,15 +157,6 @@ const TaxaAbandono = () => {
     return dadosOrdenados;
   }, [evasoesNoMesPorCID]);
 
-  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
-    return agregarPorFaixaEtariaEGenero(
-      evasoesNoMesPorGeneroEIdade,
-      'usuario_faixa_etaria',
-      'usuario_sexo',
-      'quantidade_registrada'
-    );
-  }, [evasoesNoMesPorGeneroEIdade]);
-
   // const agregadosPorRacaCor = agregarPorRacaCor(
   //   filtrarPorPeriodoEstabelecimento(abandonoPerfil, filtroEstabelecimentoRacaECor, filtroPeriodoRacaECor),
   //   'usuario_raca_cor',
@@ -299,47 +290,29 @@ const TaxaAbandono = () => {
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { evasoesNoMesPorGeneroEIdade
-        && periodos.length !== 0
-        && estabelecimentos.length !== 0
-        ? (
-          <>
-            <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoGenero,
-                    setFiltroEstabelecimentoGenero
-                  )
-                } />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoGenero,
-                    setFiltroPeriodoGenero
-                  )
-                } />
-              </div>
-            </div>
-
-            { loadingGenero
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                  agregadosPorGeneroEFaixaEtaria,
-                  ''
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
-          </>
-        )
-        : <Spinner theme='ColorSM' />
-      }
-
+      <GraficoGeneroPorFaixaEtaria
+        dados={ evasoesNoMesPorGeneroEIdade }
+        loading={ loadingGenero }
+        labels={{
+          eixoY: 'Nº de abandonos'
+        }}
+        propriedades={{
+          faixaEtaria: 'usuario_faixa_etaria',
+          sexo: 'usuario_sexo',
+          quantidade: 'quantidade_registrada',
+        }}
+        filtroEstabelecimento={{
+          selecionado: filtroEstabelecimentoGenero,
+          setFiltro: setFiltroEstabelecimentoGenero,
+          opcoes: estabelecimentos,
+        }}
+        filtroCompetencia={{
+          selecionado: filtroPeriodoGenero,
+          setFiltro: setFiltroPeriodoGenero,
+          opcoes: periodos,
+          multiSelecao: true
+        }}
+      />
       {/* <GraficoInfo
         titulo='Raça/Cor*'
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
