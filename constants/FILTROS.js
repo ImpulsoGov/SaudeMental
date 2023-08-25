@@ -7,3 +7,7 @@ export const FILTRO_ESTABELECIMENTO_DEFAULT = {
 };
 
 export const FILTRO_ESTABELECIMENTO_MULTI_DEFAULT = [FILTRO_ESTABELECIMENTO_DEFAULT];
+
+export const FILTRO_OCUPACAO_DEFAULT = {
+  value: 'Todas', label: 'Todas'
+};
