@@ -1,8 +1,8 @@
 import axios from "axios";
-import { API_URL } from "../constants/API_URL";
+import { API_SAUDE_MENTAL_URL } from "../constants/API_URL";
 
 const axiosInstance = axios.create({
-  baseURL: `${API_URL}saude-mental`,
+  baseURL: `${API_SAUDE_MENTAL_URL}saude-mental`,
 });
 
 export const getPerfilUsuarios = async (municipioIdSus) => {
