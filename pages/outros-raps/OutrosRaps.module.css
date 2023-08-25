@@ -13,6 +13,7 @@
 .GraficoDonutContainer {
   display: flex;
   justify-content: flex-start;
+  gap: 24px;
   width: 100%;
   height: 70vh;
 }
