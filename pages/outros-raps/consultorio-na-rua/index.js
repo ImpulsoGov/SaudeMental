@@ -134,7 +134,7 @@ const ConsultorioNaRua = () => {
     return {
       key: uuidv1(),
       indicador: atendimentoTodosUltimos12Meses['quantidade_registrada'],
-      titulo: 'Total de atendimentos nos últimos 12 meses',
+      titulo: `Total de atendimentos nos últimos 12 meses de ${atendimentoTodosUltimos12Meses['a_partir_do_mes']}/${atendimentoTodosUltimos12Meses['a_partir_do_ano']} a ${atendimentoTodosUltimos12Meses['ate_mes']}/${atendimentoTodosUltimos12Meses['ate_ano']}`,
       indice: atendimentoTodosUltimos12Meses['dif_quantidade_registrada_anterior'],
       indiceDescricao: 'doze meses anteriores'
     };

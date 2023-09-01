@@ -55,7 +55,7 @@ const ReducaoDeDanos = () => {
     return {
       key: uuidv1(),
       indicador: acaoTodosUltimos12Meses['quantidade_registrada'],
-      titulo: `Total de ações de redução de danos entre ${acaoTodosUltimos12Meses['a_partir_do_mes']} de ${acaoTodosUltimos12Meses['a_partir_do_ano']} e ${acaoTodosUltimos12Meses['ate_mes']} de ${acaoTodosUltimos12Meses['ate_ano']}`,
+      titulo: `Total de ações de redução de danos nos últimos 12 meses de ${acaoTodosUltimos12Meses['a_partir_do_mes']}/${acaoTodosUltimos12Meses['a_partir_do_ano']} a ${acaoTodosUltimos12Meses['ate_mes']}/${acaoTodosUltimos12Meses['ate_ano']}`,
       indice: acaoTodosUltimos12Meses['dif_quantidade_registrada_anterior'],
       indiceDescricao: 'doze meses anteriores'
     };
