@@ -1,7 +1,7 @@
 import {CardIndicadorDescricao, CardInternacaoStatus, CardPeriodosInternacao, CardsGridInternacao, CardInfoTipoA, CardInfoTipoC, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto} from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import {FiltroCompetencia} from '../../../components/Filtros/FiltroCompetencia'
+import {FiltroCompetencia} from '../../../components/Filtros'
 import { getCAPSAcolhimentoNoturno, getInternacoesRapsAltas, getInternacoesRapsAdmissoes, getInternacoesRapsAltas12m } from "../../../requests/cuidado-compartilhado";
 const FILTRO_PERIODO_MULTI_DEFAULT = [
   { value: 'Último período', label: 'Último período' },
@@ -140,6 +140,7 @@ const RapsHospitalar = ({ }) => {
                 descricao={ 'Internações finalizadas no mês selecionado abaixo:' }
                 filtro = {
                   <FiltroCompetencia
+                    width={'100%'}
                     dados = {periodosECompetencias}
                     valor = {filtroPeriodoInternacoesRapsAltas12m}
                     setValor = {setFiltroPeriodoInternacoesRapsAltas12m}
