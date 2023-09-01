@@ -1,4 +1,4 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from '@impulsogov/design-system';
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
@@ -133,13 +133,15 @@ const ReducaoDeDanos = () => {
       <Grid12Col
         items={ [
           <>
-            { acoes.length !== 0 &&
-              <CardInfoTipoA { ...getPropsCardUltimoPeriodo(acoes) } />
+            { acoes.length !== 0
+              ? <CardInfoTipoA { ...getPropsCardUltimoPeriodo(acoes) } />
+              : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { acoes12meses.length !== 0 &&
-              <CardInfoTipoA { ...getPropsCardUltimos12Meses(acoes12meses) } />
+            { acoes12meses.length !== 0
+              ? <CardInfoTipoA { ...getPropsCardUltimos12Meses(acoes12meses) } />
+              : <Spinner theme="ColorSM" />
             }
           </>,
         ] }
@@ -150,8 +152,8 @@ const ReducaoDeDanos = () => {
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
       />
 
-      { acoes.length !== 0 &&
-        <>
+      { acoes.length !== 0
+        ? <>
           <div className={ styles.Filtros }>
             <FiltroTexto
               dados={ acoes }
@@ -174,6 +176,7 @@ const ReducaoDeDanos = () => {
             style={ { width: '100%', height: '70vh' } }
           />
         </>
+        : <Spinner theme="ColorSM" height="70vh" />
       }
     </div>
   );

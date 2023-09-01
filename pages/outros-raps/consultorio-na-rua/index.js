@@ -1,4 +1,4 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from '@impulsogov/design-system';
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
@@ -165,13 +165,15 @@ const ConsultorioNaRua = () => {
       <Grid12Col
         items={ [
           <>
-            { atendimentos.length !== 0 &&
-              <CardInfoTipoA { ...getPropsCardUltimoPeriodo() } />
+            { atendimentos.length !== 0
+              ? <CardInfoTipoA { ...getPropsCardUltimoPeriodo() } />
+              : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { atendimentos12meses.length !== 0 &&
-              <CardInfoTipoA { ...getPropsCardUltimos12Meses() } />
+            { atendimentos12meses.length !== 0
+              ? <CardInfoTipoA { ...getPropsCardUltimos12Meses() } />
+              : <Spinner theme="ColorSM" />
             }
           </>,
         ] }
@@ -182,8 +184,8 @@ const ConsultorioNaRua = () => {
         fonte='Fonte: SISAB - Elaboração Impulso Gov'
       />
 
-      { atendimentos.length !== 0 &&
-        <>
+      { atendimentos.length !== 0
+        ? <>
           <FiltroCompetencia
             dados={ atendimentos }
             valor={ filtroCompetencia }
@@ -206,6 +208,7 @@ const ConsultorioNaRua = () => {
             />
           </div>
         </>
+        : <Spinner theme="ColorSM" height="70vh" />
       }
 
       <GraficoInfo
@@ -213,8 +216,8 @@ const ConsultorioNaRua = () => {
         fonte='Fonte: SISAB - Elaboração Impulso Gov'
       />
 
-      { atendimentos.length !== 0 &&
-        <>
+      { atendimentos.length !== 0
+        ? <>
           <FiltroTexto
             dados={ atendimentos }
             label='Tipo de produção'
@@ -228,6 +231,7 @@ const ConsultorioNaRua = () => {
             style={ { width: '100%', height: '70vh' } }
           />
         </>
+        : <Spinner theme="ColorSM" height="70vh" />
       }
     </div>
   );
