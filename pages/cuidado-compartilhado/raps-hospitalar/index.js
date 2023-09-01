@@ -1,7 +1,7 @@
 import { CardInfoTipoA, CardInfoTipoC, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { API_URL } from "../../../constants/API_URL";
+import { API_SAUDE_MENTAL_URL } from "../../../constants/API_URL";
 
 const RapsHospitalar = ({ }) => {
   const getRequestOptions = { method: 'GET', redirect: 'follow' };
@@ -16,10 +16,10 @@ const RapsHospitalar = ({ }) => {
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
-      const urlCAPSAcolhimentoNoturno = API_URL + "saude-mental/atencao_hospitalar/noturno?municipio_id_sus=" + session?.user.municipio_id_ibge;
-      const urlInternacoesRapsAdmissoes = API_URL + "saude-mental/internacoes/raps/admissoes/resumo/12m?municipio_id_sus=" + session?.user.municipio_id_ibge;
-      const urlInternacoesRapsAltas = API_URL + "saude-mental/atencao_hospitalar/altas?municipio_id_sus=" + session?.user.municipio_id_ibge;
-      const urlInternacoesRapsAltas12m = API_URL + "saude-mental/internacoes/raps/altas/resumo/12m?municipio_id_sus=" + session?.user.municipio_id_ibge;
+      const urlCAPSAcolhimentoNoturno = API_SAUDE_MENTAL_URL + "saude-mental/atencao_hospitalar/noturno?municipio_id_sus=" + session?.user.municipio_id_ibge;
+      const urlInternacoesRapsAdmissoes = API_SAUDE_MENTAL_URL + "saude-mental/internacoes/raps/admissoes/resumo/12m?municipio_id_sus=" + session?.user.municipio_id_ibge;
+      const urlInternacoesRapsAltas = API_SAUDE_MENTAL_URL + "saude-mental/atencao_hospitalar/altas?municipio_id_sus=" + session?.user.municipio_id_ibge;
+      const urlInternacoesRapsAltas12m = API_SAUDE_MENTAL_URL + "saude-mental/internacoes/raps/altas/resumo/12m?municipio_id_sus=" + session?.user.municipio_id_ibge;
 
       fetch(urlCAPSAcolhimentoNoturno, getRequestOptions)
         .then(response => response.json())
