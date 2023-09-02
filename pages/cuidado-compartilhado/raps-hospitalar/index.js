@@ -1,4 +1,4 @@
-import {CardIndicadorDescricao, CardInternacaoStatus, CardPeriodosInternacao, CardsGridInternacao, CardInfoTipoA, CardInfoTipoC, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto} from "@impulsogov/design-system";
+import {CardIndicadorDescricao, CardInternacaoStatus, CardPeriodosInternacao, CardsGridInternacao, CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto} from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {FiltroCompetencia} from '../../../components/Filtros'
@@ -6,14 +6,19 @@ import { getCAPSAcolhimentoNoturno, getInternacoesRapsAltas, getInternacoesRapsA
 const FILTRO_PERIODO_MULTI_DEFAULT = [
   { value: 'Último período', label: 'Último período' },
 ];
+
+const iconeSim = "https://media.graphassets.com/TrHUmoqQ12gaauujhEoS";
+const iconeNao = "https://media.graphassets.com/avvXauyoTCKA3NnBWP9g";
+
 const RapsHospitalar = ({ }) => {
   const { data: session } = useSession();
-  const [CAPSAcolhimentoNoturno, setCAPSAcolhimentoNoturno] = useState();
-  const [InternacoesRapsAdmissoes, setInternacoesRapsAdmissoes] = useState();
-  const [InternacoesRapsAltas12m, setInternacoesRapsAltas12m] = useState();
-  const [InternacoesRapsAltas, setInternacoesRapsAltas] = useState([]);
+  const [capsAcolhimentoNoturno, setCAPSAcolhimentoNoturno] = useState([]);
+  const [internacoesRapsAdmissoes, setInternacoesRapsAdmissoes] = useState([]);
+  const [internacoesRapsAltas12m, setInternacoesRapsAltas12m] = useState([]);
+  const [internacoesRapsAltas, setInternacoesRapsAltas] = useState([]);
   const [periodosECompetencias, setPeriodosECompetencias] = useState([]);
-  const [filtroPeriodoInternacoesRapsAltas12m, setFiltroPeriodoInternacoesRapsAltas12m] = useState([FILTRO_PERIODO_MULTI_DEFAULT]);
+  const [filtrosPeriodosInternacoesRapsAltas, setFiltroPeriodoInternacoesRapsAltas] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [internacoesRapsAltasFiltradas, setInternacoesRapsAltasFiltradas] = useState([]);
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
       getCAPSAcolhimentoNoturno(session?.user.municipio_id_ibge)
@@ -24,18 +29,25 @@ const RapsHospitalar = ({ }) => {
         .then(dados => setInternacoesRapsAltas12m(dados[0]));
       getInternacoesRapsAltas(session?.user.municipio_id_ibge)
         .then(dados => {
-          console.log(dados);
           setInternacoesRapsAltas(dados);
           const periodosECompetencias = dados.map(item => ({
             periodo: item.periodo,
             competencia: item.competencia 
           }));
           setPeriodosECompetencias(periodosECompetencias);
-          console.log(periodosECompetencias); 
         });
     }
   }, []);
-  
+
+  useEffect(() => {
+    // filtrosPeriodosInternacoes é array de objetos, eu itero e salvo todos os .value de cada obj
+    // 
+    const periodos = filtrosPeriodosInternacoesRapsAltas.map(item => item.value);
+    const filtradas = internacoesRapsAltas.filter(item => periodos.includes(item.periodo));
+    setInternacoesRapsAltasFiltradas(filtradas);
+
+  }, [internacoesRapsAltas, filtrosPeriodosInternacoesRapsAltas]);
+
   return (
     <div>
       <TituloSmallTexto
@@ -51,7 +63,7 @@ const RapsHospitalar = ({ }) => {
         titulo="<strong>Internações finalizadas desde o início do ano</strong>"
       />
 
-      { InternacoesRapsAltas12m
+      { internacoesRapsAltas12m
         ? <GraficoInfo
           titulo={'Usuários que foram atendidos na RAPS antes ou após a internação'}
           descricao={ 'Atendimentos ocorridos nos 6 meses anteriores à internação e no mês seguinte após a alta. Atendimentos ocorridos nos 6 meses anteriores à internação e no mês seguinte após a alta.'}
@@ -62,79 +74,83 @@ const RapsHospitalar = ({ }) => {
       <CardsGridInternacao
         cardsArray={ [
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardInternacaoStatus
+                icones={{ sim: iconeSim, nao: iconeNao }}
                 antes={{status:false, descricao:'Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta'}}
                 depois={{status:false, descricao:'Não foram atendidos nem no mês da alta, nem no mês seguinte'}}></CardInternacaoStatus>
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardInternacaoStatus
+                icones={{ sim: iconeSim, nao: iconeNao }}
                 antes={{status:true, descricao:'Foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta'}}
                 depois={{status:false, descricao:'Não foram atendidos nem no mês da alta, nem no mês seguinte'}}></CardInternacaoStatus>
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ? <CardInternacaoStatus
+                icones={{ sim: iconeSim, nao: iconeNao }}
                 antes={{status:true, descricao:'Foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta'}}
                 depois={{status:true, descricao:'Foram atendidos nem no mês da alta, nem no mês seguinte'}}></CardInternacaoStatus>
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardInternacaoStatus
+                icones={{ sim: iconeSim, nao: iconeNao }}
                 antes={{status:false, descricao:'Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta'}}
                 depois={{status:true, descricao:'Foram atendidos nem no mês da alta, nem no mês seguinte'}}></CardInternacaoStatus>
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardPeriodosInternacao
-                periodo={ 'Anual'}
+                periodo={ 'Ano'}
                 descricao={ 'Internações finalizadas entre agosto de 2021 e julho de 2022.' }></CardPeriodosInternacao>
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
-                indicador={ InternacoesRapsAltas12m.altas_atendimento_raps_antes_nao_apos_nao }
+                indicador={ internacoesRapsAltas12m.altas_atendimento_raps_antes_nao_apos_nao }
                 descricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
-                indicador={ InternacoesRapsAltas12m.altas_atendimento_raps_antes_sim_apos_nao }
+                indicador={ internacoesRapsAltas12m.altas_atendimento_raps_antes_sim_apos_nao }
                 descricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
-                indicador={ InternacoesRapsAltas12m.altas_atendimento_raps_antes_sim_apos_sim }
+                indicador={ internacoesRapsAltas12m.altas_atendimento_raps_antes_sim_apos_sim }
                 descricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
-                indicador={ InternacoesRapsAltas12m.altas_atendimento_raps_antes_nao_apos_sim }
+                indicador={ internacoesRapsAltas12m.altas_atendimento_raps_antes_nao_apos_sim }
                 descricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardPeriodosInternacao
                 periodo={ 'Mensal'}
                 descricao={ 'Internações finalizadas no mês selecionado abaixo:' }
@@ -142,8 +158,8 @@ const RapsHospitalar = ({ }) => {
                   <FiltroCompetencia
                     width={'100%'}
                     dados = {periodosECompetencias}
-                    valor = {filtroPeriodoInternacoesRapsAltas12m}
-                    setValor = {setFiltroPeriodoInternacoesRapsAltas12m}
+                    valor = {filtrosPeriodosInternacoesRapsAltas}
+                    setValor = {setFiltroPeriodoInternacoesRapsAltas}
                     isMulti
                   />
                 }
@@ -152,33 +168,33 @@ const RapsHospitalar = ({ }) => {
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
-                indicador={ 5}
+                indicador={ internacoesRapsAltasFiltradas.reduce((acumulador, valorAtual) => acumulador + valorAtual.altas_atendimento_raps_antes_nao_apos_nao, 0)}
                 indicadorDescricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
-                indicador={ 5 }
+                indicador={ internacoesRapsAltasFiltradas.reduce((acumulador, valorAtual) => acumulador + valorAtual.altas_atendimento_raps_antes_sim_apos_nao, 0)}
                 indicadorDescricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
-                indicador={ 5 }
+                indicador={ internacoesRapsAltasFiltradas.reduce((acumulador, valorAtual) => acumulador + valorAtual.altas_atendimento_raps_antes_sim_apos_sim, 0) }
                 indicadorDescricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAltas12m
+            { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
-                indicador={ 5 }
+                indicador={ internacoesRapsAltasFiltradas.reduce((acumulador, valorAtual) => acumulador + valorAtual.altas_atendimento_raps_antes_nao_apos_sim, 0) }
                 indicadorDescricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
@@ -243,9 +259,9 @@ const RapsHospitalar = ({ }) => {
         descricao="<strong>Atenção:</strong> os valores acima são aproximados, já que a conexão entre registros ambulatoriais e hospitalares do SUS a partir de dados abertos (não identificados) está sujeita a pequenas imprecisões."
       />
 
-      { InternacoesRapsAltas12m
+      { internacoesRapsAltas12m
         ? <GraficoInfo
-          descricao={ `Iniciadas entre ${InternacoesRapsAltas12m["a_partir_de_mes"]} de ${InternacoesRapsAltas12m["a_partir_de_ano"]} e ${InternacoesRapsAltas12m["ate_mes"]} de ${InternacoesRapsAltas12m["ate_ano"]}` }
+          descricao={ `Iniciadas entre ${internacoesRapsAltas12m["a_partir_de_mes"]} de ${internacoesRapsAltas12m["a_partir_de_ano"]} e ${internacoesRapsAltas12m["ate_mes"]} de ${internacoesRapsAltas12m["ate_ano"]}` }
           fonte="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS - Elaboração Impulso Gov"
           titulo="Novas internações e acolhimentos noturnos"
         />
@@ -255,32 +271,32 @@ const RapsHospitalar = ({ }) => {
       <Grid12Col
         items={ [
           <>
-            { InternacoesRapsAdmissoes
-              ? <CardInfoTipoA indicador={ InternacoesRapsAdmissoes["internacoes_transtornos"] }
+            { internacoesRapsAdmissoes
+              ? <CardInfoTipoA indicador={ internacoesRapsAdmissoes["internacoes_transtornos"] }
                 titulo="Novas internações da linha geral em hospitais"
               />
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAdmissoes
-              ? <CardInfoTipoA indicador={ InternacoesRapsAdmissoes["internacoes_alcool_drogas"] }
+            { internacoesRapsAdmissoes
+              ? <CardInfoTipoA indicador={ internacoesRapsAdmissoes["internacoes_alcool_drogas"] }
                 titulo="Novas internações da linha AD em hospitais"
               />
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { InternacoesRapsAdmissoes
-              ? <CardInfoTipoA indicador={ InternacoesRapsAdmissoes["internacoes_total"] }
+            { internacoesRapsAdmissoes
+              ? <CardInfoTipoA indicador={ internacoesRapsAdmissoes["internacoes_total"] }
                 titulo="Novas internações em hospitais - total"
               />
               : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { CAPSAcolhimentoNoturno
-              ? <CardInfoTipoA indicador={ CAPSAcolhimentoNoturno["acolhimentos_noturnos"] }
+            { capsAcolhimentoNoturno
+              ? <CardInfoTipoA indicador={ capsAcolhimentoNoturno["acolhimentos_noturnos"] }
                 titulo="Quantidade de usuários que passaram por acolhimentos noturnos em CAPS"
               />
               : <Spinner theme="ColorSM" />
