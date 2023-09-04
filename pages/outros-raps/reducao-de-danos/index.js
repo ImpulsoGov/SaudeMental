@@ -23,15 +23,16 @@ const ReducaoDeDanos = () => {
   const [acoes12meses, setAcoes12meses] = useState([]);
   const [filtroEstabelecimento, setFiltroEstabelecimento] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroOcupacao, setFiltroOcupacao] = useState(FILTRO_OCUPACAO_DEFAULT);
+  const [mensagem, setMensagem] = useState('');
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setAcoes(await getAcoesReducaoDeDanos(municipioIdSus));
-      setAcoes12meses(await getAcoesReducaoDeDanos12meses(municipioIdSus));
+      setAcoes(await getAcoesReducaoDeDanos(municipioIdSus, setMensagem));
+      setAcoes12meses(await getAcoesReducaoDeDanos12meses(municipioIdSus, setMensagem));
     };
 
     if (session?.user.municipio_id_ibge) {
-      getDados(session?.user.municipio_id_ibge);
+      getDados(230440);
     }
   }, []);
 
@@ -124,59 +125,75 @@ const ReducaoDeDanos = () => {
         titulo="<strong>Ações de Redução de Danos</strong>"
       />
 
-      <GraficoInfo
-        titulo="Ações de redução de danos realizadas"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
-        tooltip="Total de procedimentos registrados como 'ação de redução de danos', segundo informado pelos profissionais de saúde por meios dos Boletins de Produção Ambulatorial consolidados (BPA-c)."
-      />
-
-      <Grid12Col
-        items={ [
-          <>
-            { acoes.length !== 0
-              ? <CardInfoTipoA { ...getPropsCardUltimoPeriodo(acoes) } />
-              : <Spinner theme="ColorSM" />
-            }
-          </>,
-          <>
-            { acoes12meses.length !== 0
-              ? <CardInfoTipoA { ...getPropsCardUltimos12Meses(acoes12meses) } />
-              : <Spinner theme="ColorSM" />
-            }
-          </>,
-        ] }
-      />
-
-      <GraficoInfo
-        titulo="Histórico Temporal"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
-      />
-
-      { acoes.length !== 0
-        ? <>
-          <div className={ styles.Filtros }>
-            <FiltroTexto
-              dados={ acoes }
-              label='Estabelecimento'
-              propriedade='estabelecimento'
-              valor={ filtroEstabelecimento }
-              setValor={ setFiltroEstabelecimento }
-            />
-            <FiltroTexto
-              dados={ acoes }
-              label='CBO do profissional'
-              propriedade='profissional_vinculo_ocupacao'
-              valor={ filtroOcupacao }
-              setValor={ setFiltroOcupacao }
-            />
-          </div>
-
-          <ReactEcharts
-            option={ getOpcoesGraficoDeLinha(acoes) }
-            style={ { width: '100%', height: '70vh' } }
+      {mensagem
+        ? <TituloSmallTexto
+          imagem={ {
+            posicao: null,
+            url: ''
+          } }
+          texto={ mensagem }
+          botao={{
+            label: '',
+            url: ''
+          }}
+          titulo=""
+        />
+        : <>
+          <GraficoInfo
+            titulo="Ações de redução de danos realizadas"
+            fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+            tooltip="Total de procedimentos registrados como 'ação de redução de danos', segundo informado pelos profissionais de saúde por meios dos Boletins de Produção Ambulatorial consolidados (BPA-c)."
           />
+
+          <Grid12Col
+            items={ [
+              <>
+                { acoes.length !== 0
+                  ? <CardInfoTipoA { ...getPropsCardUltimoPeriodo(acoes) } />
+                  : <Spinner theme="ColorSM" />
+                }
+              </>,
+              <>
+                { acoes12meses.length !== 0
+                  ? <CardInfoTipoA { ...getPropsCardUltimos12Meses(acoes12meses) } />
+                  : <Spinner theme="ColorSM" />
+                }
+              </>,
+            ] }
+          />
+
+          <GraficoInfo
+            titulo="Histórico Temporal"
+            fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+          />
+
+          { acoes.length !== 0
+            ? <>
+              <div className={ styles.Filtros }>
+                <FiltroTexto
+                  dados={ acoes }
+                  label='Estabelecimento'
+                  propriedade='estabelecimento'
+                  valor={ filtroEstabelecimento }
+                  setValor={ setFiltroEstabelecimento }
+                />
+                <FiltroTexto
+                  dados={ acoes }
+                  label='CBO do profissional'
+                  propriedade='profissional_vinculo_ocupacao'
+                  valor={ filtroOcupacao }
+                  setValor={ setFiltroOcupacao }
+                />
+              </div>
+
+              <ReactEcharts
+                option={ getOpcoesGraficoDeLinha(acoes) }
+                style={ { width: '100%', height: '70vh' } }
+              />
+            </>
+            : <Spinner theme="ColorSM" height="70vh" />
+          }
         </>
-        : <Spinner theme="ColorSM" height="70vh" />
       }
     </div>
   );

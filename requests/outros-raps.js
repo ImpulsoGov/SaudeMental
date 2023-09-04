@@ -29,7 +29,7 @@ export const getAtendimentosConsultorioNaRua12meses = async (municipioIdSus) => 
   }
 };
 
-export const getAcoesReducaoDeDanos = async (municipioIdSus) => {
+export const getAcoesReducaoDeDanos = async (municipioIdSus, setMensagemErro) => {
   try {
     const endpoint = "/reducaodedanos?municipio_id_sus=" + municipioIdSus;
 
@@ -37,11 +37,15 @@ export const getAcoesReducaoDeDanos = async (municipioIdSus) => {
 
     return data;
   } catch (error) {
+    if (error.response.status === 400) {
+      setMensagemErro('Município não teve nenhuma ação de redução de danos no último mês');
+    }
+
     console.log('error', error.response.data);
   }
 };
 
-export const getAcoesReducaoDeDanos12meses = async (municipioIdSus) => {
+export const getAcoesReducaoDeDanos12meses = async (municipioIdSus, setMensagemErro) => {
   try {
     const endpoint = "/reducaodedanos12meses?municipio_id_sus=" + municipioIdSus;
 
@@ -49,6 +53,10 @@ export const getAcoesReducaoDeDanos12meses = async (municipioIdSus) => {
 
     return data;
   } catch (error) {
+    if (error.response.status === 404) {
+      setMensagemErro('Município não teve nenhuma ação de redução de danos no último ano');
+    }
+
     console.log('error', error.response.data);
   }
 };
