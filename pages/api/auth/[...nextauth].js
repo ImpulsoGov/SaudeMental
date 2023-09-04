@@ -1,107 +1,108 @@
-import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 import FormData from "form-data";
-import { API_URL } from "../../../constants/API_URL";
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { API_USUARIOS_URL } from "../../../constants/API_URL";
 
-export const obterDadosUsuarioSM = async (token,mail)=>{
-  console.log(mail)
+export const obterDadosUsuarioSM = async (token, mail) => {
   let config = {
     method: 'get',
-    url: API_URL+'suporte/ger_usuarios/dados-usuario-sm?id='+mail+'&id_cod=1',
-    headers: { 
-      'Authorization': 'Bearer '+token
+    url: API_USUARIOS_URL + 'suporte/ger_usuarios/dados-usuario-sm?id=' + mail + '&id_cod=1',
+    headers: {
+      'Authorization': 'Bearer ' + token
     }
   };
-  return await axios(config)
-  .then(function (response) {
-    return response.data.cadastro[0]
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-}
 
-const getToken = async(credentials)=>{
+  return await axios(config)
+    .then(function (response) {
+      return response.data.cadastro[0];
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+};
+
+const getToken = async (credentials) => {
   let data = new FormData();
+
   data.append('username', credentials.username);
   data.append('password', credentials.password);
+
   const config = {
     method: 'post',
-    url: API_URL + 'suporte/usuarios/token',
-    headers: { 
+    url: API_USUARIOS_URL + 'suporte/usuarios/token',
+    headers: {
       ...data.getHeaders()
     },
-    data : data
+    data: data
   };
-  return await axios(config)
-  .then(async(response)=> {
-    let DadosUsuario = await obterDadosUsuarioSM(response.data.access_token,credentials.username)
-    console.log(DadosUsuario)
-    console.log(process.env.NEXTAUTH_JWT_SECRET)
-    const res = {...response.data,mail:credentials.username,...DadosUsuario}
-    console.log(res)
-    return res
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
 
-}
+  return await axios(config)
+    .then(async (response) => {
+      let dadosUsuario = await obterDadosUsuarioSM(response.data.access_token, credentials.username);
+      const res = { ...response.data, mail: credentials.username, ...dadosUsuario };
+
+      return res;
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+};
 
 export const authOptions = {
-secret: process.env.NEXTAUTH_JWT_SECRET,
-providers: [
-  CredentialsProvider({
-    // The name to display on the sign in form (e.g. "Sign in with...")
-    name: "Credentials",
-    // The credentials is used to generate a suitable form on the sign in page.
-    // You can specify whatever fields you are expecting to be submitted.
-    // e.g. domain, username, password, 2FA token, etc.
-    // You can pass any HTML attribute to the <input> tag through the object.
-    credentials: {
-      username: { label: "Username", type: "text" },
-      password: { label: "Password", type: "password" }
-    },
-    async authorize(credentials, req) {
-      const token = await getToken(credentials)  
-      if (token) {
-        // Any object returned will be saved in `user` property of the JWT
-        return token
-      } else {
-        // If you return null then an error will be displayed advising the user to check their details.
-        return null
+  secret: process.env.NEXTAUTH_JWT_SECRET,
+  providers: [
+    CredentialsProvider({
+      // The name to display on the sign in form (e.g. "Sign in with...")
+      name: "Credentials",
+      // The credentials is used to generate a suitable form on the sign in page.
+      // You can specify whatever fields you are expecting to be submitted.
+      // e.g. domain, username, password, 2FA token, etc.
+      // You can pass any HTML attribute to the <input> tag through the object.
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials, req) {
+        const token = await getToken(credentials);
+        if (token) {
+          // Any object returned will be saved in `user` property of the JWT
+          return token;
+        } else {
+          // If you return null then an error will be displayed advising the user to check their details.
+          return null;
+        }
       }
-    }
-  })
-],
-session: {
-  strategy: "jwt",
-  maxAge: 8 * 60 * 60,
-  updateAge: 8 * 60 * 60
-},
-refetchInterval: 1,
-jwt: {
-  secret: process.env.NEXTAUTH_SECRET,
-  maxAge: 8 * 60 * 60
-},
-callbacks: {
-  jwt: async ({ token, user }) => {
-    user && (token.user = user);
-    return Promise.resolve(token);
+    })
+  ],
+  session: {
+    strategy: "jwt",
+    maxAge: 8 * 60 * 60,
+    updateAge: 8 * 60 * 60
   },
-  session: async ({ session, token }) => {
-    session.user = token.user;
-    return Promise.resolve(session);
+  refetchInterval: 1,
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
+    maxAge: 8 * 60 * 60
   },
-  signIn: async ({credentials})=> {
-    return credentials
+  callbacks: {
+    jwt: async ({ token, user }) => {
+      user && (token.user = user);
+      return Promise.resolve(token);
+    },
+    session: async ({ session, token }) => {
+      session.user = token.user;
+      return Promise.resolve(session);
+    },
+    signIn: async ({ credentials }) => {
+      return credentials;
+    },
   },
-},
-pages: {
-  signIn: '/inicio',
-  signOut: '/auth/signout',
-}
-}
+  pages: {
+    signIn: '/inicio',
+    signOut: '/auth/signout',
+  }
+};
 
-export default NextAuth(authOptions)
+export default NextAuth(authOptions);
