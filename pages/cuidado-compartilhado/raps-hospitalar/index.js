@@ -40,8 +40,6 @@ const RapsHospitalar = ({ }) => {
   }, []);
 
   useEffect(() => {
-    // filtrosPeriodosInternacoes é array de objetos, eu itero e salvo todos os .value de cada obj
-    // 
     const periodos = filtrosPeriodosInternacoesRapsAltas.map(item => item.value);
     const filtradas = internacoesRapsAltas.filter(item => periodos.includes(item.periodo));
     setInternacoesRapsAltasFiltradas(filtradas);
@@ -65,8 +63,9 @@ const RapsHospitalar = ({ }) => {
 
       { internacoesRapsAltas12m
         ? <GraficoInfo
+          tooltip="São consideradas as internações de munícipes em UPAs e hospitais gerais ou psiquiátricos, vinculados a qualquer esfera federativa, desde que o tipo de leito, o procedimento principal ou o CID diagnóstico sejam referentes a questões de saúde mental. &quot;Antes&quot; inclui internados com acompanhamento prévio na RAPS, com registros de ações psicossociais (RAAS) ou boletins de produção ambulatorial (BPA) nos 6 meses anteriores à internação. &quot;Depois&quot; abrange egressos da internação na rede hospitalar com altas relacionadas à saúde mental e registros na RAPS de ações psicossociais (RAAS) ou boletins de produção ambulatorial (BPA) no mesmo mês da alta ou no mês seguinte."
           titulo={'Usuários que foram atendidos na RAPS antes ou após a internação'}
-          descricao={ 'Atendimentos ocorridos nos 6 meses anteriores à internação e no mês seguinte após a alta. Atendimentos ocorridos nos 6 meses anteriores à internação e no mês seguinte após a alta.'}
+          descricao={ 'Internações em saúde mental em qualquer unidade hospitalar ou UPA, classificados por histórico de atendimento do usuário na RAPS nos 6 meses anteriores à internação e/ou no mês seguinte após a alta.'}
           fonte="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS - Elaboração Impulso Gov"
         />
         : <Spinner theme="ColorSM" />
@@ -77,8 +76,8 @@ const RapsHospitalar = ({ }) => {
             { internacoesRapsAltas12m
               ?<CardInternacaoStatus
                 icones={{ sim: iconeSim, nao: iconeNao }}
-                antes={{status:false, descricao:'Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta'}}
-                depois={{status:false, descricao:'Não foram atendidos nem no mês da alta, nem no mês seguinte'}}></CardInternacaoStatus>
+                antes={{status:false, descricao:'Não atendidos'}}
+                depois={{status:false, descricao:'e nem'}}></CardInternacaoStatus>
               : <Spinner theme="ColorSM" />
             }
           </>,
@@ -86,8 +85,8 @@ const RapsHospitalar = ({ }) => {
             { internacoesRapsAltas12m
               ?<CardInternacaoStatus
                 icones={{ sim: iconeSim, nao: iconeNao }}
-                antes={{status:true, descricao:'Foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta'}}
-                depois={{status:false, descricao:'Não foram atendidos nem no mês da alta, nem no mês seguinte'}}></CardInternacaoStatus>
+                antes={{status:true, descricao:'Atendidos'}}
+                depois={{status:false, descricao:'mas não'}}></CardInternacaoStatus>
               : <Spinner theme="ColorSM" />
             }
           </>,
@@ -95,8 +94,8 @@ const RapsHospitalar = ({ }) => {
             { internacoesRapsAltas12m
               ? <CardInternacaoStatus
                 icones={{ sim: iconeSim, nao: iconeNao }}
-                antes={{status:true, descricao:'Foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta'}}
-                depois={{status:true, descricao:'Foram atendidos nem no mês da alta, nem no mês seguinte'}}></CardInternacaoStatus>
+                antes={{status:true, descricao:'Atendidos'}}
+                depois={{status:true, descricao:'E também'}}></CardInternacaoStatus>
               : <Spinner theme="ColorSM" />
             }
           </>,
@@ -104,8 +103,8 @@ const RapsHospitalar = ({ }) => {
             { internacoesRapsAltas12m
               ?<CardInternacaoStatus
                 icones={{ sim: iconeSim, nao: iconeNao }}
-                antes={{status:false, descricao:'Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta'}}
-                depois={{status:true, descricao:'Foram atendidos nem no mês da alta, nem no mês seguinte'}}></CardInternacaoStatus>
+                antes={{status:false, descricao:'Não atendidos'}}
+                depois={{status:true, descricao:'mas atendidos'}}></CardInternacaoStatus>
               : <Spinner theme="ColorSM" />
             }
           </>,
@@ -113,7 +112,7 @@ const RapsHospitalar = ({ }) => {
             { internacoesRapsAltas12m
               ?<CardPeriodosInternacao
                 periodo={ 'Ano'}
-                descricao={ 'Internações finalizadas entre agosto de 2021 e julho de 2022.' }></CardPeriodosInternacao>
+                descricao={ 'Internações finalizadas entre ' + internacoesRapsAltas12m.a_partir_de_mes + ' de ' + internacoesRapsAltas12m.a_partir_de_ano + ' e ' + internacoesRapsAltas12m.ate_mes + ' de ' + internacoesRapsAltas12m.ate_ano}></CardPeriodosInternacao>
               : <Spinner theme="ColorSM" />
             }
           </>,
@@ -152,7 +151,7 @@ const RapsHospitalar = ({ }) => {
           <>
             { internacoesRapsAltas12m
               ?<CardPeriodosInternacao
-                periodo={ 'Mensal'}
+                periodo={ 'Mês'}
                 descricao={ 'Internações finalizadas no mês selecionado abaixo:' }
                 filtro = {
                   <FiltroCompetencia
