@@ -1,7 +1,7 @@
 import {CardIndicadorDescricao, CardInternacaoStatus, CardPeriodosInternacao, CardsGridInternacao, CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto} from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import {FiltroCompetencia} from '../../../components/Filtros'
+import {FiltroCompetencia} from '../../../components/Filtros';
 import { getCAPSAcolhimentoNoturno, getInternacoesRapsAltas, getInternacoesRapsAdmissoes, getInternacoesRapsAltas12m } from "../../../requests/cuidado-compartilhado";
 const FILTRO_PERIODO_MULTI_DEFAULT = { value: 'Último período', label: 'Último período' };
 
@@ -38,12 +38,8 @@ const RapsHospitalar = ({ }) => {
   }, []);
 
   useEffect(() => {
-    console.log(internacoesRapsAltas)
-    console.log(filtroPeriodoInternacoesRapsAltas.value)
     const filtradas = internacoesRapsAltas.filter(item => item.periodo === filtroPeriodoInternacoesRapsAltas.value);
     setInternacoesRapsAltasFiltradas(filtradas);
-    console.log(internacoesRapsAltasFiltradas)
-
   }, [internacoesRapsAltas, filtroPeriodoInternacoesRapsAltas]);
 
   return (
