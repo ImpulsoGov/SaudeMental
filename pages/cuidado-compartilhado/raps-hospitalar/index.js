@@ -170,7 +170,7 @@ const RapsHospitalar = ({ }) => {
             { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
                 indicador={ internacoesRapsAltasFiltradas.reduce((acumulador, valorAtual) => acumulador + valorAtual.altas_atendimento_raps_antes_nao_apos_nao, 0)}
-                indicadorDescricao={ 'Usuários' }></CardIndicadorDescricao>
+                descricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
           </>,
@@ -178,7 +178,7 @@ const RapsHospitalar = ({ }) => {
             { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
                 indicador={ internacoesRapsAltasFiltradas.reduce((acumulador, valorAtual) => acumulador + valorAtual.altas_atendimento_raps_antes_sim_apos_nao, 0)}
-                indicadorDescricao={ 'Usuários' }></CardIndicadorDescricao>
+                descricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
           </>,
@@ -186,7 +186,7 @@ const RapsHospitalar = ({ }) => {
             { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
                 indicador={ internacoesRapsAltasFiltradas.reduce((acumulador, valorAtual) => acumulador + valorAtual.altas_atendimento_raps_antes_sim_apos_sim, 0) }
-                indicadorDescricao={ 'Usuários' }></CardIndicadorDescricao>
+                descricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
           </>,
@@ -194,66 +194,12 @@ const RapsHospitalar = ({ }) => {
             { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
                 indicador={ internacoesRapsAltasFiltradas.reduce((acumulador, valorAtual) => acumulador + valorAtual.altas_atendimento_raps_antes_nao_apos_sim, 0) }
-                indicadorDescricao={ 'Usuários' }></CardIndicadorDescricao>
+                descricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
           </>,
         ] }
       />
-
-
-      {
-        // <>
-        //   <GraficoInfo
-        //     descricao={ `Internações finalizadas em ${InternacoesRapsAltas["periodo"]} .` }
-        //     fonte="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS - Elaboração Impulso Gov"
-        //     titulo="Usuários que foram atendidos na RAPS antes ou após a internação - MENSAL"
-        //   />
-        //   <div className={ styles.Filtro }>
-        //     {/* <Select { ...getPropsFiltroCompetencia(InternacoesRapsAltas) } /> */}
-        //   </div>     
-        //   <Grid12Col
-        //     items={ [
-        //       <>
-        //           <CardInfoTipoC
-        //             descricao="Não foram atendidos na RAPS nos 6 meses anteriores à internação nem até o mês após a alta"
-        //             indicador={ InternacoesRapsAltas["altas_atendimento_raps_antes_nao_apos_nao"] }
-        //             indicadorDescricao="Usuários"
-        //           />
-        //       </>,
-        //       <>
-        //           <CardInfoTipoC
-        //             descricao="Foram atendidos na RAPS nos 6 meses anteriores à internação mas não foram atendidos após a alta"
-        //             indicador={ InternacoesRapsAltas["altas_atendimento_raps_antes_sim_apos_nao"] }
-        //             indicadorDescricao="Usuários"
-        //             statusAntes
-        //           />
-        //       </>,
-        //       <>
-        //         <CardInfoTipoC
-        //           descricao="Foram atendidos na RAPS nos 6 meses anteriores à internação e após a alta"
-        //           indicador={ InternacoesRapsAltas["altas_atendimento_raps_antes_sim_apos_sim"] }
-        //           indicadorDescricao="Usuários"
-        //           statusAntes
-        //           statusDepois
-        //         />
-        //       </>,
-        //       <>
-        //           <CardInfoTipoC
-        //             descricao="Não foram atendidos na RAPS nos 6 meses anteriores à internação mas foram atendidos após a alta"
-        //             indicador={ InternacoesRapsAltas["altas_atendimento_raps_antes_nao_apos_sim"] }
-        //             indicadorDescricao="Usuários"
-        //             statusDepois
-        //           />
-        //       </>,
-        //     ] }
-        //     proporcao="3-3-3-3"
-        //   /> 
-        // </>
-      }
-
-
-
       <GraficoInfo
         descricao="<strong>Atenção:</strong> os valores acima são aproximados, já que a conexão entre registros ambulatoriais e hospitalares do SUS a partir de dados abertos (não identificados) está sujeita a pequenas imprecisões."
       />
