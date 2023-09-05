@@ -36,12 +36,11 @@ const RapsHospitalar = ({ }) => {
         });
     }
   }, []);
-
   useEffect(() => {
     const filtradas = internacoesRapsAltas.filter(item => item.periodo === filtroPeriodoInternacoesRapsAltas.value);
     setInternacoesRapsAltasFiltradas(filtradas);
   }, [internacoesRapsAltas, filtroPeriodoInternacoesRapsAltas]);
-
+  
   return (
     <div>
       <TituloSmallTexto
@@ -162,7 +161,7 @@ const RapsHospitalar = ({ }) => {
             }
           </>,
           <>
-            { internacoesRapsAltas12m
+            { internacoesRapsAltasFiltradas.length != 0
               ?<CardIndicadorDescricao
                 indicador={ internacoesRapsAltasFiltradas[0].altas_atendimento_raps_antes_nao_apos_nao}
                 descricao={ 'Usuários' }></CardIndicadorDescricao>
@@ -170,7 +169,7 @@ const RapsHospitalar = ({ }) => {
             }
           </>,
           <>
-            { internacoesRapsAltas12m
+            { internacoesRapsAltasFiltradas.length != 0
               ?<CardIndicadorDescricao
                 indicador={ internacoesRapsAltasFiltradas[0].altas_atendimento_raps_antes_sim_apos_nao}
                 descricao={ 'Usuários' }></CardIndicadorDescricao>
@@ -178,7 +177,7 @@ const RapsHospitalar = ({ }) => {
             }
           </>,
           <>
-            { internacoesRapsAltas12m
+            { internacoesRapsAltasFiltradas.length != 0
               ?<CardIndicadorDescricao
                 indicador={ internacoesRapsAltasFiltradas[0].altas_atendimento_raps_antes_sim_apos_sim }
                 descricao={ 'Usuários' }></CardIndicadorDescricao>
@@ -186,7 +185,7 @@ const RapsHospitalar = ({ }) => {
             }
           </>,
           <>
-            { internacoesRapsAltas12m
+            { internacoesRapsAltasFiltradas.length != 0
               ?<CardIndicadorDescricao
                 indicador={ internacoesRapsAltasFiltradas[0].altas_atendimento_raps_antes_nao_apos_sim}
                 descricao={ 'Usuários' }></CardIndicadorDescricao>
