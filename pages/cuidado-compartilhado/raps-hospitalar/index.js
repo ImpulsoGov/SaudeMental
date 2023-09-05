@@ -3,9 +3,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {FiltroCompetencia} from '../../../components/Filtros'
 import { getCAPSAcolhimentoNoturno, getInternacoesRapsAltas, getInternacoesRapsAdmissoes, getInternacoesRapsAltas12m } from "../../../requests/cuidado-compartilhado";
-const FILTRO_PERIODO_MULTI_DEFAULT = [
-  { value: 'Último período', label: 'Último período' },
-];
+const FILTRO_PERIODO_MULTI_DEFAULT = { value: 'Último período', label: 'Último período' };
 
 const iconeSim = "https://media.graphassets.com/TrHUmoqQ12gaauujhEoS";
 const iconeNao = "https://media.graphassets.com/avvXauyoTCKA3NnBWP9g";
@@ -17,7 +15,7 @@ const RapsHospitalar = ({ }) => {
   const [internacoesRapsAltas12m, setInternacoesRapsAltas12m] = useState([]);
   const [internacoesRapsAltas, setInternacoesRapsAltas] = useState([]);
   const [periodosECompetencias, setPeriodosECompetencias] = useState([]);
-  const [filtrosPeriodosInternacoesRapsAltas, setFiltroPeriodoInternacoesRapsAltas] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroPeriodoInternacoesRapsAltas, setFiltroPeriodoInternacoesRapsAltas] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [internacoesRapsAltasFiltradas, setInternacoesRapsAltasFiltradas] = useState([]);
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -40,11 +38,13 @@ const RapsHospitalar = ({ }) => {
   }, []);
 
   useEffect(() => {
-    const periodos = filtrosPeriodosInternacoesRapsAltas.map(item => item.value);
-    const filtradas = internacoesRapsAltas.filter(item => periodos.includes(item.periodo));
+    console.log(internacoesRapsAltas)
+    console.log(filtroPeriodoInternacoesRapsAltas.value)
+    const filtradas = internacoesRapsAltas.filter(item => item.periodo === filtroPeriodoInternacoesRapsAltas.value);
     setInternacoesRapsAltasFiltradas(filtradas);
+    console.log(internacoesRapsAltasFiltradas)
 
-  }, [internacoesRapsAltas, filtrosPeriodosInternacoesRapsAltas]);
+  }, [internacoesRapsAltas, filtroPeriodoInternacoesRapsAltas]);
 
   return (
     <div>
@@ -157,9 +157,8 @@ const RapsHospitalar = ({ }) => {
                   <FiltroCompetencia
                     width={'100%'}
                     dados = {periodosECompetencias}
-                    valor = {filtrosPeriodosInternacoesRapsAltas}
+                    valor = {filtroPeriodoInternacoesRapsAltas}
                     setValor = {setFiltroPeriodoInternacoesRapsAltas}
-                    isMulti
                   />
                 }
               ></CardPeriodosInternacao>
@@ -169,7 +168,7 @@ const RapsHospitalar = ({ }) => {
           <>
             { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
-                indicador={ internacoesRapsAltasFiltradas.reduce((acumulador, valorAtual) => acumulador + valorAtual.altas_atendimento_raps_antes_nao_apos_nao, 0)}
+                indicador={ internacoesRapsAltasFiltradas[0].altas_atendimento_raps_antes_nao_apos_nao}
                 descricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
@@ -177,7 +176,7 @@ const RapsHospitalar = ({ }) => {
           <>
             { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
-                indicador={ internacoesRapsAltasFiltradas.reduce((acumulador, valorAtual) => acumulador + valorAtual.altas_atendimento_raps_antes_sim_apos_nao, 0)}
+                indicador={ internacoesRapsAltasFiltradas[0].altas_atendimento_raps_antes_sim_apos_nao}
                 descricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
@@ -185,7 +184,7 @@ const RapsHospitalar = ({ }) => {
           <>
             { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
-                indicador={ internacoesRapsAltasFiltradas.reduce((acumulador, valorAtual) => acumulador + valorAtual.altas_atendimento_raps_antes_sim_apos_sim, 0) }
+                indicador={ internacoesRapsAltasFiltradas[0].altas_atendimento_raps_antes_sim_apos_sim }
                 descricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
@@ -193,7 +192,7 @@ const RapsHospitalar = ({ }) => {
           <>
             { internacoesRapsAltas12m
               ?<CardIndicadorDescricao
-                indicador={ internacoesRapsAltasFiltradas.reduce((acumulador, valorAtual) => acumulador + valorAtual.altas_atendimento_raps_antes_nao_apos_sim, 0) }
+                indicador={ internacoesRapsAltasFiltradas[0].altas_atendimento_raps_antes_nao_apos_sim}
                 descricao={ 'Usuários' }></CardIndicadorDescricao>
               : <Spinner theme="ColorSM" />
             }
