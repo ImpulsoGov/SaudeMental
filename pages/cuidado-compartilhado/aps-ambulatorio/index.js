@@ -3,7 +3,7 @@ import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
-import { API_URL } from "../../../constants/API_URL";
+import { API_SAUDE_MENTAL_URL } from "../../../constants/API_URL";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
 
@@ -23,10 +23,10 @@ const ApsAmbulatorio = () => {
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
       const getRequestOptions = { method: 'GET', redirect: 'follow' };
-      const urlEncaminhamentosApsResumo = API_URL
+      const urlEncaminhamentosApsResumo = API_SAUDE_MENTAL_URL
         + "saude-mental/encaminhamentos/aps/especializada/resumo?municipio_id_sus="
         + session?.user.municipio_id_ibge;
-      const urlEncaminhamentosAps = API_URL
+      const urlEncaminhamentosAps = API_SAUDE_MENTAL_URL
         + "saude-mental/encaminhamentos/aps/especializada?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 

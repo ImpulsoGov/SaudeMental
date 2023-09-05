@@ -2,7 +2,7 @@ import { CardInfoTipoA, CardInfoTipoB, GraficoInfo, Grid12Col, Spinner, TituloSm
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
-import { API_URL } from "../../../constants/API_URL";
+import { API_SAUDE_MENTAL_URL } from "../../../constants/API_URL";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 
 export function getServerSideProps(ctx) {
@@ -30,7 +30,7 @@ const Resumo = () => {
     if (session?.user.municipio_id_ibge) {
       const getRequestOptions = { method: 'GET', redirect: 'follow' };
 
-      const urlInternacoesRapsAdmissoes = API_URL
+      const urlInternacoesRapsAdmissoes = API_SAUDE_MENTAL_URL
         + "saude-mental/internacoes/raps/admissoes/resumo/vertical?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
@@ -39,7 +39,7 @@ const Resumo = () => {
         .then(result => setInternacoesRapsAdmissoesVertical(result))
         .catch(error => console.log('error', error));
 
-      const urlInternacoesRapsAltas = API_URL
+      const urlInternacoesRapsAltas = API_SAUDE_MENTAL_URL
         + "saude-mental/internacoes/raps/altas/resumo/vertical?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
@@ -48,7 +48,7 @@ const Resumo = () => {
         .then(result => setInternacoesRapsAltasVertical(result))
         .catch(error => console.log('error', error));
 
-      const urlEncaminhamentosApsCapsVertical = API_URL
+      const urlEncaminhamentosApsCapsVertical = API_SAUDE_MENTAL_URL
         + "saude-mental/encaminhamentos/aps/caps/resumo?municipio_id_sus="
         + session?.user.municipio_id_ibge
         + "&sentido=vertical";
@@ -58,7 +58,7 @@ const Resumo = () => {
         .then(result => setEncaminhamentosApsCapsVertical(result))
         .catch(error => console.log('error', error));
 
-      const urlEncaminhamentosApsVertical = API_URL
+      const urlEncaminhamentosApsVertical = API_SAUDE_MENTAL_URL
         + "saude-mental/encaminhamentos/aps/especializada/resumo?municipio_id_sus="
         + session?.user.municipio_id_ibge
         + "&sentido=vertical";
@@ -68,7 +68,7 @@ const Resumo = () => {
         .then(result => setEncaminhamentosApsVertical(result))
         .catch(error => console.log('error', error));
 
-      const urlMatriciamentosPorMunicipio = API_URL
+      const urlMatriciamentosPorMunicipio = API_SAUDE_MENTAL_URL
         + "saude-mental/matriciamentos/municipio?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
@@ -77,7 +77,7 @@ const Resumo = () => {
         .then(result => setMatriciamentosPorMunicipio(result[0]))
         .catch(error => console.log('error', error));
 
-      const urlEncaminhamentosApsCapsHorizontal = API_URL
+      const urlEncaminhamentosApsCapsHorizontal = API_SAUDE_MENTAL_URL
         + "saude-mental/encaminhamentos/aps/caps/resumo?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
@@ -86,7 +86,7 @@ const Resumo = () => {
         .then(result => setEncaminhamentosApsCapsHorizontal(result[0]))
         .catch(error => console.log('error', error));
 
-      const urlEncaminhamentosApsHorizontal = API_URL
+      const urlEncaminhamentosApsHorizontal = API_SAUDE_MENTAL_URL
         + "saude-mental/encaminhamentos/aps/especializada/resumo?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
@@ -95,7 +95,7 @@ const Resumo = () => {
         .then(result => setEncaminhamentosApsHorizontal(result[0]))
         .catch(error => console.log('error', error));
 
-      const urlinternacoesRapsAdmissoes12m = API_URL
+      const urlinternacoesRapsAdmissoes12m = API_SAUDE_MENTAL_URL
         + "saude-mental/internacoes/raps/admissoes/resumo/12m?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
@@ -104,7 +104,7 @@ const Resumo = () => {
         .then(result => setInternacoesRapsAdmissoes12m(result[0]))
         .catch(error => console.log('error', error));
 
-      const urlinternacoesRapsAltas12m = API_URL
+      const urlinternacoesRapsAltas12m = API_SAUDE_MENTAL_URL
         + "saude-mental/internacoes/raps/altas/resumo/12m?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
