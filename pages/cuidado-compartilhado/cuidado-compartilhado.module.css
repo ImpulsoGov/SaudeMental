@@ -1,12 +1,16 @@
 .Filtro {
-    width: 50%;
-    font-size: 14px;
-  }
-  
-  .Filtros {
-    display: flex;
-    gap: 24px;
-    width: 100%;
-    margin-bottom: 30px;
-  }
-  
+  width: 50%;
+  font-size: 14px;
+}
+
+.Filtros {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.Mensagem {
+  font-size: 16px;
+  color: #9ba4a5;
+}

@@ -1,9 +1,10 @@
 import { CardIndicadorDescricao, CardInfoTipoA, CardInternacaoStatus, CardPeriodosInternacao, CardsGridInternacao, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FiltroCompetencia } from '../../../components/Filtros';
 import { getCAPSAcolhimentoNoturno, getInternacoesRapsAdmissoes, getInternacoesRapsAltas, getInternacoesRapsAltas12m } from "../../../requests/cuidado-compartilhado";
-const FILTRO_PERIODO_MULTI_DEFAULT = { value: 'Último período', label: 'Último período' };
+import { FILTRO_PERIODO_DEFAULT } from "../../../constants/FILTROS";
+import styles from '../cuidado-compartilhado.module.css';
 
 const iconeSim = "https://media.graphassets.com/TrHUmoqQ12gaauujhEoS";
 const iconeNao = "https://media.graphassets.com/avvXauyoTCKA3NnBWP9g";
@@ -15,7 +16,7 @@ const RapsHospitalar = ({ }) => {
   const [internacoesRapsAltas12m, setInternacoesRapsAltas12m] = useState();
   const [internacoesRapsAltas, setInternacoesRapsAltas] = useState([]);
   const [periodosECompetencias, setPeriodosECompetencias] = useState([]);
-  const [filtroPeriodoInternacoesRapsAltas, setFiltroPeriodoInternacoesRapsAltas] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroPeriodoInternacoesRapsAltas, setFiltroPeriodoInternacoesRapsAltas] = useState(FILTRO_PERIODO_DEFAULT);
   const [internacoesRapsAltasFiltradas, setInternacoesRapsAltasFiltradas] = useState([]);
 
   useEffect(() => {
@@ -42,6 +43,13 @@ const RapsHospitalar = ({ }) => {
     const filtradas = internacoesRapsAltas.filter(item => item.periodo === filtroPeriodoInternacoesRapsAltas.value);
     setInternacoesRapsAltasFiltradas(filtradas);
   }, [internacoesRapsAltas, filtroPeriodoInternacoesRapsAltas]);
+
+  const obterPeriodoPorExtenso = useCallback((dados, periodo) => {
+    const { nome_mes: mes, competencia } = dados.find((dado) => dado.periodo === periodo);
+    const [ano] = `${competencia}`.split('-');
+
+    return `${mes} de ${ano}`;
+  }, []);
 
   return (
     <div>
@@ -137,15 +145,12 @@ const RapsHospitalar = ({ }) => {
               periodo={ 'Mensal'}
               descricao={ 'Internações finalizadas no mês selecionado abaixo:' }
               filtro = {
-                <>
-                  <FiltroCompetencia
-                    width={'100%'}
-                    dados = {periodosECompetencias}
-                    valor = {filtroPeriodoInternacoesRapsAltas}
-                    setValor = {setFiltroPeriodoInternacoesRapsAltas}
-                  />
-                  {/* <p>Último mês disponível: {internacoesRapsAltas.length !== 0 && internacoesRapsAltas.find(({ periodo }) => periodo === 'Último período').nome_mes}</p> */}
-                </>
+                <FiltroCompetencia
+                  width={'100%'}
+                  dados = {periodosECompetencias}
+                  valor = {filtroPeriodoInternacoesRapsAltas}
+                  setValor = {setFiltroPeriodoInternacoesRapsAltas}
+                />
               }
             ></CardPeriodosInternacao>
           </>,
@@ -183,6 +188,13 @@ const RapsHospitalar = ({ }) => {
           </>,
         ] }
       />
+
+      {internacoesRapsAltas.length !== 0 &&
+        <div className={ styles.Mensagem }>
+          {`Última competência disponível: ${obterPeriodoPorExtenso(internacoesRapsAltas, 'Último período')}`}
+        </div>
+      }
+
       <GraficoInfo
         descricao="<strong>Atenção:</strong> os valores acima são aproximados, já que a conexão entre registros ambulatoriais e hospitalares do SUS a partir de dados abertos (não identificados) está sujeita a pequenas imprecisões."
       />
