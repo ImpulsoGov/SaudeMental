@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useMemo } from 'react';
 import Select, { components } from 'react-select';
 import styles from './Filtros.module.css';
+import InputOption from './InputOption';
 
 const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSearchable, width }) => {
   const options = useMemo(() => {
@@ -37,8 +38,13 @@ const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSe
         onChange={ (selected) => setValor(selected) }
         isMulti={ isMulti }
         isSearchable={ isSearchable }
-        components={ { Control: getOptionPersonalizada } }
+        components={ {
+          Control: getOptionPersonalizada,
+          Option: InputOption
+        } }
         styles={ { control: (css) => ({ ...css, paddingLeft: '15px' }) } }
+        hideSelectedOptions={ false }
+        closeMenuOnSelect={ isMulti ? false : true }
       />
     </div>
   );
