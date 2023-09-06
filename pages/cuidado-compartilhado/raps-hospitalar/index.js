@@ -1,8 +1,8 @@
-import {CardIndicadorDescricao, CardInternacaoStatus, CardPeriodosInternacao, CardsGridInternacao, CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto} from "@impulsogov/design-system";
+import { CardIndicadorDescricao, CardInfoTipoA, CardInternacaoStatus, CardPeriodosInternacao, CardsGridInternacao, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import {FiltroCompetencia} from '../../../components/Filtros';
-import { getCAPSAcolhimentoNoturno, getInternacoesRapsAltas, getInternacoesRapsAdmissoes, getInternacoesRapsAltas12m } from "../../../requests/cuidado-compartilhado";
+import { FiltroCompetencia } from '../../../components/Filtros';
+import { getCAPSAcolhimentoNoturno, getInternacoesRapsAdmissoes, getInternacoesRapsAltas, getInternacoesRapsAltas12m } from "../../../requests/cuidado-compartilhado";
 const FILTRO_PERIODO_MULTI_DEFAULT = { value: 'Último período', label: 'Último período' };
 
 const iconeSim = "https://media.graphassets.com/TrHUmoqQ12gaauujhEoS";
@@ -10,13 +10,14 @@ const iconeNao = "https://media.graphassets.com/avvXauyoTCKA3NnBWP9g";
 
 const RapsHospitalar = ({ }) => {
   const { data: session } = useSession();
-  const [capsAcolhimentoNoturno, setCAPSAcolhimentoNoturno] = useState([]);
-  const [internacoesRapsAdmissoes, setInternacoesRapsAdmissoes] = useState([]);
-  const [internacoesRapsAltas12m, setInternacoesRapsAltas12m] = useState([]);
+  const [capsAcolhimentoNoturno, setCAPSAcolhimentoNoturno] = useState();
+  const [internacoesRapsAdmissoes, setInternacoesRapsAdmissoes] = useState();
+  const [internacoesRapsAltas12m, setInternacoesRapsAltas12m] = useState();
   const [internacoesRapsAltas, setInternacoesRapsAltas] = useState([]);
   const [periodosECompetencias, setPeriodosECompetencias] = useState([]);
   const [filtroPeriodoInternacoesRapsAltas, setFiltroPeriodoInternacoesRapsAltas] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [internacoesRapsAltasFiltradas, setInternacoesRapsAltasFiltradas] = useState([]);
+
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
       getCAPSAcolhimentoNoturno(session?.user.municipio_id_ibge)
@@ -30,17 +31,18 @@ const RapsHospitalar = ({ }) => {
           setInternacoesRapsAltas(dados);
           const periodosECompetencias = dados.map(item => ({
             periodo: item.periodo,
-            competencia: item.competencia 
+            competencia: item.competencia
           }));
           setPeriodosECompetencias(periodosECompetencias);
         });
     }
   }, []);
+
   useEffect(() => {
     const filtradas = internacoesRapsAltas.filter(item => item.periodo === filtroPeriodoInternacoesRapsAltas.value);
     setInternacoesRapsAltasFiltradas(filtradas);
   }, [internacoesRapsAltas, filtroPeriodoInternacoesRapsAltas]);
-  
+
   return (
     <div>
       <TituloSmallTexto
@@ -56,60 +58,47 @@ const RapsHospitalar = ({ }) => {
         titulo="<strong>Internações finalizadas desde o início do ano</strong>"
       />
 
-      { internacoesRapsAltas12m
-        ? <GraficoInfo
-          tooltip="São consideradas as internações de munícipes em UPAs e hospitais gerais ou psiquiátricos, vinculados a qualquer esfera federativa, desde que o tipo de leito, o procedimento principal ou o CID diagnóstico sejam referentes a questões de saúde mental. &quot;Antes&quot; inclui internados com acompanhamento prévio na RAPS, com registros de ações psicossociais (RAAS) ou boletins de produção ambulatorial (BPA) nos 6 meses anteriores à internação. &quot;Depois&quot; abrange egressos da internação na rede hospitalar com altas relacionadas à saúde mental e registros na RAPS de ações psicossociais (RAAS) ou boletins de produção ambulatorial (BPA) no mesmo mês da alta ou no mês seguinte."
-          titulo={'Usuários que foram atendidos na RAPS antes ou após a internação'}
-          descricao={ 'Internações em saúde mental em qualquer unidade hospitalar ou UPA, classificados por histórico de atendimento do usuário na RAPS nos 6 meses anteriores à internação e/ou no mês seguinte após a alta.'}
-          fonte="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS - Elaboração Impulso Gov"
-        />
-        : <Spinner theme="ColorSM" />
-      }
+      <GraficoInfo
+        tooltip='São consideradas as internações de munícipes em UPAs e hospitais gerais ou psiquiátricos, vinculados a qualquer esfera federativa, desde que o tipo de leito, o procedimento principal ou o CID diagnóstico sejam referentes a questões de saúde mental.
+        <br/>
+        <strong>Internações ocorridas "Antes"</strong> incluem pessoas internadas com acompanhamento prévio na RAPS, com registros de ações psicossociais (RAAS) ou boletins de produção ambulatorial (BPA) nos 6 meses anteriores à internação.
+        <br/>
+        <strong>Internações ocorridas "Depois"</strong> abrangem egressos da internação na rede hospitalar com altas relacionadas saúde mental e registros na RAPS de ações psicossociais (RAAS) ou boletins de produção ambulatorial (BPA) no mesmo mês da alta ou no mês seguinte.'
+        titulo={'Usuários que foram atendidos na RAPS antes ou após a internação'}
+        descricao={ 'Internações em saúde mental em qualquer unidade hospitalar ou UPA, classificados por histórico de atendimento do usuário na RAPS nos 6 meses anteriores à internação e/ou no mês seguinte após a alta.'}
+        fonte="Fonte: RAAS/SIASUS, BPA/SIASUS, AIH/SIHSUS - Elaboração Impulso Gov"
+      />
+
       <CardsGridInternacao
         cardsArray={ [
           <>
-            { internacoesRapsAltas12m
-              ?<CardInternacaoStatus
-                icones={{ sim: iconeSim, nao: iconeNao }}
-                antes={{status:false, descricao:'Não atendidos'}}
-                depois={{status:false, descricao:'e nem'}}></CardInternacaoStatus>
-              : <Spinner theme="ColorSM" />
-            }
+            <CardInternacaoStatus
+              icones={{ sim: iconeSim, nao: iconeNao }}
+              antes={{status:false, descricao:'Não atendidos'}}
+              depois={{status:false, descricao:'e nem'}}></CardInternacaoStatus>
           </>,
           <>
-            { internacoesRapsAltas12m
-              ?<CardInternacaoStatus
-                icones={{ sim: iconeSim, nao: iconeNao }}
-                antes={{status:true, descricao:'Atendidos'}}
-                depois={{status:false, descricao:'mas não'}}></CardInternacaoStatus>
-              : <Spinner theme="ColorSM" />
-            }
+            <CardInternacaoStatus
+              icones={{ sim: iconeSim, nao: iconeNao }}
+              antes={{status:true, descricao:'Atendidos'}}
+              depois={{status:false, descricao:'mas não'}}></CardInternacaoStatus>
           </>,
           <>
-            { internacoesRapsAltas12m
-              ? <CardInternacaoStatus
-                icones={{ sim: iconeSim, nao: iconeNao }}
-                antes={{status:true, descricao:'Atendidos'}}
-                depois={{status:true, descricao:'E também'}}></CardInternacaoStatus>
-              : <Spinner theme="ColorSM" />
-            }
+            <CardInternacaoStatus
+              icones={{ sim: iconeSim, nao: iconeNao }}
+              antes={{status:true, descricao:'Atendidos'}}
+              depois={{status:true, descricao:'e também'}}></CardInternacaoStatus>
           </>,
           <>
-            { internacoesRapsAltas12m
-              ?<CardInternacaoStatus
-                icones={{ sim: iconeSim, nao: iconeNao }}
-                antes={{status:false, descricao:'Não atendidos'}}
-                depois={{status:true, descricao:'mas atendidos'}}></CardInternacaoStatus>
-              : <Spinner theme="ColorSM" />
-            }
+            <CardInternacaoStatus
+              icones={{ sim: iconeSim, nao: iconeNao }}
+              antes={{status:false, descricao:'Não atendidos'}}
+              depois={{status:true, descricao:'mas atendidos'}}></CardInternacaoStatus>
           </>,
           <>
-            { internacoesRapsAltas12m
-              ?<CardPeriodosInternacao
-                periodo={ 'Ano'}
-                descricao={ 'Internações finalizadas entre ' + internacoesRapsAltas12m.a_partir_de_mes + ' de ' + internacoesRapsAltas12m.a_partir_de_ano + ' e ' + internacoesRapsAltas12m.ate_mes + ' de ' + internacoesRapsAltas12m.ate_ano}></CardPeriodosInternacao>
-              : <Spinner theme="ColorSM" />
-            }
+            <CardPeriodosInternacao
+              periodo={ 'Anual'}
+              descricao={ internacoesRapsAltas12m && `Internações finalizadas entre ${internacoesRapsAltas12m.a_partir_de_mes} de ${internacoesRapsAltas12m.a_partir_de_ano} e ${internacoesRapsAltas12m.ate_mes} de ${internacoesRapsAltas12m.ate_ano}` }></CardPeriodosInternacao>
           </>,
           <>
             { internacoesRapsAltas12m
@@ -144,21 +133,21 @@ const RapsHospitalar = ({ }) => {
             }
           </>,
           <>
-            { internacoesRapsAltas12m
-              ?<CardPeriodosInternacao
-                periodo={ 'Mês'}
-                descricao={ 'Internações finalizadas no mês selecionado abaixo:' }
-                filtro = {
+            <CardPeriodosInternacao
+              periodo={ 'Mensal'}
+              descricao={ 'Internações finalizadas no mês selecionado abaixo:' }
+              filtro = {
+                <>
                   <FiltroCompetencia
                     width={'100%'}
                     dados = {periodosECompetencias}
                     valor = {filtroPeriodoInternacoesRapsAltas}
                     setValor = {setFiltroPeriodoInternacoesRapsAltas}
                   />
-                }
-              ></CardPeriodosInternacao>
-              : <Spinner theme="ColorSM" />
-            }
+                  {/* <p>Último mês disponível: {internacoesRapsAltas.length !== 0 && internacoesRapsAltas.find(({ periodo }) => periodo === 'Último período').nome_mes}</p> */}
+                </>
+              }
+            ></CardPeriodosInternacao>
           </>,
           <>
             { internacoesRapsAltasFiltradas.length != 0
