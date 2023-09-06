@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { components } from 'react-select';
 import styles from './Filtros.module.css';
 
+// Referência: https://codesandbox.io/s/react-select-with-checkboxes-bedj8
 const InputOption = ({
   getStyles,
   isDisabled,
