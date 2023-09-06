@@ -111,6 +111,7 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
           dados={ procedimentos }
           valor={ filtroPeriodos }
           setValor={ setFiltroPeriodos }
+          label='Competência'
           isMulti
         />
       </div>
