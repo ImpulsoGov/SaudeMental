@@ -1,3 +1,13 @@
 .Filtro {
   font-size: 14px;
 }
+
+.InputOption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.InputOptionCheckbox {
+  margin-right: 8px;
+}

@@ -1,66 +1,17 @@
 import PropTypes from 'prop-types';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import Select, { components } from 'react-select';
 import styles from './Filtros.module.css';
+import InputOption from './InputOption';
 
-const InputOption = ({
-  getStyles,
-  isDisabled,
-  isFocused,
-  isSelected,
-  children,
-  innerProps,
-  ...rest
+const FiltroCompetencia = ({
+  dados,
+  valor,
+  setValor,
+  isMulti,
+  isSearchable,
+  width
 }) => {
-  const [isActive, setIsActive] = useState(false);
-  const onMouseDown = () => setIsActive(true);
-  const onMouseUp = () => setIsActive(false);
-  const onMouseLeave = () => setIsActive(false);
-
-  // styles
-  let bg = 'transparent';
-  if (isFocused) bg = '#deebff';
-  if (isActive) bg = '#B2D4FF';
-
-  const style = {
-    alignItems: 'center',
-    backgroundColor: bg,
-    color: 'inherit',
-    display: 'flex ',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  };
-
-  // prop assignment
-  const props = {
-    ...innerProps,
-    onMouseDown,
-    onMouseUp,
-    onMouseLeave,
-    style
-  };
-
-  return (
-    <components.Option
-      {...rest}
-      isDisabled={isDisabled}
-      isFocused={isFocused}
-      isSelected={isSelected}
-      getStyles={getStyles}
-      innerProps={props}
-    >
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <input type='checkbox' checked={isSelected} style={{ marginRight: '8px' }} />
-        {children}
-      </div>
-
-      <span>{rest.data.periodo_ordem.toFixed(2)}</span>
-    </components.Option>
-  );
-};
-
-const FiltroCompetencia = ({ dados, valor, setValor, isMulti, isSearchable, width }) => {
   const options = useMemo(() => {
     const competencias = [];
 
@@ -104,7 +55,7 @@ const FiltroCompetencia = ({ dados, valor, setValor, isMulti, isSearchable, widt
           control: (css) => ({ ...css, paddingLeft: '15px' }),
         } }
         hideSelectedOptions={ false }
-        closeMenuOnSelect={ false }
+        closeMenuOnSelect={ isMulti ? false : true }
       />
     </div>
   );
