@@ -7,8 +7,10 @@ import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
 import styles from '../OutrosRaps.module.css';
 import { FiltroTexto, FiltroCompetencia } from '../../../components/Filtros';
-import { getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
+import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
+import { FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -25,9 +27,7 @@ const ConsultorioNaRua = () => {
   const [filtroProducao, setFiltroProducao] = useState({
     value: 'Todos', label: 'Todos'
   });
-  const [filtroCompetencia, setFiltroCompetencia] = useState({
-    value: 'Último período', label: 'Último período'
-  });
+  const [filtroCompetencia, setFiltroCompetencia] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -94,25 +94,27 @@ const ConsultorioNaRua = () => {
   };
 
   const atendimentosFiltradosOrdenados = useMemo(() => {
+    const periodosSelecionados = filtroCompetencia.map(({ value }) => value);
     const atendimentosFiltrados = atendimentos.filter(({
       tipo_producao: tipoProducao,
       periodo
     }) =>
-      tipoProducao !== 'Todos' && periodo === filtroCompetencia.value
+      tipoProducao !== 'Todos' && periodosSelecionados.includes(periodo)
     );
 
-    const atendimentosOrdenados = atendimentosFiltrados
-      .sort((a, b) => b.quantidade_registrada - a.quantidade_registrada);
+    const atendimentosAgregados = agregarQuantidadePorPropriedadeNome(
+      atendimentosFiltrados,
+      'tipo_producao',
+      'quantidade_registrada'
+    );
 
-    const atendimentosFormatados = atendimentosOrdenados.map(({
-      tipo_producao: nome,
-      quantidade_registrada: quantidade
-    }) => ({
-      nome, quantidade
-    }));
+    const atendimentosOrdenados = ordenarDecrescentePorPropriedadeNumerica(
+      atendimentosAgregados,
+      'quantidade'
+    );
 
-    return atendimentosFormatados;
-  }, [atendimentos, filtroCompetencia.value]);
+    return atendimentosOrdenados;
+  }, [atendimentos, filtroCompetencia]);
 
   const getPropsCardUltimoPeriodo = () => {
     const atendimentoTodosUltimoPeriodo = atendimentos
@@ -191,6 +193,7 @@ const ConsultorioNaRua = () => {
             valor={ filtroCompetencia }
             setValor={ setFiltroCompetencia }
             label='Competência'
+            isMulti
           />
 
           <div className={ styles.GraficoDonutContainer }>
