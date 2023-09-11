@@ -325,7 +325,7 @@ const AtendimentoIndividual = () => {
                 ) } />
               </div>
               <FiltroCompetencia
-                width={'100%'}
+                width={'50%'}
                 dados = {periodos}
                 valor = {filtroPeriodoCID}
                 setValor = {setFiltroPeriodoCID}
@@ -376,7 +376,7 @@ const AtendimentoIndividual = () => {
                 ) } />
               </div>
               <FiltroCompetencia
-                width={'100%'}
+                width={'50%'}
                 dados = {periodos}
                 valor = {filtroPeriodoGenero}
                 setValor = {setFiltroPeriodoGenero}
@@ -419,7 +419,7 @@ const AtendimentoIndividual = () => {
                 ) } />
               </div>
               <FiltroCompetencia
-                width={'100%'}
+                width={'50%'}
                 dados = {periodos}
                 valor = {filtroPeriodoRacaECor}
                 setValor = {setFiltroPeriodoRacaECor}
