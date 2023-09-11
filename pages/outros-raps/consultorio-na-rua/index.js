@@ -2,7 +2,7 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
-import { v1 as uuidv1 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
 import styles from '../OutrosRaps.module.css';
@@ -121,7 +121,7 @@ const ConsultorioNaRua = () => {
       .find((atendimento) => atendimento.tipo_producao === 'Todos' && atendimento.periodo === 'Último período');
 
     return {
-      key: uuidv1(),
+      key: uuidv4(),
       indicador: atendimentoTodosUltimoPeriodo['quantidade_registrada'],
       titulo: `Total de atendimentos em ${atendimentoTodosUltimoPeriodo['nome_mes']}`,
       indice: atendimentoTodosUltimoPeriodo['dif_quantidade_registrada_anterior'],
@@ -134,7 +134,7 @@ const ConsultorioNaRua = () => {
       .find(({ tipo_producao: tipoProducao }) => tipoProducao === 'Todos');
 
     return {
-      key: uuidv1(),
+      key: uuidv4(),
       indicador: atendimentoTodosUltimos12Meses['quantidade_registrada'],
       titulo: `Total de atendimentos nos últimos 12 meses de ${atendimentoTodosUltimos12Meses['a_partir_do_mes']}/${atendimentoTodosUltimos12Meses['a_partir_do_ano']} a ${atendimentoTodosUltimos12Meses['ate_mes']}/${atendimentoTodosUltimos12Meses['ate_ano']}`,
       indice: atendimentoTodosUltimos12Meses['dif_quantidade_registrada_anterior'],

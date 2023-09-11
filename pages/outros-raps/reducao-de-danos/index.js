@@ -2,7 +2,7 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { v1 as uuidv1 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses } from '../../../requests/outros-raps';
 import styles from '../OutrosRaps.module.css';
@@ -40,7 +40,7 @@ const ReducaoDeDanos = () => {
       .find((acao) => acao.estabelecimento === 'Todos' && acao.profissional_vinculo_ocupacao === 'Todas' && acao.periodo === 'Último período');
 
     return {
-      key: uuidv1(),
+      key: uuidv4(),
       indicador: acaoTodosUltimoPeriodo['quantidade_registrada'],
       titulo: `Total de ações de redução de danos em ${acaoTodosUltimoPeriodo['nome_mes']}`,
       indice: acaoTodosUltimoPeriodo['dif_quantidade_registrada_anterior'],
@@ -53,7 +53,7 @@ const ReducaoDeDanos = () => {
       .find((acao) => acao.estabelecimento === 'Todos' && acao.profissional_vinculo_ocupacao === 'Todas');
 
     return {
-      key: uuidv1(),
+      key: uuidv4(),
       indicador: acaoTodosUltimos12Meses['quantidade_registrada'],
       titulo: `Total de ações de redução de danos nos últimos 12 meses de ${acaoTodosUltimos12Meses['a_partir_do_mes']}/${acaoTodosUltimos12Meses['a_partir_do_ano']} a ${acaoTodosUltimos12Meses['ate_mes']}/${acaoTodosUltimos12Meses['ate_ano']}`,
       indice: acaoTodosUltimos12Meses['dif_quantidade_registrada_anterior'],
