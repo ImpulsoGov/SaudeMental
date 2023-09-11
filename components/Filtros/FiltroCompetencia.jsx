@@ -6,6 +6,7 @@ import InputOption from './InputOption';
 
 const FiltroCompetencia = ({
   dados,
+  label,
   valor,
   setValor,
   isMulti,
@@ -30,8 +31,8 @@ const FiltroCompetencia = ({
   }, [dados]);
 
   const getOptionPersonalizada = ({ children, ...props }) => (
-    <components.Control { ...props }>
-      Competência: { children }
+    <components.Control { ...props } >
+      {`${label}`}: { children }
     </components.Control>
   );
 
@@ -48,10 +49,10 @@ const FiltroCompetencia = ({
         isMulti={ isMulti }
         isSearchable={ isSearchable }
         components={ {
-          Control: getOptionPersonalizada,
+          Control: label ? getOptionPersonalizada : components.Control,
           Option: InputOption
         } }
-        styles={ {
+        styles={ label && {
           control: (css) => ({ ...css, paddingLeft: '15px' }),
         } }
         hideSelectedOptions={ false }
@@ -80,7 +81,8 @@ FiltroCompetencia.propTypes = {
   setValor: PropTypes.func.isRequired,
   isMulti: PropTypes.bool,
   isSearchable: PropTypes.bool,
-  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  label: PropTypes.string
 };
 
 export default FiltroCompetencia;
