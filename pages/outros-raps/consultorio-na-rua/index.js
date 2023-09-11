@@ -3,14 +3,14 @@ import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
-import styles from '../OutrosRaps.module.css';
-import { FiltroTexto, FiltroCompetencia } from '../../../components/Filtros';
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
+import { getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
+import styles from '../OutrosRaps.module.css';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -142,6 +142,14 @@ const ConsultorioNaRua = () => {
     };
   };
 
+  const encontrarMesDeUltimoPeriodo = (dados) => {
+    const ultimoPeriodo = dados.find(({ periodo, tipo_producao: tipoProducao }) =>
+      tipoProducao === 'Todos' && periodo === 'Último período'
+    );
+
+    return ultimoPeriodo.nome_mes;
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -150,12 +158,18 @@ const ConsultorioNaRua = () => {
           url: ''
         } }
         texto=''
-        botao={{
+        botao={ {
           label: '',
           url: ''
-        }}
+        } }
         titulo='<strong>Consultório na Rua</strong>'
       />
+
+      { atendimentos.length !== 0 &&
+        <GraficoInfo
+          descricao={ `Última competência disponível: ${encontrarMesDeUltimoPeriodo(atendimentos)}` }
+        />
+      }
 
       <GraficoInfo
         titulo='Atendimentos realizados por equipes'
@@ -203,10 +217,10 @@ const ConsultorioNaRua = () => {
             />
 
             <TabelaGraficoDonut
-              labels={{
+              labels={ {
                 colunaHeader: 'Tipo de produção',
                 colunaQuantidade: 'Quantidade registrada',
-              }}
+              } }
               data={ atendimentosFiltradosOrdenados }
               mensagemDadosZerados=''
             />
