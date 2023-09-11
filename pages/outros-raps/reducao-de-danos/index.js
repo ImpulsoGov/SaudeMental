@@ -3,11 +3,11 @@ import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import FiltroTexto from '../../../components/Filtros/FiltroTexto';
+import { FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_OCUPACAO_DEFAULT } from '../../../constants/FILTROS';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses } from '../../../requests/outros-raps';
 import styles from '../OutrosRaps.module.css';
-import FiltroTexto from '../../../components/Filtros/FiltroTexto';
-import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_OCUPACAO_DEFAULT } from '../../../constants/FILTROS';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -21,7 +21,7 @@ const ReducaoDeDanos = () => {
   const { data: session } = useSession();
   const [acoes, setAcoes] = useState([]);
   const [acoes12meses, setAcoes12meses] = useState([]);
-  const [filtroEstabelecimento, setFiltroEstabelecimento] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroEstabelecimento, setFiltroEstabelecimento] = useState(FILTRO_ESTABELECIMENTO_MULTI_DEFAULT);
   const [filtroOcupacao, setFiltroOcupacao] = useState(FILTRO_OCUPACAO_DEFAULT);
 
   useEffect(() => {
@@ -65,14 +65,33 @@ const ReducaoDeDanos = () => {
     return acoes.sort((a, b) => new Date(a.competencia) - new Date(b.competencia));
   };
 
+  const agregarQuantidadePorPeriodo = (dados) => {
+    const dadosAgregados = [];
+
+    dados.forEach(({ periodo, competencia, quantidade_registrada: quantidade }) => {
+      const periodoEncontrado = dadosAgregados.find((item) => periodo === item.periodo);
+
+      if (periodoEncontrado) {
+        periodoEncontrado.quantidade += quantidade;
+      } else {
+        dadosAgregados.push({ periodo, competencia, quantidade });
+      }
+    });
+
+    return dadosAgregados;
+  };
+
   const getOpcoesGraficoDeLinha = (acoes) => {
+    const estabelecimentosSelecionados = filtroEstabelecimento.map(({ value }) => value);
     const acoesFiltradas = acoes.filter(({
       estabelecimento,
       profissional_vinculo_ocupacao: ocupacao
     }) =>
-      estabelecimento === filtroEstabelecimento.value && ocupacao === filtroOcupacao.value
+      estabelecimentosSelecionados.includes(estabelecimento)
+      && ocupacao === filtroOcupacao.value
     );
-    const acoesOrdenadas = ordenarQuantidadesPorCompetenciaAsc(acoesFiltradas);
+    const acoesAgregadas = agregarQuantidadePorPeriodo(acoesFiltradas);
+    const acoesOrdenadas = ordenarQuantidadesPorCompetenciaAsc(acoesAgregadas);
 
     return {
       tooltip: {
@@ -99,7 +118,7 @@ const ReducaoDeDanos = () => {
       series: [
         {
           name: 'Ações registradas',
-          data: acoesOrdenadas.map(({ quantidade_registrada: quantidadeRegistrada }) => quantidadeRegistrada),
+          data: acoesOrdenadas.map(({ quantidade }) => quantidade),
           type: 'line',
           itemStyle: {
             color: '#5367C9'
@@ -117,10 +136,10 @@ const ReducaoDeDanos = () => {
           url: ''
         } }
         texto=""
-        botao={{
+        botao={ {
           label: '',
           url: ''
-        }}
+        } }
         titulo="<strong>Ações de Redução de Danos</strong>"
       />
 
@@ -161,6 +180,7 @@ const ReducaoDeDanos = () => {
               propriedade='estabelecimento'
               valor={ filtroEstabelecimento }
               setValor={ setFiltroEstabelecimento }
+              isMulti
             />
             <FiltroTexto
               dados={ acoes }
