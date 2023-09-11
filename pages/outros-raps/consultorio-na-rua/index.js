@@ -190,6 +190,7 @@ const ConsultorioNaRua = () => {
             dados={ atendimentos }
             valor={ filtroCompetencia }
             setValor={ setFiltroCompetencia }
+            label='Competência'
           />
 
           <div className={ styles.GraficoDonutContainer }>
