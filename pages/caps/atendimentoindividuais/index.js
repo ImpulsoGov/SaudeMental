@@ -15,13 +15,8 @@ import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGenero
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
-
-const FILTRO_PERIODO_MULTI_DEFAULT = [
-  { value: 'Último período', label: 'Último período' },
-];
-const FILTRO_ESTABELECIMENTO_DEFAULT = {
-  value: 'Todos', label: 'Todos'
-};
+import { FiltroCompetencia } from '../../../components/Filtros';
+import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -298,7 +293,6 @@ const AtendimentoIndividual = () => {
                 setFiltroEstabelecimentoHistorico
               ) } />
             </div>
-
             <ReactEcharts
               option={ getOpcoesGraficoHistoricoTemporal(
                 filtrarPorEstabelecimento(atendimentosPorCaps, filtroEstabelecimentoHistorico),
@@ -330,15 +324,14 @@ const AtendimentoIndividual = () => {
                   setFiltroEstabelecimentoCID
                 ) } />
               </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoCID,
-                    setFiltroPeriodoCID,
-                  )
-                } />
-              </div>
+              <FiltroCompetencia
+                width={'100%'}
+                dados = {periodos}
+                valor = {filtroPeriodoCID}
+                setValor = {setFiltroPeriodoCID}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingCID
@@ -382,15 +375,14 @@ const AtendimentoIndividual = () => {
                   setFiltroEstabelecimentoGenero
                 ) } />
               </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoGenero,
-                    setFiltroPeriodoGenero
-                  )
-                } />
-              </div>
+              <FiltroCompetencia
+                width={'100%'}
+                dados = {periodos}
+                valor = {filtroPeriodoGenero}
+                setValor = {setFiltroPeriodoGenero}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingGenero
@@ -426,15 +418,14 @@ const AtendimentoIndividual = () => {
                   setFiltroEstabelecimentoRacaECor
                 ) } />
               </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoRacaECor,
-                    setFiltroPeriodoRacaECor
-                  )
-                } />
-              </div>
+              <FiltroCompetencia
+                width={'100%'}
+                dados = {periodos}
+                valor = {filtroPeriodoRacaECor}
+                setValor = {setFiltroPeriodoRacaECor}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingRaca
