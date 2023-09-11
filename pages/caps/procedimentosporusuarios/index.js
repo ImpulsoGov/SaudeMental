@@ -2,12 +2,13 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import Select, { components } from "react-select";
+import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
 import styles from "../Caps.module.css";
-
+import { FiltroCompetencia } from '../../../components/Filtros';
+import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 import { getPropsFiltroEstabelecimento } from "../../../helpers/filtrosGraficos";
 // import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
@@ -24,15 +25,8 @@ const ProcedimentosPorUsuarios = () => {
   const { data: session } = useSession();
   const [procedimentosPorEstabelecimento, setProcedimentosPorEstabelecimento] = useState([]);
   const [procedimentosPorTempoServico, setProcedimentosPorTempoServico] = useState([]);
-  const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState({
-    value: "Todos", label: "Todos"
-  });
-  const [filtroEstabelecimentoProcedimento, setFiltroEstabelecimentoProcedimento] = useState({
-    value: "Todos", label: "Todos"
-  });
-  const [filtroPeriodoProcedimento, setFiltroPeriodoProcedimento] = useState([
-    { value: "Último período", label: "Último período" },
-  ]);
+  const [filtroEstabelecimentoProcedimento, setFiltroEstabelecimentoProcedimento] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroPeriodoProcedimento, setFiltroPeriodoProcedimento] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -136,16 +130,6 @@ const ProcedimentosPorUsuarios = () => {
 
     return cardsProcedimentosPorEstabelecimento;
   };
-
-  const filtrarPorEstabelecimento = (dados, filtroEstabelecimento) => {
-    return dados
-      .filter((item) =>
-        item.estabelecimento === filtroEstabelecimento.value
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
-      );
-  };
-
   const agregarPorTempoDeServico = (procedimentos) => {
     const procedimentosAgregados = [];
 
@@ -213,43 +197,6 @@ const ProcedimentosPorUsuarios = () => {
           name: 'Média de procedimentos'
         }
       ]
-    };
-  };
-
-  const getPropsFiltroCompetencia = (procedimentos, estadoFiltro, funcaoSetFiltro) => {
-    const periodosSemDuplicadas = [];
-
-    procedimentos.forEach(({ periodo, competencia }) => {
-      const periodoEncontrado = periodosSemDuplicadas
-        .find((item) => item.periodo === periodo);
-
-      if (!periodoEncontrado) {
-        periodosSemDuplicadas.push({ periodo, competencia });
-      }
-    });
-
-    const periodosOrdenadosDesc = periodosSemDuplicadas
-      .sort((a, b) => new Date(b.competencia) - new Date(a.competencia))
-      .map(({ periodo }) => ({
-        value: periodo,
-        label: periodo
-      }));
-
-    const optionPersonalizada = ({ children, ...props }) => (
-      <components.Control { ...props }>
-        Períodos: { children }
-      </components.Control>
-    );
-
-    return {
-      options: periodosOrdenadosDesc,
-      defaultValue: estadoFiltro,
-      selectedValue: estadoFiltro,
-      onChange: (selected) => funcaoSetFiltro(selected),
-      isMulti: true,
-      isSearchable: false,
-      components: { Control: optionPersonalizada },
-      styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
     };
   };
 
@@ -343,16 +290,14 @@ const ProcedimentosPorUsuarios = () => {
                   )
                 } />
               </div>
-
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroCompetencia(
-                    procedimentosPorTempoServico.filter(({ periodo }) => periodo !== "Fev/23"),
-                    filtroPeriodoProcedimento,
-                    setFiltroPeriodoProcedimento
-                  )
-                } />
-              </div>
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {procedimentosPorTempoServico.filter(({ periodo }) => periodo !== "Fev/23")}
+                valor = {filtroPeriodoProcedimento}
+                setValor = {setFiltroPeriodoProcedimento}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             <ReactEcharts
