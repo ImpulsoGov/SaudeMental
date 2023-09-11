@@ -32,7 +32,8 @@ const RapsHospitalar = ({ }) => {
           setInternacoesRapsAltas(dados);
           const periodosECompetencias = dados.map(item => ({
             periodo: item.periodo,
-            competencia: item.competencia
+            competencia: item.competencia,
+            periodo_ordem:item.periodo_ordem
           }));
           setPeriodosECompetencias(periodosECompetencias);
         });
