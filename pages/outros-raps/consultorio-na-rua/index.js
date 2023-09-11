@@ -222,7 +222,7 @@ const ConsultorioNaRua = () => {
                 colunaQuantidade: 'Quantidade registrada',
               } }
               data={ atendimentosFiltradosOrdenados }
-              mensagemDadosZerados=''
+              mensagemDadosZerados='Sem produção registrada nessa competência'
             />
           </div>
         </>
