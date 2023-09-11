@@ -16,13 +16,8 @@ import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNo
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
-
-const FILTRO_PERIODO_MULTI_DEFAULT = [
-  { value: 'Último período', label: 'Último período' },
-];
-const FILTRO_ESTABELECIMENTO_DEFAULT = {
-  value: 'Todos', label: 'Todos'
-};
+import { FiltroCompetencia } from '../../../components/Filtros';
+import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -373,15 +368,14 @@ const NovoUsuario = () => {
                   )
                 } />
               </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoCID,
-                    setFiltroPeriodoCID,
-                  )
-                } />
-              </div>
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoCID}
+                setValor = {setFiltroPeriodoCID}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingCID
@@ -427,15 +421,14 @@ const NovoUsuario = () => {
                   )
                 } />
               </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoGenero,
-                    setFiltroPeriodoGenero
-                  )
-                } />
-              </div>
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoGenero}
+                setValor = {setFiltroPeriodoGenero}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingGenero
@@ -473,15 +466,14 @@ const NovoUsuario = () => {
                   )
                 } />
               </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoCondicao,
-                    setFiltroPeriodoCondicao
-                  )
-                } />
-              </div>
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoCondicao}
+                setValor = {setFiltroPeriodoCondicao}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingCondicao
@@ -535,15 +527,14 @@ const NovoUsuario = () => {
                   )
                 } />
               </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoRacaECor,
-                    setFiltroPeriodoRacaECor
-                  )
-                } />
-              </div>
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoRacaECor}
+                setValor = {setFiltroPeriodoRacaECor}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingRaca
