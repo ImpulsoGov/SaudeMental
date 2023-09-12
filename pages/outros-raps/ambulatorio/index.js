@@ -1,8 +1,9 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
-import { useSession } from "next-auth/react";
-import { useCallback, useEffect, useState } from "react";
-import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getAtendimentosAmbulatorioResumoUltimoMes } from "../../../requests/outros-raps";
+import { GraficoInfo, TituloSmallTexto } from '@impulsogov/design-system';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState, useCallback } from 'react';
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { getAtendimentosAmbulatorioResumoUltimoMes } from '../../../requests/outros-raps';
+import { CardsAmbulatorioUltimoMes, CardsAtendimentoPorOcupacaoUltimoMes } from '../../../components/CardsAmbulatorio';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -26,40 +27,15 @@ const Ambulatorio = () => {
     }
   }, []);
 
-  const obterAtendimentoGeralUltimoMes = useCallback((atendimentos) => {
-    const atendimentoGeral = atendimentos.find((atendimento) =>
-      atendimento.ocupacao === 'Todas'
+  const obterAtendimentoGeralUltimoMesPorOcupacao = useCallback((atendimentos, ocupacao) => {
+    const atendimentoGeralPorOcupacao = atendimentos.find((atendimento) =>
+      atendimento.ocupacao === ocupacao
       && atendimento.periodo === 'Último período'
       && atendimento.estabelecimento === 'Todos'
     );
 
-    return atendimentoGeral;
+    return atendimentoGeralPorOcupacao;
   }, []);
-
-  const obterPropsCardTotalDeAtendimentos = useCallback(() => {
-    const atendimentoGeral = obterAtendimentoGeralUltimoMes(atendimentosUltimoMes);
-
-    return {
-      titulo: `Total de atendimentos em ${atendimentoGeral.nome_mes}`,
-      indicador: atendimentoGeral.procedimentos_realizados,
-      indice: atendimentoGeral.dif_procedimentos_realizados_anterior,
-      indiceDescricao: 'ult. mês',
-      key: `${atendimentoGeral.procedimentos_realizados}${atendimentoGeral.dif_procedimentos_realizados_anterior}`
-    };
-  }, [atendimentosUltimoMes, obterAtendimentoGeralUltimoMes]);
-
-  const obterPropsCardTotalDeAtendimentosPorHora = useCallback(() => {
-    const atendimentoGeral = obterAtendimentoGeralUltimoMes(atendimentosUltimoMes);
-
-    return {
-      titulo: `Total de atendimentos por hora trabalhada em ${atendimentoGeral.nome_mes}`,
-      indicador: atendimentoGeral.procedimentos_por_hora,
-      indice: atendimentoGeral.dif_procedimentos_por_hora_anterior,
-      indiceDescricao: 'ult. mês',
-      tooltip: 'Indicador é calculado a partir da divisão do total de atendimentos registrados pelo total de horas de trabalho dos profissionais estabelecidas em contrato. De tal modo, valores podem apresentar subnotificação em caso de férias, licenças, feriados, números de maior número de finais de semana no mês.',
-      key: `${atendimentoGeral.procedimentos_por_hora}${atendimentoGeral.dif_procedimentos_por_hora_anterior}`
-    };
-  }, [atendimentosUltimoMes, obterAtendimentoGeralUltimoMes]);
 
   return (
     <div>
@@ -68,61 +44,59 @@ const Ambulatorio = () => {
           posicao: null,
           url: ''
         } }
-        texto=""
+        texto=''
         botao={{
           label: '',
           url: ''
         }}
-        titulo="<strong>Ambulatório de Saúde Mental</strong>"
+        titulo='<strong>Ambulatório de Saúde Mental</strong>'
       />
 
       <GraficoInfo
-        titulo="Ambulatório de Saúde Mental"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo='Ambulatório de Saúde Mental'
+        fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
       />
 
-      {atendimentosUltimoMes.length !== 0
-        ? <Grid12Col
-          proporcao='6-6'
-          items={[
-            <CardInfoTipoA
-              {...obterPropsCardTotalDeAtendimentos()}
-              key={ obterPropsCardTotalDeAtendimentos().key }
-            />,
-            <CardInfoTipoA
-              {...obterPropsCardTotalDeAtendimentosPorHora()}
-              key={ obterPropsCardTotalDeAtendimentosPorHora().key }
-            />
-          ]}
-        />
-        : <Spinner theme='ColorSM' />
-      }
-
-      <GraficoInfo
-        titulo="Atendimentos"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+      <CardsAmbulatorioUltimoMes
+        atendimento={
+          obterAtendimentoGeralUltimoMesPorOcupacao(atendimentosUltimoMes, 'Todas')
+        }
       />
 
       <GraficoInfo
-        titulo="Total de atendimentos"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
-        tooltip="Indicador é calculado a partir de divisão do total de procedimentos registradas pelo total de horas de trabalho estabelecidas em contrato. De tal modo, dados podem apresentar valores subestimados no caso de férias, licenças, feriados e números de finais de semana no mês."
+        titulo='Atendimentos'
+        fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
+      />
+
+      <CardsAtendimentoPorOcupacaoUltimoMes
+        atendimentoPsicologo={
+          obterAtendimentoGeralUltimoMesPorOcupacao(atendimentosUltimoMes, 'Psicólogo clínico')
+        }
+        atendimentoPsiquiatra={
+          obterAtendimentoGeralUltimoMesPorOcupacao(atendimentosUltimoMes, 'Médico psiquiatra')
+        }
       />
 
       <GraficoInfo
-        titulo="Atendimentos por horas trabalhadas"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
-        tooltip="Indicador é calculado a partir da divisão do total de atendimentos registrados pelo total de horas de trabalho dos profissionais estabelecidas em contrato. De tal modo, valores podem apresentar subnotificação em caso de férias, licenças, feriados, números de maior número de finais de semana no mês."
+        titulo='Total de atendimentos'
+        fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
+        tooltip='Indicador é calculado a partir de divisão do total de procedimentos registradas pelo total de horas de trabalho estabelecidas em contrato. De tal modo, dados podem apresentar valores subestimados no caso de férias, licenças, feriados e números de finais de semana no mês.'
       />
 
       <GraficoInfo
-        titulo="Pirâmide etária de atendidos"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo='Atendimentos por horas trabalhadas'
+        fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
+        tooltip='Indicador é calculado a partir da divisão do total de atendimentos registrados pelo total de horas de trabalho dos profissionais estabelecidas em contrato. De tal modo, valores podem apresentar subnotificação em caso de férias, licenças, feriados, números de maior número de finais de semana no mês.'
       />
 
       <GraficoInfo
-        titulo="Atendimentos por profissional"
-        fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
+        titulo='Pirâmide etária de atendidos'
+        fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
+      />
+
+      <GraficoInfo
+        titulo='Atendimentos por profissional'
+        fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
       />
     </div>
   );
