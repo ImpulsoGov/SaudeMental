@@ -48,17 +48,18 @@ const Ambulatorio = () => {
     };
   }, [atendimentosUltimoMes, obterAtendimentoGeralUltimoMes]);
 
-  // const obterPropsCardTotalDeAtendimentosPorHora = useCallback(() => {
-  //   const atendimentoGeral = obterAtendimentoGeralUltimoMes(atendimentosUltimoMes);
+  const obterPropsCardTotalDeAtendimentosPorHora = useCallback(() => {
+    const atendimentoGeral = obterAtendimentoGeralUltimoMes(atendimentosUltimoMes);
 
-  //   return {
-  //     titulo: `Total de atendimentos por hora trabalhada em ${atendimentoGeral.nome_mes}`,
-  //     indicador: atendimentoGeral.procedimentos_realizados,
-  //     indice: atendimentoGeral.dif_procedimentos_realizados_anterior,
-  //     indiceDescricao: 'ult. mês',
-  //     key: `${atendimentoGeral.procedimentos_realizados}${atendimentoGeral.dif_procedimentos_realizados_anterior}`
-  //   };
-  // }, [atendimentosUltimoMes, obterAtendimentoGeralUltimoMes]);
+    return {
+      titulo: `Total de atendimentos por hora trabalhada em ${atendimentoGeral.nome_mes}`,
+      indicador: atendimentoGeral.procedimentos_por_hora,
+      indice: atendimentoGeral.dif_procedimentos_por_hora_anterior,
+      indiceDescricao: 'ult. mês',
+      tooltip: 'Indicador é calculado a partir da divisão do total de atendimentos registrados pelo total de horas de trabalho dos profissionais estabelecidas em contrato. De tal modo, valores podem apresentar subnotificação em caso de férias, licenças, feriados, números de maior número de finais de semana no mês.',
+      key: `${atendimentoGeral.procedimentos_por_hora}${atendimentoGeral.dif_procedimentos_por_hora_anterior}`
+    };
+  }, [atendimentosUltimoMes, obterAtendimentoGeralUltimoMes]);
 
   return (
     <div>
@@ -80,21 +81,22 @@ const Ambulatorio = () => {
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
       />
 
-      <Grid12Col
-        proporcao='6-6'
-        items={[
-          <>{
-            atendimentosUltimoMes.length !== 0
-              ? <CardInfoTipoA {...obterPropsCardTotalDeAtendimentos()} />
-              : <Spinner theme='ColorSM' />
-          }</>,
-          // <>{
-          //   atendimentosUltimoMes.length !== 0
-          //     ? <CardInfoTipoA {...obterPropsCardTotalDeAtendimentos()} />
-          //     : <Spinner theme='ColorSM' />
-          // }</>
-        ]}
-      />
+      {atendimentosUltimoMes.length !== 0
+        ? <Grid12Col
+          proporcao='6-6'
+          items={[
+            <CardInfoTipoA
+              {...obterPropsCardTotalDeAtendimentos()}
+              key={ obterPropsCardTotalDeAtendimentos().key }
+            />,
+            <CardInfoTipoA
+              {...obterPropsCardTotalDeAtendimentosPorHora()}
+              key={ obterPropsCardTotalDeAtendimentosPorHora().key }
+            />
+          ]}
+        />
+        : <Spinner theme='ColorSM' />
+      }
 
       <GraficoInfo
         titulo="Atendimentos"
