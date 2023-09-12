@@ -27,15 +27,15 @@ const Ambulatorio = () => {
     }
   }, []);
 
-  const obterAtendimentoGeralUltimoMesPorOcupacao = useCallback((atendimentos, ocupacao) => {
-    const atendimentoGeralPorOcupacao = atendimentos.find((atendimento) =>
+  const obterAtendimentoGeralUltimoMesPorOcupacao = useCallback((ocupacao) => {
+    const atendimentoGeralPorOcupacao = atendimentosUltimoMes.find((atendimento) =>
       atendimento.ocupacao === ocupacao
       && atendimento.periodo === 'Último período'
       && atendimento.estabelecimento === 'Todos'
     );
 
     return atendimentoGeralPorOcupacao;
-  }, []);
+  }, [atendimentosUltimoMes]);
 
   return (
     <div>
@@ -59,7 +59,7 @@ const Ambulatorio = () => {
 
       <CardsAmbulatorioUltimoMes
         atendimento={
-          obterAtendimentoGeralUltimoMesPorOcupacao(atendimentosUltimoMes, 'Todas')
+          obterAtendimentoGeralUltimoMesPorOcupacao('Todas')
         }
       />
 
@@ -70,10 +70,10 @@ const Ambulatorio = () => {
 
       <CardsAtendimentoPorOcupacaoUltimoMes
         atendimentoPsicologo={
-          obterAtendimentoGeralUltimoMesPorOcupacao(atendimentosUltimoMes, 'Psicólogo clínico')
+          obterAtendimentoGeralUltimoMesPorOcupacao('Psicólogo clínico')
         }
         atendimentoPsiquiatra={
-          obterAtendimentoGeralUltimoMesPorOcupacao(atendimentosUltimoMes, 'Médico psiquiatra')
+          obterAtendimentoGeralUltimoMesPorOcupacao('Médico psiquiatra')
         }
       />
 
