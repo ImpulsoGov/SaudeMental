@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosPorProfissional } from '../../../requests/outros-raps';
 import { CardsAmbulatorioUltimoMes, CardsAtendimentoPorOcupacaoUltimoMes } from '../../../components/CardsAmbulatorio';
+import { TabelaAtendimentosPorProfissional } from '../../../components/Tabelas';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -99,6 +100,10 @@ const Ambulatorio = () => {
       <GraficoInfo
         titulo='Atendimentos por profissional'
         fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
+      />
+
+      <TabelaAtendimentosPorProfissional
+        atendimentos={ atendimentosPorProfissional }
       />
     </div>
   );
