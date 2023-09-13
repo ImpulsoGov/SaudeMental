@@ -202,7 +202,7 @@ const TaxaAbandono = () => {
         ? (
           <>
             <FiltroTexto
-              width={'100%'}
+              width={'50%'}
               dados = {abandonoMensal}
               valor = {filtroEstabelecimentoHistorico}
               setValor = {setFiltroEstabelecimentoHistorico}
@@ -235,6 +235,7 @@ const TaxaAbandono = () => {
           <>
             <div className={ styles.Filtros }>
               <FiltroTexto
+                width={'50%'}
                 dados = {estabelecimentos}
                 valor = {filtroEstabelecimentoCID}
                 setValor = {setFiltroEstabelecimentoCID}
@@ -286,6 +287,7 @@ const TaxaAbandono = () => {
           <>
             <div className={ styles.Filtros }>
               <FiltroTexto
+                width={'50%'}
                 dados = {estabelecimentos}
                 valor = {filtroEstabelecimentoGenero}
                 setValor = {setFiltroEstabelecimentoGenero}
