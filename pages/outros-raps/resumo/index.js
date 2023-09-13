@@ -1,4 +1,4 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
@@ -96,25 +96,27 @@ const Resumo = () => {
       <Grid12Col
         items={ [
           <>
-            { ambulatorioUltMes.length !== 0 &&
-              <CardInfoTipoA
+            { ambulatorioUltMes.length !== 0
+              ? <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ getDadosAmbulatorioUltimoMes().procedimentos_realizados }
                 titulo={ `Total de atendimentos em ${getDadosAmbulatorioUltimoMes().nome_mes}` }
                 indice={ getDadosAmbulatorioUltimoMes().dif_procedimentos_realizados_anterior }
                 indiceDescricao="últ. mês"
               />
+              : <Spinner theme='ColorSM' />
             }
           </>,
           <>
-            { ambulatorioUltMes.length !== 0 &&
-              <CardInfoTipoA
+            { ambulatorioUltMes.length !== 0
+              ? <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ getDadosAmbulatorioUltimoMes().procedimentos_por_hora }
                 titulo={ `Total de atendimentos por hora trabalhada em ${getDadosAmbulatorioUltimoMes().nome_mes}` }
                 indice={ getDadosAmbulatorioUltimoMes().dif_procedimentos_por_hora_anterior }
                 indiceDescricao="últ. mês"
               />
+              : <Spinner theme='ColorSM' />
             }
           </>,
         ] }
@@ -129,25 +131,27 @@ const Resumo = () => {
       <Grid12Col
         items={ [
           <>
-            { consultorioNaRua.length !== 0 &&
-              <CardInfoTipoA
+            { consultorioNaRua.length !== 0
+              ? <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ getDadosConsultorioNaRua().quantidade_registrada }
                 titulo={ `Total de atendimentos em ${getDadosConsultorioNaRua().nome_mes}` }
                 indice={ getDadosConsultorioNaRua().dif_quantidade_registrada_anterior }
                 indiceDescricao="últ. mês"
               />
+              : <Spinner theme='ColorSM' />
             }
           </>,
           <>
-            { consultorioNaRua12Meses.length !== 0 &&
-              <CardInfoTipoA
+            { consultorioNaRua12Meses.length !== 0
+              ? <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ getDadosConsultorioNaRua12meses().quantidade_registrada }
                 titulo={ `Total de atendimentos entre ${getDadosConsultorioNaRua12meses().a_partir_do_mes}/${getDadosConsultorioNaRua12meses().a_partir_do_ano} e ${getDadosConsultorioNaRua12meses().ate_mes}/${getDadosConsultorioNaRua12meses().ate_ano}` }
                 indice={ getDadosConsultorioNaRua12meses().dif_quantidade_registrada_anterior }
                 indiceDescricao="doze meses anteriores"
               />
+              : <Spinner theme='ColorSM' />
             }
           </>,
         ] }
@@ -162,25 +166,27 @@ const Resumo = () => {
       <Grid12Col
         items={ [
           <>
-            { reducaoDanos.length !== 0 &&
-              <CardInfoTipoA
+            { reducaoDanos.length !== 0
+              ? <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ getDadosReducaoDanos().quantidade_registrada }
                 titulo={ `Total de ações de redução de danos em ${getDadosReducaoDanos().nome_mes}` }
                 indice={ getDadosReducaoDanos().dif_quantidade_registrada_anterior }
                 indiceDescricao="últ. mês"
               />
+              : <Spinner theme='ColorSM' />
             }
           </>,
           <>
-            { reducaoDanos12Meses.length !== 0 &&
-              <CardInfoTipoA
+            { reducaoDanos12Meses.length !== 0
+              ? <CardInfoTipoA
                 key={ uuidv1() }
                 indicador={ getDadosReducaoDanos12meses().quantidade_registrada }
                 titulo={ `Total ações de redução de danos entre ${getDadosReducaoDanos12meses().a_partir_do_mes}/${getDadosReducaoDanos12meses().a_partir_do_ano} e ${getDadosReducaoDanos12meses().ate_mes}/${getDadosReducaoDanos12meses().ate_ano}` }
                 indice={ getDadosReducaoDanos12meses().dif_quantidade_registrada_anterior }
                 indiceDescricao="doze meses anteriores"
               />
+              : <Spinner theme='ColorSM' />
             }
           </>,
         ] }
