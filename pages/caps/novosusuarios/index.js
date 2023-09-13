@@ -2,11 +2,9 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
-import Select from 'react-select';
 import { v1 as uuidv1 } from 'uuid';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
@@ -16,7 +14,7 @@ import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNo
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
-import { FiltroCompetencia } from '../../../components/Filtros';
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 
 export function getServerSideProps(ctx) {
@@ -325,15 +323,14 @@ const NovoUsuario = () => {
       { resumoNovosUsuarios.length !== 0
         ? (
           <>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  resumoNovosUsuarios,
-                  filtroEstabelecimentoHistorico,
-                  setFiltroEstabelecimentoHistorico
-                )
-              } />
-            </div>
+            <FiltroTexto
+              width={'50%'}
+              dados = {resumoNovosUsuarios}
+              valor = {filtroEstabelecimentoHistorico}
+              setValor = {setFiltroEstabelecimentoHistorico}
+              label = {'Estabelecimento'}
+              propriedade = {'estabelecimento'}
+            />
 
             <ReactEcharts
               option={ getOpcoesGraficoHistoricoTemporal(
@@ -359,15 +356,14 @@ const NovoUsuario = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoCID,
-                    setFiltroEstabelecimentoCID
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoCID}
+                setValor = {setFiltroEstabelecimentoCID}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
               <FiltroCompetencia
                 width={'50%'}
                 dados = {periodos}
@@ -412,15 +408,14 @@ const NovoUsuario = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoGenero,
-                    setFiltroEstabelecimentoGenero
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoGenero}
+                setValor = {setFiltroEstabelecimentoGenero}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
               <FiltroCompetencia
                 width={'50%'}
                 dados = {periodos}
@@ -457,15 +452,14 @@ const NovoUsuario = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoCondicao,
-                    setFiltroEstabelecimentoCondicao
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoCondicao}
+                setValor = {setFiltroEstabelecimentoCondicao}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
               <FiltroCompetencia
                 width={'50%'}
                 dados = {periodos}
@@ -518,15 +512,14 @@ const NovoUsuario = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoRacaECor,
-                    setFiltroEstabelecimentoRacaECor
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoRacaECor}
+                setValor = {setFiltroEstabelecimentoRacaECor}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
               <FiltroCompetencia
                 width={'50%'}
                 dados = {periodos}

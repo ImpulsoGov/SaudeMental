@@ -5,16 +5,14 @@ import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesNoMesPorCID, getEvasoesNoMesPorGeneroEIdade, getPeriodos } from '../../../requests/caps';
 import ReactEcharts from 'echarts-for-react';
-import Select from 'react-select';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
-import { getPropsFiltroEstabelecimento} from '../../../helpers/filtrosGraficos';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
-import { FiltroCompetencia } from '../../../components/Filtros';
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 
 export function getServerSideProps(ctx) {
@@ -203,15 +201,14 @@ const TaxaAbandono = () => {
       { abandonoMensal.length !== 0
         ? (
           <>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  abandonoMensal,
-                  filtroEstabelecimentoHistorico,
-                  setFiltroEstabelecimentoHistorico
-                )
-              } />
-            </div>
+            <FiltroTexto
+              width={'100%'}
+              dados = {abandonoMensal}
+              valor = {filtroEstabelecimentoHistorico}
+              setValor = {setFiltroEstabelecimentoHistorico}
+              label = {'Estabelecimento'}
+              propriedade = {'estabelecimento'}
+            />
 
             <ReactEcharts
               option={ getOpcoesGraficoHistoricoTemporal(
@@ -237,15 +234,13 @@ const TaxaAbandono = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoCID,
-                    setFiltroEstabelecimentoCID
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoCID}
+                setValor = {setFiltroEstabelecimentoCID}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
               <FiltroCompetencia
                 width={'50%'}
                 dados = {periodos}
@@ -290,15 +285,13 @@ const TaxaAbandono = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoGenero,
-                    setFiltroEstabelecimentoGenero
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoGenero}
+                setValor = {setFiltroEstabelecimentoGenero}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
               <FiltroCompetencia
                 width={'50%'}
                 dados = {periodos}

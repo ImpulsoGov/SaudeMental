@@ -2,15 +2,12 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from
 import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import Select from "react-select";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
 import styles from "../Caps.module.css";
-import { FiltroCompetencia } from '../../../components/Filtros';
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
-import { getPropsFiltroEstabelecimento } from "../../../helpers/filtrosGraficos";
-// import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
 
 export function getServerSideProps(ctx) {
@@ -232,7 +229,7 @@ const ProcedimentosPorUsuarios = () => {
                   && item.periodo === "Último período"
                 )
                 .nome_mes
-                }` }
+              }` }
             />
 
             { getCardsProcedimentosPorEstabelecimento(procedimentosPorEstabelecimento) }
@@ -240,38 +237,6 @@ const ProcedimentosPorUsuarios = () => {
         )
         : <Spinner theme="ColorSM" />
       }
-
-      {/* <GraficoInfo
-        titulo="Histórico Temporal"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
-      />
-
-      { procedimentosPorEstabelecimento.length !== 0
-        ? (
-          <>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  procedimentosPorEstabelecimento,
-                  filtroEstabelecimentoHistorico,
-                  setFiltroEstabelecimentoHistorico
-                )
-              } />
-            </div>
-
-            <ReactEcharts
-              option={ getOpcoesGraficoHistoricoTemporal(
-                filtrarPorEstabelecimento(procedimentosPorEstabelecimento, filtroEstabelecimentoHistorico),
-                "procedimentos_por_usuario",
-                filtroEstabelecimentoHistorico.value
-              ) }
-              style={ { width: "100%", height: "70vh" } }
-            />
-          </>
-        )
-        : <Spinner theme="ColorSM" />
-      } */}
-
       <GraficoInfo
         titulo="Procedimento por usuários x tempo do usuário no serviço"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
@@ -281,15 +246,14 @@ const ProcedimentosPorUsuarios = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    procedimentosPorTempoServico,
-                    filtroEstabelecimentoProcedimento,
-                    setFiltroEstabelecimentoProcedimento
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {procedimentosPorTempoServico}
+                valor = {filtroEstabelecimentoProcedimento}
+                setValor = {setFiltroEstabelecimentoProcedimento}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
               <FiltroCompetencia
                 width={'50%'}
                 dados = {procedimentosPorTempoServico.filter(({ periodo }) => periodo !== "Fev/23")}
