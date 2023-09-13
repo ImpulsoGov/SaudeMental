@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import Select, { components } from 'react-select';
 import styles from './Filtros.module.css';
 
-const FiltroCompetencia = ({ dados, valor, setValor, isMulti, isSearchable, width }) => {
+const FiltroCompetencia = ({ dados, label, valor, setValor, isMulti, isSearchable, width }) => {
   const options = useMemo(() => {
     const competencias = [];
 
@@ -22,8 +22,8 @@ const FiltroCompetencia = ({ dados, valor, setValor, isMulti, isSearchable, widt
   }, [dados]);
 
   const getOptionPersonalizada = ({ children, ...props }) => (
-    <components.Control { ...props }>
-      Competência: { children }
+    <components.Control { ...props } >
+      {`${label}`}: { children }
     </components.Control>
   );
 
@@ -39,8 +39,8 @@ const FiltroCompetencia = ({ dados, valor, setValor, isMulti, isSearchable, widt
         onChange={ (selected) => setValor(selected) }
         isMulti={ isMulti }
         isSearchable={ isSearchable }
-        components={ { Control: getOptionPersonalizada } }
-        styles={ { control: (css) => ({ ...css, paddingLeft: '15px' }) } }
+        components={ { Control: label ? getOptionPersonalizada : components.Control } }
+        styles={ label && { control: (css) => ({ ...css, paddingLeft: '15px' }) } }
       />
     </div>
   );
@@ -64,7 +64,8 @@ FiltroCompetencia.propTypes = {
   setValor: PropTypes.func.isRequired,
   isMulti: PropTypes.bool,
   isSearchable: PropTypes.bool,
-  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  label: PropTypes.string
 };
 
 export default FiltroCompetencia;

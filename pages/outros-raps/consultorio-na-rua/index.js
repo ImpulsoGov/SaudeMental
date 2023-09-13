@@ -2,13 +2,15 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
-import { v1 as uuidv1 } from 'uuid';
-import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
-import styles from '../OutrosRaps.module.css';
-import { FiltroTexto, FiltroCompetencia } from '../../../components/Filtros';
-import { getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
+import { v4 as uuidv4 } from 'uuid';
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
+import { FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
+import { getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
+import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
+import styles from '../OutrosRaps.module.css';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -25,9 +27,7 @@ const ConsultorioNaRua = () => {
   const [filtroProducao, setFiltroProducao] = useState({
     value: 'Todos', label: 'Todos'
   });
-  const [filtroCompetencia, setFiltroCompetencia] = useState({
-    value: 'Último período', label: 'Último período'
-  });
+  const [filtroCompetencia, setFiltroCompetencia] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -94,32 +94,34 @@ const ConsultorioNaRua = () => {
   };
 
   const atendimentosFiltradosOrdenados = useMemo(() => {
+    const periodosSelecionados = filtroCompetencia.map(({ value }) => value);
     const atendimentosFiltrados = atendimentos.filter(({
       tipo_producao: tipoProducao,
       periodo
     }) =>
-      tipoProducao !== 'Todos' && periodo === filtroCompetencia.value
+      tipoProducao !== 'Todos' && periodosSelecionados.includes(periodo)
     );
 
-    const atendimentosOrdenados = atendimentosFiltrados
-      .sort((a, b) => b.quantidade_registrada - a.quantidade_registrada);
+    const atendimentosAgregados = agregarQuantidadePorPropriedadeNome(
+      atendimentosFiltrados,
+      'tipo_producao',
+      'quantidade_registrada'
+    );
 
-    const atendimentosFormatados = atendimentosOrdenados.map(({
-      tipo_producao: nome,
-      quantidade_registrada: quantidade
-    }) => ({
-      nome, quantidade
-    }));
+    const atendimentosOrdenados = ordenarDecrescentePorPropriedadeNumerica(
+      atendimentosAgregados,
+      'quantidade'
+    );
 
-    return atendimentosFormatados;
-  }, [atendimentos, filtroCompetencia.value]);
+    return atendimentosOrdenados;
+  }, [atendimentos, filtroCompetencia]);
 
   const getPropsCardUltimoPeriodo = () => {
     const atendimentoTodosUltimoPeriodo = atendimentos
       .find((atendimento) => atendimento.tipo_producao === 'Todos' && atendimento.periodo === 'Último período');
 
     return {
-      key: uuidv1(),
+      key: uuidv4(),
       indicador: atendimentoTodosUltimoPeriodo['quantidade_registrada'],
       titulo: `Total de atendimentos em ${atendimentoTodosUltimoPeriodo['nome_mes']}`,
       indice: atendimentoTodosUltimoPeriodo['dif_quantidade_registrada_anterior'],
@@ -132,12 +134,20 @@ const ConsultorioNaRua = () => {
       .find(({ tipo_producao: tipoProducao }) => tipoProducao === 'Todos');
 
     return {
-      key: uuidv1(),
+      key: uuidv4(),
       indicador: atendimentoTodosUltimos12Meses['quantidade_registrada'],
       titulo: `Total de atendimentos nos últimos 12 meses de ${atendimentoTodosUltimos12Meses['a_partir_do_mes']}/${atendimentoTodosUltimos12Meses['a_partir_do_ano']} a ${atendimentoTodosUltimos12Meses['ate_mes']}/${atendimentoTodosUltimos12Meses['ate_ano']}`,
       indice: atendimentoTodosUltimos12Meses['dif_quantidade_registrada_anterior'],
       indiceDescricao: 'doze meses anteriores'
     };
+  };
+
+  const encontrarMesDeUltimoPeriodo = (dados) => {
+    const ultimoPeriodo = dados.find(({ periodo, tipo_producao: tipoProducao }) =>
+      tipoProducao === 'Todos' && periodo === 'Último período'
+    );
+
+    return ultimoPeriodo.nome_mes;
   };
 
   return (
@@ -148,12 +158,18 @@ const ConsultorioNaRua = () => {
           url: ''
         } }
         texto=''
-        botao={{
+        botao={ {
           label: '',
           url: ''
-        }}
+        } }
         titulo='<strong>Consultório na Rua</strong>'
       />
+
+      { atendimentos.length !== 0 &&
+        <GraficoInfo
+          descricao={ `Última competência disponível: ${encontrarMesDeUltimoPeriodo(atendimentos)}` }
+        />
+      }
 
       <GraficoInfo
         titulo='Atendimentos realizados por equipes'
@@ -190,6 +206,8 @@ const ConsultorioNaRua = () => {
             dados={ atendimentos }
             valor={ filtroCompetencia }
             setValor={ setFiltroCompetencia }
+            label='Competência'
+            isMulti
           />
 
           <div className={ styles.GraficoDonutContainer }>
@@ -199,12 +217,12 @@ const ConsultorioNaRua = () => {
             />
 
             <TabelaGraficoDonut
-              labels={{
+              labels={ {
                 colunaHeader: 'Tipo de produção',
                 colunaQuantidade: 'Quantidade registrada',
-              }}
+              } }
               data={ atendimentosFiltradosOrdenados }
-              mensagemDadosZerados=''
+              mensagemDadosZerados='Sem produção registrada nessa competência'
             />
           </div>
         </>
