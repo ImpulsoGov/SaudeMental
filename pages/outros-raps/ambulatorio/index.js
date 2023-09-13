@@ -2,7 +2,7 @@ import { GraficoInfo, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState, useCallback } from 'react';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAtendimentosAmbulatorioResumoUltimoMes } from '../../../requests/outros-raps';
+import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosPorProfissional } from '../../../requests/outros-raps';
 import { CardsAmbulatorioUltimoMes, CardsAtendimentoPorOcupacaoUltimoMes } from '../../../components/CardsAmbulatorio';
 
 export function getServerSideProps(ctx) {
@@ -16,10 +16,12 @@ export function getServerSideProps(ctx) {
 const Ambulatorio = () => {
   const { data: session } = useSession();
   const [atendimentosUltimoMes, setAtendimentosUltimoMes] = useState([]);
+  const [atendimentosPorProfissional, setAtendimentosPorProfissional] = useState([]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       setAtendimentosUltimoMes(await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus));
+      setAtendimentosPorProfissional(await getAtendimentosPorProfissional(municipioIdSus));
     };
 
     if (session?.user.municipio_id_ibge) {
