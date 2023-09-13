@@ -53,17 +53,14 @@ const Resumo = () => {
     return reducaoDanos.find((item) =>
       item.periodo === "Último período"
       && item.estabelecimento === "Todos"
-      && item.estabelecimento_linha_perfil === "Todas"
-      && item.estabelecimento_linha_idade === "Todas"
+      && item.profissional_vinculo_ocupacao === "Todas"
     );
   };
 
   const getDadosReducaoDanos12meses = () => {
     return reducaoDanos12Meses.find((item) =>
       item.estabelecimento === "Todos"
-      && item.estabelecimento_linha_perfil === "Todas"
       && item.profissional_vinculo_ocupacao === "Todas"
-      && item.estabelecimento_linha_idade === "Todas"
     );
   };
 
@@ -71,8 +68,7 @@ const Resumo = () => {
     return ambulatorioUltMes.find((item) =>
       item.periodo === "Último período"
       && item.estabelecimento === "Todos"
-      && item.estabelecimento_linha_perfil === "Todas"
-      && item.estabelecimento_linha_idade === "Todas"
+      && item.ocupacao === "Todas"
     );
   };
 
@@ -96,6 +92,7 @@ const Resumo = () => {
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
         link={ { label: 'Mais informações', url: '/outros-raps?painel=1' } }
       />
+
       <Grid12Col
         items={ [
           <>
@@ -122,8 +119,6 @@ const Resumo = () => {
           </>,
         ] }
       />
-
-
 
       <GraficoInfo
         titulo="Consultório na Rua"
