@@ -20,7 +20,7 @@ export const getOpcoesGraficoAtendimentos = (dados, propriedade, textoTooltipPsi
         fontSize: 14,
         fontWeight: 500,
       },
-      left:'5%'
+      left:'0.5%'
     },
     toolbox: {
       feature: {

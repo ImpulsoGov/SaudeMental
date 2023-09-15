@@ -119,8 +119,8 @@ const Ambulatorio = () => {
                 getOpcoesGraficoAtendimentos(
                   filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosTotal),
                   'procedimentos_realizados',
-                  'Médico psiquiatra:',
-                  'Psicólogo clínico:'
+                  'Médico psiquiatra',
+                  'Psicólogo clínico'
                 )
               }
               style = {{width: '100%', height: '70vh'}}
