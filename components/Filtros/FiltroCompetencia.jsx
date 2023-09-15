@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import Select, { components } from 'react-select';
 import Control from './Control';
 import styles from './Filtros.module.css';
@@ -14,28 +14,45 @@ const FiltroCompetencia = ({
   isSearchable,
   width
 }) => {
+  const obterPeriodoFormatado = useCallback((competencia, nomeMes) => {
+    const abreviacaoMes = nomeMes.slice(0, 3);
+    const ano = new Date(competencia).getUTCFullYear();
+
+    return `${abreviacaoMes}/${ano}`;
+  }, []);
+
   const options = useMemo(() => {
     const competencias = [];
 
-    dados.forEach(({ periodo, competencia, periodo_ordem }) => {
+    dados.forEach(({ periodo, competencia, nome_mes: nomeMes }) => {
       const periodoEncontrado = competencias
         .find((item) => item.periodo === periodo);
 
       if (!periodoEncontrado) {
-        competencias.push({ periodo, competencia, periodo_ordem });
+        competencias.push(
+          periodo === 'Último período'
+            ? {
+              periodo,
+              competencia,
+              descricaoPeriodo: `(${obterPeriodoFormatado(competencia, nomeMes)})`
+            }
+            : {
+              periodo,
+              competencia,
+              descricaoPeriodo: null
+            }
+        );
       }
     });
 
     return competencias
       .sort((a, b) => new Date(b.competencia) - new Date(a.competencia))
-      .map(({ periodo, periodo_ordem }) => ({ value: periodo, label: periodo, periodo_ordem }));
-  }, [dados]);
-
-  const getOptionPersonalizada = ({ children, ...props }) => (
-    <components.Control { ...props } >
-      {`${label}`}: { children }
-    </components.Control>
-  );
+      .map(({ periodo, descricaoPeriodo }) => ({
+        value: periodo,
+        label: periodo,
+        descricaoPeriodo
+      }));
+  }, [dados, obterPeriodoFormatado]);
 
   return (
     <div
