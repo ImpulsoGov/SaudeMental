@@ -1,9 +1,14 @@
-import { GraficoInfo, TituloSmallTexto } from '@impulsogov/design-system';
+import { GraficoInfo, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAtendimentosAmbulatorioResumoUltimoMes } from '../../../requests/outros-raps';
+import { getAtendimentosAmbulatorioResumoUltimoMes, getPerfilAtendimentosAmbulatorio } from '../../../requests/outros-raps';
 import { CardsAmbulatorioUltimoMes, CardsAtendimentoPorOcupacaoUltimoMes } from '../../../components/CardsAmbulatorio';
+import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
+import ReactEcharts from 'echarts-for-react';
+import styles from '../OutrosRaps.module.css';
+import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -16,10 +21,14 @@ export function getServerSideProps(ctx) {
 const Ambulatorio = () => {
   const { data: session } = useSession();
   const [atendimentosUltimoMes, setAtendimentosUltimoMes] = useState([]);
+  const [perfilAtendimentos, setPerfilAtendimentos] = useState([]);
+  const [filtroEstabelecimentoPiramideEtaria, setFiltroEstabelecimentoPiramideEtaria] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroPeriodoPiramideEtaria, setFiltroPeriodoPiramideEtaria] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       setAtendimentosUltimoMes(await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus));
+      setPerfilAtendimentos(await getPerfilAtendimentosAmbulatorio(municipioIdSus));
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -36,6 +45,21 @@ const Ambulatorio = () => {
 
     return atendimentoGeralPorOcupacao;
   }, [atendimentosUltimoMes]);
+
+  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
+    const periodosSelecionados = filtroPeriodoPiramideEtaria.map(({ value }) => value);
+    const atendimentosFiltrados = perfilAtendimentos.filter((atendimento) =>
+      atendimento.estabelecimento === filtroEstabelecimentoPiramideEtaria.value
+      && periodosSelecionados.includes(atendimento.periodo)
+    );
+
+    return agregarPorFaixaEtariaEGenero(
+      atendimentosFiltrados,
+      'usuario_faixa_etaria',
+      'usuario_sexo',
+      'usuarios_unicos_mes'
+    );
+  }, [perfilAtendimentos, filtroPeriodoPiramideEtaria, filtroEstabelecimentoPiramideEtaria.value]);
 
   return (
     <div>
@@ -93,6 +117,37 @@ const Ambulatorio = () => {
         titulo='Pirâmide etária de atendidos'
         fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
       />
+
+      {perfilAtendimentos.length !== 0
+        ? <>
+          <div className={ styles.Filtros }>
+            <FiltroTexto
+              dados={ perfilAtendimentos }
+              label='Estabelecimento'
+              propriedade='estabelecimento'
+              valor={ filtroEstabelecimentoPiramideEtaria }
+              setValor={ setFiltroEstabelecimentoPiramideEtaria }
+            />
+
+            <FiltroCompetencia
+              dados={ perfilAtendimentos }
+              valor={ filtroPeriodoPiramideEtaria }
+              setValor={ setFiltroPeriodoPiramideEtaria }
+              label='Competência'
+              isMulti
+            />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoGeneroEFaixaEtaria(
+              agregadosPorGeneroEFaixaEtaria,
+              'Nº de usuários únicos nas referências ambulatoriais'
+            ) }
+            style={ { width: '100%', height: '70vh' } }
+          />
+        </>
+        : <Spinner theme='ColorSM' />
+      }
 
       <GraficoInfo
         titulo='Atendimentos por profissional'
