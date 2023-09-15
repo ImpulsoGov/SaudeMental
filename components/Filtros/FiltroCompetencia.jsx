@@ -17,8 +17,9 @@ const FiltroCompetencia = ({
   const obterPeriodoFormatado = useCallback((competencia, nomeMes) => {
     const abreviacaoMes = nomeMes.slice(0, 3);
     const ano = new Date(competencia).getUTCFullYear();
+    const abreviacaoAno = ano % 100;
 
-    return `${abreviacaoMes}/${ano}`;
+    return `${abreviacaoMes}/${abreviacaoAno}`;
   }, []);
 
   const options = useMemo(() => {
