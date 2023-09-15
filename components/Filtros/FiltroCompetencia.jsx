@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import { useMemo } from 'react';
 import Select, { components } from 'react-select';
+import Control from './Control';
 import styles from './Filtros.module.css';
-import InputOption from './InputOption';
+import Option from './Option';
 
 const FiltroCompetencia = ({
   dados,
@@ -48,12 +49,10 @@ const FiltroCompetencia = ({
         onChange={ (selected) => setValor(selected) }
         isMulti={ isMulti }
         isSearchable={ isSearchable }
+        controlLabel={ label }
         components={ {
-          Control: label ? getOptionPersonalizada : components.Control,
-          Option: InputOption
-        } }
-        styles={ label && {
-          control: (css) => ({ ...css, paddingLeft: '15px' }),
+          Control: label ? Control : components.Control,
+          Option: Option
         } }
         hideSelectedOptions={ false }
         closeMenuOnSelect={ isMulti ? false : true }
