@@ -1,8 +1,7 @@
 export const getOpcoesGraficoAtendimentos = (dados, propriedade, textoTooltipPsiquiatra, textoTooltipPsicologo) => {
-  console.log(dados);
   const procedimentosOrdenadosPorCompetencia = dados.sort((a,b) => new Date(a.competencia) - new Date(b.competencia));
   const periodos = procedimentosOrdenadosPorCompetencia.map((item) => item.periodo);
-  console.log('Os periodos estão:', periodos);
+  const periodosUnicos = [...new Set(periodos)];
   const procedimentosPsiquiatra = procedimentosOrdenadosPorCompetencia.filter((item => item.ocupacao === 'Médico psiquiatra')).map((item) => item[propriedade]);
   const procedimentosPsicologo = procedimentosOrdenadosPorCompetencia.filter((item => item.ocupacao === 'Psicólogo clínico')).map((item) => item[propriedade]);
   return {
@@ -38,7 +37,7 @@ export const getOpcoesGraficoAtendimentos = (dados, propriedade, textoTooltipPsi
     xAxis: {
       type: 'category',
       boundaryGap: true,
-      data: periodos
+      data: periodosUnicos
     },
     yAxis: {
       type: 'value'
