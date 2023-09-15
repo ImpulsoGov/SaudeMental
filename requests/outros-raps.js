@@ -64,3 +64,15 @@ export const getAtendimentosAmbulatorioResumoUltimoMes = async (municipioIdSus) 
     console.log('error', error.response.data);
   }
 };
+
+export const getPerfilAtendimentosAmbulatorio = async (municipioIdSus) => {
+  try {
+    const endpoint = "/ambulatorio/usuario-perfil?municipio_id_sus=" + municipioIdSus;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
