@@ -33,7 +33,7 @@ const RapsHospitalar = ({ }) => {
           const periodosECompetencias = dados.map(item => ({
             periodo: item.periodo,
             competencia: item.competencia,
-            periodo_ordem:item.periodo_ordem
+            nome_mes:item.nome_mes
           }));
           setPeriodosECompetencias(periodosECompetencias);
         });
