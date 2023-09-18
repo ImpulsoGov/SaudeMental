@@ -196,7 +196,7 @@ const ReducaoDeDanos = () => {
             style={ { width: '100%', height: '70vh' } }
           />
         </>
-        : <Spinner theme="ColorSM" height="70vh" />
+        : <Spinner theme="ColorSM" />
       }
     </div>
   );
