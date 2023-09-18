@@ -2,11 +2,9 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
-import Select from 'react-select';
 import { v1 as uuidv1 } from 'uuid';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
@@ -16,13 +14,8 @@ import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNo
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
-
-const FILTRO_PERIODO_MULTI_DEFAULT = [
-  { value: 'Último período', label: 'Último período' },
-];
-const FILTRO_ESTABELECIMENTO_DEFAULT = {
-  value: 'Todos', label: 'Todos'
-};
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
+import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -330,15 +323,14 @@ const NovoUsuario = () => {
       { resumoNovosUsuarios.length !== 0
         ? (
           <>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  resumoNovosUsuarios,
-                  filtroEstabelecimentoHistorico,
-                  setFiltroEstabelecimentoHistorico
-                )
-              } />
-            </div>
+            <FiltroTexto
+              width={'50%'}
+              dados = {resumoNovosUsuarios}
+              valor = {filtroEstabelecimentoHistorico}
+              setValor = {setFiltroEstabelecimentoHistorico}
+              label = {'Estabelecimento'}
+              propriedade = {'estabelecimento'}
+            />
 
             <ReactEcharts
               option={ getOpcoesGraficoHistoricoTemporal(
@@ -364,24 +356,22 @@ const NovoUsuario = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoCID,
-                    setFiltroEstabelecimentoCID
-                  )
-                } />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoCID,
-                    setFiltroPeriodoCID,
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoCID}
+                setValor = {setFiltroEstabelecimentoCID}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoCID}
+                setValor = {setFiltroPeriodoCID}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingCID
@@ -418,24 +408,22 @@ const NovoUsuario = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoGenero,
-                    setFiltroEstabelecimentoGenero
-                  )
-                } />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoGenero,
-                    setFiltroPeriodoGenero
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoGenero}
+                setValor = {setFiltroEstabelecimentoGenero}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoGenero}
+                setValor = {setFiltroPeriodoGenero}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingGenero
@@ -464,24 +452,22 @@ const NovoUsuario = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoCondicao,
-                    setFiltroEstabelecimentoCondicao
-                  )
-                } />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoCondicao,
-                    setFiltroPeriodoCondicao
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoCondicao}
+                setValor = {setFiltroEstabelecimentoCondicao}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoCondicao}
+                setValor = {setFiltroPeriodoCondicao}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingCondicao
@@ -526,24 +512,22 @@ const NovoUsuario = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoRacaECor,
-                    setFiltroEstabelecimentoRacaECor
-                  )
-                } />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoRacaECor,
-                    setFiltroPeriodoRacaECor
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoRacaECor}
+                setValor = {setFiltroEstabelecimentoRacaECor}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoRacaECor}
+                setValor = {setFiltroPeriodoRacaECor}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingRaca

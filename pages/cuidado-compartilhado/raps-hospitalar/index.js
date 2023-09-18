@@ -32,7 +32,8 @@ const RapsHospitalar = ({ }) => {
           setInternacoesRapsAltas(dados);
           const periodosECompetencias = dados.map(item => ({
             periodo: item.periodo,
-            competencia: item.competencia
+            competencia: item.competencia,
+            nome_mes:item.nome_mes
           }));
           setPeriodosECompetencias(periodosECompetencias);
         });
@@ -43,13 +44,6 @@ const RapsHospitalar = ({ }) => {
     const filtradas = internacoesRapsAltas.filter(item => item.periodo === filtroPeriodoInternacoesRapsAltas.value);
     setInternacoesRapsAltasFiltradas(filtradas);
   }, [internacoesRapsAltas, filtroPeriodoInternacoesRapsAltas]);
-
-  const obterPeriodoPorExtenso = useCallback((dados, periodo) => {
-    const { nome_mes: mes, competencia } = dados.find((dado) => dado.periodo === periodo);
-    const [ano] = `${competencia}`.split('-');
-
-    return `${mes} de ${ano}`;
-  }, []);
 
   return (
     <div>
@@ -188,12 +182,6 @@ const RapsHospitalar = ({ }) => {
           </>,
         ] }
       />
-
-      {internacoesRapsAltas.length !== 0 &&
-        <div className={ styles.Mensagem }>
-          {`Última competência disponível: ${obterPeriodoPorExtenso(internacoesRapsAltas, 'Último período')}`}
-        </div>
-      }
 
       <GraficoInfo
         descricao="<strong>Atenção:</strong> os valores acima são aproximados, já que a conexão entre registros ambulatoriais e hospitalares do SUS a partir de dados abertos (não identificados) está sujeita a pequenas imprecisões."

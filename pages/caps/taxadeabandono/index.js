@@ -4,24 +4,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesNoMesPorCID, getEvasoesNoMesPorGeneroEIdade, getPeriodos } from '../../../requests/caps';
-
 import ReactEcharts from 'echarts-for-react';
-import Select from 'react-select';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
-
-const FILTRO_PERIODO_MULTI_DEFAULT = [
-  { value: 'Último período', label: 'Último período' },
-];
-const FILTRO_ESTABELECIMENTO_DEFAULT = {
-  value: 'Todos', label: 'Todos'
-};
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
+import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -44,8 +36,6 @@ const TaxaAbandono = () => {
   const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoGenero, setFiltroPeriodoGenero] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
-  // const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
-  // const [filtroEstabelecimentoRacaECor, setFiltroEstabelecimentoRacaECor] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [estabelecimentos, setEstabelecimentos] = useState([]);
   const [periodos, setPeriodos] = useState([]);
   const [loadingCID, setLoadingCID] = useState(false);
@@ -166,12 +156,6 @@ const TaxaAbandono = () => {
     );
   }, [evasoesNoMesPorGeneroEIdade]);
 
-  // const agregadosPorRacaCor = agregarPorRacaCor(
-  //   filtrarPorPeriodoEstabelecimento(abandonoPerfil, filtroEstabelecimentoRacaECor, filtroPeriodoRacaECor),
-  //   'usuario_raca_cor',
-  //   'quantidade_registrada'
-  // );
-
   return (
     <div>
       <TituloSmallTexto
@@ -217,15 +201,14 @@ const TaxaAbandono = () => {
       { abandonoMensal.length !== 0
         ? (
           <>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  abandonoMensal,
-                  filtroEstabelecimentoHistorico,
-                  setFiltroEstabelecimentoHistorico
-                )
-              } />
-            </div>
+            <FiltroTexto
+              width={'50%'}
+              dados = {abandonoMensal}
+              valor = {filtroEstabelecimentoHistorico}
+              setValor = {setFiltroEstabelecimentoHistorico}
+              label = {'Estabelecimento'}
+              propriedade = {'estabelecimento'}
+            />
 
             <ReactEcharts
               option={ getOpcoesGraficoHistoricoTemporal(
@@ -251,24 +234,22 @@ const TaxaAbandono = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoCID,
-                    setFiltroEstabelecimentoCID
-                  )
-                } />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoCID,
-                    setFiltroPeriodoCID,
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoCID}
+                setValor = {setFiltroEstabelecimentoCID}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoCID}
+                setValor = {setFiltroPeriodoCID}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingCID
@@ -305,24 +286,22 @@ const TaxaAbandono = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoGenero,
-                    setFiltroEstabelecimentoGenero
-                  )
-                } />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoGenero,
-                    setFiltroPeriodoGenero
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoGenero}
+                setValor = {setFiltroEstabelecimentoGenero}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoGenero}
+                setValor = {setFiltroPeriodoGenero}
+                isMulti
+                label = {'Competência'}
+              />
             </div>
 
             { loadingGenero
@@ -339,48 +318,6 @@ const TaxaAbandono = () => {
         )
         : <Spinner theme='ColorSM' />
       }
-
-      {/* <GraficoInfo
-        titulo='Raça/Cor*'
-        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
-      />
-
-      { abandonoPerfil.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroEstabelecimento(
-                  abandonoPerfil,
-                  filtroEstabelecimentoRacaECor,
-                  setFiltroEstabelecimentoRacaECor
-                )
-              } />
-            </div>
-            <div className={ styles.Filtro }>
-              <Select {
-                ...getPropsFiltroPeriodo(
-                  abandonoPerfil,
-                  filtroPeriodoRacaECor,
-                  setFiltroPeriodoRacaECor
-                )
-              } />
-            </div>
-          </div>
-
-          <ReactEcharts
-            option={ getOpcoesGraficoRacaEcor(
-              agregadosPorRacaCor,
-              'Usuários recentes que abandonaram no período'
-            ) }
-            style={ { width: '100%', height: '70vh' } }
-          />
-        </>
-      }
-
-      <GraficoInfo
-        descricao='*Dados podem ter problemas de coleta, registro e preenchimento'
-      /> */}
     </div>
   );
 };
