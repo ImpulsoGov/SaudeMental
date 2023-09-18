@@ -9,6 +9,7 @@ import styles from "../Caps.module.css";
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
+import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -24,6 +25,7 @@ const ProcedimentosPorUsuarios = () => {
   const [procedimentosPorTempoServico, setProcedimentosPorTempoServico] = useState([]);
   const [filtroEstabelecimentoProcedimento, setFiltroEstabelecimentoProcedimento] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoProcedimento, setFiltroPeriodoProcedimento] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -197,6 +199,15 @@ const ProcedimentosPorUsuarios = () => {
     };
   };
 
+  const filtrarPorEstabelecimento = (dados, filtroEstabelecimento) => {
+    return dados
+      .filter((item) =>
+        item.estabelecimento === filtroEstabelecimento.value
+        && item.estabelecimento_linha_perfil === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
+      );
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -237,6 +248,36 @@ const ProcedimentosPorUsuarios = () => {
         )
         : <Spinner theme="ColorSM" />
       }
+
+      <GraficoInfo
+        titulo="Histórico Temporal"
+        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+      />
+      { procedimentosPorEstabelecimento.length !== 0
+        ? (
+          <>
+            <FiltroTexto
+              width={'50%'}
+              dados = {procedimentosPorEstabelecimento}
+              valor = {filtroEstabelecimentoHistorico}
+              setValor = {setFiltroEstabelecimentoHistorico}
+              label = {'Estabelecimento'}
+              propriedade = {'estabelecimento'}
+            />
+
+            <ReactEcharts
+              option={ getOpcoesGraficoHistoricoTemporal(
+                filtrarPorEstabelecimento(procedimentosPorEstabelecimento, filtroEstabelecimentoHistorico),
+                "procedimentos_por_usuario",
+                filtroEstabelecimentoHistorico.value
+              ) }
+              style={ { width: "100%", height: "70vh" } }
+            />
+          </>
+        )
+        : <Spinner theme="ColorSM" />
+      }
+
       <GraficoInfo
         titulo="Procedimento por usuários x tempo do usuário no serviço"
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
@@ -256,7 +297,7 @@ const ProcedimentosPorUsuarios = () => {
               />
               <FiltroCompetencia
                 width={'50%'}
-                dados = {procedimentosPorTempoServico.filter(({ periodo }) => periodo !== "Fev/23")}
+                dados = {procedimentosPorTempoServico}
                 valor = {filtroPeriodoProcedimento}
                 setValor = {setFiltroPeriodoProcedimento}
                 isMulti
