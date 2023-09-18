@@ -2,11 +2,9 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
-import Select from 'react-select';
 import { v1 as uuidv1 } from 'uuid';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
@@ -15,13 +13,8 @@ import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGenero
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
-
-const FILTRO_PERIODO_MULTI_DEFAULT = [
-  { value: 'Último período', label: 'Último período' },
-];
-const FILTRO_ESTABELECIMENTO_DEFAULT = {
-  value: 'Todos', label: 'Todos'
-};
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
+import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -291,14 +284,14 @@ const AtendimentoIndividual = () => {
       { atendimentosPorCaps.length !== 0
         ? (
           <>
-            <div className={ styles.Filtro }>
-              <Select { ...getPropsFiltroEstabelecimento(
-                atendimentosPorCaps,
-                filtroEstabelecimentoHistorico,
-                setFiltroEstabelecimentoHistorico
-              ) } />
-            </div>
-
+            <FiltroTexto
+              width={'50%'}
+              dados = {atendimentosPorCaps}
+              valor = {filtroEstabelecimentoHistorico}
+              setValor = {setFiltroEstabelecimentoHistorico}
+              label = {'Estabelecimento'}
+              propriedade = {'estabelecimento'}
+            />
             <ReactEcharts
               option={ getOpcoesGraficoHistoricoTemporal(
                 filtrarPorEstabelecimento(atendimentosPorCaps, filtroEstabelecimentoHistorico),
@@ -323,24 +316,23 @@ const AtendimentoIndividual = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select { ...getPropsFiltroEstabelecimento(
-                  estabelecimentos,
-                  filtroEstabelecimentoCID,
-                  setFiltroEstabelecimentoCID
-                ) } />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoCID,
-                    setFiltroPeriodoCID,
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoCID}
+                setValor = {setFiltroEstabelecimentoCID}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoCID}
+                setValor = {setFiltroPeriodoCID}
+                isMulti = {true}
+                label = {'Competência'}
+              />
             </div>
-
             { loadingCID
               ? <Spinner theme='ColorSM' height='70vh' />
               : <div className={ styles.GraficoCIDContainer }>
@@ -375,24 +367,23 @@ const AtendimentoIndividual = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select { ...getPropsFiltroEstabelecimento(
-                  estabelecimentos,
-                  filtroEstabelecimentoGenero,
-                  setFiltroEstabelecimentoGenero
-                ) } />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoGenero,
-                    setFiltroPeriodoGenero
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoGenero}
+                setValor = {setFiltroEstabelecimentoGenero}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoGenero}
+                setValor = {setFiltroPeriodoGenero}
+                isMulti = {true}
+                label = {'Competência'}
+              />
             </div>
-
             { loadingGenero
               ? <Spinner theme='ColorSM' height='70vh' />
               : <ReactEcharts
@@ -419,24 +410,23 @@ const AtendimentoIndividual = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select { ...getPropsFiltroEstabelecimento(
-                  estabelecimentos,
-                  filtroEstabelecimentoRacaECor,
-                  setFiltroEstabelecimentoRacaECor
-                ) } />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    periodos,
-                    filtroPeriodoRacaECor,
-                    setFiltroPeriodoRacaECor
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoRacaECor}
+                setValor = {setFiltroEstabelecimentoRacaECor}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {periodos}
+                valor = {filtroPeriodoRacaECor}
+                setValor = {setFiltroPeriodoRacaECor}
+                isMulti = {true}
+                label = {'Competência'}
+              />
             </div>
-
             { loadingRaca
               ? <Spinner theme='ColorSM' height='70vh' />
               : <ReactEcharts

@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import { useMemo } from 'react';
 import Select, { components } from 'react-select';
+import Control from './Control';
 import styles from './Filtros.module.css';
+import Option from './Option';
 
 const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSearchable, width }) => {
   const options = useMemo(() => {
@@ -19,12 +21,6 @@ const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSe
       }));
   }, [dados, propriedade]);
 
-  const getOptionPersonalizada = ({ children, ...props }) => (
-    <components.Control { ...props }>
-      {`${label}`}: { children }
-    </components.Control>
-  );
-
   return (
     <div
       className={ styles.Filtro }
@@ -37,8 +33,13 @@ const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSe
         onChange={ (selected) => setValor(selected) }
         isMulti={ isMulti }
         isSearchable={ isSearchable }
-        components={ { Control: getOptionPersonalizada } }
-        styles={ { control: (css) => ({ ...css, paddingLeft: '15px' }) } }
+        controlLabel={ label }
+        components={ {
+          Control: label ? Control : components.Control,
+          Option: Option
+        } }
+        hideSelectedOptions={ false }
+        closeMenuOnSelect={ isMulti ? false : true }
       />
     </div>
   );
@@ -51,7 +52,6 @@ FiltroTexto.defaultProps = {
 };
 
 FiltroTexto.propTypes = {
-  label: PropTypes.string.isRequired,
   propriedade: PropTypes.string.isRequired,
   valor: PropTypes.shape({
     value: PropTypes.string,
@@ -60,7 +60,8 @@ FiltroTexto.propTypes = {
   setValor: PropTypes.func.isRequired,
   isMulti: PropTypes.bool,
   isSearchable: PropTypes.bool,
-  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  label: PropTypes.string,
 };
 
 export default FiltroTexto;
