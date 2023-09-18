@@ -1,31 +1,59 @@
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import Select, { components } from 'react-select';
+import Control from './Control';
 import styles from './Filtros.module.css';
+import Option from './Option';
 
-const FiltroCompetencia = ({ dados, label, valor, setValor, isMulti, isSearchable, width }) => {
+const FiltroCompetencia = ({
+  dados,
+  label,
+  valor,
+  setValor,
+  isMulti,
+  isSearchable,
+  width
+}) => {
+  const obterPeriodoFormatado = useCallback((competencia, nomeMes) => {
+    const abreviacaoMes = nomeMes.slice(0, 3);
+    const ano = new Date(competencia).getUTCFullYear();
+    const abreviacaoAno = ano % 100;
+
+    return `${abreviacaoMes}/${abreviacaoAno}`;
+  }, []);
+
   const options = useMemo(() => {
     const competencias = [];
 
-    dados.forEach(({ periodo, competencia }) => {
+    dados.forEach(({ periodo, competencia, nome_mes: nomeMes }) => {
       const periodoEncontrado = competencias
         .find((item) => item.periodo === periodo);
 
       if (!periodoEncontrado) {
-        competencias.push({ periodo, competencia });
+        competencias.push(
+          periodo === 'Último período'
+            ? {
+              periodo,
+              competencia,
+              descricaoPeriodo: `(${obterPeriodoFormatado(competencia, nomeMes)})`
+            }
+            : {
+              periodo,
+              competencia,
+              descricaoPeriodo: null
+            }
+        );
       }
     });
 
     return competencias
       .sort((a, b) => new Date(b.competencia) - new Date(a.competencia))
-      .map(({ periodo }) => ({ value: periodo, label: periodo }));
-  }, [dados]);
-
-  const getOptionPersonalizada = ({ children, ...props }) => (
-    <components.Control { ...props } >
-      {`${label}`}: { children }
-    </components.Control>
-  );
+      .map(({ periodo, descricaoPeriodo }) => ({
+        value: periodo,
+        label: periodo,
+        descricaoPeriodo
+      }));
+  }, [dados, obterPeriodoFormatado]);
 
   return (
     <div
@@ -39,8 +67,13 @@ const FiltroCompetencia = ({ dados, label, valor, setValor, isMulti, isSearchabl
         onChange={ (selected) => setValor(selected) }
         isMulti={ isMulti }
         isSearchable={ isSearchable }
-        components={ { Control: label ? getOptionPersonalizada : components.Control } }
-        styles={ label && { control: (css) => ({ ...css, paddingLeft: '15px' }) } }
+        controlLabel={ label }
+        components={ {
+          Control: label ? Control : components.Control,
+          Option: Option
+        } }
+        hideSelectedOptions={ false }
+        closeMenuOnSelect={ isMulti ? false : true }
       />
     </div>
   );
@@ -55,7 +88,8 @@ FiltroCompetencia.defaultProps = {
 FiltroCompetencia.propTypes = {
   dados: PropTypes.arrayOf(PropTypes.shape({
     periodo: PropTypes.string,
-    competencia: PropTypes.string
+    competencia: PropTypes.string,
+    periodo_ordem: PropTypes.number
   })).isRequired,
   valor: PropTypes.shape({
     value: PropTypes.string,
