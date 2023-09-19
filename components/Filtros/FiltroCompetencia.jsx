@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import Select, { components } from 'react-select';
 import Control from './Control';
 import styles from './Filtros.module.css';
@@ -16,7 +16,8 @@ const FiltroCompetencia = ({
   isSearchable,
   width,
   labelAllOption,
-  showAllOption
+  showAllOption,
+  isDefaultAllOption
 }) => {
   const valueRef = useRef(valor);
   valueRef.current = valor;
@@ -66,6 +67,12 @@ const FiltroCompetencia = ({
         descricaoPeriodo
       }));
   }, [dados, obterPeriodoFormatado]);
+
+  useEffect(() => {
+    if (isDefaultAllOption && showAllOption && isMulti) {
+      setValor(options);
+    }
+  }, [isDefaultAllOption, options, setValor, showAllOption, isMulti]);
 
   const isSelectAllSelected = () =>
     valueRef.current.length === options.length;
@@ -137,7 +144,8 @@ FiltroCompetencia.defaultProps = {
   isSearchable: false,
   width: '50%',
   labelAllOption: 'Todas',
-  showAllOption: false
+  showAllOption: false,
+  isDefaultAllOption: false
 };
 
 FiltroCompetencia.propTypes = {
@@ -156,7 +164,8 @@ FiltroCompetencia.propTypes = {
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   label: PropTypes.string,
   labelAllOption: PropTypes.string,
-  showAllOption: PropTypes.bool
+  showAllOption: PropTypes.bool,
+  isDefaultAllOption: PropTypes.bool
 };
 
 export default FiltroCompetencia;

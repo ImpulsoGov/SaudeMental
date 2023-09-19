@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import Select, { components } from 'react-select';
 import Control from './Control';
 import styles from './Filtros.module.css';
@@ -17,7 +17,8 @@ const FiltroTexto = ({
   isSearchable,
   width,
   labelAllOption,
-  showAllOption
+  showAllOption,
+  isDefaultAllOption
 }) => {
   const valueRef = useRef(valor);
   valueRef.current = valor;
@@ -41,6 +42,12 @@ const FiltroTexto = ({
         label: valor
       }));
   }, [dados, propriedade]);
+
+  useEffect(() => {
+    if (isDefaultAllOption && showAllOption && isMulti) {
+      setValor(options);
+    }
+  }, [isDefaultAllOption, options, setValor, showAllOption, isMulti]);
 
   const isSelectAllSelected = () =>
     valueRef.current.length === options.length;
@@ -112,7 +119,8 @@ FiltroTexto.defaultProps = {
   isSearchable: false,
   width: '50%',
   labelAllOption: 'Todos',
-  showAllOption: false
+  showAllOption: false,
+  isDefaultAllOption: false
 };
 
 FiltroTexto.propTypes = {
@@ -127,7 +135,8 @@ FiltroTexto.propTypes = {
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   label: PropTypes.string,
   labelAllOption: PropTypes.string,
-  showAllOption: PropTypes.bool
+  showAllOption: PropTypes.bool,
+  isDefaultAllOption: PropTypes.bool
 };
 
 export default FiltroTexto;
