@@ -1,11 +1,32 @@
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import Select, { components } from 'react-select';
 import Control from './Control';
 import styles from './Filtros.module.css';
 import Option from './Option';
 
-const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSearchable, width }) => {
+// Referência:
+// https://codesandbox.io/s/distracted-panini-8458i?file=/src/MultiSelect.js:567-589
+const FiltroTexto = ({
+  dados,
+  label,
+  propriedade,
+  valor,
+  setValor,
+  isMulti,
+  isSearchable,
+  width,
+  labelAllOption,
+  showAllOption
+}) => {
+  const valueRef = useRef(valor);
+  valueRef.current = valor;
+
+  const selectAllOption = {
+    value: '<SELECT_ALL>',
+    label: labelAllOption
+  };
+
   const options = useMemo(() => {
     const valoresUnicos = new Set();
 
@@ -21,16 +42,57 @@ const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSe
       }));
   }, [dados, propriedade]);
 
+  const isSelectAllSelected = () =>
+    valueRef.current.length === options.length;
+
+  const isOptionSelected = option =>
+    valueRef.current.some(({ value }) => value === option.value) ||
+    isSelectAllSelected();
+
+  const getOptions = () => showAllOption ? [selectAllOption, ...options] : options;
+
+  const getValue = () =>
+    isSelectAllSelected() ? [selectAllOption] : valor;
+
+  const handleChangeWithAllOption = (newValue, actionMeta) => {
+    const { action, option, removedValue } = actionMeta;
+
+    if (action === 'select-option' && option.value === selectAllOption.value) {
+      setValor(options, actionMeta);
+    } else if (
+      (action === 'deselect-option' &&
+        option.value === selectAllOption.value) ||
+      (action === 'remove-value' &&
+        removedValue.value === selectAllOption.value)
+    ) {
+      setValor([], actionMeta);
+    } else if (
+      actionMeta.action === 'deselect-option' &&
+      isSelectAllSelected()
+    ) {
+      setValor(
+        options.filter(({ value }) => value !== option.value),
+        actionMeta
+      );
+    } else {
+      setValor(newValue || [], actionMeta);
+    }
+  };
+
+  const handleChange = (selected) => setValor(selected);
+
   return (
     <div
       className={ styles.Filtro }
       style={{ width }}
     >
       <Select
-        options={ options }
+        isOptionSelected={isOptionSelected}
+        options={ getOptions() }
+        value={getValue()}
         defaultValue={ valor }
         selectedValue={ valor }
-        onChange={ (selected) => setValor(selected) }
+        onChange={ showAllOption ? handleChangeWithAllOption : handleChange }
         isMulti={ isMulti }
         isSearchable={ isSearchable }
         controlLabel={ label }
@@ -48,7 +110,9 @@ const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSe
 FiltroTexto.defaultProps = {
   isMulti: false,
   isSearchable: false,
-  width: '50%'
+  width: '50%',
+  labelAllOption: 'Todos',
+  showAllOption: false
 };
 
 FiltroTexto.propTypes = {
@@ -62,6 +126,8 @@ FiltroTexto.propTypes = {
   isSearchable: PropTypes.bool,
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   label: PropTypes.string,
+  labelAllOption: PropTypes.string,
+  showAllOption: PropTypes.bool
 };
 
 export default FiltroTexto;
