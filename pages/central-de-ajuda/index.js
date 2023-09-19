@@ -47,7 +47,7 @@ const Index = ({ res }) => {
               },
               {
                 content: '(11) 94135-0260',
-                link: 'https://wa.me/message/IX6SKT7NHH7OE1',
+                link: 'https://wa.me/message/5511941350260',
                 icon: 'https://media.graphassets.com/X8qAQFkrTLapqBDlfkMO'
               }
             ],
