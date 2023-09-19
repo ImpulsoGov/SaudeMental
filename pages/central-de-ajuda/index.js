@@ -63,7 +63,7 @@ const Index = ({ res }) => {
               blocks: [
                 {
                   subTitle: 'Esqueci qual é o meu e-mail cadastrado',
-                  description: 'Caso não se lembre do e-mail que nos forneceu para a criação do seu login e senha, entre em contato conosco pelo Whatsapp <u><a href="https://wa.me/message/IX6SKT7NHH7OE1" target="_blank">(11) 94135-0260</a></u> nos dizendo seu nome e o seu município que nós te reenviaremos o seu e-mail cadastrado.',
+                  description: 'Caso não se lembre do e-mail que nos forneceu para a criação do seu login e senha, entre em contato conosco pelo Whatsapp <u><a href="https://wa.me/5511941350260" target="_blank">(11) 94135-0260</a></u> nos dizendo seu nome e o seu município que nós te reenviaremos o seu e-mail cadastrado.',
                 },
                 {
                   subTitle: 'Esqueci minha senha',
