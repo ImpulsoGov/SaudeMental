@@ -27,7 +27,6 @@ const Ambulatorio = () => {
   const [filtroEstabelecimentoAtendimentosPorHorasTrabalhadas, setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setAtendidos(await getAtendidos(municipioIdSus));
       setAtendimentosTotal(await getAtendimentosTotal(municipioIdSus));
       setAtendimentosUltimoMes(await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus));
       setAtendimentosPorProfissional(await getAtendimentosPorProfissional(municipioIdSus));
