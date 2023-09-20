@@ -1,11 +1,15 @@
-import { Spinner } from '@impulsogov/design-system';
 import { DataGrid } from '@mui/x-data-grid';
 import React, { useMemo } from 'react';
-
+const CustomNoRowsOverlay = () => {
+  return (
+    <div> Não foi possível encontrar evidências laboratoriais no uso de SSRIs para o tratamento de transtorno depressivo</div>
+  );
+};
 const TabelaAtendimentosPorProfissional = ({ atendimentos }) => {
+  console.log('Os atendimentos que chegam na tabela:', atendimentos);
   const colunas = useMemo(() => [
     {
-      field: 'profissionalNome',
+      field: 'profissional_nome',
       sortable: false,
       headerName: 'Nome do profissional',
       flex: 250,
@@ -17,7 +21,7 @@ const TabelaAtendimentosPorProfissional = ({ atendimentos }) => {
       flex: 180,
     },
     {
-      field: 'procedimentosRealizados',
+      field: 'atendimentos_realizados',
       sortable: false,
       headerName: 'Atendimentos realizados',
       flex: 180,
@@ -25,7 +29,7 @@ const TabelaAtendimentosPorProfissional = ({ atendimentos }) => {
       align: 'right',
     },
     {
-      field: 'procedimentosPorHora',
+      field: 'atendimentos_por_hora',
       sortable: false,
       headerName: 'Atendimentos por hora',
       flex: 180,
@@ -35,59 +39,41 @@ const TabelaAtendimentosPorProfissional = ({ atendimentos }) => {
   ], []);
 
   const linhas = useMemo(() => {
-    const atendimentosGerais = atendimentos.filter(({
-      estabelecimento,
-      ocupacao,
-      estabelecimento_linha_perfil: linhaPerfil
-    }) =>
-      estabelecimento === 'Todos'
-      && ocupacao !== 'Todas'
-      && linhaPerfil === 'Todas'
-    );
-
-    return atendimentosGerais.map(({
-      id,
-      ocupacao,
-      profissional_nome: profissionalNome,
-      procedimentos_realizados: procedimentosRealizados,
-      procedimentos_por_hora: procedimentosPorHora
-    }) => ({
-      id,
-      ocupacao,
-      profissionalNome,
-      procedimentosRealizados,
-      procedimentosPorHora,
-    }));
+    if (atendimentos.length === 0) {
+      return [{
+        id: 1,
+        atendimentos_por_hora: 'Sem atendimentos nesse(s) estabelecimento(s) durante essa(s) competência(s)',
+        atendimentos_realizados: 'Sem atendimentos nesse(s) estabelecimento(s) durante essa(s) competência(s)',
+        ocupacao: '',
+        profissional_nome: ''
+      }];
+    }
+    return atendimentos;
   }, [atendimentos]);
 
   return (
-    <>
-      {atendimentos.length !== 0
-        ? <DataGrid
-          sx={ {
-            '& .MuiDataGrid-columnHeaderTitle': {
-              fontWeight: 'bold',
-              fontSize: '16px',
-              lineHeight: '1.2rem',
-              whiteSpace: 'normal',
-              textAlign: 'center',
-            },
-            height: '70vh',
-            marginBottom: '30px'
-          } }
-          rows={ linhas }
-          columns={ colunas }
-          autoPageSize
-          disableColumnMenu
-          initialState={ {
-            sorting: {
-              sortModel: [{ field: 'procedimentosRealizados', sort: 'asc' }],
-            },
-          } }
-        />
-        : <Spinner theme='ColorSM' />
-      }
-    </>
+    <DataGrid
+      sx={ {
+        '& .MuiDataGrid-columnHeaderTitle': {
+          fontWeight: 'bold',
+          fontSize: '16px',
+          lineHeight: '1.2rem',
+          whiteSpace: 'normal',
+          textAlign: 'center',
+        },
+        height: '70vh',
+        marginBottom: '30px'
+      } }
+      rows={ linhas }
+      columns={ colunas }
+      autoPageSize
+      disableColumnMenu
+      initialState={ {
+        sorting: {
+          sortModel: [{ field: 'procedimentosRealizados', sort: 'asc' }],
+        },
+      } }
+    />
   );
 };
 
