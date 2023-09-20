@@ -1,12 +1,6 @@
 import { DataGrid } from '@mui/x-data-grid';
 import React, { useMemo } from 'react';
-const CustomNoRowsOverlay = () => {
-  return (
-    <div> Não foi possível encontrar evidências laboratoriais no uso de SSRIs para o tratamento de transtorno depressivo</div>
-  );
-};
 const TabelaAtendimentosPorProfissional = ({ atendimentos }) => {
-  console.log('Os atendimentos que chegam na tabela:', atendimentos);
   const colunas = useMemo(() => [
     {
       field: 'profissional_nome',
