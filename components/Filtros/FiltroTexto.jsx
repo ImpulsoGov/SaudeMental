@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
-import { useEffect, useMemo, useRef } from 'react';
-import Select, { components } from 'react-select';
+import { useCallback, useMemo } from 'react';
+import { components } from 'react-select';
 import Control from './Control';
 import styles from './Filtros.module.css';
 import Option from './Option';
+import { FiltroMultiplo, FiltroUnico } from './index';
 
-// Referência:
-// https://codesandbox.io/s/distracted-panini-8458i?file=/src/MultiSelect.js:567-589
 const FiltroTexto = ({
   dados,
   label,
@@ -20,14 +19,6 @@ const FiltroTexto = ({
   showAllOption,
   isDefaultAllOption
 }) => {
-  const valueRef = useRef(valor);
-  valueRef.current = valor;
-
-  const selectAllOption = {
-    value: '<SELECT_ALL>',
-    label: labelAllOption
-  };
-
   const options = useMemo(() => {
     const valoresUnicos = new Set();
 
@@ -43,73 +34,37 @@ const FiltroTexto = ({
       }));
   }, [dados, propriedade]);
 
-  useEffect(() => {
-    if (isDefaultAllOption && showAllOption && isMulti) {
-      setValor(options);
-    }
-  }, [isDefaultAllOption, options, setValor, showAllOption, isMulti]);
-
-  const isSelectAllSelected = () =>
-    valueRef.current.length === options.length;
-
-  const isOptionSelected = option =>
-    valueRef.current.some(({ value }) => value === option.value) ||
-    isSelectAllSelected();
-
-  const getOptions = () => showAllOption ? [selectAllOption, ...options] : options;
-
-  const getValue = () =>
-    isSelectAllSelected() ? [selectAllOption] : valor;
-
-  const handleChangeWithAllOption = (newValue, actionMeta) => {
-    const { action, option, removedValue } = actionMeta;
-
-    if (action === 'select-option' && option.value === selectAllOption.value) {
-      setValor(options, actionMeta);
-    } else if (
-      (action === 'deselect-option' &&
-        option.value === selectAllOption.value) ||
-      (action === 'remove-value' &&
-        removedValue.value === selectAllOption.value)
-    ) {
-      setValor([], actionMeta);
-    } else if (
-      actionMeta.action === 'deselect-option' &&
-      isSelectAllSelected()
-    ) {
-      setValor(
-        options.filter(({ value }) => value !== option.value),
-        actionMeta
-      );
-    } else {
-      setValor(newValue || [], actionMeta);
-    }
-  };
-
-  const handleChange = (selected) => setValor(selected);
+  const getComponents = useCallback(() => ({
+    Control: label ? Control : components.Control,
+    Option: Option
+  }), [label]);
 
   return (
     <div
       className={ styles.Filtro }
       style={{ width }}
     >
-      <Select
-        isOptionSelected={isOptionSelected}
-        options={ getOptions() }
-        value={getValue()}
-        defaultValue={ valor }
-        selectedValue={ valor }
-        onChange={ showAllOption ? handleChangeWithAllOption : handleChange }
-        isMulti={ isMulti }
-        isSearchable={ isSearchable }
-        controlLabel={ label }
-        components={ {
-          Control: label ? Control : components.Control,
-          Option: Option
-        } }
-        hideSelectedOptions={ false }
-        closeMenuOnSelect={ isMulti ? false : true }
-      />
+      {isMulti
+        ? <FiltroMultiplo
+          valor={ valor }
+          options={ options }
+          setValor={ setValor }
+          components={ getComponents() }
+          controlLabel={ label }
+          isSearchable={ isSearchable }
+          showAllOption={ showAllOption }
+          labelAllOption={ labelAllOption }
+          isDefaultAllOption={ isDefaultAllOption }
+        />
+        : <FiltroUnico
+          valor={ valor }
+          options={ options }
+          setValor={ setValor }
+          components={ getComponents() }
+          controlLabel={ label }
+          isSearchable={ isSearchable }
+        />
+      }
     </div>
   );
 };
