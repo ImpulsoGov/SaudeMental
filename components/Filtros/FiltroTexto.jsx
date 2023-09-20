@@ -4,7 +4,7 @@ import { components } from 'react-select';
 import Control from './Control';
 import styles from './Filtros.module.css';
 import Option from './Option';
-import { FiltroMultiplo, FiltroUnico } from './index';
+import { SelectMultiplo, SelectUnico } from './index';
 
 const FiltroTexto = ({
   dados,
@@ -45,7 +45,7 @@ const FiltroTexto = ({
       style={{ width }}
     >
       {isMulti
-        ? <FiltroMultiplo
+        ? <SelectMultiplo
           valor={ valor }
           options={ options }
           setValor={ setValor }
@@ -56,7 +56,7 @@ const FiltroTexto = ({
           labelAllOption={ labelAllOption }
           isDefaultAllOption={ isDefaultAllOption }
         />
-        : <FiltroUnico
+        : <SelectUnico
           valor={ valor }
           options={ options }
           setValor={ setValor }

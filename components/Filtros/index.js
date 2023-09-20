@@ -1,15 +1,15 @@
 import Control from './Control';
 import FiltroCompetencia from './FiltroCompetencia';
-import FiltroMultiplo from './FiltroMultiplo';
 import FiltroTexto from './FiltroTexto';
-import FiltroUnico from './FiltroUnico';
 import Option from './Option';
+import SelectMultiplo from './SelectMultiplo';
+import SelectUnico from './SelectUnico';
 
 export {
   Control,
   FiltroCompetencia,
-  FiltroMultiplo,
   FiltroTexto,
-  FiltroUnico,
-  Option
+  Option,
+  SelectMultiplo,
+  SelectUnico
 };

@@ -3,7 +3,7 @@ import Select from 'react-select';
 
 // Referência:
 // https://codesandbox.io/s/distracted-panini-8458i?file=/src/MultiSelect.js:567-589
-const FiltroMultiplo = ({
+const SelectMultiplo = ({
   valor,
   options,
   setValor,
@@ -83,4 +83,4 @@ const FiltroMultiplo = ({
   );
 };
 
-export default FiltroMultiplo;
+export default SelectMultiplo;

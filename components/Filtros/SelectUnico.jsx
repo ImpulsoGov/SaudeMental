@@ -1,7 +1,7 @@
 import React from 'react';
 import Select from 'react-select';
 
-const FiltroUnico = ({
+const SelectUnico = ({
   valor,
   options,
   setValor,
@@ -27,4 +27,4 @@ const FiltroUnico = ({
   );
 };
 
-export default FiltroUnico;
+export default SelectUnico;
