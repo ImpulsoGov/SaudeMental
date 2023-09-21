@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
 import { TabelaMatriciamentosPorCaps } from "../../../components/Tabelas";
-import { API_URL } from "../../../constants/API_URL";
+import { API_SAUDE_MENTAL_URL } from "../../../constants/API_URL";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
 
@@ -27,7 +27,7 @@ const ApsCaps = () => {
     if (session?.user.municipio_id_ibge) {
       const getRequestOptions = { method: 'GET', redirect: 'follow' };
 
-      const urlEncaminhamentosApsCaps = API_URL
+      const urlEncaminhamentosApsCaps = API_SAUDE_MENTAL_URL
         + "saude-mental/encaminhamentos/aps/caps?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
@@ -36,7 +36,7 @@ const ApsCaps = () => {
         .then(result => setEncaminhamentosApsCaps(result))
         .catch(error => console.log('error', error));
 
-      const urlEncaminhamentosApsCapsResumo = API_URL
+      const urlEncaminhamentosApsCapsResumo = API_SAUDE_MENTAL_URL
         + "saude-mental/encaminhamentos/aps/caps/resumo?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
@@ -45,7 +45,7 @@ const ApsCaps = () => {
         .then(result => setEncaminhamentosApsCapsResumo(result[0]))
         .catch(error => console.log('error', error));
 
-      const urlMatriciamentosPorMunicipio = API_URL
+      const urlMatriciamentosPorMunicipio = API_SAUDE_MENTAL_URL
         + "saude-mental/matriciamentos/municipio?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 
@@ -54,7 +54,7 @@ const ApsCaps = () => {
         .then(result => setMatriciamentosPorMunicipio(result[0]))
         .catch(error => console.log('error', error));
 
-      const urlMatriciamentosPorCaps = API_URL
+      const urlMatriciamentosPorCaps = API_SAUDE_MENTAL_URL
         + "saude-mental/matriciamentos/caps?municipio_id_sus="
         + session?.user.municipio_id_ibge;
 

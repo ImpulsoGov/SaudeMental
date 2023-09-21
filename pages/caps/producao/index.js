@@ -3,26 +3,18 @@ import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Select from 'react-select';
 import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarPorPropriedadeESomarQuantidade, getOpcoesGraficoBarrasProducao } from '../../../helpers/graficoBarrasProducao';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { getProcedimentosPorHora, getProcedimentosPorTipo } from '../../../requests/caps';
 import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
 import { ProcedimentosPorCaps } from '../../../components/ProcedimentosPorCaps';
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
+import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_PERIODO_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 
 const OCUPACOES_NAO_ACEITAS = ['Todas', null];
-const FILTRO_PERIODO_MULTI_DEFAULT = [
-  { value: 'Último período', label: 'Último período' },
-];
-const FILTRO_ESTABELECIMENTO_DEFAULT = {
-  value: 'Todos', label: 'Todos'
-};
-const COMPETENCIA_MARCO_2022 = ['Mar/22'];
-const COMPPETENCIAS_A_REMOVER = [...COMPETENCIA_MARCO_2022, 'Abr/22', 'Mai/22', 'Jun/22', 'Jul/22', 'Nov/22', 'Fev/23'];
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -37,7 +29,7 @@ const Producao = () => {
   const [procedimentosPorHora, setProcedimentosPorHora] = useState([]);
   const [procedimentosPorTipo, setProcedimentosPorTipo] = useState([]);
   const [filtroEstabelecimentoCBO, setFiltroEstabelecimentoCBO] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
-  const [filtroPeriodoCBO, setFiltroPeriodoCBO] = useState({ value: 'Último período', label: 'Último período' });
+  const [filtroPeriodoCBO, setFiltroPeriodoCBO] = useState(FILTRO_PERIODO_DEFAULT);
   const [filtroEstabelecimentoBPA, setFiltroEstabelecimentoBPA] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoBPA, setFiltroPeriodoBPA] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoRAAS, setFiltroEstabelecimentoRAAS] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
@@ -219,10 +211,6 @@ const Producao = () => {
     return dadosOrdenados;
   }, [filtrarPorTipoEstabelecimentoEPeriodo, filtroEstabelecimentoRAAS, filtroPeriodoRAAS, procedimentosPorTipo]);
 
-  const removerCompetencias = (dados, competencias) => {
-    return dados.filter(({ periodo }) => !competencias.includes(periodo));
-  };
-
   return (
     <div>
       <TituloSmallTexto
@@ -273,26 +261,22 @@ const Producao = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    procedimentosPorHora,
-                    filtroEstabelecimentoCBO,
-                    setFiltroEstabelecimentoCBO
-                  )
-                } />
-              </div>
-
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    removerCompetencias(procedimentosPorHora, COMPPETENCIAS_A_REMOVER),
-                    filtroPeriodoCBO,
-                    setFiltroPeriodoCBO,
-                    false
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {procedimentosPorHora}
+                valor = {filtroEstabelecimentoCBO}
+                setValor = {setFiltroEstabelecimentoCBO}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {procedimentosPorHora}
+                valor = {filtroPeriodoCBO}
+                setValor = {setFiltroPeriodoCBO}
+                isMulti = {false}
+                label = {'Competência'}
+              />
             </div>
 
             <ReactEcharts
@@ -316,25 +300,22 @@ const Producao = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    procedimentosPorTipo,
-                    filtroEstabelecimentoBPA,
-                    setFiltroEstabelecimentoBPA
-                  )
-                } />
-              </div>
-
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    removerCompetencias(procedimentosPorTipo, COMPPETENCIAS_A_REMOVER),
-                    filtroPeriodoBPA,
-                    setFiltroPeriodoBPA
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {procedimentosPorTipo}
+                valor = {filtroEstabelecimentoBPA}
+                setValor = {setFiltroEstabelecimentoBPA}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {procedimentosPorTipo}
+                valor = {filtroPeriodoBPA}
+                setValor = {setFiltroPeriodoBPA}
+                isMulti = {true}
+                label = {'Competência'}
+              />
             </div>
 
             <div className={ styles.GraficoCIDContainer }>
@@ -366,25 +347,22 @@ const Producao = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    procedimentosPorTipo,
-                    filtroEstabelecimentoRAAS,
-                    setFiltroEstabelecimentoRAAS
-                  )
-                } />
-              </div>
-
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    removerCompetencias(procedimentosPorTipo, COMPETENCIA_MARCO_2022),
-                    filtroPeriodoRAAS,
-                    setFiltroPeriodoRAAS
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {procedimentosPorTipo}
+                valor = {filtroEstabelecimentoRAAS}
+                setValor = {setFiltroEstabelecimentoRAAS}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {procedimentosPorTipo}
+                valor = {filtroPeriodoRAAS}
+                setValor = {setFiltroPeriodoRAAS}
+                isMulti = {true}
+                label = {'Competência'}
+              />
             </div>
 
             <div className={ styles.GraficoCIDContainer }>
@@ -416,25 +394,22 @@ const Producao = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroEstabelecimento(
-                    procedimentosPorTipo,
-                    filtroEstabelecimentoProducao,
-                    setFiltroEstabelecimentoProducao
-                  )
-                } />
-              </div>
-
-              <div className={ styles.Filtro }>
-                <Select {
-                  ...getPropsFiltroPeriodo(
-                    removerCompetencias(procedimentosPorTipo, COMPPETENCIAS_A_REMOVER),
-                    filtroPeriodoProducao,
-                    setFiltroPeriodoProducao,
-                  )
-                } />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {procedimentosPorTipo}
+                valor = {filtroEstabelecimentoProducao}
+                setValor = {setFiltroEstabelecimentoProducao}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {procedimentosPorTipo}
+                valor = {filtroPeriodoProducao}
+                setValor = {setFiltroPeriodoProducao}
+                isMulti = {true}
+                label = {'Competência'}
+              />
             </div>
 
             <ReactEcharts

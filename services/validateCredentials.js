@@ -1,21 +1,21 @@
 import axios from "axios";
 import FormData from "form-data";
-import { API_URL } from "../constants/API_URL";
+import { API_USUARIOS_URL } from "../constants/API_URL";
 
 const validateCredentials = async (mail, senha) => {
   let data = new FormData();
+
   data.append('username', mail);
   data.append('password', senha);
 
-  var config = {
+  const config = {
     method: 'post',
-    url: API_URL + 'suporte/usuarios/token',
+    url: API_USUARIOS_URL + 'suporte/usuarios/token',
     data: data
   };
 
   const res = await axios(config)
     .then(function (response) {
-      console.log(response);
       return response.data;
     })
     .catch(function (error) {
@@ -27,9 +27,12 @@ const validateCredentials = async (mail, senha) => {
 
 const validacao = (setResposta, validarCredencial, entrar, mail, senha, setEsperandoResposta) => {
   const res = async () => await validarCredencial(mail, senha);
+
   if (mail.length < 1 || senha.length < 1) {
     const msg_campo_vazio = "Preencha todos os campos";
+
     setResposta(msg_campo_vazio);
+
     return msg_campo_vazio;
   } else {
     res().then((response) => {
@@ -39,9 +42,10 @@ const validacao = (setResposta, validarCredencial, entrar, mail, senha, setEsper
         setResposta(response["detail"]);
         setEsperandoResposta(false);
       }
+
       return res;
     });
   }
 };
 
-export { validateCredentials, validacao };
+export { validacao, validateCredentials };

@@ -2,21 +2,16 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Select from 'react-select';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import styles from '../Caps.module.css';
-
 import { TabelaGraficoDonut, TabelaDetalhamentoPorCaps } from '../../../components/Tabelas';
-import { getPropsFiltroEstabelecimento, getPropsFiltroPeriodo } from '../../../helpers/filtrosGraficos';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
 import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from '../../../requests/caps';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
-import { GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
-
-const FILTRO_COMPETENCIA_VALOR_PADRAO = { value: 'Último período', label: 'Último período' };
-const FILTRO_ESTABELECIMENTO_VALOR_PADRAO = { value: 'Todos', label: 'Todos' };
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
+import {FILTRO_PERIODO_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -35,15 +30,15 @@ const PerfilUsuario = () => {
   const [usuariosPorRacaECor, setUsuariosPorRacaECor] = useState([]);
   const [usuariosPorCID, setUsuariosPorCID] = useState([]);
   const [perfilPorEstabelecimento, setPerfilPorEstabelecimento] = useState([]);
-  const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
-  const [filtroCompetenciaCID, setFiltroCompetenciaCID] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
-  const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
-  const [filtroCompetenciaGenero, setFiltroCompetenciaGenero] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
-  const [filtroEstabelecimentoRacaCor, setFiltroEstabelecimentoRacaCor] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
-  const [filtroCompetenciaRacaCor, setFiltroCompetenciaRacaCor] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
-  const [filtroEstabelecimentoUsuariosAtivos, setFiltroEstabelecimentoUsuariosAtivos] = useState(FILTRO_ESTABELECIMENTO_VALOR_PADRAO);
-  const [filtroCompetenciaUsuariosAtivos, setFiltroCompetenciaUsuariosAtivos] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
-  const [filtroPeriodoPanorama, setFiltroPeriodoPanorama] = useState(FILTRO_COMPETENCIA_VALOR_PADRAO);
+  const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroCompetenciaCID, setFiltroCompetenciaCID] = useState(FILTRO_PERIODO_DEFAULT);
+  const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroCompetenciaGenero, setFiltroCompetenciaGenero] = useState(FILTRO_PERIODO_DEFAULT);
+  const [filtroEstabelecimentoRacaCor, setFiltroEstabelecimentoRacaCor] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroCompetenciaRacaCor, setFiltroCompetenciaRacaCor] = useState(FILTRO_PERIODO_DEFAULT);
+  const [filtroEstabelecimentoUsuariosAtivos, setFiltroEstabelecimentoUsuariosAtivos] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroCompetenciaUsuariosAtivos, setFiltroCompetenciaUsuariosAtivos] = useState(FILTRO_PERIODO_DEFAULT);
+  const [filtroPeriodoPanorama, setFiltroPeriodoPanorama] = useState(FILTRO_PERIODO_DEFAULT);
   const [loadingCID, setLoadingCID] = useState(false);
   const [loadingGenero, setLoadingGenero] = useState(false);
   const [loadingCondicao, setLoadingCondicao] = useState(false);
@@ -280,14 +275,14 @@ const PerfilUsuario = () => {
       { perfilPorEstabelecimento.length !== 0
         ? (
           <>
-            <div className={ styles.Filtro }>
-              <Select { ...getPropsFiltroPeriodo(
-                perfilPorEstabelecimento,
-                filtroPeriodoPanorama,
-                setFiltroPeriodoPanorama,
-                false
-              ) } />
-            </div>
+            <FiltroCompetencia
+              width={'50%'}
+              dados = {perfilPorEstabelecimento}
+              valor = {filtroPeriodoPanorama}
+              setValor = {setFiltroPeriodoPanorama}
+              isMulti = {false}
+              label = {'Competência'}
+            />
 
             {
               getCardsPanoramaGeral(
@@ -330,27 +325,22 @@ const PerfilUsuario = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select
-                  { ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoCID,
-                    setFiltroEstabelecimentoCID
-                  )
-                  }
-                />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select
-                  { ...getPropsFiltroPeriodo(
-                    competencias,
-                    filtroCompetenciaCID,
-                    setFiltroCompetenciaCID,
-                    false
-                  )
-                  }
-                />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoCID}
+                setValor = {setFiltroEstabelecimentoCID}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {competencias}
+                valor = {filtroCompetenciaCID}
+                setValor = {setFiltroCompetenciaCID}
+                isMulti = {false}
+                label = {'Competência'}
+              />
             </div>
 
             { loadingCID
@@ -381,29 +371,44 @@ const PerfilUsuario = () => {
         fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      <GraficoGeneroPorFaixaEtaria
-        dados={ usuariosPorGeneroEIdade }
-        loading={ loadingGenero }
-        labels={{
-          eixoY: 'Usuários ativos'
-        }}
-        propriedades={{
-          quantidade: 'ativos_3meses',
-          faixaEtaria: 'usuario_faixa_etaria',
-          sexo: 'usuario_sexo',
-        }}
-        filtroEstabelecimento={{
-          selecionado: filtroEstabelecimentoGenero,
-          setFiltro: setFiltroEstabelecimentoGenero,
-          opcoes: estabelecimentos,
-        }}
-        filtroCompetencia={{
-          selecionado: filtroCompetenciaGenero,
-          setFiltro: setFiltroCompetenciaGenero,
-          opcoes: competencias,
-          multiSelecao: false
-        }}
-      />
+      { usuariosPorGeneroEIdade.length !== 0
+        && competencias.length !== 0
+        && estabelecimentos.length !== 0
+        ? (
+          <>
+            <div className={ styles.Filtros }>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoGenero}
+                setValor = {setFiltroEstabelecimentoGenero}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {competencias}
+                valor = {filtroCompetenciaGenero}
+                setValor = {setFiltroCompetenciaGenero}
+                isMulti = {false}
+                label = {'Competência'}
+              />
+            </div>
+
+            { loadingGenero
+              ? <Spinner theme='ColorSM' height='70vh' />
+              : <ReactEcharts
+                option={ getOpcoesGraficoGeneroEFaixaEtaria(
+                  agregadosPorGeneroEFaixaEtaria,
+                  'Usuários ativos'
+                ) }
+                style={ { width: '100%', height: '70vh' } }
+              />
+            }
+          </>
+        )
+        : <Spinner theme='ColorSM' />
+      }
 
       <GraficoInfo
         titulo='Usuários ativos'
@@ -416,27 +421,22 @@ const PerfilUsuario = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select
-                  { ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoUsuariosAtivos,
-                    setFiltroEstabelecimentoUsuariosAtivos
-                  )
-                  }
-                />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select
-                  { ...getPropsFiltroPeriodo(
-                    competencias,
-                    filtroCompetenciaUsuariosAtivos,
-                    setFiltroCompetenciaUsuariosAtivos,
-                    false
-                  )
-                  }
-                />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoUsuariosAtivos}
+                setValor = {setFiltroEstabelecimentoUsuariosAtivos}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {competencias}
+                valor = {filtroCompetenciaUsuariosAtivos}
+                setValor = {setFiltroCompetenciaUsuariosAtivos}
+                isMulti = {false}
+                label = {'Competência'}
+              />
             </div>
 
             { loadingCondicao
@@ -481,27 +481,22 @@ const PerfilUsuario = () => {
         ? (
           <>
             <div className={ styles.Filtros }>
-              <div className={ styles.Filtro }>
-                <Select
-                  { ...getPropsFiltroEstabelecimento(
-                    estabelecimentos,
-                    filtroEstabelecimentoRacaCor,
-                    setFiltroEstabelecimentoRacaCor
-                  )
-                  }
-                />
-              </div>
-              <div className={ styles.Filtro }>
-                <Select
-                  { ...getPropsFiltroPeriodo(
-                    competencias,
-                    filtroCompetenciaRacaCor,
-                    setFiltroCompetenciaRacaCor,
-                    false
-                  )
-                  }
-                />
-              </div>
+              <FiltroTexto
+                width={'50%'}
+                dados = {estabelecimentos}
+                valor = {filtroEstabelecimentoRacaCor}
+                setValor = {setFiltroEstabelecimentoRacaCor}
+                label = {'Estabelecimento'}
+                propriedade = {'estabelecimento'}
+              />
+              <FiltroCompetencia
+                width={'50%'}
+                dados = {competencias}
+                valor = {filtroCompetenciaRacaCor}
+                setValor = {setFiltroCompetenciaRacaCor}
+                isMulti = {false}
+                label = {'Competência'}
+              />
             </div>
 
             { loadingRaca
