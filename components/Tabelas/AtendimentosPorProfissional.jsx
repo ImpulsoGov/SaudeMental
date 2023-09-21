@@ -1,28 +1,27 @@
 import { DataGrid } from '@mui/x-data-grid';
 import React, { useMemo } from 'react';
+
 const arrendondarPorDuasCasasDecimais = (valor) =>{
   if(typeof valor === 'number'){
     return valor.toFixed(2);
   }
   return valor;
 };
+
 const TabelaAtendimentosPorProfissional = ({ atendimentos }) => {
   const colunas = useMemo(() => [
     {
       field: 'profissional_nome',
-      sortable: false,
       headerName: 'Nome do profissional',
       flex: 250,
     },
     {
       field: 'ocupacao',
-      sortable: false,
       headerName: 'Categoria profissional',
       flex: 180,
     },
     {
       field: 'atendimentos_realizados',
-      sortable: false,
       headerName: 'Atendimentos realizados',
       flex: 180,
       headerAlign: 'right',
@@ -30,7 +29,6 @@ const TabelaAtendimentosPorProfissional = ({ atendimentos }) => {
     },
     {
       field: 'atendimentos_por_hora',
-      sortable: false,
       headerName: 'Atendimentos por hora',
       flex: 180,
       headerAlign: 'right',
