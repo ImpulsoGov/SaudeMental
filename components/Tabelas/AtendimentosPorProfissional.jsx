@@ -14,6 +14,7 @@ const TabelaAtendimentosPorProfissional = ({ atendimentos }) => {
       field: 'profissional_nome',
       headerName: 'Nome do profissional',
       flex: 250,
+      valueFormatter:({ value }) => value ? value : 'Sem profissional definido',
     },
     {
       field: 'ocupacao',
