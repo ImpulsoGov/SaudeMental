@@ -1,5 +1,11 @@
 import { DataGrid } from '@mui/x-data-grid';
 import React, { useMemo } from 'react';
+const arrendondarPorDuasCasasDecimais = (valor) =>{
+  if(typeof valor === 'number'){
+    return valor.toFixed(2);
+  }
+  return valor;
+};
 const TabelaAtendimentosPorProfissional = ({ atendimentos }) => {
   const colunas = useMemo(() => [
     {
@@ -29,6 +35,7 @@ const TabelaAtendimentosPorProfissional = ({ atendimentos }) => {
       flex: 180,
       headerAlign: 'right',
       align: 'right',
+      valueFormatter:(params) => arrendondarPorDuasCasasDecimais(params.value),
     },
   ], []);
 
@@ -64,7 +71,7 @@ const TabelaAtendimentosPorProfissional = ({ atendimentos }) => {
       disableColumnMenu
       initialState={ {
         sorting: {
-          sortModel: [{ field: 'procedimentosRealizados', sort: 'asc' }],
+          sortModel: [{ field: 'profissional_nome', sort: 'asc' }],
         },
       } }
     />

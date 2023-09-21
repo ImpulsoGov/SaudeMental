@@ -89,13 +89,11 @@ const Ambulatorio = () => {
         dadoEncontrado.atendimentos_realizados += dado.procedimentos_realizados;
       }
     });
-    console.log('dados agregados:', dadosAgregados);
     return dadosAgregados;
   };
 
   function filtrarDados(dados){
     const filtradosPorEstabelecimento = filtrarPorMultiplosEstabelecimentos(dados, filtroEstabelecimentoAtendimentosPorProfissional);
-    console.log('Dados filtrados por estab:', filtradosPorEstabelecimento);
     const filtradosPorPeriodoEEstabelecimento = filtrarPorPeriodo(filtradosPorEstabelecimento, filtroCompetenciaAtendimentosPorProfissional);
     return filtradosPorPeriodoEEstabelecimento;
   }
