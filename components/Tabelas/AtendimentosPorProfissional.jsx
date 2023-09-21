@@ -67,11 +67,6 @@ const TabelaAtendimentosPorProfissional = ({ atendimentos }) => {
       columns={ colunas }
       autoPageSize
       disableColumnMenu
-      initialState={ {
-        sorting: {
-          sortModel: [{ field: 'profissional_nome', sort: 'asc' }],
-        },
-      } }
     />
   );
 };

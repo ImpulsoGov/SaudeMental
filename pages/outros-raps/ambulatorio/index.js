@@ -1,15 +1,14 @@
-import { GraficoInfo, TituloSmallTexto, Spinner } from '@impulsogov/design-system';
+import { GraficoInfo, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState, useCallback} from 'react';
-import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosPorProfissional, getAtendimentosTotal } from '../../../requests/outros-raps';
+import { useCallback, useEffect, useState } from 'react';
 import { CardsAmbulatorioUltimoMes, CardsAtendimentoPorOcupacaoUltimoMes } from '../../../components/CardsAmbulatorio';
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import { TabelaAtendimentosPorProfissional } from '../../../components/Tabelas';
+import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getOpcoesGraficoAtendimentos } from '../../../helpers/graficoAtendimentos';
-import {FiltroCompetencia, FiltroTexto} from '../../../components/Filtros';
-import {FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_ESTABELECIMENTO_MULTI_DEFAULT} from '../../../constants/FILTROS';
-import { FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosPorProfissional, getAtendimentosTotal } from '../../../requests/outros-raps';
 import Style from '../OutrosRaps.module.css';
 
 export function getServerSideProps(ctx) {
@@ -80,7 +79,7 @@ const Ambulatorio = () => {
         dadosAgregados.push({
           profissional_nome: dado.profissional_nome,
           ocupacao: dado.ocupacao,
-          atendimentos_por_hora: dado.procedimentos_por_hora? Number(dado.procedimentos_por_hora.toFixed(2)) : null,
+          atendimentos_por_hora: dado.procedimentos_por_hora ? Number(dado.procedimentos_por_hora.toFixed(2)) : null,
           atendimentos_realizados: dado.procedimentos_realizados,
           id: dado.id
         });
@@ -92,11 +91,26 @@ const Ambulatorio = () => {
     return dadosAgregados;
   };
 
-  function filtrarDados(dados){
+  function filtrarDados(dados) {
     const filtradosPorEstabelecimento = filtrarPorMultiplosEstabelecimentos(dados, filtroEstabelecimentoAtendimentosPorProfissional);
     const filtradosPorPeriodoEEstabelecimento = filtrarPorPeriodo(filtradosPorEstabelecimento, filtroCompetenciaAtendimentosPorProfissional);
     return filtradosPorPeriodoEEstabelecimento;
   }
+
+  function ordenarPorNomeProfissional(atualAtendimento, proximoAtendimento) {
+    if (!atualAtendimento.profissional_nome || !proximoAtendimento.profissional_nome) {
+      return -1;
+    }
+
+    return atualAtendimento.profissional_nome.localeCompare(proximoAtendimento.profissional_nome);
+  }
+
+  function agregarFiltrarEOrdenar(dados) {
+    const agregados = agregarPorNomeEOcupacao(filtrarDados(dados));
+
+    return agregados.sort(ordenarPorNomeProfissional);
+  }
+
   return (
     <div>
       <TituloSmallTexto
@@ -105,10 +119,10 @@ const Ambulatorio = () => {
           url: ''
         } }
         texto=''
-        botao={{
+        botao={ {
           label: '',
           url: ''
-        }}
+        } }
         titulo='<strong>Ambulatório de Saúde Mental</strong>'
       />
 
@@ -146,12 +160,12 @@ const Ambulatorio = () => {
         ? (
           <>
             <FiltroTexto
-              width ={'50%'}
-              dados = {atendimentosTotal}
-              valor = {filtroEstabelecimentoAtendimentosTotal}
-              setValor = {setFiltroEstabelecimentoAtendimentosTotal}
-              label = {'Estabelecimento'}
-              propriedade = {'estabelecimento'}
+              width={ '50%' }
+              dados={ atendimentosTotal }
+              valor={ filtroEstabelecimentoAtendimentosTotal }
+              setValor={ setFiltroEstabelecimentoAtendimentosTotal }
+              label={ 'Estabelecimento' }
+              propriedade={ 'estabelecimento' }
             />
             <ReactEcharts
               option={
@@ -162,7 +176,7 @@ const Ambulatorio = () => {
                   'Psicólogo clínico'
                 )
               }
-              style = {{width: '100%', height: '70vh'}}
+              style={ { width: '100%', height: '70vh' } }
             />
           </>
         )
@@ -177,12 +191,12 @@ const Ambulatorio = () => {
         ? (
           <>
             <FiltroTexto
-              width ={'50%'}
-              dados = {atendimentosTotal}
-              valor = {filtroEstabelecimentoAtendimentosPorHorasTrabalhadas}
-              setValor = {setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas}
-              label = {'Estabelecimento'}
-              propriedade = {'estabelecimento'}
+              width={ '50%' }
+              dados={ atendimentosTotal }
+              valor={ filtroEstabelecimentoAtendimentosPorHorasTrabalhadas }
+              setValor={ setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas }
+              label={ 'Estabelecimento' }
+              propriedade={ 'estabelecimento' }
             />
             <ReactEcharts
               option={
@@ -193,7 +207,7 @@ const Ambulatorio = () => {
                   'Psicólogo clínico'
                 )
               }
-              style = {{width: '100%', height: '70vh'}}
+              style={ { width: '100%', height: '70vh' } }
             />
           </>
         )
@@ -211,31 +225,31 @@ const Ambulatorio = () => {
       />
       { atendimentosTotal.length !== 0
         ? (
-          <> <div className = {Style.Filtros}>
+          <> <div className={ Style.Filtros }>
             <FiltroTexto
-              width ={'50%'}
-              dados = {atendimentosPorProfissional}
-              valor = {filtroEstabelecimentoAtendimentosPorProfissional}
-              setValor = {setFiltroEstabelecimentoAtendimentosPorProfissional}
-              label = {'Estabelecimento'}
-              propriedade = {'estabelecimento'}
+              width={ '50%' }
+              dados={ atendimentosPorProfissional }
+              valor={ filtroEstabelecimentoAtendimentosPorProfissional }
+              setValor={ setFiltroEstabelecimentoAtendimentosPorProfissional }
+              label={ 'Estabelecimento' }
+              propriedade={ 'estabelecimento' }
               isMulti
               showAllOption
               isDefaultAllOption
             />
             <FiltroCompetencia
-              width ={'50%'}
-              dados = {atendimentosPorProfissional}
-              valor = {filtroCompetenciaAtendimentosPorProfissional}
-              setValor = {setFiltroCompetenciaAtendimentosPorProfissional}
-              label = {'Competência'}
+              width={ '50%' }
+              dados={ atendimentosPorProfissional }
+              valor={ filtroCompetenciaAtendimentosPorProfissional }
+              setValor={ setFiltroCompetenciaAtendimentosPorProfissional }
+              label={ 'Competência' }
               isMulti
               showAllOption
               isDefaultAllOption
             />
           </div>
           <TabelaAtendimentosPorProfissional
-            atendimentos={ agregarPorNomeEOcupacao(filtrarDados(atendimentosPorProfissional)) }
+            atendimentos={ agregarFiltrarEOrdenar(atendimentosPorProfissional) }
           />
           </>
         )
