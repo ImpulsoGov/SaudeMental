@@ -15,8 +15,6 @@ import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_PERIODO_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 
 const OCUPACOES_NAO_ACEITAS = ['Todas', null];
-const COMPETENCIA_MARCO_2022 = ['Mar/22'];
-const COMPPETENCIAS_A_REMOVER = [...COMPETENCIA_MARCO_2022, 'Abr/22', 'Mai/22', 'Jun/22', 'Jul/22', 'Nov/22', 'Fev/23'];
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -213,10 +211,6 @@ const Producao = () => {
     return dadosOrdenados;
   }, [filtrarPorTipoEstabelecimentoEPeriodo, filtroEstabelecimentoRAAS, filtroPeriodoRAAS, procedimentosPorTipo]);
 
-  const removerCompetencias = (dados, competencias) => {
-    return dados.filter(({ periodo }) => !competencias.includes(periodo));
-  };
-
   return (
     <div>
       <TituloSmallTexto
@@ -277,7 +271,7 @@ const Producao = () => {
               />
               <FiltroCompetencia
                 width={'50%'}
-                dados = {removerCompetencias(procedimentosPorHora, COMPPETENCIAS_A_REMOVER)}
+                dados = {procedimentosPorHora}
                 valor = {filtroPeriodoCBO}
                 setValor = {setFiltroPeriodoCBO}
                 isMulti = {false}
@@ -316,7 +310,7 @@ const Producao = () => {
               />
               <FiltroCompetencia
                 width={'50%'}
-                dados = {removerCompetencias(procedimentosPorTipo, COMPPETENCIAS_A_REMOVER)}
+                dados = {procedimentosPorTipo}
                 valor = {filtroPeriodoBPA}
                 setValor = {setFiltroPeriodoBPA}
                 isMulti = {true}
@@ -363,7 +357,7 @@ const Producao = () => {
               />
               <FiltroCompetencia
                 width={'50%'}
-                dados = {removerCompetencias(procedimentosPorTipo, COMPETENCIA_MARCO_2022)}
+                dados = {procedimentosPorTipo}
                 valor = {filtroPeriodoRAAS}
                 setValor = {setFiltroPeriodoRAAS}
                 isMulti = {true}
@@ -410,7 +404,7 @@ const Producao = () => {
               />
               <FiltroCompetencia
                 width={'50%'}
-                dados = {removerCompetencias(procedimentosPorTipo, COMPPETENCIAS_A_REMOVER)}
+                dados = {procedimentosPorTipo}
                 valor = {filtroPeriodoProducao}
                 setValor = {setFiltroPeriodoProducao}
                 isMulti = {true}
