@@ -6,10 +6,10 @@ import { v1 as uuidv1 } from 'uuid';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import GraficoRacaECor from '../../../components/Graficos/RacaECor';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
-import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
 import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
@@ -237,6 +237,15 @@ const NovoUsuario = () => {
     }
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoCID.value, filtroPeriodoCID]);
 
+  const getDadosFiltradosRacaECor = useMemo(() => {
+    const periodosSelecionados = filtroPeriodoRacaECor.map(({ value }) => value);
+
+    return usuariosNovosPorRaca.filter((item) =>
+      item.estabelecimento === filtroEstabelecimentoRacaECor.value
+      && periodosSelecionados.includes(item.periodo)
+    );
+  }, [usuariosNovosPorRaca, filtroPeriodoRacaECor, filtroEstabelecimentoRacaECor.value]);
+
   const agregadosPorCID = useMemo(() => {
     const dadosAgregados = agregarQuantidadePorPropriedadeNome(
       usuariosNovosPorCID,
@@ -264,14 +273,6 @@ const NovoUsuario = () => {
       'usuarios_novos'
     );
   }, [usuariosNovosPorCondicao]);
-
-  const agregadosPorRacaCor = useMemo(() => {
-    return agregarPorRacaCor(
-      usuariosNovosPorRaca,
-      'usuario_raca_cor',
-      'usuarios_novos'
-    );
-  }, [usuariosNovosPorRaca]);
 
   return (
     <div>
@@ -529,17 +530,15 @@ const NovoUsuario = () => {
                 label = {'Competência'}
               />
             </div>
-
-            { loadingRaca
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoRacaEcor(
-                  agregadosPorRacaCor,
-                  'Usuários novos no período'
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
+            <GraficoRacaECor
+              dados = {getDadosFiltradosRacaECor}
+              label={'Usuários novos no período'}
+              loading = {loadingRaca}
+              propriedades={{
+                racaCor: 'usuario_raca_cor',
+                quantidade: 'usuarios_novos',
+              }}
+            />
           </>
         )
         : <Spinner theme='ColorSM' />

@@ -8,7 +8,7 @@ import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorF
 import { TabelaGraficoDonut, TabelaDetalhamentoPorCaps } from '../../../components/Tabelas';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
-import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
+import GraficoRacaECor from '../../../components/Graficos/RacaECor';
 import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from '../../../requests/caps';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
@@ -110,6 +110,13 @@ const PerfilUsuario = () => {
     );
   }, [usuariosPorGeneroEIdade, filtroCompetenciaGenero.value, filtroEstabelecimentoGenero.value]);
 
+  const getDadosFiltradosRacaECor = useMemo(() => {
+    return usuariosPorRacaECor.filter((item) =>
+      item.estabelecimento === filtroEstabelecimentoRacaCor.value
+      && item.periodo === filtroCompetenciaRacaCor.value
+    );
+  }, [usuariosPorRacaECor, filtroCompetenciaRacaCor.value, filtroEstabelecimentoRacaCor.value]);
+
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
       setLoadingRaca(true);
@@ -202,7 +209,6 @@ const PerfilUsuario = () => {
       />
     );
   };
-
   const agregadosPorAbusoSubstancias = useMemo(() => {
     return agregarPorAbusoSubstancias(
       usuariosPorCondicao,
@@ -218,14 +224,6 @@ const PerfilUsuario = () => {
       'ativos_3meses'
     );
   }, [usuariosPorCondicao]);
-
-  const agregadosPorRacaCor = useMemo(() => {
-    return agregarPorRacaCor(
-      usuariosPorRacaECor,
-      'usuario_raca_cor',
-      'ativos_3meses'
-    );
-  }, [usuariosPorRacaECor]);
 
   const agregadosPorCondicaoSaude = useMemo(() => {
     const dadosAgregados = agregarQuantidadePorPropriedadeNome(
@@ -507,17 +505,15 @@ const PerfilUsuario = () => {
                 label = {'Competência'}
               />
             </div>
-
-            { loadingRaca
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoRacaEcor(
-                  agregadosPorRacaCor,
-                  'Usuários ativos'
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
+            <GraficoRacaECor
+              dados = {getDadosFiltradosRacaECor}
+              label={'Usuários ativos'}
+              loading = {loadingRaca}
+              propriedades={{
+                racaCor: 'usuario_raca_cor',
+                quantidade: 'ativos_3meses',
+              }}
+            />
           </>
         )
         : <Spinner theme='ColorSM' />
