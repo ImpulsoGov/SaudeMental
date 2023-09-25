@@ -13,8 +13,8 @@ const GraficoRacaECor = ({
 }) => {
   const dadosAgregados = useMemo(() => {
     return agregarPorRacaCor(dados,
-      propriedades.quantidade,
       propriedades.racaCor,
+      propriedades.quantidade
     );
   }, [dados, propriedades]);
 
