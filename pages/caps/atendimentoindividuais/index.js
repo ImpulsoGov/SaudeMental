@@ -145,6 +145,14 @@ const AtendimentoIndividual = () => {
 
     return atendimentosAgregados;
   };
+  const getDadosFiltradosGeneroEFaixaEtaria = useMemo(() => {
+    const periodosSelecionados = filtroPeriodoGenero.map(({ value }) => value);
+
+    return atendimentosPorGenero.filter((item) =>
+      item.estabelecimento === filtroEstabelecimentoGenero.value
+      && periodosSelecionados.includes(item.periodo)
+    );
+  }, [atendimentosPorGenero, filtroPeriodoGenero, filtroEstabelecimentoGenero.value]);
 
   const getCardsAtendimentosPorCaps = (atendimentos) => {
     const atendimentosPorCapsUltimoPeriodo = atendimentos
@@ -375,16 +383,19 @@ const AtendimentoIndividual = () => {
                 label = {'Competência'}
               />
             </div>
-            { loadingGenero
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                  agregadosPorGeneroEFaixaEtaria,
-                  ''
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
+            <GraficoGeneroPorFaixaEtaria
+              dados = {getDadosFiltradosGeneroEFaixaEtaria}
+              labels={{
+                eixoY: 'Nº de usuários que passaram apenas por atendimentos individuais'
+              }}
+              loading = {loadingGenero}
+              propriedades={{
+                faixaEtaria: 'usuario_faixa_etaria',
+                sexo: 'usuario_sexo',
+                quantidade: 'usuarios_apenas_atendimento_individual',
+              }}
+
+            />
           </>
         )
         : <Spinner theme='ColorSM' />

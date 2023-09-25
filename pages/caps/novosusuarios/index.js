@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
+import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
@@ -65,6 +66,14 @@ const NovoUsuario = () => {
     }
   }, []);
 
+  const getDadosFiltradosGeneroEFaixaEtaria = useMemo(() => {
+    const periodosSelecionados = filtroPeriodoGenero.map(({ value }) => value);
+
+    return usuariosNovosPorGeneroEIdade.filter((item) =>
+      item.estabelecimento === filtroEstabelecimentoGenero.value
+      && periodosSelecionados.includes(item.periodo)
+    );
+  }, [usuariosNovosPorGeneroEIdade, filtroPeriodoGenero, filtroEstabelecimentoGenero.value]);
   const agregarPorLinhaPerfil = (usuariosNovos) => {
     const usuariosAgregados = [];
 
@@ -415,17 +424,18 @@ const NovoUsuario = () => {
                 label = {'Competência'}
               />
             </div>
-
-            { loadingGenero
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                  agregadosPorGeneroEFaixaEtaria,
-                  'Usuários novos'
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
+            <GraficoGeneroPorFaixaEtaria
+              dados = {getDadosFiltradosGeneroEFaixaEtaria}
+              labels={{
+                eixoY: 'Usuários novos'
+              }}
+              loading = {loadingGenero}
+              propriedades={{
+                faixaEtaria: 'usuario_faixa_etaria',
+                sexo: 'usuario_sexo',
+                quantidade: 'usuarios_novos',
+              }}
+            />
           </>
         )
         : <Spinner theme='ColorSM' />

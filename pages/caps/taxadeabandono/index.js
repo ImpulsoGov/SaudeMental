@@ -147,14 +147,14 @@ const TaxaAbandono = () => {
     return dadosOrdenados;
   }, [evasoesNoMesPorCID]);
 
-  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
-    return agregarPorFaixaEtariaEGenero(
-      evasoesNoMesPorGeneroEIdade,
-      'usuario_faixa_etaria',
-      'usuario_sexo',
-      'quantidade_registrada'
+  const getDadosFiltradosGeneroEFaixaEtaria = useMemo(() => {
+    const periodosSelecionados = filtroPeriodoGenero.map(({ value }) => value);
+
+    return evasoesNoMesPorGeneroEIdade.filter((item) =>
+      item.estabelecimento === filtroEstabelecimentoGenero.value
+      && periodosSelecionados.includes(item.periodo)
     );
-  }, [evasoesNoMesPorGeneroEIdade]);
+  }, [evasoesNoMesPorGeneroEIdade, filtroPeriodoGenero, filtroEstabelecimentoGenero.value]);
 
   return (
     <div>
@@ -303,17 +303,19 @@ const TaxaAbandono = () => {
                 label = {'Competência'}
               />
             </div>
+            <GraficoGeneroPorFaixaEtaria
+              dados = {getDadosFiltradosGeneroEFaixaEtaria}
+              labels={{
+                eixoY: 'Nº de abandonos'
+              }}
+              loading = {loadingGenero}
+              propriedades={{
+                faixaEtaria: 'usuario_faixa_etaria',
+                sexo: 'usuario_sexo',
+                quantidade: 'quantidade_registrada',
+              }}
 
-            { loadingGenero
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                  agregadosPorGeneroEFaixaEtaria,
-                  ''
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
+            />
           </>
         )
         : <Spinner theme='ColorSM' />

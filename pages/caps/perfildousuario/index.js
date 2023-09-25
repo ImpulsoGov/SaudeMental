@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import styles from '../Caps.module.css';
+import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import { TabelaGraficoDonut, TabelaDetalhamentoPorCaps } from '../../../components/Tabelas';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
@@ -101,6 +102,13 @@ const PerfilUsuario = () => {
       });
     }
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoGenero.value, filtroCompetenciaGenero.value]);
+
+  const getDadosFiltradosGeneroEFaixaEtaria = useMemo(() => {
+    return usuariosPorGeneroEIdade.filter((item) =>
+      item.estabelecimento === filtroEstabelecimentoGenero.value
+      && item.periodo === filtroCompetenciaGenero.value
+    );
+  }, [usuariosPorGeneroEIdade, filtroCompetenciaGenero.value, filtroEstabelecimentoGenero.value]);
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -394,17 +402,18 @@ const PerfilUsuario = () => {
                 label = {'Competência'}
               />
             </div>
-
-            { loadingGenero
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                  agregadosPorGeneroEFaixaEtaria,
-                  'Usuários ativos'
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
+            <GraficoGeneroPorFaixaEtaria
+              dados = {getDadosFiltradosGeneroEFaixaEtaria}
+              labels={{
+                eixoY: 'Usuários ativos'
+              }}
+              loading = {loadingGenero}
+              propriedades={{
+                faixaEtaria: 'usuario_faixa_etaria',
+                sexo: 'usuario_sexo',
+                quantidade: 'ativos_3meses',
+              }}
+            />
           </>
         )
         : <Spinner theme='ColorSM' />

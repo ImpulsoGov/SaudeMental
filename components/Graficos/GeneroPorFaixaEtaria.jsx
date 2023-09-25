@@ -2,10 +2,7 @@ import { Spinner } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import PropTypes from 'prop-types';
 import { useMemo } from 'react';
-import { FiltroCompetencia, FiltroTexto } from '../Filtros';
-import styles from './Graficos.module.css';
 import { agregarPorFaixaEtariaEGenero } from '../../helpers/graficoGeneroEFaixaEtaria';
-
 const NOME_DIMENSAO = 'genero';
 const LABELS_DIMENSAO = ['Masculino', 'Feminino'];
 
@@ -13,29 +10,16 @@ const GraficoGeneroPorFaixaEtaria = ({
   dados,
   labels,
   propriedades,
-  filtroEstabelecimento,
-  filtroCompetencia,
   loading
 }) => {
-  const dadosFiltrados = useMemo(() => {
-    const periodosSelecionados = filtroCompetencia.multiSelecao
-      ? filtroCompetencia.selecionado.map(({ value }) => value)
-      : [filtroCompetencia.selecionado.value];
-
-    return dados.filter((item) =>
-      item.estabelecimento === filtroEstabelecimento.selecionado.value
-      && periodosSelecionados.includes(item.periodo)
-    );
-  }, [dados, filtroCompetencia, filtroEstabelecimento]);
-
   const dadosAgregados = useMemo(() => {
     return agregarPorFaixaEtariaEGenero(
-      dadosFiltrados,
+      dados,
       propriedades.faixaEtaria,
       propriedades.sexo,
       propriedades.quantidade
     );
-  }, [dadosFiltrados, propriedades]);
+  }, [dados, propriedades]);
 
   const optionsGrafico = useMemo(() => ({
     legend: {
@@ -93,23 +77,6 @@ const GraficoGeneroPorFaixaEtaria = ({
 
   return (
     <>
-      <div className={ styles.Filtros }>
-        <FiltroTexto
-          dados={ filtroEstabelecimento.opcoes }
-          label='Estabelecimento'
-          propriedade='estabelecimento'
-          valor={ filtroEstabelecimento.selecionado }
-          setValor={ filtroEstabelecimento.setFiltro }
-        />
-
-        <FiltroCompetencia
-          dados={ filtroCompetencia.opcoes }
-          valor={ filtroCompetencia.selecionado }
-          setValor={ filtroCompetencia.setFiltro }
-          isMulti={ filtroCompetencia.multiSelecao }
-        />
-      </div>
-
       { loading
         ? <Spinner theme='ColorSM' height='70vh' />
         : <ReactEcharts
