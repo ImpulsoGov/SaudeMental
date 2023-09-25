@@ -7,8 +7,8 @@ import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
+import GraficoRacaECor from '../../../components/Graficos/RacaECor';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
-import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
 import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
@@ -154,6 +154,15 @@ const AtendimentoIndividual = () => {
     );
   }, [atendimentosPorGenero, filtroPeriodoGenero, filtroEstabelecimentoGenero.value]);
 
+  const getDadosFiltradosRacaECor = useMemo(() => {
+    const periodosSelecionados = filtroPeriodoRacaECor.map(({ value }) => value);
+
+    return atendimentosPorRacaECor.filter((item) =>
+      item.estabelecimento === filtroEstabelecimentoRacaECor.value
+      && periodosSelecionados.includes(item.periodo)
+    );
+  }, [atendimentosPorRacaECor, filtroPeriodoRacaECor, filtroEstabelecimentoRacaECor.value]);
+
   const getCardsAtendimentosPorCaps = (atendimentos) => {
     const atendimentosPorCapsUltimoPeriodo = atendimentos
       .filter(({
@@ -225,14 +234,6 @@ const AtendimentoIndividual = () => {
 
     return dadosOrdenados;
   }, [atendimentosPorCID]);
-
-  const agregadosPorRacaCor = useMemo(() => {
-    return agregarPorRacaCor(
-      atendimentosPorRacaECor,
-      'usuario_raca_cor',
-      'usuarios_apenas_atendimento_individual'
-    );
-  }, [atendimentosPorRacaECor]);
 
   return (
     <div>
@@ -429,16 +430,15 @@ const AtendimentoIndividual = () => {
                 label = {'Competência'}
               />
             </div>
-            { loadingRaca
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoRacaEcor(
-                  agregadosPorRacaCor,
-                  'Usuários que realizaram apenas atendimentos individuais'
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
+            <GraficoRacaECor
+              dados = {getDadosFiltradosRacaECor}
+              label={'Usuários que realizaram apenas atendimentos individuais'}
+              loading = {loadingRaca}
+              propriedades={{
+                racaCor: 'usuario_raca_cor',
+                quantidade: 'usuarios_apenas_atendimento_individual',
+              }}
+            />
           </>
         )
         : <Spinner theme='ColorSM' />
