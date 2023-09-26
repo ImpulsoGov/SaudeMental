@@ -98,20 +98,6 @@ GraficoGeneroPorFaixaEtaria.propTypes = {
     faixaEtaria: PropTypes.string,
     sexo: PropTypes.string,
   }),
-  filtroEstabelecimento: PropTypes.shape({
-    selecionado: PropTypes.shape({ value: PropTypes.string }),
-    setFiltro: PropTypes.func,
-    opcoes: PropTypes.arrayOf(PropTypes.string),
-  }),
-  filtroCompetencia: PropTypes.shape({
-    selecionado: PropTypes.oneOfType([
-      PropTypes.shape({ value: PropTypes.string }),
-      PropTypes.arrayOf(PropTypes.shape({ value: PropTypes.string }))
-    ]),
-    setFiltro: PropTypes.func,
-    opcoes: PropTypes.arrayOf(PropTypes.string),
-    multiSelecao: PropTypes.bool,
-  }),
   loading: PropTypes.bool,
 }.isRequired;
 
