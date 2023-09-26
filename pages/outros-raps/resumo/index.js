@@ -3,6 +3,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { mostrarCardsDeResumoAmbulatorio } from '../../../helpers/mostrarDadosDeAmbulatorio';
 import { getAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses, getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
 
 export function getServerSideProps(ctx) {
@@ -29,9 +30,12 @@ const Resumo = () => {
       );
       setReducaoDanos(await getAcoesReducaoDeDanos(municipioIdSus));
       setReducaoDanos12Meses(await getAcoesReducaoDeDanos12meses(municipioIdSus));
-      setAmbulatorioUltMes(
-        await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus)
-      );
+
+      if (mostrarCardsDeResumoAmbulatorio(municipioIdSus)) {
+        setAmbulatorioUltMes(
+          await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus)
+        );
+      }
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -80,47 +84,51 @@ const Resumo = () => {
           url: ''
         } }
         texto=''
-        botao={{
+        botao={ {
           label: '',
           url: ''
-        }}
+        } }
         titulo='<strong>Resumo</strong>'
       />
 
-      <GraficoInfo
-        titulo='Ambulatório de Saúde Mental'
-        fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
-        link={ { label: 'Mais informações', url: '/outros-raps?painel=1' } }
-      />
+      { mostrarCardsDeResumoAmbulatorio(session?.user.municipio_id_ibge) &&
+        <>
+          <GraficoInfo
+            titulo='Ambulatório de Saúde Mental'
+            fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
+            link={ { label: 'Mais informações', url: '/outros-raps?painel=1' } }
+          />
 
-      <Grid12Col
-        items={ [
-          <>
-            { ambulatorioUltMes.length !== 0
-              ? <CardInfoTipoA
-                key={ uuidv1() }
-                indicador={ getDadosAmbulatorioUltimoMes().procedimentos_realizados }
-                titulo={ `Total de atendimentos em ${getDadosAmbulatorioUltimoMes().nome_mes}` }
-                indice={ getDadosAmbulatorioUltimoMes().dif_procedimentos_realizados_anterior }
-                indiceDescricao='últ. mês'
-              />
-              : <Spinner theme='ColorSM' />
-            }
-          </>,
-          <>
-            { ambulatorioUltMes.length !== 0
-              ? <CardInfoTipoA
-                key={ uuidv1() }
-                indicador={ getDadosAmbulatorioUltimoMes().procedimentos_por_hora }
-                titulo={ `Total de atendimentos por hora trabalhada em ${getDadosAmbulatorioUltimoMes().nome_mes}` }
-                indice={ getDadosAmbulatorioUltimoMes().dif_procedimentos_por_hora_anterior }
-                indiceDescricao='últ. mês'
-              />
-              : <Spinner theme='ColorSM' />
-            }
-          </>,
-        ] }
-      />
+          <Grid12Col
+            items={ [
+              <>
+                { ambulatorioUltMes.length !== 0
+                  ? <CardInfoTipoA
+                    key={ uuidv1() }
+                    indicador={ getDadosAmbulatorioUltimoMes().procedimentos_realizados }
+                    titulo={ `Total de atendimentos em ${getDadosAmbulatorioUltimoMes().nome_mes}` }
+                    indice={ getDadosAmbulatorioUltimoMes().dif_procedimentos_realizados_anterior }
+                    indiceDescricao='últ. mês'
+                  />
+                  : <Spinner theme='ColorSM' />
+                }
+              </>,
+              <>
+                { ambulatorioUltMes.length !== 0
+                  ? <CardInfoTipoA
+                    key={ uuidv1() }
+                    indicador={ getDadosAmbulatorioUltimoMes().procedimentos_por_hora }
+                    titulo={ `Total de atendimentos por hora trabalhada em ${getDadosAmbulatorioUltimoMes().nome_mes}` }
+                    indice={ getDadosAmbulatorioUltimoMes().dif_procedimentos_por_hora_anterior }
+                    indiceDescricao='últ. mês'
+                  />
+                  : <Spinner theme='ColorSM' />
+                }
+              </>,
+            ] }
+          />
+        </>
+      }
 
       <GraficoInfo
         titulo='Consultório na Rua'
