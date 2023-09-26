@@ -3,7 +3,7 @@ import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState, useCallback} from 'react';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosTotal, getAtendidos } from '../../../requests/outros-raps';
+import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosTotal} from '../../../requests/outros-raps';
 import { CardsAmbulatorioUltimoMes, CardsAtendimentoPorOcupacaoUltimoMes } from '../../../components/CardsAmbulatorio';
 import { getOpcoesGraficoAtendimentos } from '../../../helpers/graficoAtendimentos';
 import {FiltroTexto} from '../../../components/Filtros';
@@ -19,13 +19,11 @@ export function getServerSideProps(ctx) {
 const Ambulatorio = () => {
   const { data: session } = useSession();
   const [atendimentosTotal, setAtendimentosTotal] = useState([]);
-  const [atendidos, setAtendidos] = useState([]);
   const [atendimentosUltimoMes, setAtendimentosUltimoMes] = useState([]);
   const [filtroEstabelecimentoAtendimentosTotal, setFiltroEstabelecimentoAtendimentosTotal] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroEstabelecimentoAtendimentosPorHorasTrabalhadas, setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setAtendidos(await getAtendidos(municipioIdSus));
       setAtendimentosTotal(await getAtendimentosTotal(municipioIdSus));
       setAtendimentosUltimoMes(await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus));
     };
@@ -137,14 +135,16 @@ const Ambulatorio = () => {
       { atendimentosTotal.length !== 0
         ? (
           <>
-            <FiltroTexto
-              width ={'50%'}
-              dados = {atendimentosTotal}
-              valor = {filtroEstabelecimentoAtendimentosPorHorasTrabalhadas}
-              setValor = {setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas}
-              label = {'Estabelecimento'}
-              propriedade = {'estabelecimento'}
-            />
+            <div style={{ marginBottom: '30px' }}>
+              <FiltroTexto
+                width={'50%'}
+                dados={atendimentosTotal}
+                valor={filtroEstabelecimentoAtendimentosPorHorasTrabalhadas}
+                setValor={setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas}
+                label={'Estabelecimento'}
+                propriedade={'estabelecimento'}
+              />
+            </div>
             <ReactEcharts
               option={
                 getOpcoesGraficoAtendimentos(
