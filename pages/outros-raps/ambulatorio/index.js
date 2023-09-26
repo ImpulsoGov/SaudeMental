@@ -3,11 +3,13 @@ import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState, useCallback} from 'react';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosTotal, getAtendidos } from '../../../requests/outros-raps';
+import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosTotal } from '../../../requests/outros-raps';
 import { CardsAmbulatorioUltimoMes, CardsAtendimentoPorOcupacaoUltimoMes } from '../../../components/CardsAmbulatorio';
 import { getOpcoesGraficoAtendimentos } from '../../../helpers/graficoAtendimentos';
 import {FiltroTexto} from '../../../components/Filtros';
 import {FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
+import { mostrarMensagemSemAmbulatorio, mostrarMensagemSemDadosAmbulatorio } from '../../../helpers/mostrarDadosDeAmbulatorio';
+
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
 
@@ -19,18 +21,19 @@ export function getServerSideProps(ctx) {
 const Ambulatorio = () => {
   const { data: session } = useSession();
   const [atendimentosTotal, setAtendimentosTotal] = useState([]);
-  const [atendidos, setAtendidos] = useState([]);
   const [atendimentosUltimoMes, setAtendimentosUltimoMes] = useState([]);
   const [filtroEstabelecimentoAtendimentosTotal, setFiltroEstabelecimentoAtendimentosTotal] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroEstabelecimentoAtendimentosPorHorasTrabalhadas, setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+
   useEffect(() => {
+    const mostraMensagemSemAmbulatorio = mostrarMensagemSemAmbulatorio(session?.user.municipio_id_ibge);
+    const mostraMensagemSemDadosAmbulatorio = mostrarMensagemSemDadosAmbulatorio(session?.user.municipio_id_ibge);
     const getDados = async (municipioIdSus) => {
-      setAtendidos(await getAtendidos(municipioIdSus));
       setAtendimentosTotal(await getAtendimentosTotal(municipioIdSus));
       setAtendimentosUltimoMes(await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus));
     };
 
-    if (session?.user.municipio_id_ibge) {
+    if (session?.user.municipio_id_ibge && !mostraMensagemSemAmbulatorio && !mostraMensagemSemDadosAmbulatorio) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
@@ -57,7 +60,40 @@ const Ambulatorio = () => {
     return dados.filter((item => item.estabelecimento === filtro.value));
   };
 
-  obterAtendimentoGeralPorOcupacoes();
+  if (mostrarMensagemSemAmbulatorio(session?.user.municipio_id_ibge)) {
+    return (
+      <TituloSmallTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        texto=''
+        botao={{
+          label: '',
+          url: ''
+        }}
+        titulo='<strong>Município sem ambulatório</strong>'
+      />
+    );
+  }
+
+  if (mostrarMensagemSemDadosAmbulatorio(session?.user.municipio_id_ibge)) {
+    return (
+      <TituloSmallTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        texto=''
+        botao={{
+          label: '',
+          url: ''
+        }}
+        titulo='<strong>Município sem dados de ambulatório</strong>'
+      />
+    );
+  }
+
   return (
     <div>
       <TituloSmallTexto
