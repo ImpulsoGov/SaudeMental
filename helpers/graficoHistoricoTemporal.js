@@ -1,11 +1,24 @@
-export const getOpcoesGraficoHistoricoTemporal = (dados, propriedade, textoTooltip) => {
+export const ordenarPorCompetencia = (
+  dados,
+  propriedade
+) =>{
   const ordenadosPorCompetenciaAsc = dados
     .sort((a, b) => new Date(a.competencia) - new Date(b.competencia));
-
   const periodos = ordenadosPorCompetenciaAsc.map(({ periodo }) => periodo);
   const quantidades = ordenadosPorCompetenciaAsc
     .map((item) => item[propriedade]);
-
+  return {
+    ordenadosPorCompetenciaAsc,
+    periodos,
+    quantidades,
+  };
+};
+export const getOpcoesGraficoHistoricoTemporal = (dados, propriedade, textoTooltip) => {
+  const ordenadosPorCompetenciaAsc = dados
+    .sort((a, b) => new Date(a.competencia) - new Date(b.competencia));
+  const periodos = ordenadosPorCompetenciaAsc.map(({ periodo }) => periodo);
+  const quantidades = ordenadosPorCompetenciaAsc
+    .map((item) => item[propriedade]);
   return {
     tooltip: {
       trigger: 'axis',
@@ -18,7 +31,7 @@ export const getOpcoesGraficoHistoricoTemporal = (dados, propriedade, textoToolt
     toolbox: {
       feature: {
         saveAsImage: {
-          title: "Salvar como imagem",
+          title: 'Salvar como imagem',
         }
       }
     },
@@ -41,7 +54,7 @@ export const getOpcoesGraficoHistoricoTemporal = (dados, propriedade, textoToolt
         data: quantidades,
         type: 'line',
         itemStyle: {
-          color: "#5367C9"
+          color: '#5367C9'
         },
       }
     ]
