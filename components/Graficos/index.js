@@ -1,5 +1,7 @@
 import GraficoGeneroPorFaixaEtaria from './GeneroPorFaixaEtaria';
+import GraficoDonut from './Donut';
 
 export {
-  GraficoGeneroPorFaixaEtaria
+  GraficoGeneroPorFaixaEtaria,
+  GraficoDonut
 };
