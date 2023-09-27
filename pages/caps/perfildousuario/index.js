@@ -7,12 +7,11 @@ import styles from '../Caps.module.css';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import { TabelaGraficoDonut, TabelaDetalhamentoPorCaps } from '../../../components/Tabelas';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import GraficoRacaECor from '../../../components/Graficos/RacaECor';
 import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from '../../../requests/caps';
-import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
+import { GraficoDonut } from '../../../components/Graficos';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -225,16 +224,11 @@ const PerfilUsuario = () => {
     );
   }, [usuariosPorCondicao]);
 
-  const agregadosPorCondicaoSaude = useMemo(() => {
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
-      usuariosPorCID,
-      'usuario_condicao_saude',
-      'ativos_3meses'
-    );
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
+  const usuariosPorCIDNaoZerados = useMemo(() => {
+    const dadosNaoZerados = usuariosPorCID
+      .filter(({ ativos_3meses: ativos3Meses }) => ativos3Meses !== 0);
 
-    return dadosOrdenados;
+    return dadosNaoZerados;
   }, [usuariosPorCID]);
 
   const obterPeriodoPorExtenso = useCallback((dados, periodo) => {
@@ -349,24 +343,29 @@ const PerfilUsuario = () => {
               />
             </div>
 
-            { loadingCID
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <div className={ styles.GraficoCIDContainer }>
-                <ReactEcharts
-                  option={ getOpcoesGraficoDonut(agregadosPorCondicaoSaude) }
-                  style={ { width: '50%', height: '70vh' } }
-                />
+            <div className={ styles.GraficoCIDContainer }>
+              <GraficoDonut
+                dados={ usuariosPorCIDNaoZerados }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'ativos_3meses'
+                } }
+                loading={ loadingCID }
+              />
 
-                <TabelaGraficoDonut
-                  labels={ {
-                    colunaHeader: 'Grupo de diagnósticos',
-                    colunaQuantidade: 'Usuários ativos',
-                  } }
-                  data={ agregadosPorCondicaoSaude }
-                  mensagemDadosZerados='Sem usuários nessa competência'
-                />
-              </div>
-            }
+              <TabelaGraficoDonut
+                labels={ {
+                  colunaHeader: 'Grupo de diagnósticos',
+                  colunaQuantidade: 'Usuários ativos',
+                } }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'ativos_3meses'
+                } }
+                data={ usuariosPorCIDNaoZerados }
+                mensagemDadosZerados='Sem usuários nessa competência'
+              />
+            </div>
           </>
         )
         : <Spinner theme='ColorSM' />

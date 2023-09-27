@@ -6,13 +6,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { agregarPorPropriedadeESomarQuantidade, getOpcoesGraficoBarrasProducao } from '../../../helpers/graficoBarrasProducao';
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { getProcedimentosPorHora, getProcedimentosPorTipo } from '../../../requests/caps';
-import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
+import { ordenarCrescentePorPropriedadeDeTexto } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
 import { ProcedimentosPorCaps } from '../../../components/ProcedimentosPorCaps';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_PERIODO_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
+import { GraficoDonut } from '../../../components/Graficos';
 
 const OCUPACOES_NAO_ACEITAS = ['Todas', null];
 
@@ -185,30 +185,30 @@ const Producao = () => {
     'procedimentos_registrados_total'
   );
 
-  const agrupadosPorTipoBPA = useMemo(() => {
+  const procedimentosBPAFiltrados = useMemo(() => {
+    const dadosNaoZerados = procedimentosPorTipo
+      .filter(({ procedimentos_registrados_bpa: procedimentos }) => procedimentos !== 0);
+
     const dadosFiltrados = filtrarPorTipoEstabelecimentoEPeriodo(
-      procedimentosPorTipo,
+      dadosNaoZerados,
       filtroEstabelecimentoBPA,
       filtroPeriodoBPA
     );
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(dadosFiltrados, 'procedimento', 'procedimentos_registrados_bpa');
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
 
-    return dadosOrdenados;
+    return dadosFiltrados;
   }, [filtrarPorTipoEstabelecimentoEPeriodo, filtroEstabelecimentoBPA, filtroPeriodoBPA, procedimentosPorTipo]);
 
-  const agrupadosPorTipoRAAS = useMemo(() => {
+  const procedimentosRAASFiltrados = useMemo(() => {
+    const dadosNaoZerados = procedimentosPorTipo
+      .filter(({ procedimentos_registrados_raas: procedimentos }) => procedimentos !== 0);
+
     const dadosFiltrados = filtrarPorTipoEstabelecimentoEPeriodo(
-      procedimentosPorTipo,
+      dadosNaoZerados,
       filtroEstabelecimentoRAAS,
       filtroPeriodoRAAS
     );
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(dadosFiltrados, 'procedimento', 'procedimentos_registrados_raas');
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
 
-    return dadosOrdenados;
+    return dadosFiltrados;
   }, [filtrarPorTipoEstabelecimentoEPeriodo, filtroEstabelecimentoRAAS, filtroPeriodoRAAS, procedimentosPorTipo]);
 
   return (
@@ -319,9 +319,12 @@ const Producao = () => {
             </div>
 
             <div className={ styles.GraficoCIDContainer }>
-              <ReactEcharts
-                option={ getOpcoesGraficoDonut(agrupadosPorTipoBPA) }
-                style={ { width: '50%', height: '70vh' } }
+              <GraficoDonut
+                dados={ procedimentosBPAFiltrados }
+                propriedades={ {
+                  nome: 'procedimento',
+                  quantidade: 'procedimentos_registrados_bpa'
+                } }
               />
 
               <TabelaGraficoDonut
@@ -329,7 +332,11 @@ const Producao = () => {
                   colunaHeader: 'Nome do procedimento',
                   colunaQuantidade: 'Quantidade registrada',
                 } }
-                data={ agrupadosPorTipoBPA }
+                propriedades={ {
+                  nome: 'procedimento',
+                  quantidade: 'procedimentos_registrados_bpa'
+                } }
+                data={ procedimentosBPAFiltrados }
                 mensagemDadosZerados='Sem procedimentos registrados nessa competência'
               />
             </div>
@@ -366,9 +373,12 @@ const Producao = () => {
             </div>
 
             <div className={ styles.GraficoCIDContainer }>
-              <ReactEcharts
-                option={ getOpcoesGraficoDonut(agrupadosPorTipoRAAS) }
-                style={ { width: '50%', height: '70vh' } }
+              <GraficoDonut
+                dados={ procedimentosRAASFiltrados }
+                propriedades={ {
+                  nome: 'procedimento',
+                  quantidade: 'procedimentos_registrados_raas'
+                } }
               />
 
               <TabelaGraficoDonut
@@ -376,7 +386,11 @@ const Producao = () => {
                   colunaHeader: 'Nome do procedimento',
                   colunaQuantidade: 'Quantidade registrada',
                 } }
-                data={ agrupadosPorTipoRAAS }
+                propriedades={ {
+                  nome: 'procedimento',
+                  quantidade: 'procedimentos_registrados_raas'
+                } }
+                data={ procedimentosRAASFiltrados }
                 mensagemDadosZerados='Sem procedimentos registrados nessa competência'
               />
             </div>

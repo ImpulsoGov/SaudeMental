@@ -8,14 +8,13 @@ import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorF
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import GraficoRacaECor from '../../../components/Graficos/RacaECor';
 import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
 import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
-import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
+import { GraficoDonut } from '../../../components/Graficos';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -246,16 +245,11 @@ const NovoUsuario = () => {
     );
   }, [usuariosNovosPorRaca, filtroPeriodoRacaECor, filtroEstabelecimentoRacaECor.value]);
 
-  const agregadosPorCID = useMemo(() => {
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
-      usuariosNovosPorCID,
-      'usuario_condicao_saude',
-      'usuarios_novos'
-    );
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
+  const usuariosNovosPorCIDNaoZerados = useMemo(() => {
+    const dadosNaoZerados = usuariosNovosPorCID
+      .filter(({ usuarios_novos: usuariosNovos }) => usuariosNovos !== 0);
 
-    return dadosOrdenados;
+    return dadosNaoZerados;
   }, [usuariosNovosPorCID]);
 
   const agregadosPorAbusoSubstancias = useMemo(() => {
@@ -374,24 +368,29 @@ const NovoUsuario = () => {
               />
             </div>
 
-            { loadingCID
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <div className={ styles.GraficoCIDContainer }>
-                <ReactEcharts
-                  option={ getOpcoesGraficoDonut(agregadosPorCID) }
-                  style={ { width: '50%', height: '70vh' } }
-                />
+            <div className={ styles.GraficoCIDContainer }>
+              <GraficoDonut
+                dados={ usuariosNovosPorCIDNaoZerados }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'usuarios_novos'
+                } }
+                loading={ loadingCID }
+              />
 
-                <TabelaGraficoDonut
-                  labels={ {
-                    colunaHeader: 'Grupo de diagnósticos',
-                    colunaQuantidade: 'Novos usuários',
-                  } }
-                  data={ agregadosPorCID }
-                  mensagemDadosZerados='Sem usuários nessa competência'
-                />
-              </div>
-            }
+              <TabelaGraficoDonut
+                labels={ {
+                  colunaHeader: 'Grupo de diagnósticos',
+                  colunaQuantidade: 'Novos usuários',
+                } }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'usuarios_novos'
+                } }
+                data={ usuariosNovosPorCIDNaoZerados }
+                mensagemDadosZerados='Sem usuários nessa competência'
+              />
+            </div>
           </>
         )
         : <Spinner theme='ColorSM' />

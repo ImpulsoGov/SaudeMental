@@ -5,16 +5,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import GraficoRacaECor from '../../../components/Graficos/RacaECor';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
 import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
-import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
+import { GraficoDonut } from '../../../components/Graficos';
+import { ordenarCrescentePorPropriedadeDeTexto } from '../../../utils/ordenacao';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -223,16 +223,11 @@ const AtendimentoIndividual = () => {
       );
   };
 
-  const agregadosPorCID = useMemo(() => {
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
-      atendimentosPorCID,
-      'usuario_condicao_saude',
-      'usuarios_apenas_atendimento_individual'
-    );
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
+  const atendimentosPorCIDNaoZerados = useMemo(() => {
+    const dadosNaoZerados = atendimentosPorCID
+      .filter(({ usuarios_apenas_atendimento_individual: apenasAtendimentoIndividual }) => apenasAtendimentoIndividual !== 0);
 
-    return dadosOrdenados;
+    return dadosNaoZerados;
   }, [atendimentosPorCID]);
 
   return (
@@ -333,24 +328,30 @@ const AtendimentoIndividual = () => {
                 label = {'Competência'}
               />
             </div>
-            { loadingCID
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <div className={ styles.GraficoCIDContainer }>
-                <ReactEcharts
-                  option={ getOpcoesGraficoDonut(agregadosPorCID) }
-                  style={ { width: '50%', height: '70vh' } }
-                />
 
-                <TabelaGraficoDonut
-                  labels={ {
-                    colunaHeader: 'Grupos de diagnósticos',
-                    colunaQuantidade: 'Realizaram só at. individual no mês',
-                  } }
-                  data={ agregadosPorCID }
-                  mensagemDadosZerados='Sem usuários nessa competência'
-                />
-              </div>
-            }
+            <div className={ styles.GraficoCIDContainer }>
+              <GraficoDonut
+                dados={ atendimentosPorCIDNaoZerados }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'usuarios_apenas_atendimento_individual'
+                } }
+                loading={ loadingCID }
+              />
+
+              <TabelaGraficoDonut
+                labels={ {
+                  colunaHeader: 'Grupos de diagnósticos',
+                  colunaQuantidade: 'Realizaram só at. individual no mês',
+                } }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'usuarios_apenas_atendimento_individual'
+                } }
+                data={ atendimentosPorCIDNaoZerados }
+                mensagemDadosZerados='Sem usuários nessa competência'
+              />
+            </div>
           </>
         )
         : <Spinner theme='ColorSM' />

@@ -6,8 +6,7 @@ import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesNoMesPorCID, getEvasoesNoMesPorGeneroEIdade, getPeriodos } from '../../../requests/caps';
 import ReactEcharts from 'echarts-for-react';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
-import { GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
+import { GraficoDonut, GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
@@ -135,16 +134,11 @@ const TaxaAbandono = () => {
       );
   };
 
-  const agregadosPorCID = useMemo(() => {
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
-      evasoesNoMesPorCID,
-      'usuario_condicao_saude',
-      'quantidade_registrada'
-    );
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
+  const evasoesNoMesPorCIDNaoZeradas = useMemo(() => {
+    const dadosNaoZerados = evasoesNoMesPorCID
+      .filter(({ quantidade_registrada: quantidade }) => quantidade !== 0);
 
-    return dadosOrdenados;
+    return dadosNaoZerados;
   }, [evasoesNoMesPorCID]);
 
   const getDadosFiltradosGeneroEFaixaEtaria = useMemo(() => {
@@ -252,24 +246,29 @@ const TaxaAbandono = () => {
               />
             </div>
 
-            { loadingCID
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <div className={ styles.GraficoCIDContainer }>
-                <ReactEcharts
-                  option={ getOpcoesGraficoDonut(agregadosPorCID) }
-                  style={ { width: '50%', height: '70vh' } }
-                />
+            <div className={ styles.GraficoCIDContainer }>
+              <GraficoDonut
+                dados={ evasoesNoMesPorCIDNaoZeradas }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'quantidade_registrada'
+                } }
+                loading={ loadingCID }
+              />
 
-                <TabelaGraficoDonut
-                  labels={ {
-                    colunaHeader: 'Grupo de diagnósticos',
-                    colunaQuantidade: 'Evadiram no mês',
-                  } }
-                  data={ agregadosPorCID }
-                  mensagemDadosZerados='Sem usuários nessa competência'
-                />
-              </div>
-            }
+              <TabelaGraficoDonut
+                labels={ {
+                  colunaHeader: 'Grupo de diagnósticos',
+                  colunaQuantidade: 'Evadiram no mês',
+                } }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'quantidade_registrada'
+                } }
+                data={ evasoesNoMesPorCIDNaoZeradas }
+                mensagemDadosZerados='Sem usuários nessa competência'
+              />
+            </div>
           </>
         )
         : <Spinner theme='ColorSM' />
