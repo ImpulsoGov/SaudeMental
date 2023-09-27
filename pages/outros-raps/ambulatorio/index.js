@@ -67,12 +67,11 @@ const Ambulatorio = () => {
           posicao: null,
           url: ''
         } }
-        texto=''
+        texto='Essa página não está exibindo dados porque a coordenação da RAPS informou que não há ambulatórios da rede especializada que realizam atendimentos de Saúde Mental com psicólogos e psiquiatras em seu município. Caso queira solicitar a inclusão de um novo estabelecimento ambulatorial, entre em contato via nosso <u><a style="color:inherit" href="/duvidas" target="_blank">formulário de solicitação de suporte</a></u>, <u><a style="color:inherit" href="https://wa.me/5511941350260" target="_blank">whatsapp</a></u> ou e-mail (saudemental@impulsogov.org).'
         botao={{
           label: '',
           url: ''
         }}
-        titulo='<strong>Município sem ambulatório</strong>'
       />
     );
   }
@@ -84,12 +83,13 @@ const Ambulatorio = () => {
           posicao: null,
           url: ''
         } }
-        texto=''
+        texto='O indicador de ambulatório utiliza dados da atenção especializada que são coletados através dos registros de psicólogos e psiquiatras em fichas de BPA-i. São considerados os estabelecimentos indicados no momento do preenchimento do Formulário de Personalização do Painel, feito pela coordenação da RAPS no município.
+        <br/>
+        Se essa página não está exibindo nenhum dado da sua rede, verifique se o estabelecimento está habilitado a registrar em BPA-i (como no caso de ambulatórios vinculados a Atenção Básica que registram via SISAB), ou se existem problemas de registro.'
         botao={{
           label: '',
           url: ''
         }}
-        titulo='<strong>Município sem dados de ambulatório</strong>'
       />
     );
   }
