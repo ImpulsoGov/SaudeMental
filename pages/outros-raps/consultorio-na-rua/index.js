@@ -97,9 +97,12 @@ const ConsultorioNaRua = () => {
     const periodosSelecionados = filtroCompetencia.map(({ value }) => value);
     const atendimentosFiltrados = atendimentos.filter(({
       tipo_producao: tipoProducao,
-      periodo
+      periodo,
+      quantidade_registrada: quantidade
     }) =>
-      tipoProducao !== 'Todos' && periodosSelecionados.includes(periodo)
+      tipoProducao !== 'Todos'
+      && periodosSelecionados.includes(periodo)
+      && quantidade !== 0
     );
 
     const atendimentosAgregados = agregarQuantidadePorPropriedadeNome(
