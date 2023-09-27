@@ -37,7 +37,7 @@ export const getSomaQuantidadesPorPeriodo = (quantidadesPorPeriodo) => {
   return quantidadesPorPeriodo
     .reduce((acc, { quantidade }) =>
       acc + quantidade,
-      0);
+    0);
 };
 
 export const getOpcoesGraficoBarrasProducao = (dados, textoTooltip) => {

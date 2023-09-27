@@ -32,8 +32,8 @@ export const agregarPorFaixaEtariaEGenero = (
 };
 
 export const getOpcoesGraficoGeneroEFaixaEtaria = (dados, textoYAxis) => {
-  const NOME_DIMENSAO = "genero";
-  const LABELS_DIMENSAO = ["Masculino", "Feminino"];
+  const NOME_DIMENSAO = 'genero';
+  const LABELS_DIMENSAO = ['Masculino', 'Feminino'];
 
   return {
     legend: {
@@ -52,38 +52,38 @@ export const getOpcoesGraficoGeneroEFaixaEtaria = (dados, textoYAxis) => {
     },
     xAxis: {
       type: 'category',
-      name: "Faixa etária (em anos)",
-      nameLocation: "center",
+      name: 'Faixa etária (em anos)',
+      nameLocation: 'center',
       nameGap: 45,
     },
     yAxis: {
       name: textoYAxis,
-      nameLocation: "center",
+      nameLocation: 'center',
       nameGap: 55,
     },
     series: [
       {
         type: 'bar',
         itemStyle: {
-          color: "#FA81E6"
+          color: '#FA81E6'
         },
         label: {
           show: true,
           position: 'inside',
           formatter: `{@${LABELS_DIMENSAO[0]}}`,
-          color: "#FFFFFF",
+          color: '#FFFFFF',
         },
       },
       {
         type: 'bar',
         itemStyle: {
-          color: "#5367C9"
+          color: '#5367C9'
         },
         label: {
           show: true,
           position: 'inside',
           formatter: `{@${LABELS_DIMENSAO[1]}}`,
-          color: "#FFFFFF",
+          color: '#FFFFFF',
         },
       }
     ]
