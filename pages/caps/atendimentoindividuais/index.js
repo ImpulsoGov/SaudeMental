@@ -7,7 +7,7 @@ import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import GraficoRacaECor from '../../../components/Graficos/RacaECor';
-import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
+import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
 import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import styles from '../Caps.module.css';
@@ -42,7 +42,6 @@ const AtendimentoIndividual = () => {
   const [loadingCID, setLoadingCID] = useState(false);
   const [loadingGenero, setLoadingGenero] = useState(false);
   const [loadingRaca, setLoadingRaca] = useState(false);
-
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       setAtendimentosPorCaps(await getAtendimentosPorCaps(municipioIdSus));
@@ -287,13 +286,11 @@ const AtendimentoIndividual = () => {
               label = {'Estabelecimento'}
               propriedade = {'estabelecimento'}
             />
-            <ReactEcharts
-              option={ getOpcoesGraficoHistoricoTemporal(
-                filtrarPorEstabelecimento(atendimentosPorCaps, filtroEstabelecimentoHistorico),
-                'perc_apenas_atendimentos_individuais',
-                'Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):'
-              ) }
-              style={ { width: '100%', height: '70vh' } }
+            <GraficoHistoricoTemporal
+              dados = {filtrarPorEstabelecimento(atendimentosPorCaps, filtroEstabelecimentoHistorico)}
+              label={'Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):'}
+              loading = {false}
+              propriedade={'perc_apenas_atendimentos_individuais'}
             />
           </>
         )
