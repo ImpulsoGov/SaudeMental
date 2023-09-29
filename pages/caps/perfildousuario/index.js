@@ -207,17 +207,6 @@ const PerfilUsuario = () => {
     );
   };
 
-  const usuariosPorCondicaoNaoZerados = useMemo(() => {
-    return usuariosPorCondicao.filter(({ ativos_3meses: ativos3Meses }) => ativos3Meses !== 0);
-  }, [usuariosPorCondicao]);
-
-  const usuariosPorCIDNaoZerados = useMemo(() => {
-    const dadosNaoZerados = usuariosPorCID
-      .filter(({ ativos_3meses: ativos3Meses }) => ativos3Meses !== 0);
-
-    return dadosNaoZerados;
-  }, [usuariosPorCID]);
-
   const obterPeriodoPorExtenso = useCallback((dados, periodo) => {
     const { nome_mes: mes, competencia } = dados.find((dado) => dado.periodo === periodo);
     const [ano] = `${competencia}`.split('-');
@@ -332,7 +321,7 @@ const PerfilUsuario = () => {
 
             <div className={ styles.GraficoCIDContainer }>
               <GraficoDonut
-                dados={ usuariosPorCIDNaoZerados }
+                dados={ usuariosPorCID }
                 propriedades={ {
                   nome: 'usuario_condicao_saude',
                   quantidade: 'ativos_3meses'
@@ -349,7 +338,7 @@ const PerfilUsuario = () => {
                   nome: 'usuario_condicao_saude',
                   quantidade: 'ativos_3meses'
                 } }
-                data={ usuariosPorCIDNaoZerados }
+                data={ usuariosPorCID }
                 mensagemDadosZerados='Sem usuários nessa competência'
               />
             </div>
@@ -435,7 +424,7 @@ const PerfilUsuario = () => {
             <div className={ styles.GraficosUsuariosAtivosContainer }>
               <div className={ styles.GraficoUsuariosAtivos }>
                 <GraficoCondicaoUsuarios
-                  dados={ usuariosPorCondicaoNaoZerados }
+                  dados={ usuariosPorCondicao }
                   propriedades={ {
                     nome: 'usuario_abuso_substancias' ,
                     quantidade: 'ativos_3meses'
@@ -447,7 +436,7 @@ const PerfilUsuario = () => {
 
               <div className={ styles.GraficoUsuariosAtivos }>
                 <GraficoCondicaoUsuarios
-                  dados={ usuariosPorCondicaoNaoZerados }
+                  dados={ usuariosPorCondicao }
                   propriedades={ {
                     nome: 'usuario_situacao_rua' ,
                     quantidade: 'ativos_3meses'

@@ -244,17 +244,6 @@ const NovoUsuario = () => {
     );
   }, [usuariosNovosPorRaca, filtroPeriodoRacaECor, filtroEstabelecimentoRacaECor.value]);
 
-  const usuariosNovosPorCIDNaoZerados = useMemo(() => {
-    const dadosNaoZerados = usuariosNovosPorCID
-      .filter(({ usuarios_novos: usuariosNovos }) => usuariosNovos !== 0);
-
-    return dadosNaoZerados;
-  }, [usuariosNovosPorCID]);
-
-  const usuariosNovosPorCondicaoNaoZerados = useMemo(() => {
-    return usuariosNovosPorCondicao.filter(({ usuarios_novos: usuariosNovos }) => usuariosNovos !== 0);
-  }, [usuariosNovosPorCondicao]);
-
   return (
     <div>
       <TituloSmallTexto
@@ -357,7 +346,7 @@ const NovoUsuario = () => {
 
             <div className={ styles.GraficoCIDContainer }>
               <GraficoDonut
-                dados={ usuariosNovosPorCIDNaoZerados }
+                dados={ usuariosNovosPorCID }
                 propriedades={ {
                   nome: 'usuario_condicao_saude',
                   quantidade: 'usuarios_novos'
@@ -374,7 +363,7 @@ const NovoUsuario = () => {
                   nome: 'usuario_condicao_saude',
                   quantidade: 'usuarios_novos'
                 } }
-                data={ usuariosNovosPorCIDNaoZerados }
+                data={ usuariosNovosPorCID }
                 mensagemDadosZerados='Sem usuários nessa competência'
               />
             </div>
@@ -460,7 +449,7 @@ const NovoUsuario = () => {
             <div className={ styles.GraficosUsuariosAtivosContainer }>
               <div className={ styles.GraficoUsuariosAtivos }>
                 <GraficoCondicaoUsuarios
-                  dados={ usuariosNovosPorCondicaoNaoZerados }
+                  dados={ usuariosNovosPorCondicao }
                   propriedades={ {
                     nome: 'usuario_abuso_substancias' ,
                     quantidade: 'usuarios_novos'
@@ -472,7 +461,7 @@ const NovoUsuario = () => {
 
               <div className={ styles.GraficoUsuariosAtivos }>
                 <GraficoCondicaoUsuarios
-                  dados={ usuariosNovosPorCondicaoNaoZerados }
+                  dados={ usuariosNovosPorCondicao }
                   propriedades={ {
                     nome: 'usuario_situacao_rua' ,
                     quantidade: 'usuarios_novos'

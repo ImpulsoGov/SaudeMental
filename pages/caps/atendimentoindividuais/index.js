@@ -1,5 +1,4 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
-import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
@@ -222,13 +221,6 @@ const AtendimentoIndividual = () => {
       );
   };
 
-  const atendimentosPorCIDNaoZerados = useMemo(() => {
-    const dadosNaoZerados = atendimentosPorCID
-      .filter(({ usuarios_apenas_atendimento_individual: apenasAtendimentoIndividual }) => apenasAtendimentoIndividual !== 0);
-
-    return dadosNaoZerados;
-  }, [atendimentosPorCID]);
-
   return (
     <div>
       <TituloSmallTexto
@@ -328,7 +320,7 @@ const AtendimentoIndividual = () => {
 
             <div className={ styles.GraficoCIDContainer }>
               <GraficoDonut
-                dados={ atendimentosPorCIDNaoZerados }
+                dados={ atendimentosPorCID }
                 propriedades={ {
                   nome: 'usuario_condicao_saude',
                   quantidade: 'usuarios_apenas_atendimento_individual'
@@ -345,7 +337,7 @@ const AtendimentoIndividual = () => {
                   nome: 'usuario_condicao_saude',
                   quantidade: 'usuarios_apenas_atendimento_individual'
                 } }
-                data={ atendimentosPorCIDNaoZerados }
+                data={ atendimentosPorCID }
                 mensagemDadosZerados='Sem usuários nessa competência'
               />
             </div>
