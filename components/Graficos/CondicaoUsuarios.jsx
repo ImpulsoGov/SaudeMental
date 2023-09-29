@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
 import { CORES_GRAFICO_SUBST_MORADIA } from '../../constants/CORES_GRAFICO_SUBST_MORADIA';
 import { agregarQuantidadePorPropriedadeNome } from '../../helpers/graficoDonut';
-import { removerDadosZeradosPorPropriedade } from '../../utils/removerDadosZerados';
 
 const GraficoCondicaoUsuarios = ({
   dados,
@@ -13,10 +12,8 @@ const GraficoCondicaoUsuarios = ({
   titulo
 }) => {
   const dadosAgregados = useMemo(() => {
-    const dadosNaoZerados = removerDadosZeradosPorPropriedade(dados, propriedades.quantidade);
-
     return agregarQuantidadePorPropriedadeNome(
-      dadosNaoZerados,
+      dados,
       propriedades.nome,
       propriedades.quantidade
     );
