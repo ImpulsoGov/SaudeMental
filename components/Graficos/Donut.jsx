@@ -5,11 +5,13 @@ import { useCallback, useMemo } from 'react';
 import { CORES_GRAFICO_DONUT, QUANTIDADE_CORES_GRAFICO_DONUT } from '../../constants/GRAFICO_DONUT';
 import { agregarQuantidadePorPropriedadeNome, agruparItensQueUltrapassamPaleta } from '../../helpers/graficoDonut';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../utils/ordenacao';
+import { removerDadosZeradosPorPropriedade } from '../../utils/removerDadosZerados';
 
 const GraficoDonut = ({ dados, propriedades, loading }) => {
   const dadosAgregadosEOrdenados = useMemo(() => {
+    const dadosNaoZerados = removerDadosZeradosPorPropriedade(dados, propriedades.quantidade);
     const agregados = agregarQuantidadePorPropriedadeNome(
-      dados,
+      dadosNaoZerados,
       propriedades.nome,
       propriedades.quantidade
     );
