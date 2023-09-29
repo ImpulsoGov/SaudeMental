@@ -1,17 +1,15 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
-import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import styles from '../Caps.module.css';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import { TabelaGraficoDonut, TabelaDetalhamentoPorCaps } from '../../../components/Tabelas';
-import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import GraficoRacaECor from '../../../components/Graficos/RacaECor';
 import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from '../../../requests/caps';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
-import { GraficoDonut } from '../../../components/Graficos';
+import { GraficoCondicaoUsuarios, GraficoDonut } from '../../../components/Graficos';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -208,28 +206,6 @@ const PerfilUsuario = () => {
       />
     );
   };
-  const agregadosPorAbusoSubstancias = useMemo(() => {
-    return agregarPorAbusoSubstancias(
-      usuariosPorCondicao,
-      'usuario_abuso_substancias',
-      'ativos_3meses'
-    );
-  }, [usuariosPorCondicao]);
-
-  const agregadosPorSituacaoRua = useMemo(() => {
-    return agregarPorSituacaoRua(
-      usuariosPorCondicao,
-      'usuario_situacao_rua',
-      'ativos_3meses'
-    );
-  }, [usuariosPorCondicao]);
-
-  const usuariosPorCIDNaoZerados = useMemo(() => {
-    const dadosNaoZerados = usuariosPorCID
-      .filter(({ ativos_3meses: ativos3Meses }) => ativos3Meses !== 0);
-
-    return dadosNaoZerados;
-  }, [usuariosPorCID]);
 
   const obterPeriodoPorExtenso = useCallback((dados, periodo) => {
     const { nome_mes: mes, competencia } = dados.find((dado) => dado.periodo === periodo);
@@ -345,7 +321,7 @@ const PerfilUsuario = () => {
 
             <div className={ styles.GraficoCIDContainer }>
               <GraficoDonut
-                dados={ usuariosPorCIDNaoZerados }
+                dados={ usuariosPorCID }
                 propriedades={ {
                   nome: 'usuario_condicao_saude',
                   quantidade: 'ativos_3meses'
@@ -362,7 +338,7 @@ const PerfilUsuario = () => {
                   nome: 'usuario_condicao_saude',
                   quantidade: 'ativos_3meses'
                 } }
-                data={ usuariosPorCIDNaoZerados }
+                data={ usuariosPorCID }
                 mensagemDadosZerados='Sem usuários nessa competência'
               />
             </div>
@@ -445,32 +421,31 @@ const PerfilUsuario = () => {
               />
             </div>
 
-            { loadingCondicao
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <div className={ styles.GraficosUsuariosAtivosContainer }>
-                <div className={ styles.GraficoUsuariosAtivos }>
-                  <ReactEcharts
-                    option={ getOpcoesGraficoAbusoESituacao(
-                      agregadosPorAbusoSubstancias,
-                      'Fazem uso de substâncias psicoativas?',
-                      'ABUSO_SUBSTANCIAS'
-                    ) }
-                    style={ { width: '100%', height: '100%' } }
-                  />
-                </div>
-
-                <div className={ styles.GraficoUsuariosAtivos }>
-                  <ReactEcharts
-                    option={ getOpcoesGraficoAbusoESituacao(
-                      agregadosPorSituacaoRua,
-                      'Estão em situação de rua?',
-                      'SITUACAO_RUA'
-                    ) }
-                    style={ { width: '100%', height: '100%' } }
-                  />
-                </div>
+            <div className={ styles.GraficosUsuariosAtivosContainer }>
+              <div className={ styles.GraficoUsuariosAtivos }>
+                <GraficoCondicaoUsuarios
+                  dados={ usuariosPorCondicao }
+                  propriedades={ {
+                    nome: 'usuario_abuso_substancias' ,
+                    quantidade: 'ativos_3meses'
+                  } }
+                  loading={ loadingCondicao }
+                  titulo='Fazem uso de substâncias psicoativas?'
+                />
               </div>
-            }
+
+              <div className={ styles.GraficoUsuariosAtivos }>
+                <GraficoCondicaoUsuarios
+                  dados={ usuariosPorCondicao }
+                  propriedades={ {
+                    nome: 'usuario_situacao_rua' ,
+                    quantidade: 'ativos_3meses'
+                  } }
+                  loading={ loadingCondicao }
+                  titulo='Estão em situação de rua?'
+                />
+              </div>
+            </div>
           </>
         )
         : <Spinner theme='ColorSM' />

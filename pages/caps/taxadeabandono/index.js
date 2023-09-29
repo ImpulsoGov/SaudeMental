@@ -134,13 +134,6 @@ const TaxaAbandono = () => {
       );
   };
 
-  const evasoesNoMesPorCIDNaoZeradas = useMemo(() => {
-    const dadosNaoZerados = evasoesNoMesPorCID
-      .filter(({ quantidade_registrada: quantidade }) => quantidade !== 0);
-
-    return dadosNaoZerados;
-  }, [evasoesNoMesPorCID]);
-
   const getDadosFiltradosGeneroEFaixaEtaria = useMemo(() => {
     const periodosSelecionados = filtroPeriodoGenero.map(({ value }) => value);
 
@@ -248,7 +241,7 @@ const TaxaAbandono = () => {
 
             <div className={ styles.GraficoCIDContainer }>
               <GraficoDonut
-                dados={ evasoesNoMesPorCIDNaoZeradas }
+                dados={ evasoesNoMesPorCID }
                 propriedades={ {
                   nome: 'usuario_condicao_saude',
                   quantidade: 'quantidade_registrada'
@@ -265,7 +258,7 @@ const TaxaAbandono = () => {
                   nome: 'usuario_condicao_saude',
                   quantidade: 'quantidade_registrada'
                 } }
-                data={ evasoesNoMesPorCIDNaoZeradas }
+                data={ evasoesNoMesPorCID }
                 mensagemDadosZerados='Sem usuários nessa competência'
               />
             </div>

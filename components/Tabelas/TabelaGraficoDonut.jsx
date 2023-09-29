@@ -10,6 +10,7 @@ import {
 import { agregarQuantidadePorPropriedadeNome, agruparItensQueUltrapassamPaleta } from '../../helpers/graficoDonut';
 import styles from './Tabelas.module.css';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../utils/ordenacao';
+import { removerDadosZeradosPorPropriedade } from '../../utils/removerDadosZerados';
 
 const TabelaGraficoDonut = ({
   labels,
@@ -52,8 +53,10 @@ const TabelaGraficoDonut = ({
   ], [labels]);
 
   const dadosAgregadosEOrdenados = useMemo(() => {
+    const dadosNaoZerados = removerDadosZeradosPorPropriedade(data, propriedades.quantidade);
+
     const agregados = agregarQuantidadePorPropriedadeNome(
-      data,
+      dadosNaoZerados,
       propriedades.nome,
       propriedades.quantidade
     );

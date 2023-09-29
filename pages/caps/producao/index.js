@@ -186,11 +186,8 @@ const Producao = () => {
   );
 
   const procedimentosBPAFiltrados = useMemo(() => {
-    const dadosNaoZerados = procedimentosPorTipo
-      .filter(({ procedimentos_registrados_bpa: procedimentos }) => procedimentos !== 0);
-
     const dadosFiltrados = filtrarPorTipoEstabelecimentoEPeriodo(
-      dadosNaoZerados,
+      procedimentosPorTipo,
       filtroEstabelecimentoBPA,
       filtroPeriodoBPA
     );
@@ -199,11 +196,8 @@ const Producao = () => {
   }, [filtrarPorTipoEstabelecimentoEPeriodo, filtroEstabelecimentoBPA, filtroPeriodoBPA, procedimentosPorTipo]);
 
   const procedimentosRAASFiltrados = useMemo(() => {
-    const dadosNaoZerados = procedimentosPorTipo
-      .filter(({ procedimentos_registrados_raas: procedimentos }) => procedimentos !== 0);
-
     const dadosFiltrados = filtrarPorTipoEstabelecimentoEPeriodo(
-      dadosNaoZerados,
+      procedimentosPorTipo,
       filtroEstabelecimentoRAAS,
       filtroPeriodoRAAS
     );

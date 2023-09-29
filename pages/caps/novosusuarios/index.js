@@ -7,14 +7,13 @@ import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import GraficoRacaECor from '../../../components/Graficos/RacaECor';
-import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
 import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
 import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
-import { GraficoDonut } from '../../../components/Graficos';
+import { GraficoCondicaoUsuarios, GraficoDonut } from '../../../components/Graficos';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -245,29 +244,6 @@ const NovoUsuario = () => {
     );
   }, [usuariosNovosPorRaca, filtroPeriodoRacaECor, filtroEstabelecimentoRacaECor.value]);
 
-  const usuariosNovosPorCIDNaoZerados = useMemo(() => {
-    const dadosNaoZerados = usuariosNovosPorCID
-      .filter(({ usuarios_novos: usuariosNovos }) => usuariosNovos !== 0);
-
-    return dadosNaoZerados;
-  }, [usuariosNovosPorCID]);
-
-  const agregadosPorAbusoSubstancias = useMemo(() => {
-    return agregarPorAbusoSubstancias(
-      usuariosNovosPorCondicao,
-      'usuario_abuso_substancias',
-      'usuarios_novos'
-    );
-  }, [usuariosNovosPorCondicao]);
-
-  const agregadosPorSituacaoRua = useMemo(() => {
-    return agregarPorSituacaoRua(
-      usuariosNovosPorCondicao,
-      'usuario_situacao_rua',
-      'usuarios_novos'
-    );
-  }, [usuariosNovosPorCondicao]);
-
   return (
     <div>
       <TituloSmallTexto
@@ -370,7 +346,7 @@ const NovoUsuario = () => {
 
             <div className={ styles.GraficoCIDContainer }>
               <GraficoDonut
-                dados={ usuariosNovosPorCIDNaoZerados }
+                dados={ usuariosNovosPorCID }
                 propriedades={ {
                   nome: 'usuario_condicao_saude',
                   quantidade: 'usuarios_novos'
@@ -387,7 +363,7 @@ const NovoUsuario = () => {
                   nome: 'usuario_condicao_saude',
                   quantidade: 'usuarios_novos'
                 } }
-                data={ usuariosNovosPorCIDNaoZerados }
+                data={ usuariosNovosPorCID }
                 mensagemDadosZerados='Sem usuários nessa competência'
               />
             </div>
@@ -470,32 +446,31 @@ const NovoUsuario = () => {
               />
             </div>
 
-            { loadingCondicao
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <div className={ styles.GraficosUsuariosAtivosContainer }>
-                <div className={ styles.GraficoUsuariosAtivos }>
-                  <ReactEcharts
-                    option={ getOpcoesGraficoAbusoESituacao(
-                      agregadosPorAbusoSubstancias,
-                      'Fazem uso de substâncias psicoativas?',
-                      'ABUSO_SUBSTANCIAS',
-                    ) }
-                    style={ { width: '100%', height: '100%' } }
-                  />
-                </div>
-
-                <div className={ styles.GraficoUsuariosAtivos }>
-                  <ReactEcharts
-                    option={ getOpcoesGraficoAbusoESituacao(
-                      agregadosPorSituacaoRua,
-                      'Estão em situação de rua?',
-                      'SITUACAO_RUA',
-                    ) }
-                    style={ { width: '100%', height: '100%' } }
-                  />
-                </div>
+            <div className={ styles.GraficosUsuariosAtivosContainer }>
+              <div className={ styles.GraficoUsuariosAtivos }>
+                <GraficoCondicaoUsuarios
+                  dados={ usuariosNovosPorCondicao }
+                  propriedades={ {
+                    nome: 'usuario_abuso_substancias' ,
+                    quantidade: 'usuarios_novos'
+                  } }
+                  loading={ loadingCondicao }
+                  titulo='Fazem uso de substâncias psicoativas?'
+                />
               </div>
-            }
+
+              <div className={ styles.GraficoUsuariosAtivos }>
+                <GraficoCondicaoUsuarios
+                  dados={ usuariosNovosPorCondicao }
+                  propriedades={ {
+                    nome: 'usuario_situacao_rua' ,
+                    quantidade: 'usuarios_novos'
+                  } }
+                  loading={ loadingCondicao }
+                  titulo='Estão em situação de rua?'
+                />
+              </div>
+            </div>
           </>
         )
         : <Spinner theme='ColorSM' />
