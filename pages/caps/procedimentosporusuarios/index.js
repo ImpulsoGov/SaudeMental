@@ -1,7 +1,6 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
-import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { v1 as uuidv1 } from "uuid";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
@@ -9,7 +8,8 @@ import styles from "../Caps.module.css";
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
-import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
+import { GraficoProcedimentosPorTempoServico } from "../../../components/Graficos";
+import GraficoHistoricoTemporal from "../../../components/Graficos/HistoricoTemporal";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -129,84 +129,30 @@ const ProcedimentosPorUsuarios = () => {
 
     return cardsProcedimentosPorEstabelecimento;
   };
-  const agregarPorTempoDeServico = (procedimentos) => {
-    const procedimentosAgregados = [];
 
-    procedimentos.forEach((procedimento) => {
-      const {
-        periodo,
-        tempo_servico_descricao: tempoServico,
-        procedimentos_por_usuario: procedimentosPorUsuario
-      } = procedimento;
-      const procedimentoEncontrado = procedimentosAgregados
-        .find((item) => item.tempoServico === tempoServico);
-
-      if (!procedimentoEncontrado) {
-        procedimentosAgregados.push({
-          tempoServico,
-          procedimentosPorPeriodo: [{
-            periodo,
-            procedimentosPorUsuario
-          }]
-        });
-      } else {
-        procedimentoEncontrado.procedimentosPorPeriodo.push({
-          periodo,
-          procedimentosPorUsuario
-        });
-      }
-    });
-
-    return procedimentosAgregados;
-  };
-
-  const getMediaProcedimentosPorPeriodo = (procedimentosPorPeriodo) => {
-    const somaProcedimentos = procedimentosPorPeriodo
-      .reduce((acc, { procedimentosPorUsuario }) => acc + procedimentosPorUsuario, 0);
-
-    return somaProcedimentos / (procedimentosPorPeriodo.length);
-  };
-
-  const getOpcoesGraficoProcedimentoPorTempo = (procedimentos) => {
+  const procedimentosPorTempoServicoFiltrados = useMemo(() => {
     const periodosSelecionados = filtroPeriodoProcedimento
       .map(({ value }) => value);
-    const procedimentosFiltrados = procedimentos.filter((item) =>
-      item.estabelecimento === filtroEstabelecimentoProcedimento.value
-      && periodosSelecionados.includes(item.periodo)
-      && item.tempo_servico_descricao !== null
-      && item.estabelecimento_linha_perfil === "Todos"
-      && item.estabelecimento_linha_idade === "Todos"
-    );
-    const procedimentosAgregados = agregarPorTempoDeServico(procedimentosFiltrados);
-
-    return {
-      tooltip: {},
-      xAxis: {
-        type: 'category',
-        data: procedimentosAgregados.map(({ tempoServico }) => tempoServico)
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [
-        {
-          data: procedimentosAgregados.map(({ procedimentosPorPeriodo }) =>
-            getMediaProcedimentosPorPeriodo(procedimentosPorPeriodo)),
-          type: 'bar',
-          name: 'Média de procedimentos'
-        }
-      ]
-    };
-  };
-
-  const filtrarPorEstabelecimento = (dados, filtroEstabelecimento) => {
-    return dados
+    const procedimentosFiltrados = procedimentosPorTempoServico
       .filter((item) =>
-        item.estabelecimento === filtroEstabelecimento.value
+        item.estabelecimento === filtroEstabelecimentoProcedimento.value
+        && periodosSelecionados.includes(item.periodo)
+        && item.tempo_servico_descricao !== null
         && item.estabelecimento_linha_perfil === "Todos"
         && item.estabelecimento_linha_idade === "Todos"
       );
-  };
+
+    return procedimentosFiltrados;
+  }, [procedimentosPorTempoServico, filtroEstabelecimentoProcedimento.value, filtroPeriodoProcedimento]);
+
+  const procedimentosPorEstabelecimentoFiltrados = useMemo(() => {
+    return procedimentosPorEstabelecimento
+      .filter((item) =>
+        item.estabelecimento === filtroEstabelecimentoHistorico.value
+        && item.estabelecimento_linha_perfil === "Todos"
+        && item.estabelecimento_linha_idade === "Todos"
+      );
+  }, [procedimentosPorEstabelecimento, filtroEstabelecimentoHistorico.value]);
 
   return (
     <div>
@@ -265,13 +211,11 @@ const ProcedimentosPorUsuarios = () => {
               propriedade = {'estabelecimento'}
             />
 
-            <ReactEcharts
-              option={ getOpcoesGraficoHistoricoTemporal(
-                filtrarPorEstabelecimento(procedimentosPorEstabelecimento, filtroEstabelecimentoHistorico),
-                "procedimentos_por_usuario",
-                filtroEstabelecimentoHistorico.value
-              ) }
-              style={ { width: "100%", height: "70vh" } }
+            <GraficoHistoricoTemporal
+              dados={ procedimentosPorEstabelecimentoFiltrados }
+              label={ filtroEstabelecimentoHistorico.value }
+              propriedade='procedimentos_por_usuario'
+              loading={ false }
             />
           </>
         )
@@ -305,11 +249,9 @@ const ProcedimentosPorUsuarios = () => {
               />
             </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoProcedimentoPorTempo(
-                procedimentosPorTempoServico
-              ) }
-              style={ { width: "100%", height: "70vh" } }
+            <GraficoProcedimentosPorTempoServico
+              dados={ procedimentosPorTempoServicoFiltrados }
+              tooltip='Média de procedimentos'
             />
           </>
         )
