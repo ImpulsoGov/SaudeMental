@@ -18,7 +18,6 @@ const GraficoHistoricoTemporal = ({
   }, [dados, propriedade]);
 
   const optionsGrafico = useMemo(() => ({
-    legend: {},
     tooltip: {
       trigger: 'axis',
       axisPointer: {
