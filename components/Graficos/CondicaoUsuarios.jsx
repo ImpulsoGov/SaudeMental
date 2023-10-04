@@ -9,7 +9,8 @@ const GraficoCondicaoUsuarios = ({
   dados,
   propriedades,
   loading,
-  titulo
+  titulo,
+  textoTooltip
 }) => {
   const dadosAgregados = useMemo(() => {
     return agregarQuantidadePorPropriedadeNome(
@@ -38,7 +39,7 @@ const GraficoCondicaoUsuarios = ({
         {
           top: 30,
           bottom: 30,
-          name: titulo,
+          name: textoTooltip,
           type: 'pie',
           radius: ['40%', '80%'],
           avoidLabelOverlap: false,
@@ -66,7 +67,7 @@ const GraficoCondicaoUsuarios = ({
         }
       ]
     };
-  }, [dadosAgregados, titulo]);
+  }, [dadosAgregados, titulo, textoTooltip]);
 
   return (
     <>
@@ -87,7 +88,9 @@ GraficoCondicaoUsuarios.propTypes = {
     nome: PropTypes.string,
     quantidade: PropTypes.string,
   }),
-  loading: PropTypes.bool
+  loading: PropTypes.bool,
+  titulo: PropTypes.string,
+  textoTooltip: PropTypes.string,
 }.isRequired;
 
 export default GraficoCondicaoUsuarios;
