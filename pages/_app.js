@@ -107,13 +107,13 @@ function MyApp(props) {
                     alterarSenha: alterarSenha
                   },
                   chamadas: {
-                    sucesso: "Agora é só clicar no botão ENTRAR com seu e-mail e a senha criada."
+                    sucesso: "Agora é só clicar no botão ENTRAR com seu e-mail e a senha criada.",
+                    aviso: "Caso não lembre o e-mail cadastrado, entre em contato conosco através do e-mail (saudemental@impulsogov.org)."
                   }
                 } }
                 ModalInicio={ {
                   titulo: "Faça o login para ver os indicadores do seu município.",
                   chamada: "Se você já possui uma senha, clique em ENTRAR. Caso o seu município seja parceiro e seu acesso já foi autorizado, clique em PRIMEIRO ACESSO para criar a sua senha.",
-                  // cardAlert: "<p style='font-size:14px;'>Se você já possui uma senha, clique em ENTRAR.</p>",
                   botaoPrincipal: {
                     label: "entrar",
                   },
