@@ -18,7 +18,6 @@ const GraficoHistoricoTemporal = ({
   }, [dados, propriedade]);
 
   const gerarOptions = useCallback(() => ({
-    legend: {},
     tooltip: {
       trigger: 'axis',
       axisPointer: {

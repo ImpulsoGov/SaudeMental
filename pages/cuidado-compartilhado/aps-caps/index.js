@@ -1,12 +1,11 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
-import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
 import { TabelaMatriciamentosPorCaps } from "../../../components/Tabelas";
 import { API_SAUDE_MENTAL_URL } from "../../../constants/API_URL";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
+import { GraficoEncaminhamentos } from "../../../components/Graficos";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -161,9 +160,8 @@ const ApsCaps = () => {
         descricao="<strong>Atenção:</strong> o número de atendimentos no gráfico a seguir está em escala logarítmica, que reforça as variações mês a mês quando os números são pequenos, e diminui a variação aparente quando os números são muito grandes."
       />
       { encaminhamentosApsCaps.length !== 0
-        ? <ReactEcharts
-          option={ getEncaminhamentosChartOptions(encaminhamentosApsCaps) }
-          style={ { width: "100%", height: "70vh" } }
+        ? <GraficoEncaminhamentos
+          dados={ encaminhamentosApsCaps }
         />
         : <Spinner theme="ColorSM" />
       }
