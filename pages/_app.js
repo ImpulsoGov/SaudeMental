@@ -131,8 +131,13 @@ function MyApp(props) {
                     codigo: validarCodigo,
                     alterarSenha: criarSenha,
                   },
+                  titulos: {
+                    mail: "Boas vindas! Precisamos que você crie uma senha para acessar os indicadores do seu município."
+                  },
                   chamadas: {
-                    sucesso: "Agora é só clicar no botão ENTRAR com seu e-mail e a senha criada."
+                    sucesso: "Agora é só clicar no botão ENTRAR com seu e-mail e a senha criada.",
+                    mail: "Se você é de um município parceiro e ainda não tem senha cadastrada, siga os próximos passos.",
+                    aviso: "Digite o e-mail cadastrado para receber um código de autorização de criação da senha."
                   }
                 } }
               />
