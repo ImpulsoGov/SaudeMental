@@ -2,7 +2,7 @@ import { agregarPorRacaCor} from '../../helpers/graficoRacaECor';
 import { Spinner } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 const NOME_DIMENSAO = 'quantidade';
 
 const GraficoRacaECor = ({
@@ -18,7 +18,7 @@ const GraficoRacaECor = ({
     );
   }, [dados, propriedades]);
 
-  const optionsGrafico = useMemo(() => ({
+  const gerarOptions = useCallback(() => ({
     legend: {},
     tooltip: {},
     dataset: {
@@ -49,7 +49,7 @@ const GraficoRacaECor = ({
       { loading
         ? <Spinner theme='ColorSM' height='70vh' />
         : <ReactEcharts
-          option={ optionsGrafico }
+          option={ gerarOptions() }
           style={ { width: '100%', height: '70vh' } }
         />
       }
