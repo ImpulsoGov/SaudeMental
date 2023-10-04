@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { agruparPorTempoDeServico, getMediaProcedimentosPorPeriodo } from '../../helpers/graficoProcedimentosPorTempoServico';
 import { useCallback, useMemo } from 'react';
 
-const GraficoProcedimentosPorTempoServico = ({ dados, tooltip }) => {
+const GraficoProcedimentosPorTempoServico = ({ dados, textoTooltip }) => {
   const dadosAgrupados = useMemo(() => {
     return agruparPorTempoDeServico(dados);
   }, [dados]);
@@ -23,11 +23,11 @@ const GraficoProcedimentosPorTempoServico = ({ dados, tooltip }) => {
           data: dadosAgrupados.map(({ procedimentosPorPeriodo }) =>
             getMediaProcedimentosPorPeriodo(procedimentosPorPeriodo)),
           type: 'bar',
-          name: tooltip
+          name: textoTooltip
         }
       ]
     };
-  }, [dadosAgrupados, tooltip]);
+  }, [dadosAgrupados, textoTooltip]);
 
   return (
     <ReactEcharts
@@ -39,7 +39,7 @@ const GraficoProcedimentosPorTempoServico = ({ dados, tooltip }) => {
 
 GraficoProcedimentosPorTempoServico.propTypes = {
   dados: PropTypes.array,
-  tooltip: PropTypes.string
+  textoTooltip: PropTypes.string
 }.isRequired;
 
 export default GraficoProcedimentosPorTempoServico;
