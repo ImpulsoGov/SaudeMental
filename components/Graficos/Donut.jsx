@@ -55,7 +55,7 @@ const GraficoDonut = ({ dados, propriedades, loading }) => {
           },
           data: dadosGraficoDonut.map(({ nome, quantidade }, index) => ({
             value: quantidade,
-            name: !nome ? 'Sem informação' : nome,
+            name: nome || 'Sem informação',
             itemStyle: {
               color: CORES_GRAFICO_DONUT[index]
             },
