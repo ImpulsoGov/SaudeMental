@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import ReactEcharts from 'echarts-for-react';
-import { agruparPorConduta, ordenarPorCompetencia } from '../../helpers/getEncaminhamentosChartOptions';
+import { agruparPorConduta, ordenarPorCompetencia } from '../../helpers/graficoEncaminhamentos';
 
 const GraficoEncaminhamentos = ({ dados }) => {
   const dadosAgrupadosEOrdenados = useMemo(() => {
