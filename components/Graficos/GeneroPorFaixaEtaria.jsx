@@ -1,7 +1,7 @@
 import { Spinner } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { agregarPorFaixaEtariaEGenero } from '../../helpers/graficoGeneroEFaixaEtaria';
 const NOME_DIMENSAO = 'genero';
 const LABELS_DIMENSAO = ['Masculino', 'Feminino'];
@@ -21,7 +21,7 @@ const GraficoGeneroPorFaixaEtaria = ({
     );
   }, [dados, propriedades]);
 
-  const optionsGrafico = useMemo(() => ({
+  const gerarOptions = useCallback(() => ({
     legend: {
       itemGap: 25,
     },
@@ -80,7 +80,7 @@ const GraficoGeneroPorFaixaEtaria = ({
       { loading
         ? <Spinner theme='ColorSM' height='70vh' />
         : <ReactEcharts
-          option={ optionsGrafico }
+          option={ gerarOptions() }
           style={ { width: '100%', height: '70vh' } }
         />
       }

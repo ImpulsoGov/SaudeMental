@@ -51,7 +51,7 @@ export const getOpcoesGraficoBarrasProducao = (dados, textoTooltip) => {
       axisLabel: {
         rotate: 35,
         width: 100,
-        overflow: "break",
+        overflow: 'break',
         formatter: (value) => value.length > 10
           ? `${value.slice(0, 10)}...`
           : value

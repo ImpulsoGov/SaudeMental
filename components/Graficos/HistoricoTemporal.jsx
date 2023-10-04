@@ -1,7 +1,7 @@
 import { Spinner } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { ordenarPorCompetencia} from '../../helpers/graficoHistoricoTemporal';
 
 const GraficoHistoricoTemporal = ({
@@ -17,7 +17,7 @@ const GraficoHistoricoTemporal = ({
     );
   }, [dados, propriedade]);
 
-  const optionsGrafico = useMemo(() => ({
+  const gerarOptions = useCallback(() => ({
     legend: {},
     tooltip: {
       trigger: 'axis',
@@ -64,7 +64,7 @@ const GraficoHistoricoTemporal = ({
       { loading
         ? <Spinner theme='ColorSM' height='70vh' />
         : <ReactEcharts
-          option={ optionsGrafico }
+          option={ gerarOptions() }
           style={ { width: '100%', height: '70vh' } }
         />
       }
