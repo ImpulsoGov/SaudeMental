@@ -1,11 +1,9 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
-import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { agregarPorPropriedadeESomarQuantidade, getOpcoesGraficoBarrasProducao } from '../../../helpers/graficoBarrasProducao';
 import { getProcedimentosPorHora, getProcedimentosPorTipo } from '../../../requests/caps';
 import { ordenarCrescentePorPropriedadeDeTexto } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
@@ -13,7 +11,7 @@ import { ProcedimentosPorCaps } from '../../../components/ProcedimentosPorCaps';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_PERIODO_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 import { GraficoDonut } from '../../../components/Graficos';
-
+import { GraficoBarrasProducao} from '../../../components/Graficos';
 const OCUPACOES_NAO_ACEITAS = ['Todas', null];
 
 export function getServerSideProps(ctx) {
@@ -172,19 +170,6 @@ const Producao = () => {
       && item.estabelecimento_linha_idade === 'Todos'
     );
   }, []);
-
-  const agregadosPorCBO = agregarPorPropriedadeESomarQuantidade(
-    filtrarPorHoraEstabelecimentoEPeriodo(procedimentosPorHora, filtroEstabelecimentoCBO, filtroPeriodoCBO),
-    'ocupacao',
-    'procedimentos_por_hora'
-  );
-
-  const agregadosPorProducao = agregarPorPropriedadeESomarQuantidade(
-    filtrarPorTipoEstabelecimentoEPeriodo(procedimentosPorTipo, filtroEstabelecimentoProducao, filtroPeriodoProducao),
-    'procedimento',
-    'procedimentos_registrados_total'
-  );
-
   const procedimentosBPAFiltrados = useMemo(() => {
     const dadosFiltrados = filtrarPorTipoEstabelecimentoEPeriodo(
       procedimentosPorTipo,
@@ -272,13 +257,14 @@ const Producao = () => {
                 label = {'Competência'}
               />
             </div>
-
-            <ReactEcharts
-              option={ getOpcoesGraficoBarrasProducao(
-                agregadosPorCBO,
-                'Procedimentos por hora'
-              ) }
-              style={ { width: '100%', height: '70vh' } }
+            <GraficoBarrasProducao
+              dados={filtrarPorHoraEstabelecimentoEPeriodo(procedimentosPorHora, filtroEstabelecimentoCBO, filtroPeriodoCBO)}
+              label={'Procedimentos por hora'}
+              propriedades={{
+                agregacao:'ocupacao',
+                quantidade:'procedimentos_por_hora'
+              }}
+              loading={false}
             />
           </>
         )
@@ -419,13 +405,14 @@ const Producao = () => {
                 label = {'Competência'}
               />
             </div>
-
-            <ReactEcharts
-              option={ getOpcoesGraficoBarrasProducao(
-                agregadosPorProducao,
-                'Quantidade registrada'
-              ) }
-              style={ { width: '100%', height: '70vh' } }
+            <GraficoBarrasProducao
+              dados={filtrarPorTipoEstabelecimentoEPeriodo(procedimentosPorTipo, filtroEstabelecimentoProducao, filtroPeriodoProducao)}
+              label={'Quantidade registrada'}
+              propriedades={{
+                agregacao:'procedimento',
+                quantidade:'procedimentos_registrados_total'
+              }}
+              loading={false}
             />
           </>
         )
