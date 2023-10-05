@@ -1,13 +1,12 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesNoMesPorCID, getEvasoesNoMesPorGeneroEIdade, getPeriodos } from '../../../requests/caps';
-import ReactEcharts from 'echarts-for-react';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { GraficoDonut, GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
-import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
+import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
@@ -134,15 +133,6 @@ const TaxaAbandono = () => {
       );
   };
 
-  const getDadosFiltradosGeneroEFaixaEtaria = useMemo(() => {
-    const periodosSelecionados = filtroPeriodoGenero.map(({ value }) => value);
-
-    return evasoesNoMesPorGeneroEIdade.filter((item) =>
-      item.estabelecimento === filtroEstabelecimentoGenero.value
-      && periodosSelecionados.includes(item.periodo)
-    );
-  }, [evasoesNoMesPorGeneroEIdade, filtroPeriodoGenero, filtroEstabelecimentoGenero.value]);
-
   return (
     <div>
       <TituloSmallTexto
@@ -196,14 +186,11 @@ const TaxaAbandono = () => {
               label = {'Estabelecimento'}
               propriedade = {'estabelecimento'}
             />
-
-            <ReactEcharts
-              option={ getOpcoesGraficoHistoricoTemporal(
-                filtrarPorEstabelecimento(abandonoMensal, filtroEstabelecimentoHistorico),
-                'usuarios_evasao_perc',
-                'Taxa de não adesão mensal (%):'
-              ) }
-              style={ { width: '100%', height: '70vh' } }
+            <GraficoHistoricoTemporal
+              dados = {filtrarPorEstabelecimento(abandonoMensal, filtroEstabelecimentoHistorico)}
+              label={'Taxa de não adesão mensal (%):'}
+              loading = {false}
+              propriedade={'usuarios_evasao_perc'}
             />
           </>
         )
@@ -296,7 +283,7 @@ const TaxaAbandono = () => {
               />
             </div>
             <GraficoGeneroPorFaixaEtaria
-              dados = {getDadosFiltradosGeneroEFaixaEtaria}
+              dados = {evasoesNoMesPorGeneroEIdade}
               labels={{
                 eixoY: 'Nº de abandonos'
               }}
