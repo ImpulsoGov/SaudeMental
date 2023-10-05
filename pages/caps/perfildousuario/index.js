@@ -1,6 +1,6 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import styles from '../Caps.module.css';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
@@ -99,21 +99,6 @@ const PerfilUsuario = () => {
       });
     }
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoGenero.value, filtroCompetenciaGenero.value]);
-
-  const getDadosFiltradosGeneroEFaixaEtaria = useMemo(() => {
-    return usuariosPorGeneroEIdade.filter((item) =>
-      item.estabelecimento === filtroEstabelecimentoGenero.value
-      && item.periodo === filtroCompetenciaGenero.value
-    );
-  }, [usuariosPorGeneroEIdade, filtroCompetenciaGenero.value, filtroEstabelecimentoGenero.value]);
-
-  const getDadosFiltradosRacaECor = useMemo(() => {
-    return usuariosPorRacaECor.filter((item) =>
-      item.estabelecimento === filtroEstabelecimentoRacaCor.value
-      && item.periodo === filtroCompetenciaRacaCor.value
-    );
-  }, [usuariosPorRacaECor, filtroCompetenciaRacaCor.value, filtroEstabelecimentoRacaCor.value]);
-
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
       setLoadingRaca(true);
@@ -376,7 +361,7 @@ const PerfilUsuario = () => {
               />
             </div>
             <GraficoGeneroPorFaixaEtaria
-              dados = {getDadosFiltradosGeneroEFaixaEtaria}
+              dados = {usuariosPorGeneroEIdade}
               labels={{
                 eixoY: 'Usuários ativos'
               }}
@@ -482,7 +467,7 @@ const PerfilUsuario = () => {
               />
             </div>
             <GraficoRacaECor
-              dados = {getDadosFiltradosRacaECor}
+              dados = {usuariosPorRacaECor}
               label={'Usuários ativos'}
               loading = {loadingRaca}
               propriedades={{

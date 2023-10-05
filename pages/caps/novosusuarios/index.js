@@ -1,13 +1,12 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
-import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import GraficoRacaECor from '../../../components/Graficos/RacaECor';
-import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
+import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
 import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import styles from '../Caps.module.css';
@@ -63,15 +62,6 @@ const NovoUsuario = () => {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
-
-  const getDadosFiltradosGeneroEFaixaEtaria = useMemo(() => {
-    const periodosSelecionados = filtroPeriodoGenero.map(({ value }) => value);
-
-    return usuariosNovosPorGeneroEIdade.filter((item) =>
-      item.estabelecimento === filtroEstabelecimentoGenero.value
-      && periodosSelecionados.includes(item.periodo)
-    );
-  }, [usuariosNovosPorGeneroEIdade, filtroPeriodoGenero, filtroEstabelecimentoGenero.value]);
   const agregarPorLinhaPerfil = (usuariosNovos) => {
     const usuariosAgregados = [];
 
@@ -235,15 +225,6 @@ const NovoUsuario = () => {
     }
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoCID.value, filtroPeriodoCID]);
 
-  const getDadosFiltradosRacaECor = useMemo(() => {
-    const periodosSelecionados = filtroPeriodoRacaECor.map(({ value }) => value);
-
-    return usuariosNovosPorRaca.filter((item) =>
-      item.estabelecimento === filtroEstabelecimentoRacaECor.value
-      && periodosSelecionados.includes(item.periodo)
-    );
-  }, [usuariosNovosPorRaca, filtroPeriodoRacaECor, filtroEstabelecimentoRacaECor.value]);
-
   return (
     <div>
       <TituloSmallTexto
@@ -301,14 +282,11 @@ const NovoUsuario = () => {
               label = {'Estabelecimento'}
               propriedade = {'estabelecimento'}
             />
-
-            <ReactEcharts
-              option={ getOpcoesGraficoHistoricoTemporal(
-                filtrarPorEstabelecimento(resumoNovosUsuarios, filtroEstabelecimentoHistorico),
-                'usuarios_novos',
-                'Usuários novos:'
-              ) }
-              style={ { width: '100%', height: '70vh' } }
+            <GraficoHistoricoTemporal
+              dados = {filtrarPorEstabelecimento(resumoNovosUsuarios, filtroEstabelecimentoHistorico)}
+              label={'Usuários novos:'}
+              loading = {false}
+              propriedade={'usuarios_novos'}
             />
           </>
         )
@@ -401,7 +379,7 @@ const NovoUsuario = () => {
               />
             </div>
             <GraficoGeneroPorFaixaEtaria
-              dados = {getDadosFiltradosGeneroEFaixaEtaria}
+              dados = {usuariosNovosPorGeneroEIdade}
               labels={{
                 eixoY: 'Usuários novos'
               }}
@@ -507,7 +485,7 @@ const NovoUsuario = () => {
               />
             </div>
             <GraficoRacaECor
-              dados = {getDadosFiltradosRacaECor}
+              dados = {usuariosNovosPorRaca}
               label={'Usuários novos no período'}
               loading = {loadingRaca}
               propriedades={{
