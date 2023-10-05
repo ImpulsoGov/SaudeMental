@@ -6,7 +6,7 @@ import {agregarPorPropriedadeESomarQuantidade, getSomaQuantidadesPorPeriodo} fro
 
 const GraficoBarrasProducao = ({
   dados,
-  label,
+  textoTooltip,
   propriedades,
   loading
 }) => {
@@ -43,11 +43,11 @@ const GraficoBarrasProducao = ({
         data: dadosAgregados.map(({ quantidadesPorPeriodo }) =>
           getSomaQuantidadesPorPeriodo(quantidadesPorPeriodo)),
         type: 'bar',
-        name: label
+        name: textoTooltip
       }
     ]
 
-  }), [dadosAgregados, label]);
+  }), [dadosAgregados, textoTooltip]);
   return (
     <>
       { loading
@@ -63,7 +63,7 @@ const GraficoBarrasProducao = ({
 
 GraficoBarrasProducao.propTypes = {
   dados: PropTypes.array,
-  label: PropTypes.string,
+  textoTooltip: PropTypes.string,
   propriedades: PropTypes.shape({
     agregacao: PropTypes.string,
     quantidade: PropTypes.string,

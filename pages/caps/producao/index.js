@@ -259,7 +259,7 @@ const Producao = () => {
             </div>
             <GraficoBarrasProducao
               dados={filtrarPorHoraEstabelecimentoEPeriodo(procedimentosPorHora, filtroEstabelecimentoCBO, filtroPeriodoCBO)}
-              label={'Procedimentos por hora'}
+              textoTooltip={'Procedimentos por hora'}
               propriedades={{
                 agregacao:'ocupacao',
                 quantidade:'procedimentos_por_hora'
@@ -407,7 +407,7 @@ const Producao = () => {
             </div>
             <GraficoBarrasProducao
               dados={filtrarPorTipoEstabelecimentoEPeriodo(procedimentosPorTipo, filtroEstabelecimentoProducao, filtroPeriodoProducao)}
-              label={'Quantidade registrada'}
+              textoTooltip={'Quantidade registrada'}
               propriedades={{
                 agregacao:'procedimento',
                 quantidade:'procedimentos_registrados_total'
