@@ -7,7 +7,7 @@ import { useCallback, useMemo } from 'react';
 const GraficoRacaECor = ({
   dados,
   propriedades,
-  label,
+  textoTooltip,
   loading
 }) => {
   const dadosAgregadosEOrdenados = useMemo(() => {
@@ -30,14 +30,14 @@ const GraficoRacaECor = ({
     series: [
       {
         type: 'bar',
-        name: label,
+        name: textoTooltip,
         data: dadosAgregadosEOrdenados.map((item) => item.quantidade),
         itemStyle: {
           color: '#5367C9'
         },
       },
     ]
-  }), [dadosAgregadosEOrdenados, label]);
+  }), [dadosAgregadosEOrdenados, textoTooltip]);
 
   return (
     <>
@@ -54,7 +54,7 @@ const GraficoRacaECor = ({
 
 GraficoRacaECor.propTypes = {
   dados: PropTypes.array,
-  label: PropTypes.string,
+  textoTooltip: PropTypes.string,
   propriedades: PropTypes.shape({
     quantidade: PropTypes.string,
     racaCor: PropTypes.string

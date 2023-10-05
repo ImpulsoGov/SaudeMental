@@ -468,7 +468,7 @@ const PerfilUsuario = () => {
             </div>
             <GraficoRacaECor
               dados = {usuariosPorRacaECor}
-              label={'Usuários ativos'}
+              textoTooltip={'Usuários ativos'}
               loading = {loadingRaca}
               propriedades={{
                 racaCor: 'usuario_raca_cor',

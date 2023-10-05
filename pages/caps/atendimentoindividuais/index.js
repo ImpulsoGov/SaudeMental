@@ -405,7 +405,7 @@ const AtendimentoIndividual = () => {
             </div>
             <GraficoRacaECor
               dados = {atendimentosPorRacaECor}
-              label={'Usuários que realizaram apenas atendimentos individuais'}
+              textoTooltip={'Usuários que realizaram apenas atendimentos individuais'}
               loading = {loadingRaca}
               propriedades={{
                 racaCor: 'usuario_raca_cor',
