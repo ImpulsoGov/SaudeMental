@@ -263,7 +263,7 @@ const AtendimentoIndividual = () => {
             />
             <GraficoHistoricoTemporal
               dados = {filtrarPorEstabelecimento(atendimentosPorCaps, filtroEstabelecimentoHistorico)}
-              label={'Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):'}
+              textoTooltip={'Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):'}
               loading = {false}
               propriedade={'perc_apenas_atendimentos_individuais'}
             />

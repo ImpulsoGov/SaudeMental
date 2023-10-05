@@ -6,7 +6,7 @@ import { ordenarPorCompetencia} from '../../helpers/graficoHistoricoTemporal';
 
 const GraficoHistoricoTemporal = ({
   dados,
-  label,
+  textoTooltip,
   propriedade,
   loading
 }) => {
@@ -48,7 +48,7 @@ const GraficoHistoricoTemporal = ({
     },
     series: [
       {
-        name: label,
+        name: textoTooltip,
         data: dadosOrdenados.quantidades,
         type: 'line',
         itemStyle: {
@@ -56,7 +56,7 @@ const GraficoHistoricoTemporal = ({
         },
       }
     ]
-  }), [dadosOrdenados, label]);
+  }), [dadosOrdenados, textoTooltip]);
 
   return (
     <>
@@ -70,10 +70,12 @@ const GraficoHistoricoTemporal = ({
     </>
   );
 };
+
 GraficoHistoricoTemporal.propTypes = {
   dados: PropTypes.array,
-  label: PropTypes.string,
+  textoTooltip: PropTypes.string,
   propriedade: PropTypes.string,
   loading: PropTypes.bool,
 }.isRequired;
+
 export default GraficoHistoricoTemporal;

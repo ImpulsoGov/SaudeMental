@@ -188,7 +188,7 @@ const TaxaAbandono = () => {
             />
             <GraficoHistoricoTemporal
               dados = {filtrarPorEstabelecimento(abandonoMensal, filtroEstabelecimentoHistorico)}
-              label={'Taxa de não adesão mensal (%):'}
+              textoTooltip={'Taxa de não adesão mensal (%):'}
               loading = {false}
               propriedade={'usuarios_evasao_perc'}
             />

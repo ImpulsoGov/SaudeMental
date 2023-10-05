@@ -284,7 +284,7 @@ const NovoUsuario = () => {
             />
             <GraficoHistoricoTemporal
               dados = {filtrarPorEstabelecimento(resumoNovosUsuarios, filtroEstabelecimentoHistorico)}
-              label={'Usuários novos:'}
+              textoTooltip={'Usuários novos:'}
               loading = {false}
               propriedade={'usuarios_novos'}
             />

@@ -213,7 +213,7 @@ const ProcedimentosPorUsuarios = () => {
 
             <GraficoHistoricoTemporal
               dados={ procedimentosPorEstabelecimentoFiltrados }
-              label={ filtroEstabelecimentoHistorico.value }
+              textoTooltip={ filtroEstabelecimentoHistorico.value }
               propriedade='procedimentos_por_usuario'
               loading={ false }
             />
