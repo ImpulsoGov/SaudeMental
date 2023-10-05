@@ -1,6 +1,6 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
@@ -143,23 +143,6 @@ const AtendimentoIndividual = () => {
 
     return atendimentosAgregados;
   };
-  const getDadosFiltradosGeneroEFaixaEtaria = useMemo(() => {
-    const periodosSelecionados = filtroPeriodoGenero.map(({ value }) => value);
-
-    return atendimentosPorGenero.filter((item) =>
-      item.estabelecimento === filtroEstabelecimentoGenero.value
-      && periodosSelecionados.includes(item.periodo)
-    );
-  }, [atendimentosPorGenero, filtroPeriodoGenero, filtroEstabelecimentoGenero.value]);
-
-  const getDadosFiltradosRacaECor = useMemo(() => {
-    const periodosSelecionados = filtroPeriodoRacaECor.map(({ value }) => value);
-
-    return atendimentosPorRacaECor.filter((item) =>
-      item.estabelecimento === filtroEstabelecimentoRacaECor.value
-      && periodosSelecionados.includes(item.periodo)
-    );
-  }, [atendimentosPorRacaECor, filtroPeriodoRacaECor, filtroEstabelecimentoRacaECor.value]);
 
   const getCardsAtendimentosPorCaps = (atendimentos) => {
     const atendimentosPorCapsUltimoPeriodo = atendimentos
@@ -375,7 +358,7 @@ const AtendimentoIndividual = () => {
               />
             </div>
             <GraficoGeneroPorFaixaEtaria
-              dados = {getDadosFiltradosGeneroEFaixaEtaria}
+              dados = {atendimentosPorGenero}
               labels={{
                 eixoY: 'Nº de usuários que passaram apenas por atendimentos individuais'
               }}
@@ -421,7 +404,7 @@ const AtendimentoIndividual = () => {
               />
             </div>
             <GraficoRacaECor
-              dados = {getDadosFiltradosRacaECor}
+              dados = {atendimentosPorRacaECor}
               label={'Usuários que realizaram apenas atendimentos individuais'}
               loading = {loadingRaca}
               propriedades={{

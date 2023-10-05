@@ -1,15 +1,15 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
-import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
-import { v1 as uuidv1 } from "uuid";
-import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
-import styles from "../Caps.module.css";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
+import { useSession } from 'next-auth/react';
+import { useEffect, useMemo, useState } from 'react';
+import { v1 as uuidv1 } from 'uuid';
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from '../../../requests/caps';
+import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
-import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
-import { GraficoProcedimentosPorTempoServico } from "../../../components/Graficos";
-import GraficoHistoricoTemporal from "../../../components/Graficos/HistoricoTemporal";
+import { ordenarCrescentePorPropriedadeDeTexto } from '../../../utils/ordenacao';
+import { GraficoProcedimentosPorTempoServico } from '../../../components/Graficos';
+import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -85,10 +85,10 @@ const ProcedimentosPorUsuarios = () => {
         estabelecimento_linha_perfil: linhaPerfil,
         estabelecimento_linha_idade: linhaIdade
       }) =>
-        periodo === "Último período"
-        && estabelecimento !== "Todos"
-        && linhaPerfil !== "Todos"
-        && linhaIdade === "Todos"
+        periodo === 'Último período'
+        && estabelecimento !== 'Todos'
+        && linhaPerfil !== 'Todos'
+        && linhaIdade === 'Todos'
       );
 
     const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosPorEstabelecimentoUltimoPeriodo);
@@ -98,7 +98,7 @@ const ProcedimentosPorUsuarios = () => {
     }) => {
       const procedimentosOrdenados = ordenarCrescentePorPropriedadeDeTexto(
         procedimentosPorEstabelecimento,
-        "estabelecimento"
+        'estabelecimento'
       );
 
       return (
@@ -115,13 +115,13 @@ const ProcedimentosPorUsuarios = () => {
                   titulo={ item.estabelecimento }
                   indicador={ item.procedimentosPorUsuario }
                   indice={ item.difPorcentagemProcedimentosAnterior }
-                  indiceSimbolo="%"
-                  indiceDescricao="últ. mês"
+                  indiceSimbolo='%'
+                  indiceDescricao='últ. mês'
                   key={ uuidv1() }
                 />
               ))
             }
-            proporcao="3-3-3-3"
+            proporcao='3-3-3-3'
           />
         </>
       );
@@ -138,8 +138,8 @@ const ProcedimentosPorUsuarios = () => {
         item.estabelecimento === filtroEstabelecimentoProcedimento.value
         && periodosSelecionados.includes(item.periodo)
         && item.tempo_servico_descricao !== null
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
+        && item.estabelecimento_linha_perfil === 'Todos'
+        && item.estabelecimento_linha_idade === 'Todos'
       );
 
     return procedimentosFiltrados;
@@ -149,8 +149,8 @@ const ProcedimentosPorUsuarios = () => {
     return procedimentosPorEstabelecimento
       .filter((item) =>
         item.estabelecimento === filtroEstabelecimentoHistorico.value
-        && item.estabelecimento_linha_perfil === "Todos"
-        && item.estabelecimento_linha_idade === "Todos"
+        && item.estabelecimento_linha_perfil === 'Todos'
+        && item.estabelecimento_linha_idade === 'Todos'
       );
   }, [procedimentosPorEstabelecimento, filtroEstabelecimentoHistorico.value]);
 
@@ -161,17 +161,17 @@ const ProcedimentosPorUsuarios = () => {
           posicao: null,
           url: ''
         } }
-        texto=""
+        texto=''
         botao={{
           label: '',
           url: ''
         }}
-        titulo="<strong>Procedimentos por usuários</strong>"
+        titulo='<strong>Procedimentos por usuários</strong>'
       />
 
       <GraficoInfo
-        descricao="Taxa de procedimentos registrados pelo número de usuários com fichas movimentadas durante o mês de referência"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+        descricao='Taxa de procedimentos registrados pelo número de usuários com fichas movimentadas durante o mês de referência'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { procedimentosPorEstabelecimento.length !== 0
@@ -180,10 +180,10 @@ const ProcedimentosPorUsuarios = () => {
             <GraficoInfo
               descricao={ `Última competência disponível: ${procedimentosPorEstabelecimento
                 .find((item) =>
-                  item.estabelecimento === "Todos"
-                  && item.estabelecimento_linha_perfil === "Todos"
-                  && item.estabelecimento_linha_idade === "Todos"
-                  && item.periodo === "Último período"
+                  item.estabelecimento === 'Todos'
+                  && item.estabelecimento_linha_perfil === 'Todos'
+                  && item.estabelecimento_linha_idade === 'Todos'
+                  && item.periodo === 'Último período'
                 )
                 .nome_mes
               }` }
@@ -192,12 +192,12 @@ const ProcedimentosPorUsuarios = () => {
             { getCardsProcedimentosPorEstabelecimento(procedimentosPorEstabelecimento) }
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        titulo="Histórico Temporal"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='Histórico Temporal'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
       { procedimentosPorEstabelecimento.length !== 0
         ? (
@@ -219,12 +219,12 @@ const ProcedimentosPorUsuarios = () => {
             />
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
-        titulo="Procedimento por usuários x tempo do usuário no serviço"
-        fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
+        titulo='Procedimento por usuários x tempo do usuário no serviço'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { procedimentosPorTempoServico.length !== 0
@@ -255,7 +255,7 @@ const ProcedimentosPorUsuarios = () => {
             />
           </>
         )
-        : <Spinner theme="ColorSM" />
+        : <Spinner theme='ColorSM' />
       }
     </div>
   );
