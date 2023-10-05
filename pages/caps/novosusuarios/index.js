@@ -433,6 +433,7 @@ const NovoUsuario = () => {
                     quantidade: 'usuarios_novos'
                   } }
                   loading={ loadingCondicao }
+                  textoTooltip='Fazem uso de substâncias psicoativas?'
                   titulo='Fazem uso de substâncias psicoativas?'
                 />
               </div>
@@ -445,6 +446,7 @@ const NovoUsuario = () => {
                     quantidade: 'usuarios_novos'
                   } }
                   loading={ loadingCondicao }
+                  textoTooltip='Estão em situação de rua?'
                   titulo='Estão em situação de rua?'
                 />
               </div>

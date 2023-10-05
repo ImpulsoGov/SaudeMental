@@ -3,7 +3,6 @@ import { Spinner } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import PropTypes from 'prop-types';
 import { useCallback, useMemo } from 'react';
-const NOME_DIMENSAO = 'quantidade';
 
 const GraficoRacaECor = ({
   dados,
@@ -11,38 +10,34 @@ const GraficoRacaECor = ({
   label,
   loading
 }) => {
-  const dadosAgregados = useMemo(() => {
-    return agregarPorRacaCor(dados,
+  const dadosAgregadosEOrdenados = useMemo(() => {
+    const dadosAgregados = agregarPorRacaCor(dados,
       propriedades.racaCor,
       propriedades.quantidade
     );
+
+    return dadosAgregados.sort((a, b) => b.racaCor.localeCompare(a.racaCor));
   }, [dados, propriedades]);
 
   const gerarOptions = useCallback(() => ({
     legend: {},
     tooltip: {},
-    dataset: {
-      dimensions: [NOME_DIMENSAO, label],
-      source: dadosAgregados
-        .sort((a, b) => b.racaCor.localeCompare(a.racaCor))
-        .map((item) => ({
-          [NOME_DIMENSAO]: item.racaCor,
-          [label]: item.quantidade,
-        })),
-    },
     xAxis: {
       type: 'category',
+      data: dadosAgregadosEOrdenados.map((item) => item.racaCor)
     },
     yAxis: {},
     series: [
       {
         type: 'bar',
+        name: label,
+        data: dadosAgregadosEOrdenados.map((item) => item.quantidade),
         itemStyle: {
           color: '#5367C9'
         },
       },
     ]
-  }), [dadosAgregados, label]);
+  }), [dadosAgregadosEOrdenados, label]);
 
   return (
     <>
@@ -56,6 +51,7 @@ const GraficoRacaECor = ({
     </>
   );
 };
+
 GraficoRacaECor.propTypes = {
   dados: PropTypes.array,
   label: PropTypes.string,
@@ -65,4 +61,5 @@ GraficoRacaECor.propTypes = {
   }),
   loading: PropTypes.bool,
 }.isRequired;
+
 export default GraficoRacaECor;

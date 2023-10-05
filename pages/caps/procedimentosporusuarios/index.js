@@ -251,7 +251,7 @@ const ProcedimentosPorUsuarios = () => {
 
             <GraficoProcedimentosPorTempoServico
               dados={ procedimentosPorTempoServicoFiltrados }
-              tooltip='Média de procedimentos'
+              textoTooltip='Média de procedimentos'
             />
           </>
         )
