@@ -39,35 +39,3 @@ export const getSomaQuantidadesPorPeriodo = (quantidadesPorPeriodo) => {
       acc + quantidade,
     0);
 };
-
-export const getOpcoesGraficoBarrasProducao = (dados, textoTooltip) => {
-  return {
-    legend: {
-      show: true
-    },
-    tooltip: {},
-    xAxis: {
-      type: 'category',
-      axisLabel: {
-        rotate: 35,
-        width: 100,
-        overflow: 'break',
-        formatter: (value) => value.length > 10
-          ? `${value.slice(0, 10)}...`
-          : value
-      },
-      data: dados.map(({ propriedade }) => propriedade)
-    },
-    yAxis: {
-      type: 'value'
-    },
-    series: [
-      {
-        data: dados.map(({ quantidadesPorPeriodo }) =>
-          getSomaQuantidadesPorPeriodo(quantidadesPorPeriodo)),
-        type: 'bar',
-        name: textoTooltip
-      }
-    ]
-  };
-};
