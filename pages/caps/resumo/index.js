@@ -210,6 +210,7 @@ const Resumo = () => {
                   <>
                     <CardInfoTipoA
                       indicador={ resumoMunicipio.procedimentos_por_usuario }
+                      indicadorDescricao={'procedimentos por usuário'}
                       indice={ resumoMunicipio.dif_procedimentos_por_usuario_anterior_perc }
                       indiceSimbolo="%"
                       indiceDescricao="últ. mês"
@@ -217,8 +218,9 @@ const Resumo = () => {
                   </>,
                   <>
                     <CardInfoTipoA
-                      indicador={ resumoMunicipio.maior_taxa_estabelecimento_procedimentos_por_usuario }
-                      fonte={ resumoMunicipio.maior_taxa_procedimentos_por_usuario }
+                      indicador={ resumoMunicipio.maior_taxa_procedimentos_por_usuario }
+                      indicadorDescricao={'procedimentos por usuário'}
+                      fonte={ resumoMunicipio.maior_taxa_estabelecimento_procedimentos_por_usuario }
                       titulo="CAPS com maior número"
                     />
                   </>,
