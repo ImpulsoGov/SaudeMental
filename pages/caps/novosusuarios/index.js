@@ -251,19 +251,25 @@ const NovoUsuario = () => {
   }, [usuariosNovosPorGeneroEIdade]);
 
   const agregadosPorAbusoSubstancias = useMemo(() => {
-    return agregarPorAbusoSubstancias(
+    const dadosAgregados = agregarPorAbusoSubstancias(
       usuariosNovosPorCondicao,
       'usuario_abuso_substancias',
       'usuarios_novos'
     );
+    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
+
+    return dadosNaoZerados;
   }, [usuariosNovosPorCondicao]);
 
   const agregadosPorSituacaoRua = useMemo(() => {
-    return agregarPorSituacaoRua(
+    const dadosAgregados = agregarPorSituacaoRua(
       usuariosNovosPorCondicao,
       'usuario_situacao_rua',
       'usuarios_novos'
     );
+    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
+
+    return dadosNaoZerados;
   }, [usuariosNovosPorCondicao]);
 
   const agregadosPorRacaCor = useMemo(() => {
