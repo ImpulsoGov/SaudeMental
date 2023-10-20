@@ -454,3 +454,21 @@ export const getEvasoesNoMesPorGeneroEIdade = async (
     console.log('error', error.response.data);
   }
 };
+
+export const obterProcedimentosPorTempoServico = async (
+  municipioIdSus,
+  estabelecimentos,
+  periodos
+) => {
+  try {
+    const endpoint = "/procedimentos-por-usuario-tempo?municipio_id_sus=" + municipioIdSus
+      + "&estabelecimentos=" + estabelecimentos
+      + "&periodos=" + periodos;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
