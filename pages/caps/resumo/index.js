@@ -220,7 +220,7 @@ const Resumo = () => {
                     <CardInfoTipoA
                       indicador={ resumoMunicipio.maior_taxa_procedimentos_por_usuario }
                       indicadorDescricao={'procedimentos por usuário'}
-                      titulo={`CAPS com maior número: ${resumoMunicipio.maior_taxa_estabelecimento_procedimentos_por_usuario}`}
+                      titulo={`Maior número: ${resumoMunicipio.maior_taxa_estabelecimento_procedimentos_por_usuario}`}
                     />
                   </>,
                   // <>
