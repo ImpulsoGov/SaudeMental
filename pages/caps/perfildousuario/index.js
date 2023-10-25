@@ -197,19 +197,25 @@ const PerfilUsuario = () => {
   };
 
   const agregadosPorAbusoSubstancias = useMemo(() => {
-    return agregarPorAbusoSubstancias(
+    const dadosAgregados = agregarPorAbusoSubstancias(
       usuariosPorCondicao,
       'usuario_abuso_substancias',
       'ativos_3meses'
     );
+    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
+
+    return dadosNaoZerados;
   }, [usuariosPorCondicao]);
 
   const agregadosPorSituacaoRua = useMemo(() => {
-    return agregarPorSituacaoRua(
+    const dadosAgregados = agregarPorSituacaoRua(
       usuariosPorCondicao,
       'usuario_situacao_rua',
       'ativos_3meses'
     );
+    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
+
+    return dadosNaoZerados;
   }, [usuariosPorCondicao]);
 
   const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
