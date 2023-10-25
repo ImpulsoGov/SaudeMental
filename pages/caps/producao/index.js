@@ -1,7 +1,7 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
@@ -12,6 +12,7 @@ import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../.
 import { getEstabelecimentos, getPeriodos, obterProcedimentosPorHora, obterProcedimentosPorTipo } from '../../../requests/caps';
 import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
+import ProcedimentosPorCaps from '../../../components/ProcedimentosPorCaps/ProcedimentosPorCaps';
 
 const OCUPACOES_NAO_ACEITAS = ['Todas', null];
 
@@ -43,7 +44,6 @@ const Producao = () => {
   const [periodosPorTipo, setPeriodosPorTipo] = useState([]);
   const [procedimentosBPA, setProcedimentosBPA] = useState([]);
   const [procedimentosRAAS, setProcedimentosRAAS] = useState([]);
-  const [procedimentosPorCAPS, setProcedimentosPorCAPS] = useState([]);
   const [loadingBPA, setLoadingBPA] = useState(false);
   const [loadingRAAS, setLoadingRAAS] = useState(false);
   const [loadingProducao, setLoadingProducao] = useState(false);
@@ -484,17 +484,17 @@ const Producao = () => {
         />
       }
 
-      {/* <GraficoInfo
+      <GraficoInfo
         titulo='Procedimentos por CAPS'
         fonte='Fonte: BPA-c, BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { procedimentosPorCAPS.length !== 0
-        ? <ProcedimentosPorCaps
-          procedimentos={ procedimentosPorCAPS }
-        />
-        : <Spinner theme='ColorSM' />
-      } */}
+      <ProcedimentosPorCaps
+        periodos={ periodosPorTipo }
+        municipioIdSus={ session?.user.municipio_id_ibge }
+        estabelecimentos={ estabelecimentosPorTipo }
+        requisicao={ obterProcedimentosPorTipo }
+      />
     </div>
   );
 };
