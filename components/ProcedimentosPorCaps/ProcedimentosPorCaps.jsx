@@ -53,8 +53,6 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
       procedimentosFiltrados = procedimentos.filter((item) =>
         periodosSelecionados.includes(item.periodo)
         && estabelecimentosSelecionados.includes(item.estabelecimento)
-        && item.estabelecimento_linha_perfil === 'Todos'
-        && item.estabelecimento_linha_idade === 'Todos'
       );
 
       return procedimentosFiltrados.sort(ordenar);
@@ -66,8 +64,6 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
       estabelecimentosSelecionados.includes(item.estabelecimento)
       && periodosSelecionados.includes(item.periodo)
       && procedimentosSelecionados.includes(item.procedimento)
-      && item.estabelecimento_linha_perfil === 'Todos'
-      && item.estabelecimento_linha_idade === 'Todos'
     );
 
     return procedimentosFiltrados.sort(ordenar);
