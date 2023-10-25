@@ -10,7 +10,7 @@ const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSe
     const valoresUnicos = new Set();
 
     dados.forEach((dado) => {
-      if (dado[propriedade] !== null) {
+      if (dado[propriedade]) {
         valoresUnicos.add(dado[propriedade]);
       }
     });
