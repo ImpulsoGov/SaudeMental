@@ -15,7 +15,7 @@ const ProcedimentosPorCaps = ({
   const [filtroEstabelecimentos, setFiltroEstabelecimentos] = useState(FILTRO_ESTABELECIMENTO_MULTI_DEFAULT);
   const [filtroPeriodos, setFiltroPeriodos] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroProcedimentos, setFiltroProcedimentos] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (municipioIdSus) {

@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
+import ProcedimentosPorCaps from '../../../components/ProcedimentosPorCaps/ProcedimentosPorCaps';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_PERIODO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
@@ -12,7 +13,6 @@ import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../.
 import { getEstabelecimentos, getPeriodos, obterProcedimentosPorHora, obterProcedimentosPorTipo } from '../../../requests/caps';
 import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
-import ProcedimentosPorCaps from '../../../components/ProcedimentosPorCaps/ProcedimentosPorCaps';
 
 const OCUPACOES_NAO_ACEITAS = ['Todas', null];
 
@@ -36,7 +36,6 @@ const Producao = () => {
   const [filtroPeriodoRAAS, setFiltroPeriodoRAAS] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoProducao, setFiltroEstabelecimentoProducao] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoProducao, setFiltroPeriodoProducao] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
-  const [loadingProcedimentosPorHora, setLoadingProcedimentosPorHora] = useState(false);
   const [estabelecimentosPorHora, setEstabelecimentosPorHora] = useState([]);
   const [periodosPorHora, setPeriodosPorHora] = useState([]);
   const [procedimentosPorHoraUltimoPeriodo, setProcedimentosPorHoraUltimoPeriodo] = useState([]);
@@ -44,9 +43,10 @@ const Producao = () => {
   const [periodosPorTipo, setPeriodosPorTipo] = useState([]);
   const [procedimentosBPA, setProcedimentosBPA] = useState([]);
   const [procedimentosRAAS, setProcedimentosRAAS] = useState([]);
-  const [loadingBPA, setLoadingBPA] = useState(false);
-  const [loadingRAAS, setLoadingRAAS] = useState(false);
-  const [loadingProducao, setLoadingProducao] = useState(false);
+  const [loadingBPA, setLoadingBPA] = useState(true);
+  const [loadingRAAS, setLoadingRAAS] = useState(true);
+  const [loadingProducao, setLoadingProducao] = useState(true);
+  const [loadingProcedimentosPorHora, setLoadingProcedimentosPorHora] = useState(true);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -313,7 +313,7 @@ const Producao = () => {
           <>
             <GraficoInfo
               descricao={ `Última competência disponível: ${procedimentosPorHoraUltimoPeriodo
-                .find((item) =>item.estabelecimento === 'Todos')
+                .find((item) => item.estabelecimento === 'Todos')
                 .nome_mes
               }` }
             />
