@@ -10,7 +10,7 @@ import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_PERIODO_DEFAULT, FILTRO_PERIODO_
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { agregarPorPropriedadeESomarQuantidade, getOpcoesGraficoBarrasProducao } from '../../../helpers/graficoBarrasProducao';
 import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
-import { getEstabelecimentos, getPeriodos, obterProcedimentosPorHora, obterProcedimentosPorTipo } from '../../../requests/caps';
+import { getEstabelecimentos, getPeriodos, obterNomesDeProcedimentosPorTipo, obterProcedimentosPorHora, obterProcedimentosPorTipo } from '../../../requests/caps';
 import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
 
@@ -41,6 +41,7 @@ const Producao = () => {
   const [procedimentosPorHoraUltimoPeriodo, setProcedimentosPorHoraUltimoPeriodo] = useState([]);
   const [estabelecimentosPorTipo, setEstabelecimentosPorTipo] = useState([]);
   const [periodosPorTipo, setPeriodosPorTipo] = useState([]);
+  const [nomesProcedimentosPorTipo, setNomesProcedimentosPorTipo] = useState([]);
   const [procedimentosBPA, setProcedimentosBPA] = useState([]);
   const [procedimentosRAAS, setProcedimentosRAAS] = useState([]);
   const [loadingBPA, setLoadingBPA] = useState(true);
@@ -54,6 +55,7 @@ const Producao = () => {
       setPeriodosPorHora(await getPeriodos(municipioIdSus, 'procedimentos_por_hora'));
       setEstabelecimentosPorTipo(await getEstabelecimentos(municipioIdSus, 'procedimentos_por_tipo'));
       setPeriodosPorTipo(await getPeriodos(municipioIdSus, 'procedimentos_por_tipo'));
+      setNomesProcedimentosPorTipo(await obterNomesDeProcedimentosPorTipo(municipioIdSus));
       setProcedimentosPorHoraUltimoPeriodo(await obterProcedimentosPorHora({
         municipioIdSus, periodos: 'Último período', ocupacao: 'Todas'
       }));
@@ -63,6 +65,7 @@ const Producao = () => {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
+
   // prcedimentos por hora
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -81,6 +84,7 @@ const Producao = () => {
     filtroEstabelecimentoCBO.value,
     filtroPeriodoCBO.value
   ]);
+
   // procedimentos BPA
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -106,6 +110,7 @@ const Producao = () => {
     filtroEstabelecimentoBPA.value,
     filtroPeriodoBPA
   ]);
+
   // procedimentos RAAS
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -131,6 +136,7 @@ const Producao = () => {
     filtroEstabelecimentoRAAS.value,
     filtroPeriodoRAAS
   ]);
+
   // procedimentos por tipo (gráfico de produção)
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -490,9 +496,10 @@ const Producao = () => {
       />
 
       <ProcedimentosPorCaps
-        periodos={ periodosPorTipo }
         municipioIdSus={ session?.user.municipio_id_ibge }
+        periodos={ periodosPorTipo }
         estabelecimentos={ estabelecimentosPorTipo }
+        nomesProcedimentos={ nomesProcedimentosPorTipo }
         requisicao={ obterProcedimentosPorTipo }
       />
     </div>

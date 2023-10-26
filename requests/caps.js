@@ -536,3 +536,15 @@ export const obterProcedimentosPorTipo = async ({
     console.log('error', error.response.data);
   }
 };
+
+export const obterNomesDeProcedimentosPorTipo = async (municipioIdSus) => {
+  try {
+    const endpoint = `/procedimentos-por-tipo/procedimentos?municipio_id_sus=${municipioIdSus}`;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};

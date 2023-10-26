@@ -9,6 +9,7 @@ const ProcedimentosPorCaps = ({
   periodos,
   municipioIdSus,
   estabelecimentos,
+  nomesProcedimentos,
   requisicao
 }) => {
   const [procedimentos, setProcedimentos] = useState([]);
@@ -125,7 +126,7 @@ const ProcedimentosPorCaps = ({
 
         <FiltroTexto
           width='33%'
-          dados={ procedimentos }
+          dados={ nomesProcedimentos }
           label='Nome do Procedimento'
           propriedade='procedimento'
           valor={ filtroProcedimentos }
