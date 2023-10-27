@@ -100,10 +100,10 @@ const TabelaGraficoDonut = ({
   }], [mensagemDadosZerados]);
 
   const linhas = useMemo(() => {
-    return data.length !== 0
+    return dadosAgregadosEOrdenados.length !== 0
       ? formatarDadosEmLinhas()
       : obterLinhaParaDadosZerados();
-  }, [formatarDadosEmLinhas, obterLinhaParaDadosZerados, data]);
+  }, [formatarDadosEmLinhas, obterLinhaParaDadosZerados, dadosAgregadosEOrdenados]);
 
   return (
     <DataGrid
