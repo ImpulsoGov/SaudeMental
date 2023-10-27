@@ -1,19 +1,54 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import { Spinner } from '@impulsogov/design-system';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../constants/FILTROS';
 import { FiltroCompetencia, FiltroTexto } from '../Filtros';
 import { TabelaProcedimentosPorCaps } from '../Tabelas';
 import styles from './ProcedimentosPorCaps.module.css';
 
-const ProcedimentosPorCaps = ({ procedimentos }) => {
+const ProcedimentosPorCaps = ({
+  periodos,
+  municipioIdSus,
+  estabelecimentos,
+  nomesProcedimentos,
+  requisicao
+}) => {
+  const [procedimentos, setProcedimentos] = useState([]);
   const [filtroEstabelecimentos, setFiltroEstabelecimentos] = useState(FILTRO_ESTABELECIMENTO_MULTI_DEFAULT);
   const [filtroPeriodos, setFiltroPeriodos] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroProcedimentos, setFiltroProcedimentos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const obterValoresDeFiltro = useCallback((filtro) => {
-    return filtro.map(({ value }) => value);
-  }, []);
+  useEffect(() => {
+    if (municipioIdSus) {
+      setLoading(true);
 
-  function agregarPorProcedimentoEEstabelecimento(procedimentos, propriedadeTipoProcedimento, propriedadeQuantidade, propriedadeEstabelecimento){
+      const promises = [];
+
+      filtroEstabelecimentos.forEach(({ value: estabelecimento }) => {
+        filtroPeriodos.forEach(({ value: periodo }) => {
+          promises.push(requisicao({
+            municipioIdSus: municipioIdSus,
+            estabelecimentos: estabelecimento,
+            periodos: periodo
+          }));
+        });
+      });
+
+      Promise.all(promises).then((respostas) => {
+        const respostasUnificadas = [].concat(...respostas);
+        setProcedimentos(respostasUnificadas);
+      });
+
+      setLoading(false);
+    }
+  }, [municipioIdSus, filtroEstabelecimentos, filtroPeriodos, requisicao]);
+
+  function agregarPorProcedimentoEEstabelecimento(
+    procedimentos,
+    propriedadeTipoProcedimento,
+    propriedadeQuantidade,
+    propriedadeEstabelecimento
+  ){
     const dadosAgregados = [];
 
     procedimentos.forEach((procedimento) => {
@@ -44,47 +79,44 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
     return dadosAgregados;
   };
 
-  const procedimentosFiltradosOrdenados = useMemo(() => {
-    const periodosSelecionados = obterValoresDeFiltro(filtroPeriodos);
-    const estabelecimentosSelecionados = obterValoresDeFiltro(filtroEstabelecimentos);
-    let procedimentosFiltrados = [];
-
-    if (filtroProcedimentos.length === 0) {
-      procedimentosFiltrados = procedimentos.filter((item) =>
-        periodosSelecionados.includes(item.periodo)
-        && estabelecimentosSelecionados.includes(item.estabelecimento)
-      );
-
-      return procedimentosFiltrados.sort(ordenar);
-    }
-
-    const procedimentosSelecionados = obterValoresDeFiltro(filtroProcedimentos);
-
-    procedimentosFiltrados = procedimentos.filter((item) =>
-      estabelecimentosSelecionados.includes(item.estabelecimento)
-      && periodosSelecionados.includes(item.periodo)
-      && procedimentosSelecionados.includes(item.procedimento)
-    );
-
-    return procedimentosFiltrados.sort(ordenar);
-  }, [filtroEstabelecimentos, filtroPeriodos, filtroProcedimentos, obterValoresDeFiltro, procedimentos]);
-
   function ordenar(atualProcedimento, proximoProcedimento) {
-    if (proximoProcedimento.procedimentos_registrados_total === atualProcedimento.procedimentos_registrados_total) {
+    if (proximoProcedimento.quantidade === atualProcedimento.quantidade) {
       return atualProcedimento.estabelecimento.localeCompare(proximoProcedimento.estabelecimento);
     }
 
-    return proximoProcedimento.procedimentos_registrados_total - atualProcedimento.procedimentos_registrados_total;
+    return proximoProcedimento.quantidade - atualProcedimento.quantidade;
   };
 
-  const agregadosPorProcedimentoEEestabelecimento = agregarPorProcedimentoEEstabelecimento(procedimentosFiltradosOrdenados, 'procedimento', 'procedimentos_registrados_total', 'estabelecimento');
+  const procedimentosFiltradosPorNome = useMemo(() => {
+    if (filtroProcedimentos.length === 0) {
+      return procedimentos;
+    }
+
+    const procedimentosSelecionados = filtroProcedimentos.map(({ value }) => value);
+    const procedimentosFiltrados = procedimentos.filter((item) =>
+      procedimentosSelecionados.includes(item.procedimento)
+    );
+
+    return procedimentosFiltrados;
+  }, [filtroProcedimentos, procedimentos]);
+
+  const procedimentosAgregadosEOrdenados = useMemo(() => {
+    const dadosAgregados = agregarPorProcedimentoEEstabelecimento(
+      procedimentosFiltradosPorNome,
+      'procedimento',
+      'procedimentos_registrados_total',
+      'estabelecimento'
+    );
+
+    return dadosAgregados.sort(ordenar);
+  }, [procedimentosFiltradosPorNome]);
 
   return (
     <>
       <div className={ styles.Filtros } >
         <FiltroTexto
           width='33%'
-          dados={ procedimentos }
+          dados={ estabelecimentos }
           label='Estabelecimento'
           propriedade='estabelecimento'
           valor={ filtroEstabelecimentos }
@@ -94,7 +126,7 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
 
         <FiltroTexto
           width='33%'
-          dados={ procedimentos }
+          dados={ nomesProcedimentos }
           label='Nome do Procedimento'
           propriedade='procedimento'
           valor={ filtroProcedimentos }
@@ -104,7 +136,7 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
 
         <FiltroCompetencia
           width='33%'
-          dados={ procedimentos }
+          dados={ periodos }
           valor={ filtroPeriodos }
           setValor={ setFiltroPeriodos }
           label='Competência'
@@ -112,11 +144,14 @@ const ProcedimentosPorCaps = ({ procedimentos }) => {
         />
       </div>
 
-      <div className={ styles.Tabela }>
-        <TabelaProcedimentosPorCaps
-          procedimentos={ agregadosPorProcedimentoEEestabelecimento }
-        />
-      </div>
+      { loading
+        ? <Spinner theme='ColorSM' />
+        : <div className={ styles.Tabela }>
+          <TabelaProcedimentosPorCaps
+            procedimentos={ procedimentosAgregadosEOrdenados }
+          />
+        </div>
+      }
     </>
   );
 };

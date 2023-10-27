@@ -3,13 +3,13 @@ import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from "uuid";
-import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from "../../../requests/caps";
-import styles from "../Caps.module.css";
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
-import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
-import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
+import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
 import { getOpcoesGraficoHistoricoTemporal } from "../../../helpers/graficoHistoricoTemporal";
+import { getEstabelecimentos, getPeriodos, getProcedimentosPorEstabelecimento, obterProcedimentosPorTempoServico } from "../../../requests/caps";
+import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
+import styles from "../Caps.module.css";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -26,19 +26,52 @@ const ProcedimentosPorUsuarios = () => {
   const [filtroEstabelecimentoProcedimento, setFiltroEstabelecimentoProcedimento] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoProcedimento, setFiltroPeriodoProcedimento] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [loadingProcedimentosPorTempoServico, setLoadingProcedimentosPorTempoServico] = useState(false);
+  const [estabelecimentos, setEstabelecimentos] = useState([]);
+  const [periodos, setPeriodos] = useState([]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       setProcedimentosPorEstabelecimento(await getProcedimentosPorEstabelecimento(municipioIdSus));
-      setProcedimentosPorTempoServico(
-        await getProcedimentosPorTempoServico(municipioIdSus)
-      );
+      setEstabelecimentos(await getEstabelecimentos(
+        municipioIdSus,
+        "procedimentos_usuarios_tempo_servico"
+      ));
+      setPeriodos(await getPeriodos(
+        municipioIdSus,
+        "procedimentos_usuarios_tempo_servico"
+      ));
     };
 
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
+
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingProcedimentosPorTempoServico(true);
+
+      const promises = filtroPeriodoProcedimento.map(({ value: periodo }) => {
+        return obterProcedimentosPorTempoServico({
+          municipioIdSus: session?.user.municipio_id_ibge,
+          estabelecimentos: filtroEstabelecimentoProcedimento.value,
+          periodos: periodo
+        });
+      });
+
+      Promise.all(promises).then((respostas) => {
+        const respostasUnificadas = [].concat(...respostas);
+        setProcedimentosPorTempoServico(respostasUnificadas);
+      });
+
+      setLoadingProcedimentosPorTempoServico(false);
+    }
+  }, [
+    session?.user.municipio_id_ibge,
+    filtroEstabelecimentoProcedimento.value,
+    filtroPeriodoProcedimento
+  ]);
 
   const agregarPorLinhaPerfil = (procedimentos) => {
     const procedimentosAgregados = [];
@@ -168,12 +201,8 @@ const ProcedimentosPorUsuarios = () => {
   };
 
   const getOpcoesGraficoProcedimentoPorTempo = (procedimentos) => {
-    const periodosSelecionados = filtroPeriodoProcedimento
-      .map(({ value }) => value);
     const procedimentosFiltrados = procedimentos.filter((item) =>
-      item.estabelecimento === filtroEstabelecimentoProcedimento.value
-      && periodosSelecionados.includes(item.periodo)
-      && item.tempo_servico_descricao !== null
+      item.tempo_servico_descricao !== null
     );
     const procedimentosAgregados = agregarPorTempoDeServico(procedimentosFiltrados);
 
@@ -214,10 +243,10 @@ const ProcedimentosPorUsuarios = () => {
           url: ''
         } }
         texto=""
-        botao={{
+        botao={ {
           label: '',
           url: ''
-        }}
+        } }
         titulo="<strong>Procedimentos por usuários</strong>"
       />
 
@@ -238,7 +267,7 @@ const ProcedimentosPorUsuarios = () => {
                   && item.periodo === "Último período"
                 )
                 .nome_mes
-              }` }
+                }` }
             />
 
             { getCardsProcedimentosPorEstabelecimento(procedimentosPorEstabelecimento) }
@@ -255,12 +284,12 @@ const ProcedimentosPorUsuarios = () => {
         ? (
           <>
             <FiltroTexto
-              width={'50%'}
-              dados = {procedimentosPorEstabelecimento}
-              valor = {filtroEstabelecimentoHistorico}
-              setValor = {setFiltroEstabelecimentoHistorico}
-              label = {'Estabelecimento'}
-              propriedade = {'estabelecimento'}
+              width={ '50%' }
+              dados={ procedimentosPorEstabelecimento }
+              valor={ filtroEstabelecimentoHistorico }
+              setValor={ setFiltroEstabelecimentoHistorico }
+              label={ 'Estabelecimento' }
+              propriedade={ 'estabelecimento' }
             />
 
             <ReactEcharts
@@ -281,37 +310,34 @@ const ProcedimentosPorUsuarios = () => {
         fonte="Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov"
       />
 
-      { procedimentosPorTempoServico.length !== 0
-        ? (
-          <>
-            <div className={ styles.Filtros }>
-              <FiltroTexto
-                width={'50%'}
-                dados = {procedimentosPorTempoServico}
-                valor = {filtroEstabelecimentoProcedimento}
-                setValor = {setFiltroEstabelecimentoProcedimento}
-                label = {'Estabelecimento'}
-                propriedade = {'estabelecimento'}
-              />
-              <FiltroCompetencia
-                width={'50%'}
-                dados = {procedimentosPorTempoServico}
-                valor = {filtroPeriodoProcedimento}
-                setValor = {setFiltroPeriodoProcedimento}
-                isMulti
-                label = {'Competência'}
-              />
-            </div>
+      <div className={ styles.Filtros }>
+        <FiltroTexto
+          width={ '50%' }
+          dados={ estabelecimentos }
+          valor={ filtroEstabelecimentoProcedimento }
+          setValor={ setFiltroEstabelecimentoProcedimento }
+          label={ 'Estabelecimento' }
+          propriedade={ 'estabelecimento' }
+        />
 
-            <ReactEcharts
-              option={ getOpcoesGraficoProcedimentoPorTempo(
-                procedimentosPorTempoServico
-              ) }
-              style={ { width: "100%", height: "70vh" } }
-            />
-          </>
-        )
-        : <Spinner theme="ColorSM" />
+        <FiltroCompetencia
+          width={ '50%' }
+          dados={ periodos }
+          valor={ filtroPeriodoProcedimento }
+          setValor={ setFiltroPeriodoProcedimento }
+          isMulti
+          label={ 'Competência' }
+        />
+      </div>
+
+      { loadingProcedimentosPorTempoServico
+        ? <Spinner theme="ColorSM" />
+        : <ReactEcharts
+          option={ getOpcoesGraficoProcedimentoPorTempo(
+            procedimentosPorTempoServico
+          ) }
+          style={ { width: "100%", height: "70vh" } }
+        />
       }
     </div>
   );
