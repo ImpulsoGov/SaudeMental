@@ -92,7 +92,6 @@ const Producao = () => {
         estabelecimento,
         ocupacao,
         estabelecimento_linha_perfil: linhaPerfil,
-        estabelecimento_linha_idade: linhaIdade,
         procedimentos_por_hora: procedimentosPorHora
       }) =>
         periodo === 'Último período'
@@ -100,7 +99,6 @@ const Producao = () => {
         && linhaPerfil !== 'Todos'
         && procedimentosPorHora !== null
         && ocupacao === 'Todas'
-        && linhaIdade === 'Todos'
       );
 
     const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosPorHoraUltimoPeriodo);
@@ -155,8 +153,6 @@ const Producao = () => {
       && item.periodo === filtroPeriodo.value
       && !OCUPACOES_NAO_ACEITAS.includes(item.ocupacao)
       && item.procedimentos_por_hora !== null
-      && item.estabelecimento_linha_perfil === 'Todos'
-      && item.estabelecimento_linha_idade === 'Todos'
     );
   };
 
@@ -166,8 +162,6 @@ const Producao = () => {
     return procedimentos.filter((item) =>
       item.estabelecimento === filtroEstabelecimento.value
       && periodosSelecionados.includes(item.periodo)
-      && item.estabelecimento_linha_perfil === 'Todos'
-      && item.estabelecimento_linha_idade === 'Todos'
     );
   }, []);
   const procedimentosBPAFiltrados = useMemo(() => {
@@ -216,8 +210,6 @@ const Producao = () => {
               descricao={ `Última competência disponível: ${procedimentosPorHora
                 .find((item) =>
                   item.estabelecimento === 'Todos'
-                  && item.estabelecimento_linha_perfil === 'Todos'
-                  && item.estabelecimento_linha_idade === 'Todos'
                   && item.periodo === 'Último período'
                 )
                 .nome_mes

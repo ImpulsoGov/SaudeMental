@@ -133,14 +133,12 @@ const ProcedimentosPorUsuarios = () => {
   const procedimentosPorTempoServicoFiltrados = useMemo(() => {
     const periodosSelecionados = filtroPeriodoProcedimento
       .map(({ value }) => value);
-    const procedimentosFiltrados = procedimentosPorTempoServico
-      .filter((item) =>
-        item.estabelecimento === filtroEstabelecimentoProcedimento.value
-        && periodosSelecionados.includes(item.periodo)
-        && item.tempo_servico_descricao !== null
-        && item.estabelecimento_linha_perfil === 'Todos'
-        && item.estabelecimento_linha_idade === 'Todos'
-      );
+
+    const procedimentosFiltrados = procedimentosPorTempoServico.filter((item) =>
+      item.estabelecimento === filtroEstabelecimentoProcedimento.value
+      && periodosSelecionados.includes(item.periodo)
+      && item.tempo_servico_descricao !== null
+    );
 
     return procedimentosFiltrados;
   }, [procedimentosPorTempoServico, filtroEstabelecimentoProcedimento.value, filtroPeriodoProcedimento]);
