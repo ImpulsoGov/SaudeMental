@@ -1,7 +1,7 @@
 import ReactEcharts from 'echarts-for-react';
 import PropTypes from 'prop-types';
-import { agruparPorTempoDeServico, getMediaProcedimentosPorPeriodo } from '../../helpers/graficoProcedimentosPorTempoServico';
 import { useCallback, useMemo } from 'react';
+import { agruparPorTempoDeServico, getMediaProcedimentosPorPeriodo } from '../../helpers/graficoProcedimentosPorTempoServico';
 
 const GraficoProcedimentosPorTempoServico = ({ dados, textoTooltip }) => {
   const dadosAgrupados = useMemo(() => {
@@ -21,7 +21,7 @@ const GraficoProcedimentosPorTempoServico = ({ dados, textoTooltip }) => {
       series: [
         {
           data: dadosAgrupados.map(({ procedimentosPorPeriodo }) =>
-            getMediaProcedimentosPorPeriodo(procedimentosPorPeriodo)),
+            getMediaProcedimentosPorPeriodo(procedimentosPorPeriodo).toFixed(2)),
           type: 'bar',
           name: textoTooltip
         }
