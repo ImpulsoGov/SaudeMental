@@ -1,15 +1,14 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
-import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useState } from 'react';
-import { v1 as uuidv1 } from 'uuid';
-import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getProcedimentosPorEstabelecimento, getProcedimentosPorTempoServico } from '../../../requests/caps';
-import styles from '../Caps.module.css';
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { v1 as uuidv1 } from "uuid";
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
-import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
-import { ordenarCrescentePorPropriedadeDeTexto } from '../../../utils/ordenacao';
-import { GraficoProcedimentosPorTempoServico } from '../../../components/Graficos';
-import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
+import { GraficoHistoricoTemporal, GraficoProcedimentosPorTempoServico } from "../../../components/Graficos";
+import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
+import { getEstabelecimentos, getPeriodos, getProcedimentosPorEstabelecimento, obterProcedimentosPorTempoServico } from "../../../requests/caps";
+import { ordenarCrescentePorPropriedadeDeTexto } from "../../../utils/ordenacao";
+import styles from "../Caps.module.css";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -26,19 +25,52 @@ const ProcedimentosPorUsuarios = () => {
   const [filtroEstabelecimentoProcedimento, setFiltroEstabelecimentoProcedimento] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoProcedimento, setFiltroPeriodoProcedimento] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [loadingProcedimentosPorTempoServico, setLoadingProcedimentosPorTempoServico] = useState(true);
+  const [estabelecimentos, setEstabelecimentos] = useState([]);
+  const [periodos, setPeriodos] = useState([]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       setProcedimentosPorEstabelecimento(await getProcedimentosPorEstabelecimento(municipioIdSus));
-      setProcedimentosPorTempoServico(
-        await getProcedimentosPorTempoServico(municipioIdSus)
-      );
+      setEstabelecimentos(await getEstabelecimentos(
+        municipioIdSus,
+        "procedimentos_usuarios_tempo_servico"
+      ));
+      setPeriodos(await getPeriodos(
+        municipioIdSus,
+        "procedimentos_usuarios_tempo_servico"
+      ));
     };
 
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
+
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingProcedimentosPorTempoServico(true);
+
+      const promises = filtroPeriodoProcedimento.map(({ value: periodo }) => {
+        return obterProcedimentosPorTempoServico({
+          municipioIdSus: session?.user.municipio_id_ibge,
+          estabelecimentos: filtroEstabelecimentoProcedimento.value,
+          periodos: periodo
+        });
+      });
+
+      Promise.all(promises).then((respostas) => {
+        const respostasUnificadas = [].concat(...respostas);
+        setProcedimentosPorTempoServico(respostasUnificadas);
+      });
+
+      setLoadingProcedimentosPorTempoServico(false);
+    }
+  }, [
+    session?.user.municipio_id_ibge,
+    filtroEstabelecimentoProcedimento.value,
+    filtroPeriodoProcedimento
+  ]);
 
   const agregarPorLinhaPerfil = (procedimentos) => {
     const procedimentosAgregados = [];
@@ -130,19 +162,6 @@ const ProcedimentosPorUsuarios = () => {
     return cardsProcedimentosPorEstabelecimento;
   };
 
-  const procedimentosPorTempoServicoFiltrados = useMemo(() => {
-    const periodosSelecionados = filtroPeriodoProcedimento
-      .map(({ value }) => value);
-
-    const procedimentosFiltrados = procedimentosPorTempoServico.filter((item) =>
-      item.estabelecimento === filtroEstabelecimentoProcedimento.value
-      && periodosSelecionados.includes(item.periodo)
-      && item.tempo_servico_descricao !== null
-    );
-
-    return procedimentosFiltrados;
-  }, [procedimentosPorTempoServico, filtroEstabelecimentoProcedimento.value, filtroPeriodoProcedimento]);
-
   const procedimentosPorEstabelecimentoFiltrados = useMemo(() => {
     return procedimentosPorEstabelecimento
       .filter((item) =>
@@ -159,12 +178,12 @@ const ProcedimentosPorUsuarios = () => {
           posicao: null,
           url: ''
         } }
-        texto=''
-        botao={{
+        texto=""
+        botao={ {
           label: '',
           url: ''
-        }}
-        titulo='<strong>Procedimentos por usuários</strong>'
+        } }
+        titulo="<strong>Procedimentos por usuários</strong>"
       />
 
       <GraficoInfo
@@ -184,7 +203,7 @@ const ProcedimentosPorUsuarios = () => {
                   && item.periodo === 'Último período'
                 )
                 .nome_mes
-              }` }
+                }` }
             />
 
             { getCardsProcedimentosPorEstabelecimento(procedimentosPorEstabelecimento) }
@@ -201,12 +220,12 @@ const ProcedimentosPorUsuarios = () => {
         ? (
           <>
             <FiltroTexto
-              width={'50%'}
-              dados = {procedimentosPorEstabelecimento}
-              valor = {filtroEstabelecimentoHistorico}
-              setValor = {setFiltroEstabelecimentoHistorico}
-              label = {'Estabelecimento'}
-              propriedade = {'estabelecimento'}
+              width={ '50%' }
+              dados={ procedimentosPorEstabelecimento }
+              valor={ filtroEstabelecimentoHistorico }
+              setValor={ setFiltroEstabelecimentoHistorico }
+              label={ 'Estabelecimento' }
+              propriedade={ 'estabelecimento' }
             />
 
             <GraficoHistoricoTemporal
@@ -225,35 +244,32 @@ const ProcedimentosPorUsuarios = () => {
         fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { procedimentosPorTempoServico.length !== 0
-        ? (
-          <>
-            <div className={ styles.Filtros }>
-              <FiltroTexto
-                width={'50%'}
-                dados = {procedimentosPorTempoServico}
-                valor = {filtroEstabelecimentoProcedimento}
-                setValor = {setFiltroEstabelecimentoProcedimento}
-                label = {'Estabelecimento'}
-                propriedade = {'estabelecimento'}
-              />
-              <FiltroCompetencia
-                width={'50%'}
-                dados = {procedimentosPorTempoServico}
-                valor = {filtroPeriodoProcedimento}
-                setValor = {setFiltroPeriodoProcedimento}
-                isMulti
-                label = {'Competência'}
-              />
-            </div>
+      <div className={ styles.Filtros }>
+        <FiltroTexto
+          width={ '50%' }
+          dados={ estabelecimentos }
+          valor={ filtroEstabelecimentoProcedimento }
+          setValor={ setFiltroEstabelecimentoProcedimento }
+          label={ 'Estabelecimento' }
+          propriedade={ 'estabelecimento' }
+        />
 
-            <GraficoProcedimentosPorTempoServico
-              dados={ procedimentosPorTempoServicoFiltrados }
-              textoTooltip='Média de procedimentos'
-            />
-          </>
-        )
-        : <Spinner theme='ColorSM' />
+        <FiltroCompetencia
+          width={ '50%' }
+          dados={ periodos }
+          valor={ filtroPeriodoProcedimento }
+          setValor={ setFiltroPeriodoProcedimento }
+          isMulti
+          label={ 'Competência' }
+        />
+      </div>
+
+      { loadingProcedimentosPorTempoServico
+        ? <Spinner theme="ColorSM" />
+        : <GraficoProcedimentosPorTempoServico
+          dados={ procedimentosPorTempoServico }
+          textoTooltip='Média de procedimentos'
+        />
       }
     </div>
   );

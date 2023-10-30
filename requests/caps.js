@@ -89,17 +89,17 @@ export const getAtendimentosPorCaps = async (municipioIdSus) => {
   }
 };
 
-export const getProcedimentosPorTempoServico = async (municipioIdSus) => {
-  try {
-    const endpoint = "/procedimentos_por_usuario_tempo?municipio_id_sus=" + municipioIdSus;
+// export const getProcedimentosPorTempoServico = async (municipioIdSus) => {
+//   try {
+//     const endpoint = "/procedimentos_por_usuario_tempo?municipio_id_sus=" + municipioIdSus;
 
-    const { data } = await axiosInstance.get(endpoint);
+//     const { data } = await axiosInstance.get(endpoint);
 
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-};
+//     return data;
+//   } catch (error) {
+//     console.log('error', error.response.data);
+//   }
+// };
 
 export const getProcedimentosPorEstabelecimento = async (municipioIdSus) => {
   try {
@@ -161,29 +161,29 @@ export const getAbandonoCoortes = async (municipioIdSus) => {
   }
 };
 
-export const getProcedimentosPorTipo = async (municipioIdSus) => {
-  try {
-    const endpoint = "/procedimentos_por_tipo?municipio_id_sus=" + municipioIdSus;
+// export const getProcedimentosPorTipo = async (municipioIdSus) => {
+//   try {
+//     const endpoint = "/procedimentos_por_tipo?municipio_id_sus=" + municipioIdSus;
 
-    const { data } = await axiosInstance.get(endpoint);
+//     const { data } = await axiosInstance.get(endpoint);
 
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-};
+//     return data;
+//   } catch (error) {
+//     console.log('error', error.response.data);
+//   }
+// };
 
-export const getProcedimentosPorHora = async (municipioIdSus) => {
-  try {
-    const endpoint = "/procedimentos_por_hora?municipio_id_sus=" + municipioIdSus;
+// export const getProcedimentosPorHora = async (municipioIdSus) => {
+//   try {
+//     const endpoint = "/procedimentos_por_hora?municipio_id_sus=" + municipioIdSus;
 
-    const { data } = await axiosInstance.get(endpoint);
+//     const { data } = await axiosInstance.get(endpoint);
 
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-};
+//     return data;
+//   } catch (error) {
+//     console.log('error', error.response.data);
+//   }
+// };
 
 export const getUsuariosAtivosPorCondicao = async (
   municipioIdSus,
@@ -446,6 +446,100 @@ export const getEvasoesNoMesPorGeneroEIdade = async (
     const endpoint = "/abandono/evadiram-no-mes/genero-e-idade?municipio_id_sus=" + municipioIdSus
       + "&estabelecimento=" + estabelecimento
       + "&periodos=" + periodos;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const obterProcedimentosPorTempoServico = async ({
+  municipioIdSus,
+  estabelecimentos,
+  periodos
+}) => {
+  try {
+    let endpoint = `/procedimentos-por-usuario-tempo?municipio_id_sus=${municipioIdSus}`;
+
+    if (estabelecimentos !== undefined) {
+      endpoint += `&estabelecimentos=${estabelecimentos}`;
+    }
+
+    if (periodos !== undefined) {
+      endpoint += `&periodos=${periodos}`;
+    }
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const obterProcedimentosPorHora = async ({
+  municipioIdSus,
+  estabelecimentos,
+  periodos,
+  ocupacao
+}) => {
+  try {
+    let endpoint = `/procedimentos-por-hora?municipio_id_sus=${municipioIdSus}`;
+
+    if (estabelecimentos !== undefined) {
+      endpoint += `&estabelecimentos=${estabelecimentos}`;
+    }
+
+    if (periodos !== undefined) {
+      endpoint += `&periodos=${periodos}`;
+    }
+
+    if (ocupacao !== undefined) {
+      endpoint += `&ocupacao=${ocupacao}`;
+    }
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const obterProcedimentosPorTipo = async ({
+  municipioIdSus,
+  estabelecimentos,
+  periodos,
+  procedimentos
+}) => {
+  try {
+    let endpoint = `/procedimentos-por-tipo?municipio_id_sus=${municipioIdSus}`;
+
+    if (estabelecimentos !== undefined) {
+      endpoint += `&estabelecimentos=${estabelecimentos}`;
+    }
+
+    if (periodos !== undefined) {
+      endpoint += `&periodos=${periodos}`;
+    }
+
+    if (procedimentos !== undefined) {
+      endpoint += `&procedimentos=${procedimentos}&periodos=${periodos}`;
+    }
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const obterNomesDeProcedimentosPorTipo = async (municipioIdSus) => {
+  try {
+    const endpoint = `/procedimentos-por-tipo/procedimentos?municipio_id_sus=${municipioIdSus}`;
 
     const { data } = await axiosInstance.get(endpoint);
 
