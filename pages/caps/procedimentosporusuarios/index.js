@@ -1,6 +1,6 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { v1 as uuidv1 } from "uuid";
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import { GraficoHistoricoTemporal, GraficoProcedimentosPorTempoServico } from "../../../components/Graficos";
