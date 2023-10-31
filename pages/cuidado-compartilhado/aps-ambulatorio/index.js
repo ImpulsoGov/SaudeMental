@@ -1,11 +1,10 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
-import ReactEcharts from "echarts-for-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { v1 as uuidv1 } from 'uuid';
 import { API_SAUDE_MENTAL_URL } from "../../../constants/API_URL";
 import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getEncaminhamentosChartOptions } from "../../../helpers/getEncaminhamentosChartOptions";
+import { GraficoEncaminhamentos } from "../../../components/Graficos";
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -99,9 +98,8 @@ const ApsAmbulatorio = () => {
       />
 
       { encaminhamentosAps.length !== 0
-        ? <ReactEcharts
-          option={ getEncaminhamentosChartOptions(encaminhamentosAps) }
-          style={ { width: "100%", height: "70vh" } }
+        ? <GraficoEncaminhamentos
+          dados={ encaminhamentosAps }
         />
         : <Spinner theme="ColorSM" />
       }

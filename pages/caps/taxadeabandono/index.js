@@ -1,14 +1,12 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesNoMesPorCID, getEvasoesNoMesPorGeneroEIdade, getPeriodos } from '../../../requests/caps';
-import ReactEcharts from 'echarts-for-react';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
-import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
-import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
+import { GraficoDonut, GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
+import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
@@ -135,27 +133,6 @@ const TaxaAbandono = () => {
       );
   };
 
-  const agregadosPorCID = useMemo(() => {
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
-      evasoesNoMesPorCID,
-      'usuario_condicao_saude',
-      'quantidade_registrada'
-    );
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
-
-    return dadosOrdenados;
-  }, [evasoesNoMesPorCID]);
-
-  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
-    return agregarPorFaixaEtariaEGenero(
-      evasoesNoMesPorGeneroEIdade,
-      'usuario_faixa_etaria',
-      'usuario_sexo',
-      'quantidade_registrada'
-    );
-  }, [evasoesNoMesPorGeneroEIdade]);
-
   return (
     <div>
       <TituloSmallTexto
@@ -209,14 +186,11 @@ const TaxaAbandono = () => {
               label = {'Estabelecimento'}
               propriedade = {'estabelecimento'}
             />
-
-            <ReactEcharts
-              option={ getOpcoesGraficoHistoricoTemporal(
-                filtrarPorEstabelecimento(abandonoMensal, filtroEstabelecimentoHistorico),
-                'usuarios_evasao_perc',
-                'Taxa de não adesão mensal (%):'
-              ) }
-              style={ { width: '100%', height: '70vh' } }
+            <GraficoHistoricoTemporal
+              dados = {filtrarPorEstabelecimento(abandonoMensal, filtroEstabelecimentoHistorico)}
+              textoTooltip={'Taxa de não adesão mensal (%):'}
+              loading = {false}
+              propriedade={'usuarios_evasao_perc'}
             />
           </>
         )
@@ -252,24 +226,29 @@ const TaxaAbandono = () => {
               />
             </div>
 
-            { loadingCID
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <div className={ styles.GraficoCIDContainer }>
-                <ReactEcharts
-                  option={ getOpcoesGraficoDonut(agregadosPorCID) }
-                  style={ { width: '50%', height: '70vh' } }
-                />
+            <div className={ styles.GraficoCIDContainer }>
+              <GraficoDonut
+                dados={ evasoesNoMesPorCID }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'quantidade_registrada'
+                } }
+                loading={ loadingCID }
+              />
 
-                <TabelaGraficoDonut
-                  labels={ {
-                    colunaHeader: 'Grupo de diagnósticos',
-                    colunaQuantidade: 'Evadiram no mês',
-                  } }
-                  data={ agregadosPorCID }
-                  mensagemDadosZerados='Sem usuários nessa competência'
-                />
-              </div>
-            }
+              <TabelaGraficoDonut
+                labels={ {
+                  colunaHeader: 'Grupo de diagnósticos',
+                  colunaQuantidade: 'Evadiram no mês',
+                } }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'quantidade_registrada'
+                } }
+                data={ evasoesNoMesPorCID }
+                mensagemDadosZerados='Sem usuários nessa competência'
+              />
+            </div>
           </>
         )
         : <Spinner theme='ColorSM' />
@@ -303,17 +282,19 @@ const TaxaAbandono = () => {
                 label = {'Competência'}
               />
             </div>
+            <GraficoGeneroPorFaixaEtaria
+              dados = {evasoesNoMesPorGeneroEIdade}
+              labels={{
+                eixoY: 'Nº de usuários que não aderiram no mês'
+              }}
+              loading = {loadingGenero}
+              propriedades={{
+                faixaEtaria: 'usuario_faixa_etaria',
+                sexo: 'usuario_sexo',
+                quantidade: 'quantidade_registrada',
+              }}
 
-            { loadingGenero
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                  agregadosPorGeneroEFaixaEtaria,
-                  ''
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
+            />
           </>
         )
         : <Spinner theme='ColorSM' />

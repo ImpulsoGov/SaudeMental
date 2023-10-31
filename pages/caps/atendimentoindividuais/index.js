@@ -1,20 +1,19 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
-import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
-import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
-import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
-import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
+import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
+import GraficoRacaECor from '../../../components/Graficos/RacaECor';
+import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
 import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
-import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
+import { GraficoDonut } from '../../../components/Graficos';
+import { ordenarCrescentePorPropriedadeDeTexto } from '../../../utils/ordenacao';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -42,7 +41,6 @@ const AtendimentoIndividual = () => {
   const [loadingCID, setLoadingCID] = useState(false);
   const [loadingGenero, setLoadingGenero] = useState(false);
   const [loadingRaca, setLoadingRaca] = useState(false);
-
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       setAtendimentosPorCaps(await getAtendimentosPorCaps(municipioIdSus));
@@ -206,35 +204,6 @@ const AtendimentoIndividual = () => {
       );
   };
 
-  const agregadosPorCID = useMemo(() => {
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
-      atendimentosPorCID,
-      'usuario_condicao_saude',
-      'usuarios_apenas_atendimento_individual'
-    );
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
-
-    return dadosOrdenados;
-  }, [atendimentosPorCID]);
-
-  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
-    return agregarPorFaixaEtariaEGenero(
-      atendimentosPorGenero,
-      'usuario_faixa_etaria',
-      'usuario_sexo',
-      'usuarios_apenas_atendimento_individual'
-    );
-  }, [atendimentosPorGenero]);
-
-  const agregadosPorRacaCor = useMemo(() => {
-    return agregarPorRacaCor(
-      atendimentosPorRacaECor,
-      'usuario_raca_cor',
-      'usuarios_apenas_atendimento_individual'
-    );
-  }, [atendimentosPorRacaECor]);
-
   return (
     <div>
       <TituloSmallTexto
@@ -292,13 +261,11 @@ const AtendimentoIndividual = () => {
               label = {'Estabelecimento'}
               propriedade = {'estabelecimento'}
             />
-            <ReactEcharts
-              option={ getOpcoesGraficoHistoricoTemporal(
-                filtrarPorEstabelecimento(atendimentosPorCaps, filtroEstabelecimentoHistorico),
-                'perc_apenas_atendimentos_individuais',
-                'Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):'
-              ) }
-              style={ { width: '100%', height: '70vh' } }
+            <GraficoHistoricoTemporal
+              dados = {filtrarPorEstabelecimento(atendimentosPorCaps, filtroEstabelecimentoHistorico)}
+              textoTooltip={'Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):'}
+              loading = {false}
+              propriedade={'perc_apenas_atendimentos_individuais'}
             />
           </>
         )
@@ -333,24 +300,30 @@ const AtendimentoIndividual = () => {
                 label = {'Competência'}
               />
             </div>
-            { loadingCID
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <div className={ styles.GraficoCIDContainer }>
-                <ReactEcharts
-                  option={ getOpcoesGraficoDonut(agregadosPorCID) }
-                  style={ { width: '50%', height: '70vh' } }
-                />
 
-                <TabelaGraficoDonut
-                  labels={ {
-                    colunaHeader: 'Grupos de diagnósticos',
-                    colunaQuantidade: 'Realizaram só at. individual no mês',
-                  } }
-                  data={ agregadosPorCID }
-                  mensagemDadosZerados='Sem usuários nessa competência'
-                />
-              </div>
-            }
+            <div className={ styles.GraficoCIDContainer }>
+              <GraficoDonut
+                dados={ atendimentosPorCID }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'usuarios_apenas_atendimento_individual'
+                } }
+                loading={ loadingCID }
+              />
+
+              <TabelaGraficoDonut
+                labels={ {
+                  colunaHeader: 'Grupos de diagnósticos',
+                  colunaQuantidade: 'Realizaram só at. individual no mês',
+                } }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'usuarios_apenas_atendimento_individual'
+                } }
+                data={ atendimentosPorCID }
+                mensagemDadosZerados='Sem usuários nessa competência'
+              />
+            </div>
           </>
         )
         : <Spinner theme='ColorSM' />
@@ -384,16 +357,19 @@ const AtendimentoIndividual = () => {
                 label = {'Competência'}
               />
             </div>
-            { loadingGenero
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                  agregadosPorGeneroEFaixaEtaria,
-                  ''
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
+            <GraficoGeneroPorFaixaEtaria
+              dados = {atendimentosPorGenero}
+              labels={{
+                eixoY: 'Nº de usuários que passaram apenas por atendimentos individuais'
+              }}
+              loading = {loadingGenero}
+              propriedades={{
+                faixaEtaria: 'usuario_faixa_etaria',
+                sexo: 'usuario_sexo',
+                quantidade: 'usuarios_apenas_atendimento_individual',
+              }}
+
+            />
           </>
         )
         : <Spinner theme='ColorSM' />
@@ -427,16 +403,15 @@ const AtendimentoIndividual = () => {
                 label = {'Competência'}
               />
             </div>
-            { loadingRaca
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoRacaEcor(
-                  agregadosPorRacaCor,
-                  'Usuários que realizaram apenas atendimentos individuais'
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
+            <GraficoRacaECor
+              dados = {atendimentosPorRacaECor}
+              textoTooltip={'Usuários que realizaram apenas atendimentos individuais'}
+              loading = {loadingRaca}
+              propriedades={{
+                racaCor: 'usuario_raca_cor',
+                quantidade: 'usuarios_apenas_atendimento_individual',
+              }}
+            />
           </>
         )
         : <Spinner theme='ColorSM' />
