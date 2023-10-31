@@ -1,13 +1,15 @@
-import { GraficoInfo, TituloSmallTexto, Spinner } from '@impulsogov/design-system';
-import ReactEcharts from 'echarts-for-react';
+import { GraficoInfo, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState, useCallback} from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosTotal } from '../../../requests/outros-raps';
+import { getAtendimentosAmbulatorioResumoUltimoMes, getPerfilAtendimentosAmbulatorio, getAtendimentosTotal } from '../../../requests/outros-raps';
 import { CardsAmbulatorioUltimoMes, CardsAtendimentoPorOcupacaoUltimoMes } from '../../../components/CardsAmbulatorio';
+import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
+import ReactEcharts from 'echarts-for-react';
+import styles from '../OutrosRaps.module.css';
+import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
 import { getOpcoesGraficoAtendimentos } from '../../../helpers/graficoAtendimentos';
-import {FiltroTexto} from '../../../components/Filtros';
-import {FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 import { mostrarMensagemSemAmbulatorio, mostrarMensagemSemDadosAmbulatorio } from '../../../helpers/mostrarDadosDeAmbulatorio';
 
 export function getServerSideProps(ctx) {
@@ -22,6 +24,9 @@ const Ambulatorio = () => {
   const { data: session } = useSession();
   const [atendimentosTotal, setAtendimentosTotal] = useState([]);
   const [atendimentosUltimoMes, setAtendimentosUltimoMes] = useState([]);
+  const [perfilAtendimentos, setPerfilAtendimentos] = useState([]);
+  const [filtroEstabelecimentoPiramideEtaria, setFiltroEstabelecimentoPiramideEtaria] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroPeriodoPiramideEtaria, setFiltroPeriodoPiramideEtaria] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoAtendimentosTotal, setFiltroEstabelecimentoAtendimentosTotal] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroEstabelecimentoAtendimentosPorHorasTrabalhadas, setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
 
@@ -31,6 +36,7 @@ const Ambulatorio = () => {
     const getDados = async (municipioIdSus) => {
       setAtendimentosTotal(await getAtendimentosTotal(municipioIdSus));
       setAtendimentosUltimoMes(await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus));
+      setPerfilAtendimentos(await getPerfilAtendimentosAmbulatorio(municipioIdSus));
     };
 
     if (session?.user.municipio_id_ibge && !mostraMensagemSemAmbulatorio && !mostraMensagemSemDadosAmbulatorio) {
@@ -47,6 +53,21 @@ const Ambulatorio = () => {
 
     return atendimentoGeralPorOcupacao;
   }, [atendimentosUltimoMes]);
+
+  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
+    const periodosSelecionados = filtroPeriodoPiramideEtaria.map(({ value }) => value);
+    const atendimentosFiltrados = perfilAtendimentos.filter((atendimento) =>
+      atendimento.estabelecimento === filtroEstabelecimentoPiramideEtaria.value
+      && periodosSelecionados.includes(atendimento.periodo)
+    );
+
+    return agregarPorFaixaEtariaEGenero(
+      atendimentosFiltrados,
+      'usuario_faixa_etaria',
+      'usuario_sexo',
+      'usuarios_unicos_mes'
+    );
+  }, [perfilAtendimentos, filtroPeriodoPiramideEtaria, filtroEstabelecimentoPiramideEtaria.value]);
 
   const obterAtendimentoGeralPorOcupacoes = useCallback(() => {
     //todo: falar com taina sobre essa forma
@@ -200,6 +221,37 @@ const Ambulatorio = () => {
         titulo='Pirâmide etária de atendidos'
         fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
       />
+
+      {perfilAtendimentos.length !== 0
+        ? <>
+          <div className={ styles.Filtros }>
+            <FiltroTexto
+              dados={ perfilAtendimentos }
+              label='Estabelecimento'
+              propriedade='estabelecimento'
+              valor={ filtroEstabelecimentoPiramideEtaria }
+              setValor={ setFiltroEstabelecimentoPiramideEtaria }
+            />
+
+            <FiltroCompetencia
+              dados={ perfilAtendimentos }
+              valor={ filtroPeriodoPiramideEtaria }
+              setValor={ setFiltroPeriodoPiramideEtaria }
+              label='Competência'
+              isMulti
+            />
+          </div>
+
+          <ReactEcharts
+            option={ getOpcoesGraficoGeneroEFaixaEtaria(
+              agregadosPorGeneroEFaixaEtaria,
+              'Nº de usuários únicos nas referências ambulatoriais'
+            ) }
+            style={ { width: '100%', height: '70vh' } }
+          />
+        </>
+        : <Spinner theme='ColorSM' />
+      }
 
       <GraficoInfo
         titulo='Atendimentos por profissional'
