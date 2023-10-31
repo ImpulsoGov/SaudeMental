@@ -1,17 +1,15 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
-import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
+import { GraficoBarrasProducao, GraficoDonut } from '../../../components/Graficos';
 import ProcedimentosPorCaps from '../../../components/ProcedimentosPorCaps/ProcedimentosPorCaps';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_PERIODO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { agregarPorPropriedadeESomarQuantidade, getOpcoesGraficoBarrasProducao } from '../../../helpers/graficoBarrasProducao';
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { getEstabelecimentos, getPeriodos, obterNomesDeProcedimentosPorTipo, obterProcedimentosPorHora, obterProcedimentosPorTipo } from '../../../requests/caps';
-import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
+import { ordenarCrescentePorPropriedadeDeTexto } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
 
 const OCUPACOES_NAO_ACEITAS = ['Todas', null];
@@ -254,46 +252,12 @@ const Producao = () => {
     return cardsProcedimentosHoraPorEstabelecimento;
   };
 
-  const agregadosPorCBO = useMemo(() => {
-    const dadosFiltrados = procedimentosPorHora.filter((item) =>
+  const procedimentosPorHoraValidos = useMemo(() => {
+    return procedimentosPorHora.filter((item) =>
       !OCUPACOES_NAO_ACEITAS.includes(item.ocupacao)
       && item.procedimentos_por_hora !== null
     );
-
-    return agregarPorPropriedadeESomarQuantidade(
-      dadosFiltrados,
-      'ocupacao',
-      'procedimentos_por_hora'
-    );
   }, [procedimentosPorHora]);
-
-  const agregadosPorProducao = useMemo(() => {
-    return agregarPorPropriedadeESomarQuantidade(
-      procedimentosPorTipo,
-      'procedimento',
-      'procedimentos_registrados_total'
-    );
-  }, [procedimentosPorTipo]);
-
-  const agrupadosPorTipoBPA = useMemo(() => {
-    const dadosNaoZerados = procedimentosBPA.filter((item) =>
-      item.procedimentos_registrados_bpa !== 0
-    );
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(dadosNaoZerados, 'procedimento', 'procedimentos_registrados_bpa');
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosAgregados, 'quantidade');
-
-    return dadosOrdenados;
-  }, [procedimentosBPA]);
-
-  const agrupadosPorTipoRAAS = useMemo(() => {
-    const dadosNaoZerados = procedimentosRAAS.filter((item) =>
-      item.procedimentos_registrados_raas !== 0
-    );
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(dadosNaoZerados, 'procedimento', 'procedimentos_registrados_raas');
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosAgregados, 'quantidade');
-
-    return dadosOrdenados;
-  }, [procedimentosRAAS]);
 
   return (
     <div>
@@ -321,7 +285,7 @@ const Producao = () => {
               descricao={ `Última competência disponível: ${procedimentosPorHoraUltimoPeriodo
                 .find((item) => item.estabelecimento === 'Todos')
                 .nome_mes
-              }` }
+                }` }
             />
 
             { getCardsProcedimentosHoraPorEstabelecimento(procedimentosPorHoraUltimoPeriodo) }
@@ -355,16 +319,15 @@ const Producao = () => {
         />
       </div>
 
-      { loadingProcedimentosPorHora
-        ? <Spinner theme='ColorSM' />
-        : <ReactEcharts
-          option={ getOpcoesGraficoBarrasProducao(
-            agregadosPorCBO,
-            'Procedimentos por hora'
-          ) }
-          style={ { width: '100%', height: '70vh' } }
-        />
-      }
+      <GraficoBarrasProducao
+        dados={ procedimentosPorHoraValidos }
+        textoTooltip={ 'Procedimentos por hora' }
+        propriedades={ {
+          agregacao: 'ocupacao',
+          quantidade: 'procedimentos_por_hora'
+        } }
+        loading={ loadingProcedimentosPorHora }
+      />
 
       <GraficoInfo
         titulo='Procedimentos BPA'
@@ -394,9 +357,12 @@ const Producao = () => {
       { loadingBPA
         ? <Spinner theme='ColorSM' />
         : <div className={ styles.GraficoCIDContainer }>
-          <ReactEcharts
-            option={ getOpcoesGraficoDonut(agrupadosPorTipoBPA) }
-            style={ { width: '50%', height: '70vh' } }
+          <GraficoDonut
+            dados={ procedimentosBPA }
+            propriedades={ {
+              nome: 'procedimento',
+              quantidade: 'procedimentos_registrados_bpa'
+            } }
           />
 
           <TabelaGraficoDonut
@@ -404,7 +370,11 @@ const Producao = () => {
               colunaHeader: 'Nome do procedimento',
               colunaQuantidade: 'Quantidade registrada',
             } }
-            data={ agrupadosPorTipoBPA }
+            propriedades={ {
+              nome: 'procedimento',
+              quantidade: 'procedimentos_registrados_bpa'
+            } }
+            data={ procedimentosBPA }
             mensagemDadosZerados='Sem procedimentos registrados nessa competência'
           />
         </div>
@@ -438,9 +408,12 @@ const Producao = () => {
       { loadingRAAS
         ? <Spinner theme='ColorSM' />
         : <div className={ styles.GraficoCIDContainer }>
-          <ReactEcharts
-            option={ getOpcoesGraficoDonut(agrupadosPorTipoRAAS) }
-            style={ { width: '50%', height: '70vh' } }
+          <GraficoDonut
+            dados={ procedimentosRAAS }
+            propriedades={ {
+              nome: 'procedimento',
+              quantidade: 'procedimentos_registrados_raas'
+            } }
           />
 
           <TabelaGraficoDonut
@@ -448,7 +421,11 @@ const Producao = () => {
               colunaHeader: 'Nome do procedimento',
               colunaQuantidade: 'Quantidade registrada',
             } }
-            data={ agrupadosPorTipoRAAS }
+            propriedades={ {
+              nome: 'procedimento',
+              quantidade: 'procedimentos_registrados_raas'
+            } }
+            data={ procedimentosRAAS }
             mensagemDadosZerados='Sem procedimentos registrados nessa competência'
           />
         </div>
@@ -479,16 +456,15 @@ const Producao = () => {
         />
       </div>
 
-      { loadingProducao
-        ? <Spinner theme='ColorSM' />
-        : <ReactEcharts
-          option={ getOpcoesGraficoBarrasProducao(
-            agregadosPorProducao,
-            'Quantidade registrada'
-          ) }
-          style={ { width: '100%', height: '70vh' } }
-        />
-      }
+      <GraficoBarrasProducao
+        dados={ procedimentosPorTipo }
+        textoTooltip={ 'Quantidade registrada' }
+        propriedades={ {
+          agregacao: 'procedimento',
+          quantidade: 'procedimentos_registrados_total'
+        } }
+        loading={ loadingProducao }
+      />
 
       <GraficoInfo
         titulo='Procedimentos por CAPS'

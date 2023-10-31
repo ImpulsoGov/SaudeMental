@@ -1,21 +1,18 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
-import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
+import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { agregarPorAbusoSubstancias, agregarPorSituacaoRua, getOpcoesGraficoAbusoESituacao } from '../../../helpers/graficoAbusoESituacao';
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
-import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
-import { getOpcoesGraficoHistoricoTemporal } from '../../../helpers/graficoHistoricoTemporal';
-import { agregarPorRacaCor, getOpcoesGraficoRacaEcor } from '../../../helpers/graficoRacaECor';
+import GraficoRacaECor from '../../../components/Graficos/RacaECor';
+import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
 import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
-import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
+import { GraficoCondicaoUsuarios, GraficoDonut } from '../../../components/Graficos';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -65,7 +62,6 @@ const NovoUsuario = () => {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
-
   const agregarPorLinhaPerfil = (usuariosNovos) => {
     const usuariosAgregados = [];
 
@@ -229,57 +225,6 @@ const NovoUsuario = () => {
     }
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoCID.value, filtroPeriodoCID]);
 
-  const agregadosPorCID = useMemo(() => {
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(
-      usuariosNovosPorCID,
-      'usuario_condicao_saude',
-      'usuarios_novos'
-    );
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
-
-    return dadosOrdenados;
-  }, [usuariosNovosPorCID]);
-
-  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
-    return agregarPorFaixaEtariaEGenero(
-      usuariosNovosPorGeneroEIdade,
-      'usuario_faixa_etaria',
-      'usuario_sexo',
-      'usuarios_novos'
-    );
-  }, [usuariosNovosPorGeneroEIdade]);
-
-  const agregadosPorAbusoSubstancias = useMemo(() => {
-    const dadosAgregados = agregarPorAbusoSubstancias(
-      usuariosNovosPorCondicao,
-      'usuario_abuso_substancias',
-      'usuarios_novos'
-    );
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-
-    return dadosNaoZerados;
-  }, [usuariosNovosPorCondicao]);
-
-  const agregadosPorSituacaoRua = useMemo(() => {
-    const dadosAgregados = agregarPorSituacaoRua(
-      usuariosNovosPorCondicao,
-      'usuario_situacao_rua',
-      'usuarios_novos'
-    );
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-
-    return dadosNaoZerados;
-  }, [usuariosNovosPorCondicao]);
-
-  const agregadosPorRacaCor = useMemo(() => {
-    return agregarPorRacaCor(
-      usuariosNovosPorRaca,
-      'usuario_raca_cor',
-      'usuarios_novos'
-    );
-  }, [usuariosNovosPorRaca]);
-
   return (
     <div>
       <TituloSmallTexto
@@ -337,14 +282,11 @@ const NovoUsuario = () => {
               label = {'Estabelecimento'}
               propriedade = {'estabelecimento'}
             />
-
-            <ReactEcharts
-              option={ getOpcoesGraficoHistoricoTemporal(
-                filtrarPorEstabelecimento(resumoNovosUsuarios, filtroEstabelecimentoHistorico),
-                'usuarios_novos',
-                'Usuários novos:'
-              ) }
-              style={ { width: '100%', height: '70vh' } }
+            <GraficoHistoricoTemporal
+              dados = {filtrarPorEstabelecimento(resumoNovosUsuarios, filtroEstabelecimentoHistorico)}
+              textoTooltip={'Usuários novos:'}
+              loading = {false}
+              propriedade={'usuarios_novos'}
             />
           </>
         )
@@ -380,24 +322,29 @@ const NovoUsuario = () => {
               />
             </div>
 
-            { loadingCID
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <div className={ styles.GraficoCIDContainer }>
-                <ReactEcharts
-                  option={ getOpcoesGraficoDonut(agregadosPorCID) }
-                  style={ { width: '50%', height: '70vh' } }
-                />
+            <div className={ styles.GraficoCIDContainer }>
+              <GraficoDonut
+                dados={ usuariosNovosPorCID }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'usuarios_novos'
+                } }
+                loading={ loadingCID }
+              />
 
-                <TabelaGraficoDonut
-                  labels={ {
-                    colunaHeader: 'Grupo de diagnósticos',
-                    colunaQuantidade: 'Novos usuários',
-                  } }
-                  data={ agregadosPorCID }
-                  mensagemDadosZerados='Sem usuários nessa competência'
-                />
-              </div>
-            }
+              <TabelaGraficoDonut
+                labels={ {
+                  colunaHeader: 'Grupo de diagnósticos',
+                  colunaQuantidade: 'Novos usuários',
+                } }
+                propriedades={ {
+                  nome: 'usuario_condicao_saude',
+                  quantidade: 'usuarios_novos'
+                } }
+                data={ usuariosNovosPorCID }
+                mensagemDadosZerados='Sem usuários nessa competência'
+              />
+            </div>
           </>
         )
         : <Spinner theme='ColorSM' />
@@ -431,17 +378,18 @@ const NovoUsuario = () => {
                 label = {'Competência'}
               />
             </div>
-
-            { loadingGenero
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoGeneroEFaixaEtaria(
-                  agregadosPorGeneroEFaixaEtaria,
-                  'Usuários novos'
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
+            <GraficoGeneroPorFaixaEtaria
+              dados = {usuariosNovosPorGeneroEIdade}
+              labels={{
+                eixoY: 'Usuários novos'
+              }}
+              loading = {loadingGenero}
+              propriedades={{
+                faixaEtaria: 'usuario_faixa_etaria',
+                sexo: 'usuario_sexo',
+                quantidade: 'usuarios_novos',
+              }}
+            />
           </>
         )
         : <Spinner theme='ColorSM' />
@@ -476,32 +424,33 @@ const NovoUsuario = () => {
               />
             </div>
 
-            { loadingCondicao
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <div className={ styles.GraficosUsuariosAtivosContainer }>
-                <div className={ styles.GraficoUsuariosAtivos }>
-                  <ReactEcharts
-                    option={ getOpcoesGraficoAbusoESituacao(
-                      agregadosPorAbusoSubstancias,
-                      'Fazem uso de substâncias psicoativas?',
-                      'ABUSO_SUBSTANCIAS',
-                    ) }
-                    style={ { width: '100%', height: '100%' } }
-                  />
-                </div>
-
-                <div className={ styles.GraficoUsuariosAtivos }>
-                  <ReactEcharts
-                    option={ getOpcoesGraficoAbusoESituacao(
-                      agregadosPorSituacaoRua,
-                      'Estão em situação de rua?',
-                      'SITUACAO_RUA',
-                    ) }
-                    style={ { width: '100%', height: '100%' } }
-                  />
-                </div>
+            <div className={ styles.GraficosUsuariosAtivosContainer }>
+              <div className={ styles.GraficoUsuariosAtivos }>
+                <GraficoCondicaoUsuarios
+                  dados={ usuariosNovosPorCondicao }
+                  propriedades={ {
+                    nome: 'usuario_abuso_substancias' ,
+                    quantidade: 'usuarios_novos'
+                  } }
+                  loading={ loadingCondicao }
+                  textoTooltip='Fazem uso de substâncias psicoativas?'
+                  titulo='Fazem uso de substâncias psicoativas?'
+                />
               </div>
-            }
+
+              <div className={ styles.GraficoUsuariosAtivos }>
+                <GraficoCondicaoUsuarios
+                  dados={ usuariosNovosPorCondicao }
+                  propriedades={ {
+                    nome: 'usuario_situacao_rua' ,
+                    quantidade: 'usuarios_novos'
+                  } }
+                  loading={ loadingCondicao }
+                  textoTooltip='Estão em situação de rua?'
+                  titulo='Estão em situação de rua?'
+                />
+              </div>
+            </div>
           </>
         )
         : <Spinner theme='ColorSM' />
@@ -535,17 +484,15 @@ const NovoUsuario = () => {
                 label = {'Competência'}
               />
             </div>
-
-            { loadingRaca
-              ? <Spinner theme='ColorSM' height='70vh' />
-              : <ReactEcharts
-                option={ getOpcoesGraficoRacaEcor(
-                  agregadosPorRacaCor,
-                  'Usuários novos no período'
-                ) }
-                style={ { width: '100%', height: '70vh' } }
-              />
-            }
+            <GraficoRacaECor
+              dados = {usuariosNovosPorRaca}
+              textoTooltip={'Usuários novos no período'}
+              loading = {loadingRaca}
+              propriedades={{
+                racaCor: 'usuario_raca_cor',
+                quantidade: 'usuarios_novos',
+              }}
+            />
           </>
         )
         : <Spinner theme='ColorSM' />
