@@ -285,7 +285,7 @@ const TaxaAbandono = () => {
             <GraficoGeneroPorFaixaEtaria
               dados = {evasoesNoMesPorGeneroEIdade}
               labels={{
-                eixoY: 'Nº de evasões'
+                eixoY: 'Nº de usuários que não aderiram no mês'
               }}
               loading = {loadingGenero}
               propriedades={{
