@@ -76,3 +76,23 @@ export const getPerfilAtendimentosAmbulatorio = async (municipioIdSus) => {
     console.log('error', error.response.data);
   }
 };
+
+export const getAtendimentosTotal = async (municipioIdSus) => {
+  try {
+    const endpoint = "/ambulatorio/atendimento-resumo?municipio_id_sus=" + municipioIdSus;
+    const { data } = await axiosInstance.get(endpoint);
+    return data;
+  }  catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const getAtendidos = async (municipioIdSus) => {
+  try {
+    const endpoint = "/ambulatorio/usuario-perfil?municipio_id_sus=" + municipioIdSus;
+    const { data } = await axiosInstance.get(endpoint);
+    return data;
+  }  catch (error) {
+    console.log('error', error.response.data);
+  }
+};
