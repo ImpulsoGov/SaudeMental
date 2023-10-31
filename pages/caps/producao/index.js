@@ -1,18 +1,16 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
-import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
-import { TabelaGraficoDonut } from '../../../components/Tabelas';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
-import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { agregarPorPropriedadeESomarQuantidade, getOpcoesGraficoBarrasProducao } from '../../../helpers/graficoBarrasProducao';
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
-import { getProcedimentosPorHora, getProcedimentosPorTipo } from '../../../requests/caps';
-import { ordenarCrescentePorPropriedadeDeTexto, ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
-import styles from '../Caps.module.css';
-import { ProcedimentosPorCaps } from '../../../components/ProcedimentosPorCaps';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
-import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_PERIODO_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
+import { GraficoBarrasProducao, GraficoDonut } from '../../../components/Graficos';
+import ProcedimentosPorCaps from '../../../components/ProcedimentosPorCaps/ProcedimentosPorCaps';
+import { TabelaGraficoDonut } from '../../../components/Tabelas';
+import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_PERIODO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { getEstabelecimentos, getPeriodos, obterNomesDeProcedimentosPorTipo, obterProcedimentosPorHora, obterProcedimentosPorTipo } from '../../../requests/caps';
+import { ordenarCrescentePorPropriedadeDeTexto } from '../../../utils/ordenacao';
+import styles from '../Caps.module.css';
 
 const OCUPACOES_NAO_ACEITAS = ['Todas', null];
 
@@ -36,19 +34,132 @@ const Producao = () => {
   const [filtroPeriodoRAAS, setFiltroPeriodoRAAS] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoProducao, setFiltroEstabelecimentoProducao] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoProducao, setFiltroPeriodoProducao] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [estabelecimentosPorHora, setEstabelecimentosPorHora] = useState([]);
+  const [periodosPorHora, setPeriodosPorHora] = useState([]);
+  const [procedimentosPorHoraUltimoPeriodo, setProcedimentosPorHoraUltimoPeriodo] = useState([]);
+  const [estabelecimentosPorTipo, setEstabelecimentosPorTipo] = useState([]);
+  const [periodosPorTipo, setPeriodosPorTipo] = useState([]);
+  const [nomesProcedimentosPorTipo, setNomesProcedimentosPorTipo] = useState([]);
+  const [procedimentosBPA, setProcedimentosBPA] = useState([]);
+  const [procedimentosRAAS, setProcedimentosRAAS] = useState([]);
+  const [loadingBPA, setLoadingBPA] = useState(true);
+  const [loadingRAAS, setLoadingRAAS] = useState(true);
+  const [loadingProducao, setLoadingProducao] = useState(true);
+  const [loadingProcedimentosPorHora, setLoadingProcedimentosPorHora] = useState(true);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setProcedimentosPorHora(await getProcedimentosPorHora(municipioIdSus));
-      setProcedimentosPorTipo(
-        await getProcedimentosPorTipo(municipioIdSus)
-      );
+      setEstabelecimentosPorHora(await getEstabelecimentos(municipioIdSus, 'procedimentos_por_hora'));
+      setPeriodosPorHora(await getPeriodos(municipioIdSus, 'procedimentos_por_hora'));
+      setEstabelecimentosPorTipo(await getEstabelecimentos(municipioIdSus, 'procedimentos_por_tipo'));
+      setPeriodosPorTipo(await getPeriodos(municipioIdSus, 'procedimentos_por_tipo'));
+      setNomesProcedimentosPorTipo(await obterNomesDeProcedimentosPorTipo(municipioIdSus));
+      setProcedimentosPorHoraUltimoPeriodo(await obterProcedimentosPorHora({
+        municipioIdSus, periodos: 'Último período', ocupacao: 'Todas'
+      }));
     };
 
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
+
+  // prcedimentos por hora
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingProcedimentosPorHora(true);
+
+      obterProcedimentosPorHora({
+        municipioIdSus: session?.user.municipio_id_ibge,
+        estabelecimentos: filtroEstabelecimentoCBO.value,
+        periodos: filtroPeriodoCBO.value
+      }).then((resposta) => setProcedimentosPorHora(resposta));
+
+      setLoadingProcedimentosPorHora(false);
+    }
+  }, [
+    session?.user.municipio_id_ibge,
+    filtroEstabelecimentoCBO.value,
+    filtroPeriodoCBO.value
+  ]);
+
+  // procedimentos BPA
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingBPA(true);
+
+      const promises = filtroPeriodoBPA.map(({ value: periodo }) => {
+        return obterProcedimentosPorTipo({
+          municipioIdSus: session?.user.municipio_id_ibge,
+          estabelecimentos: filtroEstabelecimentoBPA.value,
+          periodos: periodo
+        });
+      });
+
+      Promise.all(promises).then((respostas) => {
+        const respostasUnificadas = [].concat(...respostas);
+        setProcedimentosBPA(respostasUnificadas);
+      });
+
+      setLoadingBPA(false);
+    }
+  }, [
+    session?.user.municipio_id_ibge,
+    filtroEstabelecimentoBPA.value,
+    filtroPeriodoBPA
+  ]);
+
+  // procedimentos RAAS
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingRAAS(true);
+
+      const promises = filtroPeriodoRAAS.map(({ value: periodo }) => {
+        return obterProcedimentosPorTipo({
+          municipioIdSus: session?.user.municipio_id_ibge,
+          estabelecimentos: filtroEstabelecimentoRAAS.value,
+          periodos: periodo
+        });
+      });
+
+      Promise.all(promises).then((respostas) => {
+        const respostasUnificadas = [].concat(...respostas);
+        setProcedimentosRAAS(respostasUnificadas);
+      });
+
+      setLoadingRAAS(false);
+    }
+  }, [
+    session?.user.municipio_id_ibge,
+    filtroEstabelecimentoRAAS.value,
+    filtroPeriodoRAAS
+  ]);
+
+  // procedimentos por tipo (gráfico de produção)
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingProducao(true);
+
+      const promises = filtroPeriodoProducao.map(({ value: periodo }) => {
+        return obterProcedimentosPorTipo({
+          municipioIdSus: session?.user.municipio_id_ibge,
+          estabelecimentos: filtroEstabelecimentoProducao.value,
+          periodos: periodo
+        });
+      });
+
+      Promise.all(promises).then((respostas) => {
+        const respostasUnificadas = [].concat(...respostas);
+        setProcedimentosPorTipo(respostasUnificadas);
+      });
+
+      setLoadingProducao(false);
+    }
+  }, [
+    session?.user.municipio_id_ibge,
+    filtroEstabelecimentoProducao.value,
+    filtroPeriodoProducao
+  ]);
 
   const agregarPorLinhaPerfil = (procedimentos) => {
     const procedimentosAgregados = [];
@@ -88,24 +199,18 @@ const Producao = () => {
   };
 
   const getCardsProcedimentosHoraPorEstabelecimento = (procedimentos) => {
-    const procedimentosPorHoraUltimoPeriodo = procedimentos
+    const procedimentosFiltrados = procedimentos
       .filter(({
-        periodo,
         estabelecimento,
-        ocupacao,
         estabelecimento_linha_perfil: linhaPerfil,
-        estabelecimento_linha_idade: linhaIdade,
         procedimentos_por_hora: procedimentosPorHora
       }) =>
-        periodo === 'Último período'
-        && estabelecimento !== 'Todos'
+        estabelecimento !== 'Todos'
         && linhaPerfil !== 'Todos'
         && procedimentosPorHora !== null
-        && ocupacao === 'Todas'
-        && linhaIdade === 'Todos'
       );
 
-    const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosPorHoraUltimoPeriodo);
+    const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosFiltrados);
 
     const cardsProcedimentosHoraPorEstabelecimento = procedimentosAgregados.map(({
       linhaPerfil, procedimentosPorEstabelecimento, nomeMes
@@ -147,69 +252,12 @@ const Producao = () => {
     return cardsProcedimentosHoraPorEstabelecimento;
   };
 
-  const getValoresPeriodosSelecionados = (periodosSelecionados) => {
-    return periodosSelecionados.map(({ value }) => value);
-  };
-
-  const filtrarPorHoraEstabelecimentoEPeriodo = (procedimentos, filtroEstabelecimento, filtroPeriodo) => {
-    return procedimentos.filter((item) =>
-      item.estabelecimento === filtroEstabelecimento.value
-      && item.periodo === filtroPeriodo.value
-      && !OCUPACOES_NAO_ACEITAS.includes(item.ocupacao)
+  const procedimentosPorHoraValidos = useMemo(() => {
+    return procedimentosPorHora.filter((item) =>
+      !OCUPACOES_NAO_ACEITAS.includes(item.ocupacao)
       && item.procedimentos_por_hora !== null
-      && item.estabelecimento_linha_perfil === 'Todos'
-      && item.estabelecimento_linha_idade === 'Todos'
     );
-  };
-
-  const filtrarPorTipoEstabelecimentoEPeriodo = useCallback((procedimentos, filtroEstabelecimento, filtroPeriodo) => {
-    const periodosSelecionados = getValoresPeriodosSelecionados(filtroPeriodo);
-
-    return procedimentos.filter((item) =>
-      item.estabelecimento === filtroEstabelecimento.value
-      && periodosSelecionados.includes(item.periodo)
-      && item.estabelecimento_linha_perfil === 'Todos'
-      && item.estabelecimento_linha_idade === 'Todos'
-    );
-  }, []);
-
-  const agregadosPorCBO = agregarPorPropriedadeESomarQuantidade(
-    filtrarPorHoraEstabelecimentoEPeriodo(procedimentosPorHora, filtroEstabelecimentoCBO, filtroPeriodoCBO),
-    'ocupacao',
-    'procedimentos_por_hora'
-  );
-
-  const agregadosPorProducao = agregarPorPropriedadeESomarQuantidade(
-    filtrarPorTipoEstabelecimentoEPeriodo(procedimentosPorTipo, filtroEstabelecimentoProducao, filtroPeriodoProducao),
-    'procedimento',
-    'procedimentos_registrados_total'
-  );
-
-  const agrupadosPorTipoBPA = useMemo(() => {
-    const dadosFiltrados = filtrarPorTipoEstabelecimentoEPeriodo(
-      procedimentosPorTipo,
-      filtroEstabelecimentoBPA,
-      filtroPeriodoBPA
-    );
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(dadosFiltrados, 'procedimento', 'procedimentos_registrados_bpa');
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
-
-    return dadosOrdenados;
-  }, [filtrarPorTipoEstabelecimentoEPeriodo, filtroEstabelecimentoBPA, filtroPeriodoBPA, procedimentosPorTipo]);
-
-  const agrupadosPorTipoRAAS = useMemo(() => {
-    const dadosFiltrados = filtrarPorTipoEstabelecimentoEPeriodo(
-      procedimentosPorTipo,
-      filtroEstabelecimentoRAAS,
-      filtroPeriodoRAAS
-    );
-    const dadosAgregados = agregarQuantidadePorPropriedadeNome(dadosFiltrados, 'procedimento', 'procedimentos_registrados_raas');
-    const dadosNaoZerados = dadosAgregados.filter(({ quantidade }) => quantidade !== 0);
-    const dadosOrdenados = ordenarDecrescentePorPropriedadeNumerica(dadosNaoZerados, 'quantidade');
-
-    return dadosOrdenados;
-  }, [filtrarPorTipoEstabelecimentoEPeriodo, filtroEstabelecimentoRAAS, filtroPeriodoRAAS, procedimentosPorTipo]);
+  }, [procedimentosPorHora]);
 
   return (
     <div>
@@ -219,10 +267,10 @@ const Producao = () => {
           url: ''
         } }
         texto=""
-        botao={{
+        botao={ {
           label: '',
           url: ''
-        }}
+        } }
         titulo="<strong>Produção</strong>"
       />
 
@@ -230,22 +278,17 @@ const Producao = () => {
         fonte='Fonte: BPA-c, BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { procedimentosPorHora.length !== 0
+      { procedimentosPorHoraUltimoPeriodo.length !== 0
         ? (
           <>
             <GraficoInfo
-              descricao={ `Última competência disponível: ${procedimentosPorHora
-                .find((item) =>
-                  item.estabelecimento === 'Todos'
-                  && item.estabelecimento_linha_perfil === 'Todos'
-                  && item.estabelecimento_linha_idade === 'Todos'
-                  && item.periodo === 'Último período'
-                )
+              descricao={ `Última competência disponível: ${procedimentosPorHoraUltimoPeriodo
+                .find((item) => item.estabelecimento === 'Todos')
                 .nome_mes
-              }` }
+                }` }
             />
 
-            { getCardsProcedimentosHoraPorEstabelecimento(procedimentosPorHora) }
+            { getCardsProcedimentosHoraPorEstabelecimento(procedimentosPorHoraUltimoPeriodo) }
           </>
         )
         : <Spinner theme='ColorSM' />
@@ -257,85 +300,84 @@ const Producao = () => {
         fonte='Fonte: BPA-c, BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { procedimentosPorHora.length !== 0
-        ? (
-          <>
-            <div className={ styles.Filtros }>
-              <FiltroTexto
-                width={'50%'}
-                dados = {procedimentosPorHora}
-                valor = {filtroEstabelecimentoCBO}
-                setValor = {setFiltroEstabelecimentoCBO}
-                label = {'Estabelecimento'}
-                propriedade = {'estabelecimento'}
-              />
-              <FiltroCompetencia
-                width={'50%'}
-                dados = {procedimentosPorHora}
-                valor = {filtroPeriodoCBO}
-                setValor = {setFiltroPeriodoCBO}
-                isMulti = {false}
-                label = {'Competência'}
-              />
-            </div>
+      <div className={ styles.Filtros }>
+        <FiltroTexto
+          width={ '50%' }
+          dados={ estabelecimentosPorHora }
+          valor={ filtroEstabelecimentoCBO }
+          setValor={ setFiltroEstabelecimentoCBO }
+          label={ 'Estabelecimento' }
+          propriedade={ 'estabelecimento' }
+        />
+        <FiltroCompetencia
+          width={ '50%' }
+          dados={ periodosPorHora }
+          valor={ filtroPeriodoCBO }
+          setValor={ setFiltroPeriodoCBO }
+          isMulti={ false }
+          label={ 'Competência' }
+        />
+      </div>
 
-            <ReactEcharts
-              option={ getOpcoesGraficoBarrasProducao(
-                agregadosPorCBO,
-                'Procedimentos por hora'
-              ) }
-              style={ { width: '100%', height: '70vh' } }
-            />
-          </>
-        )
-        : <Spinner theme='ColorSM' />
-      }
+      <GraficoBarrasProducao
+        dados={ procedimentosPorHoraValidos }
+        textoTooltip={ 'Procedimentos por hora' }
+        propriedades={ {
+          agregacao: 'ocupacao',
+          quantidade: 'procedimentos_por_hora'
+        } }
+        loading={ loadingProcedimentosPorHora }
+      />
 
       <GraficoInfo
         titulo='Procedimentos BPA'
         fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
       />
 
-      { procedimentosPorTipo.length !== 0
-        ? (
-          <>
-            <div className={ styles.Filtros }>
-              <FiltroTexto
-                width={'50%'}
-                dados = {procedimentosPorTipo}
-                valor = {filtroEstabelecimentoBPA}
-                setValor = {setFiltroEstabelecimentoBPA}
-                label = {'Estabelecimento'}
-                propriedade = {'estabelecimento'}
-              />
-              <FiltroCompetencia
-                width={'50%'}
-                dados = {procedimentosPorTipo}
-                valor = {filtroPeriodoBPA}
-                setValor = {setFiltroPeriodoBPA}
-                isMulti = {true}
-                label = {'Competência'}
-              />
-            </div>
+      <div className={ styles.Filtros }>
+        <FiltroTexto
+          width={ '50%' }
+          dados={ estabelecimentosPorTipo }
+          valor={ filtroEstabelecimentoBPA }
+          setValor={ setFiltroEstabelecimentoBPA }
+          label={ 'Estabelecimento' }
+          propriedade={ 'estabelecimento' }
+        />
 
-            <div className={ styles.GraficoCIDContainer }>
-              <ReactEcharts
-                option={ getOpcoesGraficoDonut(agrupadosPorTipoBPA) }
-                style={ { width: '50%', height: '70vh' } }
-              />
+        <FiltroCompetencia
+          width={ '50%' }
+          dados={ periodosPorTipo }
+          valor={ filtroPeriodoBPA }
+          setValor={ setFiltroPeriodoBPA }
+          isMulti={ true }
+          label={ 'Competência' }
+        />
+      </div>
 
-              <TabelaGraficoDonut
-                labels={ {
-                  colunaHeader: 'Nome do procedimento',
-                  colunaQuantidade: 'Quantidade registrada',
-                } }
-                data={ agrupadosPorTipoBPA }
-                mensagemDadosZerados='Sem procedimentos registrados nessa competência'
-              />
-            </div>
-          </>
-        )
-        : <Spinner theme='ColorSM' />
+      { loadingBPA
+        ? <Spinner theme='ColorSM' />
+        : <div className={ styles.GraficoCIDContainer }>
+          <GraficoDonut
+            dados={ procedimentosBPA }
+            propriedades={ {
+              nome: 'procedimento',
+              quantidade: 'procedimentos_registrados_bpa'
+            } }
+          />
+
+          <TabelaGraficoDonut
+            labels={ {
+              colunaHeader: 'Nome do procedimento',
+              colunaQuantidade: 'Quantidade registrada',
+            } }
+            propriedades={ {
+              nome: 'procedimento',
+              quantidade: 'procedimentos_registrados_bpa'
+            } }
+            data={ procedimentosBPA }
+            mensagemDadosZerados='Sem procedimentos registrados nessa competência'
+          />
+        </div>
       }
 
       <GraficoInfo
@@ -343,46 +385,50 @@ const Producao = () => {
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { procedimentosPorTipo.length !== 0
-        ? (
-          <>
-            <div className={ styles.Filtros }>
-              <FiltroTexto
-                width={'50%'}
-                dados = {procedimentosPorTipo}
-                valor = {filtroEstabelecimentoRAAS}
-                setValor = {setFiltroEstabelecimentoRAAS}
-                label = {'Estabelecimento'}
-                propriedade = {'estabelecimento'}
-              />
-              <FiltroCompetencia
-                width={'50%'}
-                dados = {procedimentosPorTipo}
-                valor = {filtroPeriodoRAAS}
-                setValor = {setFiltroPeriodoRAAS}
-                isMulti = {true}
-                label = {'Competência'}
-              />
-            </div>
+      <div className={ styles.Filtros }>
+        <FiltroTexto
+          width={ '50%' }
+          dados={ estabelecimentosPorTipo }
+          valor={ filtroEstabelecimentoRAAS }
+          setValor={ setFiltroEstabelecimentoRAAS }
+          label={ 'Estabelecimento' }
+          propriedade={ 'estabelecimento' }
+        />
 
-            <div className={ styles.GraficoCIDContainer }>
-              <ReactEcharts
-                option={ getOpcoesGraficoDonut(agrupadosPorTipoRAAS) }
-                style={ { width: '50%', height: '70vh' } }
-              />
+        <FiltroCompetencia
+          width={ '50%' }
+          dados={ periodosPorTipo }
+          valor={ filtroPeriodoRAAS }
+          setValor={ setFiltroPeriodoRAAS }
+          isMulti={ true }
+          label={ 'Competência' }
+        />
+      </div>
 
-              <TabelaGraficoDonut
-                labels={ {
-                  colunaHeader: 'Nome do procedimento',
-                  colunaQuantidade: 'Quantidade registrada',
-                } }
-                data={ agrupadosPorTipoRAAS }
-                mensagemDadosZerados='Sem procedimentos registrados nessa competência'
-              />
-            </div>
-          </>
-        )
-        : <Spinner theme='ColorSM' />
+      { loadingRAAS
+        ? <Spinner theme='ColorSM' />
+        : <div className={ styles.GraficoCIDContainer }>
+          <GraficoDonut
+            dados={ procedimentosRAAS }
+            propriedades={ {
+              nome: 'procedimento',
+              quantidade: 'procedimentos_registrados_raas'
+            } }
+          />
+
+          <TabelaGraficoDonut
+            labels={ {
+              colunaHeader: 'Nome do procedimento',
+              colunaQuantidade: 'Quantidade registrada',
+            } }
+            propriedades={ {
+              nome: 'procedimento',
+              quantidade: 'procedimentos_registrados_raas'
+            } }
+            data={ procedimentosRAAS }
+            mensagemDadosZerados='Sem procedimentos registrados nessa competência'
+          />
+        </div>
       }
 
       <GraficoInfo
@@ -390,51 +436,48 @@ const Producao = () => {
         fonte='Fonte: BPA-c, BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { procedimentosPorTipo.length !== 0
-        ? (
-          <>
-            <div className={ styles.Filtros }>
-              <FiltroTexto
-                width={'50%'}
-                dados = {procedimentosPorTipo}
-                valor = {filtroEstabelecimentoProducao}
-                setValor = {setFiltroEstabelecimentoProducao}
-                label = {'Estabelecimento'}
-                propriedade = {'estabelecimento'}
-              />
-              <FiltroCompetencia
-                width={'50%'}
-                dados = {procedimentosPorTipo}
-                valor = {filtroPeriodoProducao}
-                setValor = {setFiltroPeriodoProducao}
-                isMulti = {true}
-                label = {'Competência'}
-              />
-            </div>
+      <div className={ styles.Filtros }>
+        <FiltroTexto
+          width={ '50%' }
+          dados={ estabelecimentosPorTipo }
+          valor={ filtroEstabelecimentoProducao }
+          setValor={ setFiltroEstabelecimentoProducao }
+          label={ 'Estabelecimento' }
+          propriedade={ 'estabelecimento' }
+        />
 
-            <ReactEcharts
-              option={ getOpcoesGraficoBarrasProducao(
-                agregadosPorProducao,
-                'Quantidade registrada'
-              ) }
-              style={ { width: '100%', height: '70vh' } }
-            />
-          </>
-        )
-        : <Spinner theme='ColorSM' />
-      }
+        <FiltroCompetencia
+          width={ '50%' }
+          dados={ periodosPorTipo }
+          valor={ filtroPeriodoProducao }
+          setValor={ setFiltroPeriodoProducao }
+          isMulti={ true }
+          label={ 'Competência' }
+        />
+      </div>
+
+      <GraficoBarrasProducao
+        dados={ procedimentosPorTipo }
+        textoTooltip={ 'Quantidade registrada' }
+        propriedades={ {
+          agregacao: 'procedimento',
+          quantidade: 'procedimentos_registrados_total'
+        } }
+        loading={ loadingProducao }
+      />
 
       <GraficoInfo
         titulo='Procedimentos por CAPS'
         fonte='Fonte: BPA-c, BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      {procedimentosPorTipo.length !== 0
-        ? <ProcedimentosPorCaps
-          procedimentos={ procedimentosPorTipo }
-        />
-        : <Spinner theme='ColorSM' />
-      }
+      <ProcedimentosPorCaps
+        municipioIdSus={ session?.user.municipio_id_ibge }
+        periodos={ periodosPorTipo }
+        estabelecimentos={ estabelecimentosPorTipo }
+        nomesProcedimentos={ nomesProcedimentosPorTipo }
+        requisicao={ obterProcedimentosPorTipo }
+      />
     </div>
   );
 };
