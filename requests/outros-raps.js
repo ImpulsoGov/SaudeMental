@@ -77,20 +77,23 @@ export const getPerfilAtendimentosAmbulatorio = async (municipioIdSus) => {
   }
 };
 
-export const getAtendimentosTotal = async (municipioIdSus) => {
+export const getAtendimentosPorProfissional = async (municipioIdSus) => {
   try {
-    const endpoint = '/ambulatorio/atendimento-resumo?municipio_id_sus=' + municipioIdSus;
+    const endpoint = '/ambulatorio/procedimento-por-profissional?municipio_id_sus=' + municipioIdSus;
+
     const { data } = await axiosInstance.get(endpoint);
+
     return data;
-  }  catch (error) {
+  } catch (error) {
     console.log('error', error.response.data);
   }
 };
 
-export const getAtendidos = async (municipioIdSus) => {
+export const getAtendimentosTotal = async (municipioIdSus) => {
   try {
-    const endpoint = '/ambulatorio/usuario-perfil?municipio_id_sus=' + municipioIdSus;
+    const endpoint = '/ambulatorio/atendimento-resumo?municipio_id_sus=' + municipioIdSus;
     const { data } = await axiosInstance.get(endpoint);
+
     return data;
   }  catch (error) {
     console.log('error', error.response.data);

@@ -1,14 +1,16 @@
 import { GraficoInfo, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState, useCallback, useMemo } from 'react';
-import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAtendimentosAmbulatorioResumoUltimoMes, getPerfilAtendimentosAmbulatorio, getAtendimentosTotal } from '../../../requests/outros-raps';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { CardsAmbulatorioUltimoMes, CardsAtendimentoPorOcupacaoUltimoMes } from '../../../components/CardsAmbulatorio';
-import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
-import styles from '../OutrosRaps.module.css';
+import { TabelaAtendimentosPorProfissional } from '../../../components/Tabelas';
+import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosPorProfissional, getAtendimentosTotal, getPerfilAtendimentosAmbulatorio } from '../../../requests/outros-raps';
+import Style from '../OutrosRaps.module.css';
 import { mostrarMensagemSemAmbulatorio, mostrarMensagemSemDadosAmbulatorio } from '../../../helpers/mostrarDadosDeAmbulatorio';
 import { GraficoAtendimentos, GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
+
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
 
@@ -21,11 +23,14 @@ const Ambulatorio = () => {
   const { data: session } = useSession();
   const [atendimentosTotal, setAtendimentosTotal] = useState([]);
   const [atendimentosUltimoMes, setAtendimentosUltimoMes] = useState([]);
+  const [atendimentosPorProfissional, setAtendimentosPorProfissional] = useState([]);
+  const [filtroEstabelecimentoAtendimentosTotal, setFiltroEstabelecimentoAtendimentosTotal] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroEstabelecimentoAtendimentosPorHorasTrabalhadas, setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroEstabelecimentoAtendimentosPorProfissional, setFiltroEstabelecimentoAtendimentosPorProfissional] = useState(FILTRO_ESTABELECIMENTO_MULTI_DEFAULT);
+  const [filtroCompetenciaAtendimentosPorProfissional, setFiltroCompetenciaAtendimentosPorProfissional] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [perfilAtendimentos, setPerfilAtendimentos] = useState([]);
   const [filtroEstabelecimentoPiramideEtaria, setFiltroEstabelecimentoPiramideEtaria] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoPiramideEtaria, setFiltroPeriodoPiramideEtaria] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
-  const [filtroEstabelecimentoAtendimentosTotal, setFiltroEstabelecimentoAtendimentosTotal] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
-  const [filtroEstabelecimentoAtendimentosPorHorasTrabalhadas, setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
 
   useEffect(() => {
     const mostraMensagemSemAmbulatorio = mostrarMensagemSemAmbulatorio(session?.user.municipio_id_ibge);
@@ -33,6 +38,7 @@ const Ambulatorio = () => {
     const getDados = async (municipioIdSus) => {
       setAtendimentosTotal(await getAtendimentosTotal(municipioIdSus));
       setAtendimentosUltimoMes(await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus));
+      setAtendimentosPorProfissional(await getAtendimentosPorProfissional(municipioIdSus));
       setPerfilAtendimentos(await getPerfilAtendimentosAmbulatorio(municipioIdSus));
     };
 
@@ -61,7 +67,6 @@ const Ambulatorio = () => {
   }, [perfilAtendimentos, filtroPeriodoPiramideEtaria, filtroEstabelecimentoPiramideEtaria.value]);
 
   const obterAtendimentoGeralPorOcupacoes = useCallback(() => {
-    //todo: falar com taina sobre essa forma
     const atendimentosPorOcupacoes = atendimentosTotal.filter((atendimento) =>
       atendimento.ocupacao !== 'Todas'
     );
@@ -71,6 +76,55 @@ const Ambulatorio = () => {
   const filtrarPorEstabelecimento = (dados, filtro) => {
     return dados.filter((item => item.estabelecimento === filtro.value));
   };
+  const filtrarPorMultiplosEstabelecimentos = (dados, filtro) => {
+    const estabelecimentos = filtro.map(({ value }) => value);
+    return dados.filter((item => estabelecimentos.includes(item.estabelecimento)));
+  };
+  const filtrarPorPeriodo = (dados, filtro) => {
+    const periodos = filtro.map(({ value }) => value);
+    return dados.filter((item => periodos.includes(item.periodo)));
+  };
+  const agregarPorNomeEOcupacao = (dadosFiltrados) => {
+    const dadosAgregados = [];
+    dadosFiltrados.forEach((dado) => {
+      const dadoEncontrado = dadosAgregados
+        .find((item) => item.profissional_nome === dado.profissional_nome && item.ocupacao === dado.ocupacao);
+
+      if (!dadoEncontrado) {
+        dadosAgregados.push({
+          profissional_nome: dado.profissional_nome,
+          ocupacao: dado.ocupacao,
+          atendimentos_por_hora: dado.procedimentos_por_hora ? Number(dado.procedimentos_por_hora.toFixed(2)) : null,
+          atendimentos_realizados: dado.procedimentos_realizados,
+          id: dado.id
+        });
+      } else {
+        dadoEncontrado.atendimentos_por_hora += dado.procedimentos_por_hora;
+        dadoEncontrado.atendimentos_realizados += dado.procedimentos_realizados;
+      }
+    });
+    return dadosAgregados;
+  };
+
+  function filtrarDados(dados) {
+    const filtradosPorEstabelecimento = filtrarPorMultiplosEstabelecimentos(dados, filtroEstabelecimentoAtendimentosPorProfissional);
+    const filtradosPorPeriodoEEstabelecimento = filtrarPorPeriodo(filtradosPorEstabelecimento, filtroCompetenciaAtendimentosPorProfissional);
+    return filtradosPorPeriodoEEstabelecimento;
+  }
+
+  function ordenarPorNomeProfissional(atualAtendimento, proximoAtendimento) {
+    if (!atualAtendimento.profissional_nome || !proximoAtendimento.profissional_nome) {
+      return -1;
+    }
+
+    return atualAtendimento.profissional_nome.localeCompare(proximoAtendimento.profissional_nome);
+  }
+
+  function agregarFiltrarEOrdenar(dados) {
+    const agregados = agregarPorNomeEOcupacao(filtrarDados(dados));
+
+    return agregados.sort(ordenarPorNomeProfissional);
+  }
 
   if (mostrarMensagemSemAmbulatorio(session?.user.municipio_id_ibge)) {
     return (
@@ -114,10 +168,10 @@ const Ambulatorio = () => {
           url: ''
         } }
         texto=''
-        botao={{
+        botao={ {
           label: '',
           url: ''
-        }}
+        } }
         titulo='<strong>Ambulatório de Saúde Mental</strong>'
       />
 
@@ -155,12 +209,12 @@ const Ambulatorio = () => {
         ? (
           <>
             <FiltroTexto
-              width ={'50%'}
-              dados = {atendimentosTotal}
-              valor = {filtroEstabelecimentoAtendimentosTotal}
-              setValor = {setFiltroEstabelecimentoAtendimentosTotal}
-              label = {'Estabelecimento'}
-              propriedade = {'estabelecimento'}
+              width={ '50%' }
+              dados={ atendimentosTotal }
+              valor={ filtroEstabelecimentoAtendimentosTotal }
+              setValor={ setFiltroEstabelecimentoAtendimentosTotal }
+              label={ 'Estabelecimento' }
+              propriedade={ 'estabelecimento' }
             />
             <GraficoAtendimentos
               dados = {filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosTotal)}
@@ -182,12 +236,12 @@ const Ambulatorio = () => {
         ? (
           <>
             <FiltroTexto
-              width ={'50%'}
-              dados = {atendimentosTotal}
-              valor = {filtroEstabelecimentoAtendimentosPorHorasTrabalhadas}
-              setValor = {setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas}
-              label = {'Estabelecimento'}
-              propriedade = {'estabelecimento'}
+              width={ '50%' }
+              dados={ atendimentosTotal }
+              valor={ filtroEstabelecimentoAtendimentosPorHorasTrabalhadas }
+              setValor={ setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas }
+              label={ 'Estabelecimento' }
+              propriedade={ 'estabelecimento' }
             />
             <GraficoAtendimentos
               dados = {filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosPorHorasTrabalhadas)}
@@ -207,7 +261,7 @@ const Ambulatorio = () => {
 
       {perfilAtendimentos.length !== 0
         ? <>
-          <div className={ styles.Filtros }>
+          <div className={ Style.Filtros }>
             <FiltroTexto
               dados={ perfilAtendimentos }
               label='Estabelecimento'
@@ -244,7 +298,40 @@ const Ambulatorio = () => {
       <GraficoInfo
         titulo='Atendimentos por profissional'
         fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
+        tooltip='O indicador de atendimentos por hora é calculado a partir da divisão do total de atendimentos registrados pelo total de horas de trabalho dos profissionais estabelecidas em contrato. De tal modo, valores podem apresentar subnotificação em caso de férias, licenças, feriados, números de maior número de finais de semana no mês.'
       />
+      { atendimentosTotal.length !== 0
+        ? (
+          <> <div className={ Style.Filtros }>
+            <FiltroTexto
+              width={ '50%' }
+              dados={ atendimentosPorProfissional }
+              valor={ filtroEstabelecimentoAtendimentosPorProfissional }
+              setValor={ setFiltroEstabelecimentoAtendimentosPorProfissional }
+              label={ 'Estabelecimento' }
+              propriedade={ 'estabelecimento' }
+              isMulti
+              showAllOption
+              isDefaultAllOption
+            />
+            <FiltroCompetencia
+              width={ '50%' }
+              dados={ atendimentosPorProfissional }
+              valor={ filtroCompetenciaAtendimentosPorProfissional }
+              setValor={ setFiltroCompetenciaAtendimentosPorProfissional }
+              label={ 'Competência' }
+              isMulti
+              showAllOption
+              isDefaultAllOption
+            />
+          </div>
+          <TabelaAtendimentosPorProfissional
+            atendimentos={ agregarFiltrarEOrdenar(atendimentosPorProfissional) }
+          />
+          </>
+        )
+        : <Spinner theme='ColorSM' />
+      }
     </div>
   );
 };
