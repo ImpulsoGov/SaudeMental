@@ -1,16 +1,14 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
-import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
-import { FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { FILTRO_TEXTO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { agregarQuantidadePorPropriedadeNome, getOpcoesGraficoDonut } from '../../../helpers/graficoDonut';
 import { getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
-import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenacao';
 import styles from '../OutrosRaps.module.css';
+import { GraficoHistoricoTemporal, GraficoDonut } from '../../../components/Graficos';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -24,9 +22,7 @@ const ConsultorioNaRua = () => {
   const { data: session } = useSession();
   const [atendimentos, setAtendimentos] = useState([]);
   const [atendimentos12meses, setAtendimentos12meses] = useState([]);
-  const [filtroProducao, setFiltroProducao] = useState({
-    value: 'Todos', label: 'Todos'
-  });
+  const [filtroProducao, setFiltroProducao] = useState(FILTRO_TEXTO_DEFAULT);
   const [filtroCompetencia, setFiltroCompetencia] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   useEffect(() => {
@@ -42,81 +38,20 @@ const ConsultorioNaRua = () => {
     }
   }, []);
 
-  const ordenarQuantidadesPorCompetenciaAsc = (atendimentos) => {
-    return atendimentos.sort((a, b) => new Date(a.competencia) - new Date(b.competencia));
-  };
+  const atendimentosFiltradosPorProducao = useMemo(() => {
+    return atendimentos.filter(({ tipo_producao: tipoProducao }) => tipoProducao === filtroProducao.value);
+  }, [atendimentos, filtroProducao.value]);
 
-  const getOpcoesGraficoDeLinha = (atendimentos) => {
-    const atendimentosFiltrados = atendimentos.filter(({ tipo_producao: tipoProducao }) => tipoProducao === filtroProducao.value);
-    const atendimentosOrdenados = ordenarQuantidadesPorCompetenciaAsc(atendimentosFiltrados);
-
-    return {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          label: {
-            backgroundColor: '#6a7985'
-          }
-        }
-      },
-      toolbox: {
-        feature: {
-          saveAsImage: {
-            title: 'Salvar como imagem',
-          }
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: atendimentosOrdenados.map(({ periodo }) => periodo)
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [
-        {
-          name: 'Atendimentos realizados',
-          data: atendimentosOrdenados
-            .map(({ quantidade_registrada: quantidadeRegistrada }) => quantidadeRegistrada),
-          type: 'line',
-          itemStyle: {
-            color: '#5367C9'
-          },
-        }
-      ]
-    };
-  };
-
-  const atendimentosFiltradosOrdenados = useMemo(() => {
+  const atendimentosFiltradosPorPeriodo = useMemo(() => {
     const periodosSelecionados = filtroCompetencia.map(({ value }) => value);
-    const atendimentosFiltrados = atendimentos.filter(({
+
+    return atendimentos.filter(({
       tipo_producao: tipoProducao,
       periodo,
-      quantidade_registrada: quantidade
     }) =>
       tipoProducao !== 'Todos'
       && periodosSelecionados.includes(periodo)
-      && quantidade !== 0
     );
-
-    const atendimentosAgregados = agregarQuantidadePorPropriedadeNome(
-      atendimentosFiltrados,
-      'tipo_producao',
-      'quantidade_registrada'
-    );
-
-    const atendimentosOrdenados = ordenarDecrescentePorPropriedadeNumerica(
-      atendimentosAgregados,
-      'quantidade'
-    );
-
-    return atendimentosOrdenados;
   }, [atendimentos, filtroCompetencia]);
 
   const getPropsCardUltimoPeriodo = () => {
@@ -214,9 +149,12 @@ const ConsultorioNaRua = () => {
           />
 
           <div className={ styles.GraficoDonutContainer }>
-            <ReactEcharts
-              option={ getOpcoesGraficoDonut(atendimentosFiltradosOrdenados) }
-              style={ { width: '50%', height: '100%' } }
+            <GraficoDonut
+              dados={ atendimentosFiltradosPorPeriodo }
+              propriedades={ {
+                nome: 'tipo_producao',
+                quantidade: 'quantidade_registrada'
+              } }
             />
 
             <TabelaGraficoDonut
@@ -224,7 +162,11 @@ const ConsultorioNaRua = () => {
                 colunaHeader: 'Tipo de produção',
                 colunaQuantidade: 'Quantidade registrada',
               } }
-              data={ atendimentosFiltradosOrdenados }
+              propriedades={ {
+                nome: 'tipo_producao',
+                quantidade: 'quantidade_registrada'
+              } }
+              data={ atendimentosFiltradosPorPeriodo }
               mensagemDadosZerados='Sem produção registrada nessa competência'
             />
           </div>
@@ -247,9 +189,11 @@ const ConsultorioNaRua = () => {
             setValor={ setFiltroProducao }
           />
 
-          <ReactEcharts
-            option={ getOpcoesGraficoDeLinha(atendimentos) }
-            style={ { width: '100%', height: '70vh' } }
+          <GraficoHistoricoTemporal
+            dados={ atendimentosFiltradosPorProducao }
+            textoTooltip='Atendimentos realizados'
+            propriedade='quantidade_registrada'
+            loading={ false }
           />
         </>
         : <Spinner theme="ColorSM" />
