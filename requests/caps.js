@@ -65,18 +65,6 @@ export const getResumoPerfilDeAtendimentos = async (municipioIdSus) => {
   }
 };
 
-export const getPerfilDeAtendimentos = async (municipioIdSus) => {
-  try {
-    const endpoint = "/atendimentosindividuais/caps/perfil?municipio_id_sus=" + municipioIdSus;
-
-    const { data } = await axiosInstance.get(endpoint);
-
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-};
-
 export const getAtendimentosPorCaps = async (municipioIdSus) => {
   try {
     const endpoint = "/atendimentosindividuais/porcaps?municipio_id_sus=" + municipioIdSus;
