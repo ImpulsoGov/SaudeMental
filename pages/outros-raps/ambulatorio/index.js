@@ -1,5 +1,4 @@
 import { GraficoInfo, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
-import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useState } from 'react';
 import { CardsAmbulatorioUltimoMes, CardsAtendimentoPorOcupacaoUltimoMes } from '../../../components/CardsAmbulatorio';
@@ -7,9 +6,10 @@ import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import { TabelaAtendimentosPorProfissional } from '../../../components/Tabelas';
 import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getOpcoesGraficoAtendimentos } from '../../../helpers/graficoAtendimentos';
 import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosPorProfissional, getAtendimentosTotal } from '../../../requests/outros-raps';
-import Style from '../OutrosRaps.module.css';
+import styles from '../OutrosRaps.module.css';
+import { mostrarMensagemSemAmbulatorio, mostrarMensagemSemDadosAmbulatorio } from '../../../helpers/mostrarDadosDeAmbulatorio';
+import { GraficoAtendimentos, GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -28,15 +28,21 @@ const Ambulatorio = () => {
   const [filtroEstabelecimentoAtendimentosPorHorasTrabalhadas, setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroEstabelecimentoAtendimentosPorProfissional, setFiltroEstabelecimentoAtendimentosPorProfissional] = useState(FILTRO_ESTABELECIMENTO_MULTI_DEFAULT);
   const [filtroCompetenciaAtendimentosPorProfissional, setFiltroCompetenciaAtendimentosPorProfissional] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [perfilAtendimentos, setPerfilAtendimentos] = useState([]);
+  const [filtroEstabelecimentoPiramideEtaria, setFiltroEstabelecimentoPiramideEtaria] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
+  const [filtroPeriodoPiramideEtaria, setFiltroPeriodoPiramideEtaria] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
 
   useEffect(() => {
+    const mostraMensagemSemAmbulatorio = mostrarMensagemSemAmbulatorio(session?.user.municipio_id_ibge);
+    const mostraMensagemSemDadosAmbulatorio = mostrarMensagemSemDadosAmbulatorio(session?.user.municipio_id_ibge);
     const getDados = async (municipioIdSus) => {
       setAtendimentosTotal(await getAtendimentosTotal(municipioIdSus));
       setAtendimentosUltimoMes(await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus));
       setAtendimentosPorProfissional(await getAtendimentosPorProfissional(municipioIdSus));
+      setPerfilAtendimentos(await getPerfilAtendimentosAmbulatorio(municipioIdSus));
     };
 
-    if (session?.user.municipio_id_ibge) {
+    if (session?.user.municipio_id_ibge && !mostraMensagemSemAmbulatorio && !mostraMensagemSemDadosAmbulatorio) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
@@ -50,8 +56,17 @@ const Ambulatorio = () => {
 
     return atendimentoGeralPorOcupacao;
   }, [atendimentosUltimoMes]);
+
+  const atendimentosFiltrados = useMemo(() => {
+    const periodosSelecionados = filtroPeriodoPiramideEtaria.map(({ value }) => value);
+    const filtrados = perfilAtendimentos.filter((atendimento) =>
+      atendimento.estabelecimento === filtroEstabelecimentoPiramideEtaria.value
+      && periodosSelecionados.includes(atendimento.periodo)
+    );
+    return filtrados;
+  }, [perfilAtendimentos, filtroPeriodoPiramideEtaria, filtroEstabelecimentoPiramideEtaria.value]);
+
   const obterAtendimentoGeralPorOcupacoes = useCallback(() => {
-    //todo: falar com taina sobre essa forma
     const atendimentosPorOcupacoes = atendimentosTotal.filter((atendimento) =>
       atendimento.ocupacao !== 'Todas'
     );
@@ -111,6 +126,40 @@ const Ambulatorio = () => {
     return agregados.sort(ordenarPorNomeProfissional);
   }
 
+  if (mostrarMensagemSemAmbulatorio(session?.user.municipio_id_ibge)) {
+    return (
+      <TituloSmallTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        texto='Essa página não está exibindo dados porque a coordenação da RAPS informou que não há ambulatórios da rede especializada que realizam atendimentos de Saúde Mental com psicólogos e psiquiatras em seu município. Caso queira solicitar a inclusão de um novo estabelecimento ambulatorial, entre em contato via nosso <u><a style="color:inherit" href="/duvidas" target="_blank">formulário de solicitação de suporte</a></u>, <u><a style="color:inherit" href="https://wa.me/5511941350260" target="_blank">whatsapp</a></u> ou e-mail (saudemental@impulsogov.org).'
+        botao={{
+          label: '',
+          url: ''
+        }}
+      />
+    );
+  }
+
+  if (mostrarMensagemSemDadosAmbulatorio(session?.user.municipio_id_ibge)) {
+    return (
+      <TituloSmallTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        texto='O indicador de ambulatório utiliza dados da atenção especializada que são coletados através dos registros de psicólogos e psiquiatras em fichas de BPA-i. São considerados os estabelecimentos indicados no momento do preenchimento do Formulário de Personalização do Painel, feito pela coordenação da RAPS no município.
+        <br/>
+        Se essa página não está exibindo nenhum dado da sua rede, verifique se o estabelecimento está habilitado a registrar em BPA-i (como no caso de ambulatórios vinculados a Atenção Básica que registram via SISAB), ou se existem problemas de registro.'
+        botao={{
+          label: '',
+          url: ''
+        }}
+      />
+    );
+  }
+
   return (
     <div>
       <TituloSmallTexto
@@ -167,16 +216,12 @@ const Ambulatorio = () => {
               label={ 'Estabelecimento' }
               propriedade={ 'estabelecimento' }
             />
-            <ReactEcharts
-              option={
-                getOpcoesGraficoAtendimentos(
-                  filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosTotal),
-                  'procedimentos_realizados',
-                  'Médico psiquiatra',
-                  'Psicólogo clínico'
-                )
-              }
-              style={ { width: '100%', height: '70vh' } }
+            <GraficoAtendimentos
+              dados = {filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosTotal)}
+              textoTooltipA={'Médico psiquiatra'}
+              textoTooltipB={'Psicólogo clínico'}
+              loading = {false}
+              propriedade={'procedimentos_realizados'}
             />
           </>
         )
@@ -198,16 +243,12 @@ const Ambulatorio = () => {
               label={ 'Estabelecimento' }
               propriedade={ 'estabelecimento' }
             />
-            <ReactEcharts
-              option={
-                getOpcoesGraficoAtendimentos(
-                  filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosPorHorasTrabalhadas),
-                  'procedimentos_por_hora',
-                  'Médico psiquiatra',
-                  'Psicólogo clínico'
-                )
-              }
-              style={ { width: '100%', height: '70vh' } }
+            <GraficoAtendimentos
+              dados = {filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosPorHorasTrabalhadas)}
+              textoTooltipA={'Médico psiquiatra'}
+              textoTooltipB={'Psicólogo clínico'}
+              loading = {false}
+              propriedade={'procedimentos_por_hora'}
             />
           </>
         )
@@ -217,6 +258,42 @@ const Ambulatorio = () => {
         titulo='Pirâmide etária de atendidos'
         fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
       />
+
+      {perfilAtendimentos.length !== 0
+        ? <>
+          <div className={ styles.Filtros }>
+            <FiltroTexto
+              dados={ perfilAtendimentos }
+              label='Estabelecimento'
+              propriedade='estabelecimento'
+              valor={ filtroEstabelecimentoPiramideEtaria }
+              setValor={ setFiltroEstabelecimentoPiramideEtaria }
+            />
+
+            <FiltroCompetencia
+              dados={ perfilAtendimentos }
+              valor={ filtroPeriodoPiramideEtaria }
+              setValor={ setFiltroPeriodoPiramideEtaria }
+              label='Competência'
+              isMulti
+            />
+          </div>
+          <GraficoGeneroPorFaixaEtaria
+            dados = {atendimentosFiltrados}
+            labels={{
+              eixoY: 'Nº de usuários únicos nas referências ambulatoriais'
+            }}
+            loading = {false}
+            propriedades={{
+              faixaEtaria: 'usuario_faixa_etaria',
+              sexo: 'usuario_sexo',
+              quantidade: 'usuarios_unicos_mes',
+            }}
+
+          />
+        </>
+        : <Spinner theme='ColorSM' />
+      }
 
       <GraficoInfo
         titulo='Atendimentos por profissional'

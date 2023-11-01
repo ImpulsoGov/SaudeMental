@@ -11,3 +11,7 @@ export const FILTRO_ESTABELECIMENTO_MULTI_DEFAULT = [FILTRO_ESTABELECIMENTO_DEFA
 export const FILTRO_OCUPACAO_DEFAULT = {
   value: 'Todas', label: 'Todas'
 };
+
+export const FILTRO_TEXTO_DEFAULT = {
+  value: 'Todos', label: 'Todos'
+};

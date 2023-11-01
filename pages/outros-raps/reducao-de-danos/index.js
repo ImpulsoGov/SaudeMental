@@ -1,13 +1,13 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
-import ReactEcharts from 'echarts-for-react';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import FiltroTexto from '../../../components/Filtros/FiltroTexto';
 import { FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_OCUPACAO_DEFAULT } from '../../../constants/FILTROS';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses } from '../../../requests/outros-raps';
 import styles from '../OutrosRaps.module.css';
+import { GraficoHistoricoTemporal } from '../../../components/Graficos';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -61,10 +61,6 @@ const ReducaoDeDanos = () => {
     };
   };
 
-  const ordenarQuantidadesPorCompetenciaAsc = (acoes) => {
-    return acoes.sort((a, b) => new Date(a.competencia) - new Date(b.competencia));
-  };
-
   const agregarQuantidadePorPeriodo = (dados) => {
     const dadosAgregados = [];
 
@@ -81,8 +77,9 @@ const ReducaoDeDanos = () => {
     return dadosAgregados;
   };
 
-  const getOpcoesGraficoDeLinha = (acoes) => {
+  const acoesFiltradasEAgregadas = useMemo(() => {
     const estabelecimentosSelecionados = filtroEstabelecimento.map(({ value }) => value);
+
     const acoesFiltradas = acoes.filter(({
       estabelecimento,
       profissional_vinculo_ocupacao: ocupacao
@@ -90,43 +87,9 @@ const ReducaoDeDanos = () => {
       estabelecimentosSelecionados.includes(estabelecimento)
       && ocupacao === filtroOcupacao.value
     );
-    const acoesAgregadas = agregarQuantidadePorPeriodo(acoesFiltradas);
-    const acoesOrdenadas = ordenarQuantidadesPorCompetenciaAsc(acoesAgregadas);
 
-    return {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          label: {
-            backgroundColor: '#6a7985'
-          }
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: acoesOrdenadas.map(({ periodo }) => periodo)
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [
-        {
-          name: 'Ações registradas',
-          data: acoesOrdenadas.map(({ quantidade }) => quantidade),
-          type: 'line',
-          itemStyle: {
-            color: '#5367C9'
-          },
-        }
-      ]
-    };
-  };
+    return agregarQuantidadePorPeriodo(acoesFiltradas);
+  }, [acoes, filtroEstabelecimento, filtroOcupacao.value]);
 
   return (
     <div>
@@ -191,9 +154,11 @@ const ReducaoDeDanos = () => {
             />
           </div>
 
-          <ReactEcharts
-            option={ getOpcoesGraficoDeLinha(acoes) }
-            style={ { width: '100%', height: '70vh' } }
+          <GraficoHistoricoTemporal
+            dados={ acoesFiltradasEAgregadas }
+            textoTooltip='Ações registradas'
+            propriedade='quantidade'
+            loading={ false }
           />
         </>
         : <Spinner theme="ColorSM" />

@@ -23,7 +23,9 @@ const FiltroTexto = ({
     const valoresUnicos = new Set();
 
     dados.forEach((dado) => {
-      valoresUnicos.add(dado[propriedade]);
+      if (dado[propriedade]) {
+        valoresUnicos.add(dado[propriedade]);
+      }
     });
 
     return [...valoresUnicos]

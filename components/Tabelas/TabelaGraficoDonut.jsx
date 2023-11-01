@@ -7,10 +7,17 @@ import {
   COR_GRAFICO_DONUT_SEM_DADOS,
   QUANTIDADE_CORES_GRAFICO_DONUT
 } from '../../constants/GRAFICO_DONUT';
-import { agruparItensQueUltrapassamPaleta } from '../../helpers/graficoDonut';
+import { agregarQuantidadePorPropriedadeNome, agruparItensQueUltrapassamPaleta } from '../../helpers/graficoDonut';
 import styles from './Tabelas.module.css';
+import { ordenarDecrescentePorPropriedadeNumerica } from '../../utils/ordenacao';
+import { removerDadosZeradosPorPropriedade } from '../../utils/removerDadosZerados';
 
-const TabelaGraficoDonut = ({ labels, data, mensagemDadosZerados }) => {
+const TabelaGraficoDonut = ({
+  labels,
+  data,
+  mensagemDadosZerados,
+  propriedades
+}) => {
   const colunas = useMemo(() => [
     {
       field: 'nome',
@@ -45,16 +52,31 @@ const TabelaGraficoDonut = ({ labels, data, mensagemDadosZerados }) => {
     },
   ], [labels]);
 
+  const dadosAgregadosEOrdenados = useMemo(() => {
+    const dadosNaoZerados = removerDadosZeradosPorPropriedade(data, propriedades.quantidade);
+
+    const agregados = agregarQuantidadePorPropriedadeNome(
+      dadosNaoZerados,
+      propriedades.nome,
+      propriedades.quantidade
+    );
+
+    return ordenarDecrescentePorPropriedadeNumerica(
+      agregados,
+      'quantidade'
+    );
+  }, [data, propriedades]);
+
   const formatarDadosEmLinhas = useCallback(() => {
     let indiceDadosAgrupados = -1;
 
-    if (data.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
-      const dadosAgrupados = agruparItensQueUltrapassamPaleta(data);
+    if (dadosAgregadosEOrdenados.length > QUANTIDADE_CORES_GRAFICO_DONUT) {
+      const dadosAgrupados = agruparItensQueUltrapassamPaleta(dadosAgregadosEOrdenados);
 
       indiceDadosAgrupados = dadosAgrupados.findIndex(({ nome }) => nome === 'Outros');
     }
 
-    return data.map(({ nome, quantidade }, index) => ({
+    return dadosAgregadosEOrdenados.map(({ nome, quantidade }, index) => ({
       id: uuidV4(),
       nome,
       quantidade: {
@@ -65,7 +87,7 @@ const TabelaGraficoDonut = ({ labels, data, mensagemDadosZerados }) => {
         dadosZerados: false
       }
     }));
-  }, [data]);
+  }, [dadosAgregadosEOrdenados]);
 
   const obterLinhaParaDadosZerados = useCallback(() => [{
     id: uuidV4(),
@@ -78,10 +100,10 @@ const TabelaGraficoDonut = ({ labels, data, mensagemDadosZerados }) => {
   }], [mensagemDadosZerados]);
 
   const linhas = useMemo(() => {
-    return data.length !== 0
+    return dadosAgregadosEOrdenados.length !== 0
       ? formatarDadosEmLinhas()
       : obterLinhaParaDadosZerados();
-  }, [formatarDadosEmLinhas, obterLinhaParaDadosZerados, data]);
+  }, [formatarDadosEmLinhas, obterLinhaParaDadosZerados, dadosAgregadosEOrdenados]);
 
   return (
     <DataGrid
@@ -114,13 +136,14 @@ const TabelaGraficoDonut = ({ labels, data, mensagemDadosZerados }) => {
 };
 
 TabelaGraficoDonut.propTypes = {
+  data: PropTypes.array,
   labels: PropTypes.shape({
     colunaHeader: PropTypes.string,
     colunaQuantidade: PropTypes.string,
   }),
-  data: PropTypes.shape({
+  propriedades: PropTypes.shape({
     nome: PropTypes.string,
-    quantidade: PropTypes.number,
+    quantidade: PropTypes.string,
   }),
   mensagemDadosZerados: PropTypes.string
 }.isRequired;

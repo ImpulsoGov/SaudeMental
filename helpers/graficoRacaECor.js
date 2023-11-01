@@ -25,34 +25,3 @@ export const agregarPorRacaCor = (
 
   return dadosAgregados;
 };
-
-export const getOpcoesGraficoRacaEcor = (dados, textoTooltip) => {
-  const NOME_DIMENSAO = "quantidade";
-  const LABEL_DIMENSAO = textoTooltip;
-
-  return {
-    legend: {},
-    tooltip: {},
-    dataset: {
-      dimensions: [NOME_DIMENSAO, LABEL_DIMENSAO],
-      source: dados
-        .sort((a, b) => b.racaCor.localeCompare(a.racaCor))
-        .map((item) => ({
-          [NOME_DIMENSAO]: item.racaCor,
-          [LABEL_DIMENSAO]: item.quantidade,
-        })),
-    },
-    xAxis: {
-      type: 'category',
-    },
-    yAxis: {},
-    series: [
-      {
-        type: 'bar',
-        itemStyle: {
-          color: "#5367C9"
-        },
-      },
-    ]
-  };
-};
