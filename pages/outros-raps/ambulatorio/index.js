@@ -1,13 +1,13 @@
 import { GraficoInfo, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { CardsAmbulatorioUltimoMes, CardsAtendimentoPorOcupacaoUltimoMes } from '../../../components/CardsAmbulatorio';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import { TabelaAtendimentosPorProfissional } from '../../../components/Tabelas';
 import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosPorProfissional, getAtendimentosTotal } from '../../../requests/outros-raps';
-import styles from '../OutrosRaps.module.css';
+import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosPorProfissional, getAtendimentosTotal, getPerfilAtendimentosAmbulatorio } from '../../../requests/outros-raps';
+import Style from '../OutrosRaps.module.css';
 import { mostrarMensagemSemAmbulatorio, mostrarMensagemSemDadosAmbulatorio } from '../../../helpers/mostrarDadosDeAmbulatorio';
 import { GraficoAtendimentos, GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
 
@@ -261,7 +261,7 @@ const Ambulatorio = () => {
 
       {perfilAtendimentos.length !== 0
         ? <>
-          <div className={ styles.Filtros }>
+          <div className={ Style.Filtros }>
             <FiltroTexto
               dados={ perfilAtendimentos }
               label='Estabelecimento'
