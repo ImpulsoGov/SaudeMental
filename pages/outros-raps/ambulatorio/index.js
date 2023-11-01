@@ -6,12 +6,10 @@ import { getAtendimentosAmbulatorioResumoUltimoMes, getPerfilAtendimentosAmbulat
 import { CardsAmbulatorioUltimoMes, CardsAtendimentoPorOcupacaoUltimoMes } from '../../../components/CardsAmbulatorio';
 import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
-import ReactEcharts from 'echarts-for-react';
 import styles from '../OutrosRaps.module.css';
-import { agregarPorFaixaEtariaEGenero, getOpcoesGraficoGeneroEFaixaEtaria } from '../../../helpers/graficoGeneroEFaixaEtaria';
-import { getOpcoesGraficoAtendimentos } from '../../../helpers/graficoAtendimentos';
 import { mostrarMensagemSemAmbulatorio, mostrarMensagemSemDadosAmbulatorio } from '../../../helpers/mostrarDadosDeAmbulatorio';
-
+import { agregarPorFaixaEtariaEGenero} from '../../../helpers/graficoGeneroEFaixaEtaria';
+import { GraficoAtendimentos, GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
 
@@ -53,14 +51,21 @@ const Ambulatorio = () => {
 
     return atendimentoGeralPorOcupacao;
   }, [atendimentosUltimoMes]);
-
+  // const atendimentosFiltrados = useMemo(() => {
+  //   const periodosSelecionados = filtroPeriodoPiramideEtaria.map(({ value }) => value);
+  //   const filtrados = perfilAtendimentos.filter((atendimento) =>
+  //     atendimento.estabelecimento === filtroEstabelecimentoPiramideEtaria.value
+  //     && periodosSelecionados.includes(atendimento.periodo)
+  //   );
+  //   return filtrados;
+  // }, [perfilAtendimentos, filtroPeriodoPiramideEtaria, filtroEstabelecimentoPiramideEtaria.value]);
   const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
     const periodosSelecionados = filtroPeriodoPiramideEtaria.map(({ value }) => value);
     const atendimentosFiltrados = perfilAtendimentos.filter((atendimento) =>
       atendimento.estabelecimento === filtroEstabelecimentoPiramideEtaria.value
       && periodosSelecionados.includes(atendimento.periodo)
     );
-
+    console.log('atendimentosFiltrados: ', atendimentosFiltrados.usuario_sexo)
     return agregarPorFaixaEtariaEGenero(
       atendimentosFiltrados,
       'usuario_faixa_etaria',
@@ -68,7 +73,6 @@ const Ambulatorio = () => {
       'usuarios_unicos_mes'
     );
   }, [perfilAtendimentos, filtroPeriodoPiramideEtaria, filtroEstabelecimentoPiramideEtaria.value]);
-
   const obterAtendimentoGeralPorOcupacoes = useCallback(() => {
     //todo: falar com taina sobre essa forma
     const atendimentosPorOcupacoes = atendimentosTotal.filter((atendimento) =>
@@ -171,16 +175,12 @@ const Ambulatorio = () => {
               label = {'Estabelecimento'}
               propriedade = {'estabelecimento'}
             />
-            <ReactEcharts
-              option={
-                getOpcoesGraficoAtendimentos(
-                  filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosTotal),
-                  'procedimentos_realizados',
-                  'Médico psiquiatra',
-                  'Psicólogo clínico'
-                )
-              }
-              style = {{width: '100%', height: '70vh'}}
+            <GraficoAtendimentos
+              dados = {filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosTotal)}
+              textoTooltipA={'Médico psiquiatra'}
+              textoTooltipB={'Psicólogo clínico'}
+              loading = {false}
+              propriedade={'procedimentos_realizados'}
             />
           </>
         )
@@ -202,16 +202,12 @@ const Ambulatorio = () => {
               label = {'Estabelecimento'}
               propriedade = {'estabelecimento'}
             />
-            <ReactEcharts
-              option={
-                getOpcoesGraficoAtendimentos(
-                  filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosPorHorasTrabalhadas),
-                  'procedimentos_por_hora',
-                  'Médico psiquiatra',
-                  'Psicólogo clínico'
-                )
-              }
-              style = {{width: '100%', height: '70vh'}}
+            <GraficoAtendimentos
+              dados = {filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosPorHorasTrabalhadas)}
+              textoTooltipA={'Médico psiquiatra'}
+              textoTooltipB={'Psicólogo clínico'}
+              loading = {false}
+              propriedade={'procedimentos_por_hora'}
             />
           </>
         )
@@ -241,13 +237,18 @@ const Ambulatorio = () => {
               isMulti
             />
           </div>
+          <GraficoGeneroPorFaixaEtaria
+            dados = {agregadosPorGeneroEFaixaEtaria}
+            labels={{
+              eixoY: 'Nº de usuários únicos nas referências ambulatoriais'
+            }}
+            loading = {false}
+            propriedades={{
+              faixaEtaria: 'usuario_faixa_etaria',
+              sexo: 'usuario_sexo',
+              quantidade: 'usuarios_apenas_atendimento_individual',
+            }}
 
-          <ReactEcharts
-            option={ getOpcoesGraficoGeneroEFaixaEtaria(
-              agregadosPorGeneroEFaixaEtaria,
-              'Nº de usuários únicos nas referências ambulatoriais'
-            ) }
-            style={ { width: '100%', height: '70vh' } }
           />
         </>
         : <Spinner theme='ColorSM' />
