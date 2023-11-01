@@ -29,18 +29,6 @@ export const getPerfilUsuariosPorEstabelecimento = async (municipioIdSus) => {
   }
 };
 
-export const getNovosUsuarios = async (municipioIdSus) => {
-  try {
-    const endpoint = "/usuarios/novos?municipio_id_sus=" + municipioIdSus;
-
-    const { data } = await axiosInstance.get(endpoint);
-
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-};
-
 export const getResumoNovosUsuarios = async (municipioIdSus) => {
   try {
     const endpoint = "/usuarios/novosresumo?municipio_id_sus=" + municipioIdSus;
