@@ -8,7 +8,6 @@ import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '..
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import styles from '../OutrosRaps.module.css';
 import { mostrarMensagemSemAmbulatorio, mostrarMensagemSemDadosAmbulatorio } from '../../../helpers/mostrarDadosDeAmbulatorio';
-import { agregarPorFaixaEtariaEGenero} from '../../../helpers/graficoGeneroEFaixaEtaria';
 import { GraficoAtendimentos, GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -51,28 +50,16 @@ const Ambulatorio = () => {
 
     return atendimentoGeralPorOcupacao;
   }, [atendimentosUltimoMes]);
-  // const atendimentosFiltrados = useMemo(() => {
-  //   const periodosSelecionados = filtroPeriodoPiramideEtaria.map(({ value }) => value);
-  //   const filtrados = perfilAtendimentos.filter((atendimento) =>
-  //     atendimento.estabelecimento === filtroEstabelecimentoPiramideEtaria.value
-  //     && periodosSelecionados.includes(atendimento.periodo)
-  //   );
-  //   return filtrados;
-  // }, [perfilAtendimentos, filtroPeriodoPiramideEtaria, filtroEstabelecimentoPiramideEtaria.value]);
-  const agregadosPorGeneroEFaixaEtaria = useMemo(() => {
+
+  const atendimentosFiltrados = useMemo(() => {
     const periodosSelecionados = filtroPeriodoPiramideEtaria.map(({ value }) => value);
-    const atendimentosFiltrados = perfilAtendimentos.filter((atendimento) =>
+    const filtrados = perfilAtendimentos.filter((atendimento) =>
       atendimento.estabelecimento === filtroEstabelecimentoPiramideEtaria.value
       && periodosSelecionados.includes(atendimento.periodo)
     );
-    console.log('atendimentosFiltrados: ', atendimentosFiltrados.usuario_sexo)
-    return agregarPorFaixaEtariaEGenero(
-      atendimentosFiltrados,
-      'usuario_faixa_etaria',
-      'usuario_sexo',
-      'usuarios_unicos_mes'
-    );
+    return filtrados;
   }, [perfilAtendimentos, filtroPeriodoPiramideEtaria, filtroEstabelecimentoPiramideEtaria.value]);
+
   const obterAtendimentoGeralPorOcupacoes = useCallback(() => {
     //todo: falar com taina sobre essa forma
     const atendimentosPorOcupacoes = atendimentosTotal.filter((atendimento) =>
@@ -238,7 +225,7 @@ const Ambulatorio = () => {
             />
           </div>
           <GraficoGeneroPorFaixaEtaria
-            dados = {agregadosPorGeneroEFaixaEtaria}
+            dados = {atendimentosFiltrados}
             labels={{
               eixoY: 'Nº de usuários únicos nas referências ambulatoriais'
             }}
@@ -246,7 +233,7 @@ const Ambulatorio = () => {
             propriedades={{
               faixaEtaria: 'usuario_faixa_etaria',
               sexo: 'usuario_sexo',
-              quantidade: 'usuarios_apenas_atendimento_individual',
+              quantidade: 'usuarios_unicos_mes',
             }}
 
           />
