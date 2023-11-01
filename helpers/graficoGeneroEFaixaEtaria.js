@@ -12,7 +12,6 @@ export const agregarPorFaixaEtariaEGenero = (
       [propriedadeFaixaEtaria]: faixaEtaria,
       [propriedadeSexo]: usuarioSexo
     } = dado;
-    console.log("dadoss:", dado)
     const genero = usuarioSexo.toLowerCase();
     const faixaEtariaDados = dadosAgregados
       .find((item) => item.faixaEtaria === faixaEtaria);
