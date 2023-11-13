@@ -67,7 +67,7 @@ export const getAtendimentosAmbulatorioResumoUltimoMes = async (municipioIdSus) 
 
 export const getPerfilAtendimentosAmbulatorio = async (municipioIdSus) => {
   try {
-    const endpoint = '/ambulatorio/usuario-perfil?municipio_id_sus=' + municipioIdSus;
+    const endpoint = '/ambulatorio/usuario_perfil?municipio_id_sus=' + municipioIdSus;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -91,7 +91,7 @@ export const getAtendimentosPorProfissional = async (municipioIdSus) => {
 
 export const getAtendimentosTotal = async (municipioIdSus) => {
   try {
-    const endpoint = '/ambulatorio/atendimento-resumo?municipio_id_sus=' + municipioIdSus;
+    const endpoint = '/ambulatorio/atendimento_resumo?municipio_id_sus=' + municipioIdSus;
     const { data } = await axiosInstance.get(endpoint);
 
     return data;
