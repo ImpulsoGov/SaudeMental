@@ -30,18 +30,6 @@ export const getAtendimentosConsultorioNaRua12meses = async (municipioIdSus) => 
   }
 };
 
-export const getAcoesReducaoDeDanos = async (municipioIdSus) => {
-  try {
-    const endpoint = '/reducaodedanos?municipio_id_sus=' + municipioIdSus;
-
-    const { data } = await axiosInstance.get(endpoint);
-
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-};
-
 export const getAcoesReducaoDeDanos12meses = async (municipioIdSus) => {
   try {
     const endpoint = '/reducaodedanos12meses?municipio_id_sus=' + municipioIdSus;
@@ -102,7 +90,48 @@ export const getAtendimentosTotal = async (municipioIdSus) => {
     const { data } = await axiosInstance.get(endpoint);
 
     return data;
-  }  catch (error) {
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const obterAcoesReducaoDeDanos = async ({
+  municipioIdSus,
+  estabelecimentos,
+  periodos,
+  ocupacoes
+}) => {
+  try {
+    let endpoint = '/reducao-de-danos?municipio_id_sus=' + municipioIdSus;
+
+    if (estabelecimentos !== undefined) {
+      endpoint += `&estabelecimentos=${estabelecimentos}`;
+    }
+
+    if (periodos !== undefined) {
+      endpoint += `&periodos=${periodos}`;
+    }
+
+    if (ocupacoes !== undefined) {
+      endpoint += `&ocupacoes=${ocupacoes}`;
+    }
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
+    console.log('error', error.response.data);
+  }
+};
+
+export const obterOcupacoesReducaoDeDanos = async (municipioIdSus) => {
+  try {
+    const endpoint = `/reducao-de-danos/ocupacoes?municipio_id_sus=${municipioIdSus}`;
+
+    const { data } = await axiosInstance.get(endpoint);
+
+    return data;
+  } catch (error) {
     console.log('error', error.response.data);
   }
 };
