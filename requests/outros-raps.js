@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_SAUDE_MENTAL_URL } from '../constants/API_URL';
+import { addQueryParamSeExiste } from '../utils/addQueryParamSeExiste';
 
 const axiosInstance = axios.create({
   baseURL: `${API_SAUDE_MENTAL_URL}saude-mental`,
@@ -65,9 +66,14 @@ export const getAtendimentosAmbulatorioResumoUltimoMes = async (municipioIdSus) 
   }
 };
 
-export const getPerfilAtendimentosAmbulatorio = async (municipioIdSus) => {
+export const getPerfilAtendimentosAmbulatorio = async ({
+  municipioIdSus,
+  periodos
+}) => {
   try {
-    const endpoint = '/ambulatorio/usuario_perfil?municipio_id_sus=' + municipioIdSus;
+    let endpoint = '/ambulatorio/usuario_perfil?municipio_id_sus=' + municipioIdSus;
+
+    endpoint = addQueryParamSeExiste(endpoint, 'periodos', periodos);
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -91,7 +97,8 @@ export const getAtendimentosPorProfissional = async (municipioIdSus) => {
 
 export const getAtendimentosTotal = async (municipioIdSus) => {
   try {
-    const endpoint = '/ambulatorio/atendimento_resumo?municipio_id_sus=' + municipioIdSus;
+    let endpoint = '/ambulatorio/atendimento_resumo?municipio_id_sus=' + municipioIdSus;
+
     const { data } = await axiosInstance.get(endpoint);
 
     return data;
