@@ -10,7 +10,7 @@ import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosPorProfission
 import Style from '../OutrosRaps.module.css';
 import { mostrarMensagemSemAmbulatorio, mostrarMensagemSemDadosAmbulatorio } from '../../../helpers/mostrarDadosDeAmbulatorio';
 import { GraficoAtendimentos, GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
-
+import {getPeriodos} from '../../../requests/caps';
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
 
@@ -31,21 +31,50 @@ const Ambulatorio = () => {
   const [perfilAtendimentos, setPerfilAtendimentos] = useState([]);
   const [filtroEstabelecimentoPiramideEtaria, setFiltroEstabelecimentoPiramideEtaria] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoPiramideEtaria, setFiltroPeriodoPiramideEtaria] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const [periodos, setPeriodos] = useState([]);
+  const [loadingPiramideEtaria, setloadingPiramideEtaria] = useState(true);
 
   useEffect(() => {
     const mostraMensagemSemAmbulatorio = mostrarMensagemSemAmbulatorio(session?.user.municipio_id_ibge);
     const mostraMensagemSemDadosAmbulatorio = mostrarMensagemSemDadosAmbulatorio(session?.user.municipio_id_ibge);
     const getDados = async (municipioIdSus) => {
-      setAtendimentosTotal(await getAtendimentosTotal(municipioIdSus));
+      setAtendimentosTotal(await getAtendimentosTotal(municipioIdSus)); //atendimento_resumo
       setAtendimentosUltimoMes(await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus));
       setAtendimentosPorProfissional(await getAtendimentosPorProfissional(municipioIdSus));
-      setPerfilAtendimentos(await getPerfilAtendimentosAmbulatorio(municipioIdSus));
+      setPeriodos(
+        await getPeriodos(municipioIdSus, 'usuarios_perfil')
+      );
+      setPerfilAtendimentos(await getPerfilAtendimentosAmbulatorio({
+        municipioIdSus,
+        estabelecimentos: 'Todos',
+        periodos: 'Último período'
+      }));// usuario_perfil
     };
 
     if (session?.user.municipio_id_ibge && !mostraMensagemSemAmbulatorio && !mostraMensagemSemDadosAmbulatorio) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
+
+  useEffect(() => {
+    if(session?.user.municipio_id_ibge) {
+      setloadingPiramideEtaria(true);
+      const promises = filtroPeriodoPiramideEtaria.map(({value: periodo}) => {
+        return getPerfilAtendimentosAmbulatorio({
+          municipioIdSus: session?.user.municipio_id_ibge,
+          estabelecimentos: filtroEstabelecimentoPiramideEtaria.value,
+          periodos: periodo
+        });
+      });
+
+      Promise.all(promises).then((result) => {
+        const respostasUnificadas = [].concat(...result);
+        setPerfilAtendimentos(respostasUnificadas);
+      });
+
+      setloadingPiramideEtaria(false);
+    }
+  }, [session?.user.municipio_id_ibge,filtroEstabelecimentoPiramideEtaria, filtroPeriodoPiramideEtaria]);
 
   const obterAtendimentoGeralUltimoMesPorOcupacao = useCallback((ocupacao) => {
     const atendimentoGeralPorOcupacao = atendimentosUltimoMes.find((atendimento) =>
@@ -259,7 +288,7 @@ const Ambulatorio = () => {
         fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
       />
 
-      {perfilAtendimentos.length !== 0
+      {!loadingPiramideEtaria
         ? <>
           <div className={ Style.Filtros }>
             <FiltroTexto
@@ -269,9 +298,8 @@ const Ambulatorio = () => {
               valor={ filtroEstabelecimentoPiramideEtaria }
               setValor={ setFiltroEstabelecimentoPiramideEtaria }
             />
-
             <FiltroCompetencia
-              dados={ perfilAtendimentos }
+              dados={ periodos }
               valor={ filtroPeriodoPiramideEtaria }
               setValor={ setFiltroPeriodoPiramideEtaria }
               label='Competência'
@@ -283,7 +311,7 @@ const Ambulatorio = () => {
             labels={{
               eixoY: 'Nº de usuários únicos nas referências ambulatoriais'
             }}
-            loading = {false}
+            loading = {loadingPiramideEtaria}
             propriedades={{
               faixaEtaria: 'usuario_faixa_etaria',
               sexo: 'usuario_sexo',
