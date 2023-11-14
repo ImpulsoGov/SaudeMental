@@ -5,9 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 import FiltroTexto from '../../../components/Filtros/FiltroTexto';
 import { FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_OCUPACAO_DEFAULT } from '../../../constants/FILTROS';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses } from '../../../requests/outros-raps';
+import { getAcoesReducaoDeDanos12meses, obterAcoesReducaoDeDanos, obterOcupacoesReducaoDeDanos } from '../../../requests/outros-raps';
 import styles from '../OutrosRaps.module.css';
 import { GraficoHistoricoTemporal } from '../../../components/Graficos';
+import { getEstabelecimentos } from '../../../requests/caps';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -19,14 +20,30 @@ export function getServerSideProps(ctx) {
 
 const ReducaoDeDanos = () => {
   const { data: session } = useSession();
-  const [acoes, setAcoes] = useState([]);
+  const [acaoUltimoPeriodo, setAcaoUltimoPeriodo] = useState(null);
   const [acoes12meses, setAcoes12meses] = useState([]);
+  const [acoesHistoricoTemporal, setAcoesHistoricoTemporal] = useState([]);
+  const [loadingHistorico, setLoadingHistorico] = useState(true);
+  const [estabelecimentos, setEstabelecimentos] = useState([]);
+  const [ocupacoes, setOcupacoes] = useState([]);
   const [filtroEstabelecimento, setFiltroEstabelecimento] = useState(FILTRO_ESTABELECIMENTO_MULTI_DEFAULT);
   const [filtroOcupacao, setFiltroOcupacao] = useState(FILTRO_OCUPACAO_DEFAULT);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setAcoes(await getAcoesReducaoDeDanos(municipioIdSus));
+      setOcupacoes(await obterOcupacoesReducaoDeDanos(municipioIdSus));
+      setEstabelecimentos(
+        await getEstabelecimentos(municipioIdSus, 'reducao_de_danos')
+      );
+
+      const [acaoReducaoUltimoPeriodo] = await obterAcoesReducaoDeDanos({
+        municipioIdSus,
+        estabelecimentos: 'Todos',
+        periodos: 'Último período',
+        ocupacoes: 'Todas'
+      });
+
+      setAcaoUltimoPeriodo(acaoReducaoUltimoPeriodo);
       setAcoes12meses(await getAcoesReducaoDeDanos12meses(municipioIdSus));
     };
 
@@ -35,18 +52,30 @@ const ReducaoDeDanos = () => {
     }
   }, []);
 
-  const getPropsCardUltimoPeriodo = (acoes) => {
-    const acaoTodosUltimoPeriodo = acoes
-      .find((acao) => acao.estabelecimento === 'Todos' && acao.profissional_vinculo_ocupacao === 'Todas' && acao.periodo === 'Último período');
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingHistorico(true);
 
-    return {
-      key: uuidv4(),
-      indicador: acaoTodosUltimoPeriodo['quantidade_registrada'],
-      titulo: `Total de ações de redução de danos em ${acaoTodosUltimoPeriodo['nome_mes']}`,
-      indice: acaoTodosUltimoPeriodo['dif_quantidade_registrada_anterior'],
-      indiceDescricao: 'últ. mês'
-    };
-  };
+      const promises = filtroEstabelecimento.map(({ value: estabelecimento }) => {
+        return obterAcoesReducaoDeDanos({
+          municipioIdSus: session?.user.municipio_id_ibge,
+          estabelecimentos: estabelecimento,
+          ocupacoes: filtroOcupacao.value
+        });
+      });
+
+      Promise.all(promises).then((respostas) => {
+        const respostasUnificadas = [].concat(...respostas);
+        setAcoesHistoricoTemporal(respostasUnificadas);
+      });
+
+      setLoadingHistorico(false);
+    }
+  }, [
+    session?.user.municipio_id_ibge,
+    filtroEstabelecimento,
+    filtroOcupacao
+  ]);
 
   const getPropsCardUltimos12Meses = (acoes) => {
     const acaoTodosUltimos12Meses = acoes
@@ -77,19 +106,9 @@ const ReducaoDeDanos = () => {
     return dadosAgregados;
   };
 
-  const acoesFiltradasEAgregadas = useMemo(() => {
-    const estabelecimentosSelecionados = filtroEstabelecimento.map(({ value }) => value);
-
-    const acoesFiltradas = acoes.filter(({
-      estabelecimento,
-      profissional_vinculo_ocupacao: ocupacao
-    }) =>
-      estabelecimentosSelecionados.includes(estabelecimento)
-      && ocupacao === filtroOcupacao.value
-    );
-
-    return agregarQuantidadePorPeriodo(acoesFiltradas);
-  }, [acoes, filtroEstabelecimento, filtroOcupacao.value]);
+  const acoesAgregadas = useMemo(() => {
+    return agregarQuantidadePorPeriodo(acoesHistoricoTemporal);
+  }, [acoesHistoricoTemporal]);
 
   return (
     <div>
@@ -115,8 +134,14 @@ const ReducaoDeDanos = () => {
       <Grid12Col
         items={ [
           <>
-            { acoes.length !== 0
-              ? <CardInfoTipoA { ...getPropsCardUltimoPeriodo(acoes) } />
+            { acaoUltimoPeriodo
+              ? <CardInfoTipoA
+                key={ acaoUltimoPeriodo.id }
+                indicador={ acaoUltimoPeriodo['quantidade_registrada']}
+                titulo={ `Total de ações de redução de danos em ${acaoUltimoPeriodo['nome_mes']}`}
+                indice={ acaoUltimoPeriodo['dif_quantidade_registrada_anterior']}
+                indiceDescricao='últ. mês'
+              />
               : <Spinner theme="ColorSM" />
             }
           </>,
@@ -134,35 +159,35 @@ const ReducaoDeDanos = () => {
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
       />
 
-      { acoes.length !== 0
-        ? <>
-          <div className={ styles.Filtros }>
-            <FiltroTexto
-              dados={ acoes }
-              label='Estabelecimento'
-              propriedade='estabelecimento'
-              valor={ filtroEstabelecimento }
-              setValor={ setFiltroEstabelecimento }
-              isMulti
-            />
-            <FiltroTexto
-              dados={ acoes }
-              label='CBO do profissional'
-              propriedade='profissional_vinculo_ocupacao'
-              valor={ filtroOcupacao }
-              setValor={ setFiltroOcupacao }
-            />
-          </div>
-
-          <GraficoHistoricoTemporal
-            dados={ acoesFiltradasEAgregadas }
-            textoTooltip='Ações registradas'
-            propriedade='quantidade'
-            loading={ false }
+      <div className={ styles.Filtros }>
+        {estabelecimentos.length !== 0 &&
+          <FiltroTexto
+            dados={ estabelecimentos }
+            label='Estabelecimento'
+            propriedade='estabelecimento'
+            valor={ filtroEstabelecimento }
+            setValor={ setFiltroEstabelecimento }
+            isMulti
           />
-        </>
-        : <Spinner theme="ColorSM" />
-      }
+        }
+
+        {ocupacoes.length !== 0 &&
+          <FiltroTexto
+            dados={ ocupacoes }
+            label='CBO do profissional'
+            propriedade='profissional_vinculo_ocupacao'
+            valor={ filtroOcupacao }
+            setValor={ setFiltroOcupacao }
+          />
+        }
+      </div>
+
+      <GraficoHistoricoTemporal
+        dados={ acoesAgregadas }
+        textoTooltip='Ações registradas'
+        propriedade='quantidade'
+        loading={ loadingHistorico }
+      />
     </div>
   );
 };
