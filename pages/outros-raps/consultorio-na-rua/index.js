@@ -3,12 +3,13 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
+import { GraficoDonut, GraficoHistoricoTemporal } from '../../../components/Graficos';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
-import { FILTRO_TEXTO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
+import { FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_TEXTO_DEFAULT } from '../../../constants/FILTROS';
+import { MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.JS';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
 import styles from '../OutrosRaps.module.css';
-import { GraficoHistoricoTemporal, GraficoDonut } from '../../../components/Graficos';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -24,6 +25,7 @@ const ConsultorioNaRua = () => {
   const [atendimentos12meses, setAtendimentos12meses] = useState([]);
   const [filtroProducao, setFiltroProducao] = useState(FILTRO_TEXTO_DEFAULT);
   const [filtroCompetencia, setFiltroCompetencia] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
+  const municipioSemConsultorioNaRua = MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA.includes(session?.user.municipio_id_ibge);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -33,7 +35,7 @@ const ConsultorioNaRua = () => {
       );
     };
 
-    if (session?.user.municipio_id_ibge) {
+    if (session?.user.municipio_id_ibge && !municipioSemConsultorioNaRua) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
@@ -87,6 +89,22 @@ const ConsultorioNaRua = () => {
 
     return ultimoPeriodo.nome_mes;
   };
+
+  if (municipioSemConsultorioNaRua) {
+    return (
+      <TituloSmallTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        texto='Essa página não está exibindo dados porque a coordenação da RAPS informou que não há equipes de Consultório na Rua cadastradas na rede de seu município. Caso queira solicitar a inclusão, entre em contato via nosso <u><a style="color:inherit" href="/duvidas" target="_blank">formulário de solicitação de suporte</a></u>, <u><a style="color:inherit" href="https://wa.me/5511941350260" target="_blank">whatsapp</a></u> ou e-mail (saudemental@impulsogov.org).'
+        botao={ {
+          label: '',
+          url: ''
+        } }
+      />
+    );
+  }
 
   return (
     <div>
