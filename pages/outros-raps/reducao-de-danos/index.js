@@ -3,12 +3,13 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import FiltroTexto from '../../../components/Filtros/FiltroTexto';
+import { GraficoHistoricoTemporal } from '../../../components/Graficos';
 import { FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_OCUPACAO_DEFAULT } from '../../../constants/FILTROS';
+import { MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.JS';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { getEstabelecimentos } from '../../../requests/caps';
 import { getAcoesReducaoDeDanos12meses, obterAcoesReducaoDeDanos, obterOcupacoesReducaoDeDanos } from '../../../requests/outros-raps';
 import styles from '../OutrosRaps.module.css';
-import { GraficoHistoricoTemporal } from '../../../components/Graficos';
-import { getEstabelecimentos } from '../../../requests/caps';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -28,6 +29,7 @@ const ReducaoDeDanos = () => {
   const [ocupacoes, setOcupacoes] = useState([]);
   const [filtroEstabelecimento, setFiltroEstabelecimento] = useState(FILTRO_ESTABELECIMENTO_MULTI_DEFAULT);
   const [filtroOcupacao, setFiltroOcupacao] = useState(FILTRO_OCUPACAO_DEFAULT);
+  const municipioSemReducaoDanos = MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS.includes(session?.user.municipio_id_ibge);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -47,7 +49,7 @@ const ReducaoDeDanos = () => {
       setAcoes12meses(await getAcoesReducaoDeDanos12meses(municipioIdSus));
     };
 
-    if (session?.user.municipio_id_ibge) {
+    if (session?.user.municipio_id_ibge && !municipioSemReducaoDanos) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
@@ -110,6 +112,22 @@ const ReducaoDeDanos = () => {
     return agregarQuantidadePorPeriodo(acoesHistoricoTemporal);
   }, [acoesHistoricoTemporal]);
 
+  if (municipioSemReducaoDanos) {
+    return (
+      <TituloSmallTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        texto='Essa página não está exibindo dados porque a coordenação da RAPS informou que não são feitas ações de redução de danos na rede de seu município. Caso queira solicitar a inclusão, entre em contato via nosso <u><a style="color:inherit" href="/duvidas" target="_blank">formulário de solicitação de suporte</a></u>, <u><a style="color:inherit" href="https://wa.me/5511941350260" target="_blank">whatsapp</a></u> ou e-mail (saudemental@impulsogov.org).'
+        botao={ {
+          label: '',
+          url: ''
+        } }
+      />
+    );
+  }
+
   return (
     <div>
       <TituloSmallTexto
@@ -137,9 +155,9 @@ const ReducaoDeDanos = () => {
             { acaoUltimoPeriodo
               ? <CardInfoTipoA
                 key={ acaoUltimoPeriodo.id }
-                indicador={ acaoUltimoPeriodo['quantidade_registrada']}
-                titulo={ `Total de ações de redução de danos em ${acaoUltimoPeriodo['nome_mes']}`}
-                indice={ acaoUltimoPeriodo['dif_quantidade_registrada_anterior']}
+                indicador={ acaoUltimoPeriodo['quantidade_registrada'] }
+                titulo={ `Total de ações de redução de danos em ${acaoUltimoPeriodo['nome_mes']}` }
+                indice={ acaoUltimoPeriodo['dif_quantidade_registrada_anterior'] }
                 indiceDescricao='últ. mês'
               />
               : <Spinner theme="ColorSM" />
@@ -160,7 +178,7 @@ const ReducaoDeDanos = () => {
       />
 
       <div className={ styles.Filtros }>
-        {estabelecimentos.length !== 0 &&
+        { estabelecimentos.length !== 0 &&
           <FiltroTexto
             dados={ estabelecimentos }
             label='Estabelecimento'
@@ -171,7 +189,7 @@ const ReducaoDeDanos = () => {
           />
         }
 
-        {ocupacoes.length !== 0 &&
+        { ocupacoes.length !== 0 &&
           <FiltroTexto
             dados={ ocupacoes }
             label='CBO do profissional'
