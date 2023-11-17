@@ -1,7 +1,6 @@
 import { ButtonLight, PanelSelectorSM, TituloTexto } from '@impulsogov/design-system';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { redirectHomeNotLooged } from '../../helpers/RedirectHome';
 import style from '../duvidas/Duvidas.module.css';
 import Ambulatorio from './ambulatorio';
@@ -65,10 +64,10 @@ export default function Paineis() {
           setActiveTitleTabIndex: setActiveTitleTabIndex
         } }
         components={ [[
-          <Resumo key={ uuidv4() } />,
-          <Ambulatorio key={ uuidv4() } />,
-          <ConsultorioNaRua key={ uuidv4() } />,
-          <ReducaoDeDanos key={ uuidv4() } />
+          <Resumo key={ 'resumo-outros-raps' } />,
+          <Ambulatorio key={ 'ambulatorio' } />,
+          <ConsultorioNaRua key={ 'consultorionarua' } />,
+          <ReducaoDeDanos key={ 'reducaodedanos' } />
         ]] }
         subtitles={ [
           [

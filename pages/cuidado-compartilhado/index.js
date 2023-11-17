@@ -1,7 +1,6 @@
 import { ButtonLight, PanelSelectorSM, TituloTexto } from "@impulsogov/design-system";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
-import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 import style from "../duvidas/Duvidas.module.css";
 import ApsAmbulatorio from "./aps-ambulatorio";
