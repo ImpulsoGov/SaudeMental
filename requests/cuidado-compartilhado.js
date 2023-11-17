@@ -11,9 +11,16 @@ export const getCAPSAcolhimentoNoturno = async (municipioIdSus) => {
     const { data } = await axiosInstance.get(endpoint);
     return data;
   }  catch (error) {
+    if (error.response.status === 404) {
+      return [{
+        'acolhimentos_noturnos': 0,
+      }];
+    }
+
     console.log('error', error.response.data);
   }
 };
+
 export const getInternacoesRapsAltas = async (municipioIdSus) => {
   try {
     const endpoint = "/atencao_hospitalar/altas?municipio_id_sus=" + municipioIdSus;
