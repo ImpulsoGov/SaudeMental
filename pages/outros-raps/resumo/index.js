@@ -84,6 +84,26 @@ const Resumo = () => {
     );
   };
 
+  if (
+    municipioSemCardsAmbulatorio
+    && municipioSemCardsReducaoDanos
+    && municipioSemCardsConsultorioNaRua
+  ) {
+    return (
+      <TituloSmallTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        texto='Essa página não está exibindo dados porque a coordenação da RAPS informou que o município não possui Ambulatórios vinculados diretamente à RAPS, não possui equipes de Consultório na Rua cadastradas na rede e não registra procedimentos de Redução de Danos. Caso queira solicitar a inclusão de alguns desses serviços, entre em contato via nosso <u><a style="color:inherit" href="/duvidas" target="_blank">formulário de solicitação de suporte</a></u>, <u><a style="color:inherit" href="https://wa.me/5511942642429" target="_blank">whatsapp</a></u> ou e-mail (saudemental@impulsogov.org).'
+        botao={ {
+          label: '',
+          url: ''
+        } }
+      />
+    );
+  }
+
   return (
     <div>
       <TituloSmallTexto
