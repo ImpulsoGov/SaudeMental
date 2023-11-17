@@ -64,10 +64,10 @@ const Index = ({ }) => {
           setActiveTitleTabIndex: setActiveTitleTabIndex
         } }
         components={ [[
-          <Resumo key={ uuidv1() }></Resumo>,
-          <ApsCaps key={ uuidv1() }></ApsCaps>,
-          <ApsAmbulatorio key={ uuidv1() }></ApsAmbulatorio>,
-          <RapsHospitalar key={ uuidv1() }></RapsHospitalar>
+          <Resumo key={ 'resumo-cuidado-compartilhado' }></Resumo>,
+          <ApsCaps key={ 'apscaps' }></ApsCaps>,
+          <ApsAmbulatorio key={ 'apsambulatorio' }></ApsAmbulatorio>,
+          <RapsHospitalar key={ 'rapshospitalar' }></RapsHospitalar>
         ]] }
         subtitles={ [
           [
