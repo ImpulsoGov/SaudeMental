@@ -10,13 +10,7 @@ export const getCAPSAcolhimentoNoturno = async (municipioIdSus) => {
     const endpoint = "/atencao_hospitalar/noturno?municipio_id_sus=" + municipioIdSus;
     const { data } = await axiosInstance.get(endpoint);
     return data;
-  }  catch (error) {
-    if (error.response.status === 404) {
-      return [{
-        'acolhimentos_noturnos': 0,
-      }];
-    }
-
+  } catch (error) {
     console.log('error', error.response.data);
   }
 };
@@ -26,7 +20,7 @@ export const getInternacoesRapsAltas = async (municipioIdSus) => {
     const endpoint = "/atencao_hospitalar/altas?municipio_id_sus=" + municipioIdSus;
     const { data } = await axiosInstance.get(endpoint);
     return data;
-  }  catch (error) {
+  } catch (error) {
     console.log('error', error.response.data);
   }
 };
@@ -35,7 +29,7 @@ export const getInternacoesRapsAdmissoes = async (municipioIdSus) => {
     const endpoint = "/internacoes/raps/admissoes/resumo/12m?municipio_id_sus=" + municipioIdSus;
     const { data } = await axiosInstance.get(endpoint);
     return data;
-  }  catch (error) {
+  } catch (error) {
     console.log('error', error.response.data);
   }
 };
@@ -44,7 +38,7 @@ export const getInternacoesRapsAltas12m = async (municipioIdSus) => {
     const endpoint = "/internacoes/raps/altas/resumo/12m?municipio_id_sus=" + municipioIdSus;
     const { data } = await axiosInstance.get(endpoint);
     return data;
-  }  catch (error) {
+  } catch (error) {
     console.log('error', error.response.data);
   }
 };
