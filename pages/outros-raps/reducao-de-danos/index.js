@@ -118,7 +118,7 @@ const ReducaoDeDanos = () => {
           posicao: null,
           url: ''
         } }
-        texto='Essa página não está exibindo dados porque a coordenação da RAPS informou que não são feitas ações de redução de danos na rede de seu município. Caso queira solicitar a inclusão, entre em contato via nosso <u><a style="color:inherit" href="/duvidas" target="_blank">formulário de solicitação de suporte</a></u>, <u><a style="color:inherit" href="https://wa.me/5511942642429" target="_blank">whatsapp</a></u> ou e-mail (saudemental@impulsogov.org).'
+        texto='Essa página não está exibindo dados porque a coordenação da RAPS informou que não são feitas Ações de Redução de Danos no município, ou que essas ações não são registradas em BPA-c na rede. Caso queira solicitar a inclusão, entre em contato via nosso <u><a style="color:inherit" href="/duvidas" target="_blank">formulário de solicitação de suporte</a></u>, <u><a style="color:inherit" href="https://wa.me/5511942642429" target="_blank">whatsapp</a></u> ou e-mail (saudemental@impulsogov.org).'
         botao={ {
           label: '',
           url: ''
