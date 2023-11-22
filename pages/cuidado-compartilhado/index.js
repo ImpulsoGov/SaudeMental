@@ -1,6 +1,7 @@
 import { ButtonLight, PanelSelectorSM, TituloTexto } from "@impulsogov/design-system";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
+import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 import style from "../duvidas/Duvidas.module.css";
 import ApsAmbulatorio from "./aps-ambulatorio";
@@ -63,10 +64,10 @@ const Index = ({ }) => {
           setActiveTitleTabIndex: setActiveTitleTabIndex
         } }
         components={ [[
-          <Resumo key={ 'resumo-cuidado-compartilhado' }></Resumo>,
-          <ApsCaps key={ 'apscaps' }></ApsCaps>,
-          <ApsAmbulatorio key={ 'apsambulatorio' }></ApsAmbulatorio>,
-          <RapsHospitalar key={ 'rapshospitalar' }></RapsHospitalar>
+          <Resumo key={ uuidv1() }></Resumo>,
+          <ApsCaps key={ uuidv1() }></ApsCaps>,
+          <ApsAmbulatorio key={ uuidv1() }></ApsAmbulatorio>,
+          <RapsHospitalar key={ uuidv1() }></RapsHospitalar>
         ]] }
         subtitles={ [
           [

@@ -1,6 +1,7 @@
 import { ButtonLight, PanelSelectorSM, TituloTexto } from "@impulsogov/design-system";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
+import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 import style from "../duvidas/Duvidas.module.css";
 import AtendimentoIndividual from "./atendimentoindividuais";
@@ -67,13 +68,13 @@ export default function Paineis() {
           setActiveTitleTabIndex: setActiveTitleTabIndex
         } }
         components={ [[
-          <Resumo key={ 'resumo' } />,
-          <PerfilUsuario key={ 'perfildeusuario' } />,
-          <NovoUsuario key={ 'novousuario' } />,
-          <TaxaAbandono key={ 'taxabandono' } />,
-          <AtendimentoIndividual key={ 'atendimentoindividual' } />,
-          <ProcedimentosPorUsuarios key={ 'procedimentosporusuarios' } />,
-          <Producao key={ 'producao' } />,
+          <Resumo key={ uuidv1() } />,
+          <PerfilUsuario key={ uuidv1() } />,
+          <NovoUsuario key={ uuidv1() } />,
+          <TaxaAbandono key={ uuidv1() } />,
+          <AtendimentoIndividual key={ uuidv1() } />,
+          <ProcedimentosPorUsuarios key={ uuidv1() } />,
+          <Producao key={ uuidv1() } />,
         ]] }
         subtitles={ [
           [
