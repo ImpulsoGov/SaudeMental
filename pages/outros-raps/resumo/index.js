@@ -1,10 +1,9 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { v1 as uuidv1 } from 'uuid';
+import { MUNICIPIOS_ID_SUS_SEM_CARDS_AMBULATORIO, MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA, MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.js';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { mostrarCardsDeResumoAmbulatorio } from '../../../helpers/mostrarDadosDeAmbulatorio';
-import { getAcoesReducaoDeDanos12meses, getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses, obterAcoesReducaoDeDanos } from '../../../requests/outros-raps';
+import { obterAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses, getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -21,25 +20,32 @@ const Resumo = () => {
   const [reducaoDanos, setReducaoDanos] = useState(null);
   const [reducaoDanos12Meses, setReducaoDanos12Meses] = useState([]);
   const [ambulatorioUltMes, setAmbulatorioUltMes] = useState([]);
+  const municipioSemCardsAmbulatorio = MUNICIPIOS_ID_SUS_SEM_CARDS_AMBULATORIO.includes(session?.user.municipio_id_ibge);
+  const municipioSemCardsReducaoDanos = MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS.includes(session?.user.municipio_id_ibge);
+  const municipioSemCardsConsultorioNaRua = MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA.includes(session?.user.municipio_id_ibge);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setConsultorioNaRua(await getAtendimentosConsultorioNaRua(municipioIdSus));
-      setConsultorioNaRua12Meses(
-        await getAtendimentosConsultorioNaRua12meses(municipioIdSus)
-      );
+      if (!municipioSemCardsConsultorioNaRua) {
+        setConsultorioNaRua(await getAtendimentosConsultorioNaRua(municipioIdSus));
+        setConsultorioNaRua12Meses(
+          await getAtendimentosConsultorioNaRua12meses(municipioIdSus)
+        );
+      }
 
-      const [reducaoDanosUltimoPeriodo] = await obterAcoesReducaoDeDanos({
-        municipioIdSus,
-        periodos: 'Último período',
-        estabelecimentos: 'Todos',
-        ocupacoes: 'Todas'
-      });
+      if (!municipioSemCardsReducaoDanos) {
+        const [reducaoDanosUltimoPeriodo] = await obterAcoesReducaoDeDanos({
+          municipioIdSus,
+          periodos: 'Último período',
+          estabelecimentos: 'Todos',
+          ocupacoes: 'Todas'
+        });
 
-      setReducaoDanos(reducaoDanosUltimoPeriodo);
-      setReducaoDanos12Meses(await getAcoesReducaoDeDanos12meses(municipioIdSus));
+        setReducaoDanos(reducaoDanosUltimoPeriodo);
+        setReducaoDanos12Meses(await getAcoesReducaoDeDanos12meses(municipioIdSus));
+      }
 
-      if (mostrarCardsDeResumoAmbulatorio(municipioIdSus)) {
+      if (!municipioSemCardsAmbulatorio) {
         setAmbulatorioUltMes(
           await getAtendimentosAmbulatorioResumoUltimoMes(municipioIdSus)
         );
@@ -76,6 +82,26 @@ const Resumo = () => {
     );
   };
 
+  if (
+    municipioSemCardsAmbulatorio
+    && municipioSemCardsReducaoDanos
+    && municipioSemCardsConsultorioNaRua
+  ) {
+    return (
+      <TituloSmallTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        texto='Essa página não está exibindo dados porque a coordenação da RAPS informou que o município não possui Ambulatórios vinculados diretamente à RAPS, não possui equipes de Consultório na Rua cadastradas na rede e não registra procedimentos de Redução de Danos. Caso queira solicitar a inclusão de alguns desses serviços, entre em contato via nosso <u><a style="color:inherit" href="/duvidas" target="_blank">formulário de solicitação de suporte</a></u>, <u><a style="color:inherit" href="https://wa.me/5511942642429" target="_blank">whatsapp</a></u> ou e-mail (saudemental@impulsogov.org).'
+        botao={ {
+          label: '',
+          url: ''
+        } }
+      />
+    );
+  }
+
   return (
     <div>
       <TituloSmallTexto
@@ -91,7 +117,7 @@ const Resumo = () => {
         titulo='<strong>Resumo</strong>'
       />
 
-      { mostrarCardsDeResumoAmbulatorio(session?.user.municipio_id_ibge) &&
+      { !municipioSemCardsAmbulatorio &&
         <>
           <GraficoInfo
             titulo='Ambulatório de Saúde Mental'
@@ -104,7 +130,7 @@ const Resumo = () => {
               <>
                 { ambulatorioUltMes.length !== 0
                   ? <CardInfoTipoA
-                    key={ uuidv1() }
+                    key={ getDadosAmbulatorioUltimoMes().id }
                     indicador={ getDadosAmbulatorioUltimoMes().procedimentos_realizados }
                     titulo={ `Total de atendimentos em ${getDadosAmbulatorioUltimoMes().nome_mes}` }
                     indice={ getDadosAmbulatorioUltimoMes().dif_procedimentos_realizados_anterior }
@@ -116,7 +142,7 @@ const Resumo = () => {
               <>
                 { ambulatorioUltMes.length !== 0
                   ? <CardInfoTipoA
-                    key={ uuidv1() }
+                    key={ getDadosAmbulatorioUltimoMes().id }
                     indicador={ getDadosAmbulatorioUltimoMes().procedimentos_por_hora }
                     titulo={ `Total de atendimentos por hora trabalhada em ${getDadosAmbulatorioUltimoMes().nome_mes}` }
                     indice={ getDadosAmbulatorioUltimoMes().dif_procedimentos_por_hora_anterior }
@@ -130,75 +156,83 @@ const Resumo = () => {
         </>
       }
 
-      <GraficoInfo
-        titulo='Consultório na Rua'
-        fonte='Fonte: SISAB - Elaboração Impulso Gov'
-        link={ { label: 'Mais informações', url: '/outros-raps?painel=2' } }
-      />
+      { !municipioSemCardsConsultorioNaRua &&
+        <>
+          <GraficoInfo
+            titulo='Consultório na Rua'
+            fonte='Fonte: SISAB - Elaboração Impulso Gov'
+            link={ { label: 'Mais informações', url: '/outros-raps?painel=2' } }
+          />
 
-      <Grid12Col
-        items={ [
-          <>
-            { consultorioNaRua.length !== 0
-              ? <CardInfoTipoA
-                key={ uuidv1() }
-                indicador={ getDadosConsultorioNaRua().quantidade_registrada }
-                titulo={ `Total de atendimentos em ${getDadosConsultorioNaRua().nome_mes}` }
-                indice={ getDadosConsultorioNaRua().dif_quantidade_registrada_anterior }
-                indiceDescricao='últ. mês'
-              />
-              : <Spinner theme='ColorSM' />
-            }
-          </>,
-          <>
-            { consultorioNaRua12Meses.length !== 0
-              ? <CardInfoTipoA
-                key={ uuidv1() }
-                indicador={ getDadosConsultorioNaRua12meses().quantidade_registrada }
-                titulo={ `Total de atendimentos entre ${getDadosConsultorioNaRua12meses().a_partir_do_mes}/${getDadosConsultorioNaRua12meses().a_partir_do_ano} e ${getDadosConsultorioNaRua12meses().ate_mes}/${getDadosConsultorioNaRua12meses().ate_ano}` }
-                indice={ getDadosConsultorioNaRua12meses().dif_quantidade_registrada_anterior }
-                indiceDescricao='doze meses anteriores'
-              />
-              : <Spinner theme='ColorSM' />
-            }
-          </>,
-        ] }
-      />
+          <Grid12Col
+            items={ [
+              <>
+                { consultorioNaRua.length !== 0
+                  ? <CardInfoTipoA
+                    key={ getDadosConsultorioNaRua().id }
+                    indicador={ getDadosConsultorioNaRua().quantidade_registrada }
+                    titulo={ `Total de atendimentos em ${getDadosConsultorioNaRua().nome_mes}` }
+                    indice={ getDadosConsultorioNaRua().dif_quantidade_registrada_anterior }
+                    indiceDescricao='últ. mês'
+                  />
+                  : <Spinner theme='ColorSM' />
+                }
+              </>,
+              <>
+                { consultorioNaRua12Meses.length !== 0
+                  ? <CardInfoTipoA
+                    key={ getDadosConsultorioNaRua12meses().id }
+                    indicador={ getDadosConsultorioNaRua12meses().quantidade_registrada }
+                    titulo={ `Total de atendimentos entre ${getDadosConsultorioNaRua12meses().a_partir_do_mes}/${getDadosConsultorioNaRua12meses().a_partir_do_ano} e ${getDadosConsultorioNaRua12meses().ate_mes}/${getDadosConsultorioNaRua12meses().ate_ano}` }
+                    indice={ getDadosConsultorioNaRua12meses().dif_quantidade_registrada_anterior }
+                    indiceDescricao='doze meses anteriores'
+                  />
+                  : <Spinner theme='ColorSM' />
+                }
+              </>,
+            ] }
+          />
+        </>
+      }
 
-      <GraficoInfo
-        titulo='Ações de redução de danos'
-        fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
-        link={ { label: 'Mais informações', url: '/outros-raps?painel=3' } }
-      />
+      { !municipioSemCardsReducaoDanos &&
+        <>
+          <GraficoInfo
+            titulo='Ações de redução de danos'
+            fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
+            link={ { label: 'Mais informações', url: '/outros-raps?painel=3' } }
+          />
 
-      <Grid12Col
-        items={ [
-          <>
-            { reducaoDanos
-              ? <CardInfoTipoA
-                key={ reducaoDanos.id }
-                indicador={ reducaoDanos.quantidade_registrada }
-                titulo={ `Total de ações de redução de danos em ${reducaoDanos.nome_mes}` }
-                indice={ reducaoDanos.dif_quantidade_registrada_anterior }
-                indiceDescricao='últ. mês'
-              />
-              : <Spinner theme='ColorSM' />
-            }
-          </>,
-          <>
-            { reducaoDanos12Meses.length !== 0
-              ? <CardInfoTipoA
-                key={ uuidv1() }
-                indicador={ getDadosReducaoDanos12meses().quantidade_registrada }
-                titulo={ `Total ações de redução de danos entre ${getDadosReducaoDanos12meses().a_partir_do_mes}/${getDadosReducaoDanos12meses().a_partir_do_ano} e ${getDadosReducaoDanos12meses().ate_mes}/${getDadosReducaoDanos12meses().ate_ano}` }
-                indice={ getDadosReducaoDanos12meses().dif_quantidade_registrada_anterior }
-                indiceDescricao='doze meses anteriores'
-              />
-              : <Spinner theme='ColorSM' />
-            }
-          </>,
-        ] }
-      />
+          <Grid12Col
+            items={ [
+              <>
+                { reducaoDanos
+                  ? <CardInfoTipoA
+                    key={ reducaoDanos.id }
+                    indicador={ reducaoDanos.quantidade_registrada }
+                    titulo={ `Total de ações de redução de danos em ${reducaoDanos.nome_mes}` }
+                    indice={ reducaoDanos.dif_quantidade_registrada_anterior }
+                    indiceDescricao='últ. mês'
+                  />
+                  : <Spinner theme='ColorSM' />
+                }
+              </>,
+              <>
+                { reducaoDanos12Meses.length !== 0
+                  ? <CardInfoTipoA
+                    key={ getDadosReducaoDanos12meses().id }
+                    indicador={ getDadosReducaoDanos12meses().quantidade_registrada }
+                    titulo={ `Total ações de redução de danos entre ${getDadosReducaoDanos12meses().a_partir_do_mes}/${getDadosReducaoDanos12meses().a_partir_do_ano} e ${getDadosReducaoDanos12meses().ate_mes}/${getDadosReducaoDanos12meses().ate_ano}` }
+                    indice={ getDadosReducaoDanos12meses().dif_quantidade_registrada_anterior }
+                    indiceDescricao='doze meses anteriores'
+                  />
+                  : <Spinner theme='ColorSM' />
+                }
+              </>,
+            ] }
+          />
+        </>
+      }
     </div>
   );
 };
