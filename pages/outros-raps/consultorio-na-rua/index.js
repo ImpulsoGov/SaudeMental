@@ -5,7 +5,7 @@ import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import { GraficoDonut, GraficoHistoricoTemporal } from '../../../components/Graficos';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_TEXTO_DEFAULT } from '../../../constants/FILTROS';
-import { MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.JS';
+import { MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.js';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
 import styles from '../OutrosRaps.module.css';

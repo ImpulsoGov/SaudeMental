@@ -1,7 +1,7 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { MUNICIPIOS_ID_SUS_SEM_CARDS_AMBULATORIO, MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA, MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.JS';
+import { MUNICIPIOS_ID_SUS_SEM_CARDS_AMBULATORIO, MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA, MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.js';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses, getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
 

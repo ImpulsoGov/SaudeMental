@@ -6,7 +6,7 @@ import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import { GraficoAtendimentos, GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
 import { TabelaAtendimentosPorProfissional } from '../../../components/Tabelas';
 import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
-import { MUNICIPIOS_ID_SUS_SEM_AMBULATORIO, MUNICIPIOS_ID_SUS_SEM_DADOS_AMBULATORIO } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.JS';
+import { MUNICIPIOS_ID_SUS_SEM_AMBULATORIO, MUNICIPIOS_ID_SUS_SEM_DADOS_AMBULATORIO } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.js';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getPeriodos } from '../../../requests/caps';
 import { getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosPorProfissional, getAtendimentosTotal, getPerfilAtendimentosAmbulatorio } from '../../../requests/outros-raps';

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import FiltroTexto from '../../../components/Filtros/FiltroTexto';
 import { GraficoHistoricoTemporal } from '../../../components/Graficos';
 import { FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_OCUPACAO_DEFAULT } from '../../../constants/FILTROS';
-import { MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.JS';
+import { MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.js';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getEstabelecimentos } from '../../../requests/caps';
 import { getAcoesReducaoDeDanos12meses, obterAcoesReducaoDeDanos, obterOcupacoesReducaoDeDanos } from '../../../requests/outros-raps';
