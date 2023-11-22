@@ -1,7 +1,6 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { v1 as uuidv1 } from 'uuid';
 import { MUNICIPIOS_ID_SUS_SEM_CARDS_AMBULATORIO, MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA, MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.JS';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses, getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
@@ -132,7 +131,7 @@ const Resumo = () => {
               <>
                 { ambulatorioUltMes.length !== 0
                   ? <CardInfoTipoA
-                    key={ uuidv1() }
+                    key={ getDadosAmbulatorioUltimoMes().id }
                     indicador={ getDadosAmbulatorioUltimoMes().procedimentos_realizados }
                     titulo={ `Total de atendimentos em ${getDadosAmbulatorioUltimoMes().nome_mes}` }
                     indice={ getDadosAmbulatorioUltimoMes().dif_procedimentos_realizados_anterior }
@@ -144,7 +143,7 @@ const Resumo = () => {
               <>
                 { ambulatorioUltMes.length !== 0
                   ? <CardInfoTipoA
-                    key={ uuidv1() }
+                    key={ getDadosAmbulatorioUltimoMes().id }
                     indicador={ getDadosAmbulatorioUltimoMes().procedimentos_por_hora }
                     titulo={ `Total de atendimentos por hora trabalhada em ${getDadosAmbulatorioUltimoMes().nome_mes}` }
                     indice={ getDadosAmbulatorioUltimoMes().dif_procedimentos_por_hora_anterior }
@@ -171,7 +170,7 @@ const Resumo = () => {
               <>
                 { consultorioNaRua.length !== 0
                   ? <CardInfoTipoA
-                    key={ uuidv1() }
+                    key={ getDadosConsultorioNaRua().id }
                     indicador={ getDadosConsultorioNaRua().quantidade_registrada }
                     titulo={ `Total de atendimentos em ${getDadosConsultorioNaRua().nome_mes}` }
                     indice={ getDadosConsultorioNaRua().dif_quantidade_registrada_anterior }
@@ -183,7 +182,7 @@ const Resumo = () => {
               <>
                 { consultorioNaRua12Meses.length !== 0
                   ? <CardInfoTipoA
-                    key={ uuidv1() }
+                    key={ getDadosConsultorioNaRua12meses().id }
                     indicador={ getDadosConsultorioNaRua12meses().quantidade_registrada }
                     titulo={ `Total de atendimentos entre ${getDadosConsultorioNaRua12meses().a_partir_do_mes}/${getDadosConsultorioNaRua12meses().a_partir_do_ano} e ${getDadosConsultorioNaRua12meses().ate_mes}/${getDadosConsultorioNaRua12meses().ate_ano}` }
                     indice={ getDadosConsultorioNaRua12meses().dif_quantidade_registrada_anterior }
@@ -210,7 +209,7 @@ const Resumo = () => {
               <>
                 { reducaoDanos.length !== 0
                   ? <CardInfoTipoA
-                    key={ uuidv1() }
+                    key={ getDadosReducaoDanos().id }
                     indicador={ getDadosReducaoDanos().quantidade_registrada }
                     titulo={ `Total de ações de redução de danos em ${getDadosReducaoDanos().nome_mes}` }
                     indice={ getDadosReducaoDanos().dif_quantidade_registrada_anterior }
@@ -222,7 +221,7 @@ const Resumo = () => {
               <>
                 { reducaoDanos12Meses.length !== 0
                   ? <CardInfoTipoA
-                    key={ uuidv1() }
+                    key={ getDadosReducaoDanos12meses().id }
                     indicador={ getDadosReducaoDanos12meses().quantidade_registrada }
                     titulo={ `Total ações de redução de danos entre ${getDadosReducaoDanos12meses().a_partir_do_mes}/${getDadosReducaoDanos12meses().a_partir_do_ano} e ${getDadosReducaoDanos12meses().ate_mes}/${getDadosReducaoDanos12meses().ate_ano}` }
                     indice={ getDadosReducaoDanos12meses().dif_quantidade_registrada_anterior }

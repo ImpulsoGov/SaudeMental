@@ -1,7 +1,6 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import FiltroTexto from '../../../components/Filtros/FiltroTexto';
 import { GraficoHistoricoTemporal } from '../../../components/Graficos';
 import { FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_OCUPACAO_DEFAULT } from '../../../constants/FILTROS';
@@ -84,7 +83,7 @@ const ReducaoDeDanos = () => {
       .find((acao) => acao.estabelecimento === 'Todos' && acao.profissional_vinculo_ocupacao === 'Todas');
 
     return {
-      key: uuidv4(),
+      key: acaoTodosUltimos12Meses.id,
       indicador: acaoTodosUltimos12Meses['quantidade_registrada'],
       titulo: `Total de ações de redução de danos nos últimos 12 meses de ${acaoTodosUltimos12Meses['a_partir_do_mes']}/${acaoTodosUltimos12Meses['a_partir_do_ano']} a ${acaoTodosUltimos12Meses['ate_mes']}/${acaoTodosUltimos12Meses['ate_ano']}`,
       indice: acaoTodosUltimos12Meses['dif_quantidade_registrada_anterior'],

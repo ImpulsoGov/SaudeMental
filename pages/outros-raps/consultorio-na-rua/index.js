@@ -1,7 +1,6 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import { GraficoDonut, GraficoHistoricoTemporal } from '../../../components/Graficos';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
@@ -61,7 +60,7 @@ const ConsultorioNaRua = () => {
       .find((atendimento) => atendimento.tipo_producao === 'Todos' && atendimento.periodo === 'Último período');
 
     return {
-      key: uuidv4(),
+      key: atendimentoTodosUltimoPeriodo.id,
       indicador: atendimentoTodosUltimoPeriodo['quantidade_registrada'],
       titulo: `Total de atendimentos em ${atendimentoTodosUltimoPeriodo['nome_mes']}`,
       indice: atendimentoTodosUltimoPeriodo['dif_quantidade_registrada_anterior'],
@@ -74,7 +73,7 @@ const ConsultorioNaRua = () => {
       .find(({ tipo_producao: tipoProducao }) => tipoProducao === 'Todos');
 
     return {
-      key: uuidv4(),
+      key: atendimentoTodosUltimos12Meses.id,
       indicador: atendimentoTodosUltimos12Meses['quantidade_registrada'],
       titulo: `Total de atendimentos nos últimos 12 meses de ${atendimentoTodosUltimos12Meses['a_partir_do_mes']}/${atendimentoTodosUltimos12Meses['a_partir_do_ano']} a ${atendimentoTodosUltimos12Meses['ate_mes']}/${atendimentoTodosUltimos12Meses['ate_ano']}`,
       indice: atendimentoTodosUltimos12Meses['dif_quantidade_registrada_anterior'],
