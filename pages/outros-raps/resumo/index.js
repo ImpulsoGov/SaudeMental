@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { MUNICIPIOS_ID_SUS_SEM_CARDS_AMBULATORIO, MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA, MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.js';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses, getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
+import { obterAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses, getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -17,7 +17,7 @@ const Resumo = () => {
   const { data: session } = useSession();
   const [consultorioNaRua, setConsultorioNaRua] = useState([]);
   const [consultorioNaRua12Meses, setConsultorioNaRua12Meses] = useState([]);
-  const [reducaoDanos, setReducaoDanos] = useState([]);
+  const [reducaoDanos, setReducaoDanos] = useState(null);
   const [reducaoDanos12Meses, setReducaoDanos12Meses] = useState([]);
   const [ambulatorioUltMes, setAmbulatorioUltMes] = useState([]);
   const municipioSemCardsAmbulatorio = MUNICIPIOS_ID_SUS_SEM_CARDS_AMBULATORIO.includes(session?.user.municipio_id_ibge);
@@ -34,7 +34,14 @@ const Resumo = () => {
       }
 
       if (!municipioSemCardsReducaoDanos) {
-        setReducaoDanos(await getAcoesReducaoDeDanos(municipioIdSus));
+        const [reducaoDanosUltimoPeriodo] = await obterAcoesReducaoDeDanos({
+          municipioIdSus,
+          periodos: 'Último período',
+          estabelecimentos: 'Todos',
+          ocupacoes: 'Todas'
+        });
+
+        setReducaoDanos(reducaoDanosUltimoPeriodo);
         setReducaoDanos12Meses(await getAcoesReducaoDeDanos12meses(municipioIdSus));
       }
 
@@ -58,14 +65,6 @@ const Resumo = () => {
   const getDadosConsultorioNaRua12meses = () => {
     return consultorioNaRua12Meses.find((item) =>
       item.tipo_producao === 'Todos');
-  };
-
-  const getDadosReducaoDanos = () => {
-    return reducaoDanos.find((item) =>
-      item.periodo === 'Último período'
-      && item.estabelecimento === 'Todos'
-      && item.profissional_vinculo_ocupacao === 'Todas'
-    );
   };
 
   const getDadosReducaoDanos12meses = () => {
@@ -207,12 +206,12 @@ const Resumo = () => {
           <Grid12Col
             items={ [
               <>
-                { reducaoDanos.length !== 0
+                { reducaoDanos
                   ? <CardInfoTipoA
-                    key={ getDadosReducaoDanos().id }
-                    indicador={ getDadosReducaoDanos().quantidade_registrada }
-                    titulo={ `Total de ações de redução de danos em ${getDadosReducaoDanos().nome_mes}` }
-                    indice={ getDadosReducaoDanos().dif_quantidade_registrada_anterior }
+                    key={ reducaoDanos.id }
+                    indicador={ reducaoDanos.quantidade_registrada }
+                    titulo={ `Total de ações de redução de danos em ${reducaoDanos.nome_mes}` }
+                    indice={ reducaoDanos.dif_quantidade_registrada_anterior }
                     indiceDescricao='últ. mês'
                   />
                   : <Spinner theme='ColorSM' />
