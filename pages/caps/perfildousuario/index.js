@@ -6,7 +6,7 @@ import styles from '../Caps.module.css';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import { TabelaGraficoDonut, TabelaDetalhamentoPorCaps } from '../../../components/Tabelas';
 import GraficoRacaECor from '../../../components/Graficos/RacaECor';
-import { getEstabelecimentos, getPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor } from '../../../requests/caps';
+import { getEstabelecimentos, obterPerfilUsuariosPorEstabelecimento, getPeriodos, getUsuariosAtivosPorCID, getUsuariosAtivosPorCondicao, getUsuariosAtivosPorGeneroEIdade, getUsuariosAtivosPorRacaECor, getPerfilUsuariosPorEstabelecimento } from '../../../requests/caps';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 import { GraficoCondicaoUsuarios, GraficoDonut } from '../../../components/Graficos';
@@ -28,6 +28,7 @@ const PerfilUsuario = () => {
   const [usuariosPorRacaECor, setUsuariosPorRacaECor] = useState([]);
   const [usuariosPorCID, setUsuariosPorCID] = useState([]);
   const [perfilPorEstabelecimento, setPerfilPorEstabelecimento] = useState([]);
+  const [nomeUltimoMes, setNomeUltimoMes] = useState('');
   const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroCompetenciaCID, setFiltroCompetenciaCID] = useState(FILTRO_PERIODO_DEFAULT);
   const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
@@ -52,6 +53,14 @@ const PerfilUsuario = () => {
 
       getPerfilUsuariosPorEstabelecimento(session?.user.municipio_id_ibge)
         .then((dados) => setPerfilPorEstabelecimento(dados));
+
+      obterPerfilUsuariosPorEstabelecimento({
+        municipioIdSus: session?.user.municipio_id_ibge,
+        estabelecimentos: 'Todos',
+        periodos: 'Último período',
+        linhas_de_perfil: 'Todos',
+        linhas_de_idade: 'Todos',
+      }).then((dados) => setNomeUltimoMes(dados[0].nome_mes));
     }
   }, []);
 
@@ -99,6 +108,7 @@ const PerfilUsuario = () => {
       });
     }
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoGenero.value, filtroCompetenciaGenero.value]);
+
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
       setLoadingRaca(true);
@@ -221,13 +231,9 @@ const PerfilUsuario = () => {
         Usuários inativos: Usuários que não tiveram nenhum procedimento registrado no serviço há mais de 3 meses.'
       />
 
-      { perfilPorEstabelecimento.length !== 0
-        ? <GraficoInfo
-          descricao={ `Última competência disponível: ${encontrarDadosGeraisPorPeriodo(perfilPorEstabelecimento, 'Último período').nome_mes
-          }` }
-        />
-        : <Spinner theme='ColorSM' />
-      }
+      <GraficoInfo
+        descricao={ `Última competência disponível: ${nomeUltimoMes}` }
+      />
 
       <GraficoInfo
         titulo='Panorama geral'
