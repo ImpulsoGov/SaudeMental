@@ -1,6 +1,6 @@
 .Filtro {
-  width: 50%;
   font-size: 14px;
+  margin-bottom: 30px;
 }
 .Filtros {
   display: flex;

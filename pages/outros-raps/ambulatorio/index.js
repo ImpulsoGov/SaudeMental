@@ -237,14 +237,16 @@ const Ambulatorio = () => {
       { atendimentosTotal.length !== 0
         ? (
           <>
-            <FiltroTexto
-              width={ '50%' }
-              dados={ atendimentosTotal }
-              valor={ filtroEstabelecimentoAtendimentosTotal }
-              setValor={ setFiltroEstabelecimentoAtendimentosTotal }
-              label={ 'Estabelecimento' }
-              propriedade={ 'estabelecimento' }
-            />
+            <div className={Style.Filtro}>
+              <FiltroTexto
+                width={ '50%' }
+                dados={ atendimentosTotal }
+                valor={ filtroEstabelecimentoAtendimentosTotal }
+                setValor={ setFiltroEstabelecimentoAtendimentosTotal }
+                label={ 'Estabelecimento' }
+                propriedade={ 'estabelecimento' }
+              />
+            </div>
             <GraficoAtendimentos
               dados={ filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosTotal) }
               textoTooltipA={ 'Médico psiquiatra' }
@@ -264,14 +266,16 @@ const Ambulatorio = () => {
       { atendimentosTotal.length !== 0
         ? (
           <>
-            <FiltroTexto
-              width={ '50%' }
-              dados={ atendimentosTotal }
-              valor={ filtroEstabelecimentoAtendimentosPorHorasTrabalhadas }
-              setValor={ setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas }
-              label={ 'Estabelecimento' }
-              propriedade={ 'estabelecimento' }
-            />
+            <div className={Style.Filtro}>
+              <FiltroTexto
+                width={ '50%' }
+                dados={ atendimentosTotal }
+                valor={ filtroEstabelecimentoAtendimentosPorHorasTrabalhadas }
+                setValor={ setFiltroEstabelecimentoAtendimentosPorHorasTrabalhadas }
+                label={ 'Estabelecimento' }
+                propriedade={ 'estabelecimento' }
+              />
+            </div>
             <GraficoAtendimentos
               dados={ filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosPorHorasTrabalhadas) }
               textoTooltipA={ 'Médico psiquiatra' }
