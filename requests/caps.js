@@ -17,17 +17,17 @@ export const getPerfilUsuarios = async (municipioIdSus) => {
   }
 };
 
-export const getPerfilUsuariosPorEstabelecimento = async (municipioIdSus) => {
-  try {
-    const endpoint = "/usuarios/perfilestabelecimento?municipio_id_sus=" + municipioIdSus;
+// export const getPerfilUsuariosPorEstabelecimento = async (municipioIdSus) => {
+//   try {
+//     const endpoint = "/usuarios/perfilestabelecimento?municipio_id_sus=" + municipioIdSus;
 
-    const { data } = await axiosInstance.get(endpoint);
+//     const { data } = await axiosInstance.get(endpoint);
 
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-};
+//     return data;
+//   } catch (error) {
+//     console.log('error', error.response.data);
+//   }
+// };
 
 export const obterPerfilUsuariosPorEstabelecimento = async ({
   municipioIdSus,
