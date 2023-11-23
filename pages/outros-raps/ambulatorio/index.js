@@ -328,7 +328,7 @@ const Ambulatorio = () => {
         fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
         tooltip='O indicador de atendimentos por hora é calculado a partir da divisão do total de atendimentos registrados pelo total de horas de trabalho dos profissionais estabelecidas em contrato. De tal modo, valores podem apresentar subnotificação em caso de férias, licenças, feriados, números de maior número de finais de semana no mês.'
       />
-      { atendimentosTotal.length !== 0
+      { atendimentosPorProfissional.length !== 0
         ? (
           <> <div className={ Style.Filtros }>
             <FiltroTexto
