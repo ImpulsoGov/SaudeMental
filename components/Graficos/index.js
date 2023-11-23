@@ -6,7 +6,7 @@ import GraficoProcedimentosPorTempoServico from './ProcedimentosPorTempoServico'
 import GraficoHistoricoTemporal from './HistoricoTemporal';
 import GraficoBarrasProducao from './BarrasProducao';
 import GraficoRacaECor from './RacaECor';
-import GraficoAtendimentos from './GraficoAtendimentos';
+
 export {
   GraficoCondicaoUsuarios,
   GraficoDonut,
@@ -15,6 +15,5 @@ export {
   GraficoProcedimentosPorTempoServico,
   GraficoHistoricoTemporal,
   GraficoBarrasProducao,
-  GraficoRacaECor,
-  GraficoAtendimentos,
+  GraficoRacaECor
 };
