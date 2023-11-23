@@ -280,7 +280,7 @@ const PerfilUsuario = () => {
         fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { usuariosPorCID.length !== 0
+      { usuariosPorCID
         && competencias.length !== 0
         && estabelecimentos.length !== 0
         ? (
@@ -337,7 +337,7 @@ const PerfilUsuario = () => {
         fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { usuariosPorGeneroEIdade.length !== 0
+      { usuariosPorGeneroEIdade
         && competencias.length !== 0
         && estabelecimentos.length !== 0
         ? (
@@ -382,7 +382,7 @@ const PerfilUsuario = () => {
         fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { usuariosPorCondicao.length !== 0
+      { usuariosPorCondicao
         && competencias.length !== 0
         && estabelecimentos.length !== 0
         ? (
@@ -443,7 +443,7 @@ const PerfilUsuario = () => {
         fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { usuariosPorRacaECor.length !== 0
+      { usuariosPorRacaECor
         && competencias.length !== 0
         && estabelecimentos.length !== 0
         ? (
