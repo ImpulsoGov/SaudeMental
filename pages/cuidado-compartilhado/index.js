@@ -1,20 +1,17 @@
 import { ButtonLight, PanelSelectorSM, TituloTexto } from "@impulsogov/design-system";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
-import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from "../../helpers/RedirectHome";
 import style from "../duvidas/Duvidas.module.css";
 import ApsAmbulatorio from "./aps-ambulatorio";
 import ApsCaps from "./aps-caps";
 import RapsHospitalar from "./raps-hospitalar";
 import Resumo from "./resumo";
-
 export async function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
   if (redirect) return redirect;
   return { props: {} };
 }
-
 const Index = ({ }) => {
   const router = useRouter();
   const [activeTabIndex, setActiveTabIndex] = useState(Number(router.query?.painel));
@@ -22,7 +19,6 @@ const Index = ({ }) => {
   useEffect(() => {
     setActiveTabIndex(Number(router.query?.painel));
   }, [router.query?.painel]);
-
   useEffect(() => {
     router.push({
       pathname: router.pathname,
@@ -31,7 +27,6 @@ const Index = ({ }) => {
       undefined, { shallow: true }
     );
   }, [activeTabIndex]);
-
   return (
     <div>
       <div className={ style.BotaoVoltar }>
@@ -54,7 +49,6 @@ const Index = ({ }) => {
         titulo="Cuidado compartilhado de Saúde Mental entre as redes de saúde"
         texto=""
       />
-
       <PanelSelectorSM
         panel={ Number(router.query?.painel) }
         states={ {
@@ -64,10 +58,10 @@ const Index = ({ }) => {
           setActiveTitleTabIndex: setActiveTitleTabIndex
         } }
         components={ [[
-          <Resumo key={ uuidv1() }></Resumo>,
-          <ApsCaps key={ uuidv1() }></ApsCaps>,
-          <ApsAmbulatorio key={ uuidv1() }></ApsAmbulatorio>,
-          <RapsHospitalar key={ uuidv1() }></RapsHospitalar>
+          <Resumo key={ 'resumo-cuidado-compartilhado' }></Resumo>,
+          <ApsCaps key={ 'apscaps' }></ApsCaps>,
+          <ApsAmbulatorio key={ 'apsambulatorio' }></ApsAmbulatorio>,
+          <RapsHospitalar key={ 'rapshospitalar' }></RapsHospitalar>
         ]] }
         subtitles={ [
           [
@@ -94,5 +88,4 @@ const Index = ({ }) => {
     </div>
   );
 };
-
 export default Index;
