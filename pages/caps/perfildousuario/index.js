@@ -1,6 +1,6 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import styles from '../Caps.module.css';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
@@ -143,16 +143,12 @@ const PerfilUsuario = () => {
     }
   }, [session?.user.municipio_id_ibge, filtroPeriodoCardsETabela.value]);
 
-  const periodoExtensoPerfilPorEstabelecimento = useMemo(() => {
-    if (loadingCardsETabela) {
-      return '';
-    } else {
-      const { nome_mes: mes, competencia } = perfilPorEstabelecimento[0];
-      const [ano] = `${competencia}`.split('-');
+  const obterPeriodoExtensoPerfilPorEstabelecimento = useCallback(() => {
+    const { nome_mes: mes, competencia } = perfilPorEstabelecimento[0];
+    const [ano] = `${competencia}`.split('-');
 
-      return `${mes} de ${ano}`;
-    }
-  }, [loadingCardsETabela, perfilPorEstabelecimento]);
+    return `${mes} de ${ano}`;
+  }, [perfilPorEstabelecimento]);
 
   return (
     <div>
@@ -235,7 +231,10 @@ const PerfilUsuario = () => {
 
       <GraficoInfo
         titulo='Detalhamento por estabelecimento'
-        descricao={ `Dados de ${periodoExtensoPerfilPorEstabelecimento}` }
+        descricao={ loadingCardsETabela
+          ? ''
+          :`Dados de ${obterPeriodoExtensoPerfilPorEstabelecimento()}`
+        }
       />
 
       { loadingCardsETabela
