@@ -226,9 +226,11 @@ const NovoUsuario = () => {
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      <GraficoInfo
-        descricao={ `Última competência disponível: ${nomeUltimoMes}` }
-      />
+      { nomeUltimoMes &&
+        <GraficoInfo
+          descricao={ `Última competência disponível: ${nomeUltimoMes}` }
+        />
+      }
 
       { resumoNovosUsuarios.length !== 0
         ? (resumoNovosUsuarios.map(({ linhaPerfil, usuariosPorEstabelecimento, nomeMes }) => (

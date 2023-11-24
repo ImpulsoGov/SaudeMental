@@ -176,9 +176,11 @@ const PerfilUsuario = () => {
         Usuários inativos: Usuários que não tiveram nenhum procedimento registrado no serviço há mais de 3 meses.'
       />
 
-      <GraficoInfo
-        descricao={ `Última competência disponível: ${nomeUltimoMes}` }
-      />
+      { nomeUltimoMes &&
+        <GraficoInfo
+          descricao={ `Última competência disponível: ${nomeUltimoMes}` }
+        />
+      }
 
       <GraficoInfo
         titulo='Panorama geral'
