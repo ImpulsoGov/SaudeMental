@@ -1,3 +1,4 @@
+// Municípios onde não há ambulatório
 export const MUNICIPIOS_ID_SUS_SEM_AMBULATORIO = [
   '230190',
   '352590',
@@ -6,6 +7,7 @@ export const MUNICIPIOS_ID_SUS_SEM_AMBULATORIO = [
   '150680'
 ];
 
+// Municípios onde tem ambulatório, mas não conseguimos mostrar os dados
 export const MUNICIPIOS_ID_SUS_SEM_DADOS_AMBULATORIO = [
   '150140',
   '351640',
@@ -15,6 +17,7 @@ export const MUNICIPIOS_ID_SUS_SEM_DADOS_AMBULATORIO = [
   '320520'
 ];
 
+// Municípios sem cards de ambulatório exibidos na página de resumo
 export const MUNICIPIOS_ID_SUS_SEM_CARDS_AMBULATORIO = [
   ...MUNICIPIOS_ID_SUS_SEM_AMBULATORIO,
   ...MUNICIPIOS_ID_SUS_SEM_DADOS_AMBULATORIO
