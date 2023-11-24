@@ -17,18 +17,6 @@ export const getPerfilUsuarios = async (municipioIdSus) => {
   }
 };
 
-// export const getPerfilUsuariosPorEstabelecimento = async (municipioIdSus) => {
-//   try {
-//     const endpoint = "/usuarios/perfilestabelecimento?municipio_id_sus=" + municipioIdSus;
-
-//     const { data } = await axiosInstance.get(endpoint);
-
-//     return data;
-//   } catch (error) {
-//     console.log('error', error.response.data);
-//   }
-// };
-
 export const obterPerfilUsuariosPorEstabelecimento = async ({
   municipioIdSus,
   estabelecimentos,
@@ -59,9 +47,27 @@ export const obterPerfilUsuariosPorEstabelecimento = async ({
   }
 };
 
-export const getResumoNovosUsuarios = async (municipioIdSus) => {
+export const obterResumoNovosUsuarios = async ({
+  municipioIdSus,
+  estabelecimentos,
+  periodos,
+  linhas_de_perfil,
+  linhas_de_idade
+}) => {
   try {
-    const endpoint = "/usuarios/novosresumo?municipio_id_sus=" + municipioIdSus;
+    let endpoint = "/usuarios/novos/resumo?municipio_id_sus=" + municipioIdSus;
+    const parametrosOpcionais = {
+      periodos,
+      estabelecimentos,
+      linhas_de_perfil,
+      linhas_de_idade
+    };
+
+    for (const parametro in parametrosOpcionais) {
+      if (parametrosOpcionais[parametro] !== undefined) {
+        endpoint += `&${parametro}=${parametrosOpcionais[parametro]}`;
+      }
+    }
 
     const { data } = await axiosInstance.get(endpoint);
 
