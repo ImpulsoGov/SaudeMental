@@ -60,7 +60,7 @@ const NovoUsuario = () => {
       const dadosFiltradosResumo = await obterResumoNovosUsuarios({
         municipioIdSus: session?.user.municipio_id_ibge,
         periodos: 'Último período',
-        linhas_de_idade: 'Todos',
+        estabelecimento_linha_idade: 'Todos',
       });
 
       const resumoGeral = dadosFiltradosResumo.find((item) => (
@@ -197,8 +197,8 @@ const NovoUsuario = () => {
       obterResumoNovosUsuarios({
         municipioIdSus: session?.user.municipio_id_ibge,
         estabelecimentos: filtroEstabelecimentoHistorico.value,
-        linhas_de_perfil: 'Todos',
-        linhas_de_idade: 'Todos',
+        estabelecimento_linha_perfil: 'Todos',
+        estabelecimento_linha_idade: 'Todos',
       }).then((dadosFiltrados) => {
         setNovosUsuariosHistorico(dadosFiltrados);
         setLoadingHistorico(false);

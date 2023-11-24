@@ -57,8 +57,8 @@ const PerfilUsuario = () => {
         municipioIdSus: session?.user.municipio_id_ibge,
         estabelecimentos: 'Todos',
         periodos: 'Último período',
-        linhas_de_perfil: 'Todos',
-        linhas_de_idade: 'Todos',
+        estabelecimento_linha_perfil: 'Todos',
+        estabelecimento_linha_idade: 'Todos',
       }).then((dadoFiltrado) => setNomeUltimoMes(dadoFiltrado[0].nome_mes));
     }
   }, []);
@@ -130,8 +130,8 @@ const PerfilUsuario = () => {
       obterPerfilUsuariosPorEstabelecimento({
         municipioIdSus: session?.user.municipio_id_ibge,
         periodos: filtroPeriodoCardsETabela.value,
-        linhas_de_perfil: 'Todos',
-        linhas_de_idade: 'Todos',
+        estabelecimento_linha_perfil: 'Todos',
+        estabelecimento_linha_idade: 'Todos',
       }).then((dadosFiltrados) => {
         const dadosPorEstabelecimento = dadosFiltrados.filter((item) => item.estabelecimento !== 'Todos');
         const totalEstabelecimentos = dadosFiltrados.find((item) => item.estabelecimento === 'Todos');

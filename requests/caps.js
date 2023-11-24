@@ -21,16 +21,16 @@ export const obterPerfilUsuariosPorEstabelecimento = async ({
   municipioIdSus,
   estabelecimentos,
   periodos,
-  linhas_de_perfil,
-  linhas_de_idade
+  estabelecimento_linha_perfil,
+  estabelecimento_linha_idade
 }) => {
   try {
     let endpoint = "/usuarios/perfil/por-estabelecimento?municipio_id_sus=" + municipioIdSus;
     const parametrosOpcionais = {
       periodos,
       estabelecimentos,
-      linhas_de_perfil,
-      linhas_de_idade
+      estabelecimento_linha_perfil,
+      estabelecimento_linha_idade
     };
 
     for (const parametro in parametrosOpcionais) {
@@ -51,16 +51,16 @@ export const obterResumoNovosUsuarios = async ({
   municipioIdSus,
   estabelecimentos,
   periodos,
-  linhas_de_perfil,
-  linhas_de_idade
+  estabelecimento_linha_perfil,
+  estabelecimento_linha_idade
 }) => {
   try {
     let endpoint = "/usuarios/novos/resumo?municipio_id_sus=" + municipioIdSus;
     const parametrosOpcionais = {
       periodos,
       estabelecimentos,
-      linhas_de_perfil,
-      linhas_de_idade
+      estabelecimento_linha_perfil,
+      estabelecimento_linha_idade
     };
 
     for (const parametro in parametrosOpcionais) {
