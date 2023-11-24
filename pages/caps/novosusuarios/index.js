@@ -1,13 +1,13 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import GraficoRacaECor from '../../../components/Graficos/RacaECor';
 import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
-import { getEstabelecimentos, getPeriodos, getResumoNovosUsuarios, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor } from '../../../requests/caps';
+import { getEstabelecimentos, getPeriodos, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor, obterResumoNovosUsuarios } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
@@ -29,6 +29,8 @@ const NovoUsuario = () => {
   const [usuariosNovosPorGeneroEIdade, setUsuariosNovosPorGeneroEIdade] = useState([]);
   const [usuariosNovosPorRaca, setUsuariosNovosPorRaca] = useState([]);
   const [resumoNovosUsuarios, setResumoNovosUsuarios] = useState([]);
+  const [novosUsuariosHistorico, setNovosUsuariosHistorico] = useState([]);
+  const [nomeUltimoMes, setNomeUltimoMes] = useState('');
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
@@ -44,6 +46,7 @@ const NovoUsuario = () => {
   const [loadingGenero, setLoadingGenero] = useState(false);
   const [loadingCondicao, setLoadingCondicao] = useState(false);
   const [loadingRaca, setLoadingRaca] = useState(false);
+  const [loadingHistorico, setLoadingHistorico] = useState(true);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -53,19 +56,35 @@ const NovoUsuario = () => {
       setPeriodos(
         await getPeriodos(municipioIdSus, 'usuarios_novos_perfil')
       );
-      setResumoNovosUsuarios(
-        await getResumoNovosUsuarios(municipioIdSus)
-      );
+
+      const dadosFiltradosResumo = await obterResumoNovosUsuarios({
+        municipioIdSus: session?.user.municipio_id_ibge,
+        periodos: 'Último período',
+        linhas_de_idade: 'Todos',
+      });
+
+      const resumoGeral = dadosFiltradosResumo.find((item) => (
+        item.estabelecimento === 'Todos' && item.estabelecimento_linha_perfil === 'Todos'
+      ));
+
+      setNomeUltimoMes(resumoGeral.nome_mes);
+
+      const resumoPorEstabelecimentoELinhaPerfil = dadosFiltradosResumo.filter((item) => (
+        item.estabelecimento !== 'Todos' && item.estabelecimento_linha_perfil !== 'Todos'
+      ));
+
+      setResumoNovosUsuarios(agregarPorLinhaDePerfil(resumoPorEstabelecimentoELinhaPerfil));
     };
 
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
-  const agregarPorLinhaPerfil = (usuariosNovos) => {
+
+  const agregarPorLinhaDePerfil = useCallback((dados) => {
     const usuariosAgregados = [];
 
-    usuariosNovos.forEach((item) => {
+    dados.forEach((item) => {
       const {
         estabelecimento,
         nome_mes: nomeMes,
@@ -97,61 +116,7 @@ const NovoUsuario = () => {
     });
 
     return usuariosAgregados;
-  };
-
-  const getCardsNovosUsuariosPorEstabelecimento = (novosUsuarios) => {
-    const novosUsuariosUltimoPeriodo = novosUsuarios
-      .filter(({
-        periodo,
-        estabelecimento,
-        estabelecimento_linha_perfil: linhaPerfil,
-        estabelecimento_linha_idade: linhaIdade
-      }) =>
-        periodo === 'Último período'
-        && estabelecimento !== 'Todos'
-        && linhaPerfil !== 'Todos'
-        && linhaIdade === 'Todos'
-      );
-
-    const usuariosAgregados = agregarPorLinhaPerfil(novosUsuariosUltimoPeriodo);
-
-    const cards = usuariosAgregados.map(({
-      linhaPerfil, usuariosPorEstabelecimento, nomeMes
-    }) => (
-      <>
-        <GraficoInfo
-          titulo={ `CAPS ${linhaPerfil}` }
-          descricao={ `Dados de ${nomeMes}` }
-        />
-
-        <Grid12Col
-          items={
-            usuariosPorEstabelecimento.map((item) => (
-              <CardInfoTipoA
-                titulo={ item.estabelecimento }
-                indicador={ item.usuariosNovos }
-                indice={ item.diferencaMesAnterior }
-                indiceDescricao='últ. mês'
-                key={ uuidv1() }
-              />
-            ))
-          }
-          proporcao='3-3-3-3'
-        />
-      </>
-    ));
-
-    return cards;
-  };
-
-  const filtrarPorEstabelecimento = (dados, filtroEstabelecimento) => {
-    return dados
-      .filter((item) =>
-        item.estabelecimento === filtroEstabelecimento.value
-        && item.estabelecimento_linha_perfil === 'Todos'
-        && item.estabelecimento_linha_idade === 'Todos'
-      );
-  };
+  }, []);
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -225,6 +190,22 @@ const NovoUsuario = () => {
     }
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoCID.value, filtroPeriodoCID]);
 
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingHistorico(true);
+
+      obterResumoNovosUsuarios({
+        municipioIdSus: session?.user.municipio_id_ibge,
+        estabelecimentos: filtroEstabelecimentoHistorico.value,
+        linhas_de_perfil: 'Todos',
+        linhas_de_idade: 'Todos',
+      }).then((dadosFiltrados) => {
+        setNovosUsuariosHistorico(dadosFiltrados);
+        setLoadingHistorico(false);
+      });
+    }
+  }, [session?.user.municipio_id_ibge, filtroEstabelecimentoHistorico.value]);
+
   return (
     <div>
       <TituloSmallTexto
@@ -245,23 +226,34 @@ const NovoUsuario = () => {
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
+      <GraficoInfo
+        descricao={ `Última competência disponível: ${nomeUltimoMes}` }
+      />
+
       { resumoNovosUsuarios.length !== 0
-        ? (
+        ? (resumoNovosUsuarios.map(({ linhaPerfil, usuariosPorEstabelecimento, nomeMes }) => (
           <>
             <GraficoInfo
-              descricao={ `Última competência disponível: ${resumoNovosUsuarios
-                .find((item) =>
-                  item.estabelecimento === 'Todos'
-                  && item.estabelecimento_linha_perfil === 'Todos'
-                  && item.estabelecimento_linha_idade === 'Todos'
-                  && item.periodo === 'Último período'
-                )
-                .nome_mes
-              }` }
+              titulo={ `CAPS ${linhaPerfil}` }
+              descricao={ `Dados de ${nomeMes}` }
             />
 
-            { getCardsNovosUsuariosPorEstabelecimento(resumoNovosUsuarios) }
+            <Grid12Col
+              items={
+                usuariosPorEstabelecimento.map((item) => (
+                  <CardInfoTipoA
+                    titulo={ item.estabelecimento }
+                    indicador={ item.usuariosNovos }
+                    indice={ item.diferencaMesAnterior }
+                    indiceDescricao='últ. mês'
+                    key={ uuidv1() }
+                  />
+                ))
+              }
+              proporcao='3-3-3-3'
+            />
           </>
+        ))
         )
         : <Spinner theme='ColorSM' />
       }
@@ -271,25 +263,24 @@ const NovoUsuario = () => {
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { resumoNovosUsuarios.length !== 0
-        ? (
-          <>
-            <FiltroTexto
-              width={'50%'}
-              dados = {resumoNovosUsuarios}
-              valor = {filtroEstabelecimentoHistorico}
-              setValor = {setFiltroEstabelecimentoHistorico}
-              label = {'Estabelecimento'}
-              propriedade = {'estabelecimento'}
-            />
-            <GraficoHistoricoTemporal
-              dados = {filtrarPorEstabelecimento(resumoNovosUsuarios, filtroEstabelecimentoHistorico)}
-              textoTooltip={'Usuários novos:'}
-              loading = {false}
-              propriedade={'usuarios_novos'}
-            />
-          </>
-        )
+      { estabelecimentos.length !== 0 &&
+        <FiltroTexto
+          width={'50%'}
+          dados={estabelecimentos}
+          valor={filtroEstabelecimentoHistorico}
+          setValor={setFiltroEstabelecimentoHistorico}
+          label={'Estabelecimento'}
+          propriedade={'estabelecimento'}
+        />
+      }
+
+      { novosUsuariosHistorico.length !== 0
+        ? <GraficoHistoricoTemporal
+          dados={novosUsuariosHistorico}
+          textoTooltip={'Usuários novos:'}
+          loading={loadingHistorico}
+          propriedade={'usuarios_novos'}
+        />
         : <Spinner theme='ColorSM' />
       }
 
