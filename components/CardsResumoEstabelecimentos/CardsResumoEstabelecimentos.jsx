@@ -9,22 +9,28 @@ const CardsResumoEstabelecimentos = ({
   indiceSimbolo,
   indiceDescricao
 }) => {
-  const estabelecimentosLinhaDePerfilGeral = useMemo(() => {
+  const dadosLinhaDePerfilGeral = useMemo(() => {
     const dadosFiltrados = dados.filter((item) => item.estabelecimento_linha_perfil === 'Geral');
 
-    return ordenarCrescentePorPropriedadeDeTexto(
-      dadosFiltrados,
-      'estabelecimento'
-    );
+    return dadosFiltrados.length !== 0
+      ? {
+        nomeLinhaDePerfil: dadosFiltrados[0].estabelecimento_linha_perfil,
+        nomeMes: dadosFiltrados[0].nome_mes,
+        estabelecimentos: ordenarCrescentePorPropriedadeDeTexto(dadosFiltrados, 'estabelecimento')
+      }
+      : {};
   }, [dados]);
 
-  const estabelecimentosLinhaDePerfilAD = useMemo(() => {
+  const dadosLinhaDePerfilAD = useMemo(() => {
     const dadosFiltrados = dados.filter((item) => item.estabelecimento_linha_perfil === 'Álcool e outras drogas');
 
-    return ordenarCrescentePorPropriedadeDeTexto(
-      dadosFiltrados,
-      'estabelecimento'
-    );
+    return dadosFiltrados.length !== 0
+      ? {
+        nomeLinhaDePerfil: dadosFiltrados[0].estabelecimento_linha_perfil,
+        nomeMes: dadosFiltrados[0].nome_mes,
+        estabelecimentos: ordenarCrescentePorPropriedadeDeTexto(dadosFiltrados, 'estabelecimento')
+      }
+      : {};
   }, [dados]);
 
   return (
@@ -32,13 +38,13 @@ const CardsResumoEstabelecimentos = ({
       { dados.length !== 0
         ? <>
           <GraficoInfo
-            titulo={ `CAPS ${estabelecimentosLinhaDePerfilGeral[0].estabelecimento_linha_perfil}` }
-            descricao={ `Dados de ${estabelecimentosLinhaDePerfilGeral[0].nome_mes}` }
+            titulo={ `CAPS ${dadosLinhaDePerfilGeral.nomeLinhaDePerfil}` }
+            descricao={ `Dados de ${dadosLinhaDePerfilGeral.nomeMes}` }
           />
 
           <Grid12Col
             items={
-              estabelecimentosLinhaDePerfilGeral.map((item) => (
+              dadosLinhaDePerfilGeral.estabelecimentos.map((item) => (
                 <CardInfoTipoA
                   titulo={ item[propriedades.estabelecimento] }
                   indicador={ item[propriedades.quantidade] }
@@ -53,13 +59,13 @@ const CardsResumoEstabelecimentos = ({
           />
 
           <GraficoInfo
-            titulo={ `CAPS ${estabelecimentosLinhaDePerfilAD[0].estabelecimento_linha_perfil}` }
-            descricao={ `Dados de ${estabelecimentosLinhaDePerfilAD[0].nome_mes}` }
+            titulo={ `CAPS ${dadosLinhaDePerfilAD.nomeLinhaDePerfil}` }
+            descricao={ `Dados de ${dadosLinhaDePerfilAD.nomeMes}` }
           />
 
           <Grid12Col
             items={
-              estabelecimentosLinhaDePerfilAD.map((item) => (
+              dadosLinhaDePerfilAD.estabelecimentos.map((item) => (
                 <CardInfoTipoA
                   titulo={ item[propriedades.estabelecimento] }
                   indicador={ item[propriedades.quantidade] }
