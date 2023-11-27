@@ -135,14 +135,14 @@ const ProcedimentosPorUsuarios = () => {
       }
 
       <CardsResumoEstabelecimentos
-        resumo={ resumoPorEstabelecimento }
-        propriedadesCard={{
+        dados={ resumoPorEstabelecimento }
+        propriedades={{
           estabelecimento: 'estabelecimento',
           quantidade: 'procedimentos_por_usuario',
           difAnterior: 'dif_procedimentos_por_usuario_anterior_perc',
-          simbolo: '%',
-          descricao: 'últ. mês',
         }}
+        indiceSimbolo='%'
+        indiceDescricao='últ. mês'
       />
 
       <GraficoInfo
