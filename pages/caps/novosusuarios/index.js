@@ -1,7 +1,6 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
+import { GraficoInfo, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
-import { useCallback, useEffect, useState } from 'react';
-import { v1 as uuidv1 } from 'uuid';
+import { useEffect, useState } from 'react';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
@@ -13,6 +12,7 @@ import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 import { GraficoCondicaoUsuarios, GraficoDonut } from '../../../components/Graficos';
+import { CardsResumoEstabelecimentos } from '../../../components/CardsResumoEstabelecimentos';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -73,49 +73,12 @@ const NovoUsuario = () => {
         item.estabelecimento !== 'Todos' && item.estabelecimento_linha_perfil !== 'Todos'
       ));
 
-      setResumoNovosUsuarios(agregarPorLinhaDePerfil(resumoPorEstabelecimentoELinhaPerfil));
+      setResumoNovosUsuarios(resumoPorEstabelecimentoELinhaPerfil);
     };
 
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
-  }, []);
-
-  const agregarPorLinhaDePerfil = useCallback((dados) => {
-    const usuariosAgregados = [];
-
-    dados.forEach((item) => {
-      const {
-        estabelecimento,
-        nome_mes: nomeMes,
-        estabelecimento_linha_perfil: linhaPerfil,
-        usuarios_novos: usuariosNovos,
-        dif_usuarios_novos_anterior: diferencaMesAnterior
-      } = item;
-
-      const linhaPerfilEncontrada = usuariosAgregados
-        .find((item) => item.linhaPerfil === linhaPerfil);
-
-      if (!linhaPerfilEncontrada) {
-        usuariosAgregados.push({
-          nomeMes,
-          linhaPerfil,
-          usuariosPorEstabelecimento: [{
-            estabelecimento,
-            usuariosNovos,
-            diferencaMesAnterior
-          }]
-        });
-      } else {
-        linhaPerfilEncontrada.usuariosPorEstabelecimento.push({
-          estabelecimento,
-          usuariosNovos,
-          diferencaMesAnterior
-        });
-      }
-    });
-
-    return usuariosAgregados;
   }, []);
 
   useEffect(() => {
@@ -232,33 +195,15 @@ const NovoUsuario = () => {
         />
       }
 
-      { resumoNovosUsuarios.length !== 0
-        ? (resumoNovosUsuarios.map(({ linhaPerfil, usuariosPorEstabelecimento, nomeMes }) => (
-          <>
-            <GraficoInfo
-              titulo={ `CAPS ${linhaPerfil}` }
-              descricao={ `Dados de ${nomeMes}` }
-            />
-
-            <Grid12Col
-              items={
-                usuariosPorEstabelecimento.map((item) => (
-                  <CardInfoTipoA
-                    titulo={ item.estabelecimento }
-                    indicador={ item.usuariosNovos }
-                    indice={ item.diferencaMesAnterior }
-                    indiceDescricao='últ. mês'
-                    key={ uuidv1() }
-                  />
-                ))
-              }
-              proporcao='3-3-3-3'
-            />
-          </>
-        ))
-        )
-        : <Spinner theme='ColorSM' />
-      }
+      <CardsResumoEstabelecimentos
+        dados={ resumoNovosUsuarios }
+        propriedades={{
+          estabelecimento: 'estabelecimento',
+          quantidade: 'usuarios_novos',
+          difAnterior: 'dif_usuarios_novos_anterior',
+        }}
+        indiceDescricao='últ. mês'
+      />
 
       <GraficoInfo
         titulo='Histórico Temporal'
