@@ -41,7 +41,6 @@ const TaxaAbandono = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setAbandonoCoortes(await getAbandonoCoortes(municipioIdSus));
       setAbandonoMensal(await getAbandonoMensal(municipioIdSus));
       setEstabelecimentos(
         await getEstabelecimentos(municipioIdSus, 'abandono_perfil')
@@ -49,6 +48,11 @@ const TaxaAbandono = () => {
       setPeriodos(
         await getPeriodos(municipioIdSus, 'abandono_perfil')
       );
+      setAbandonoCoortes(await getAbandonoCoortes({
+        municipioIdSus,
+        periodos: 'Último período',
+        estabelecimento: 'Todos'
+      }));
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -94,7 +98,7 @@ const TaxaAbandono = () => {
 
   const getCardsAbandonoAcumulado = (abandonos) => {
     const abandonosUltimoPeriodo = abandonos
-      .filter(({ periodo, estabelecimento }) => periodo === 'Último período' && estabelecimento !== 'Todos');
+      .filter((item) => item.periodo === 'Último período' && item.estabelecimento !== 'Todos');
     const abandonosOrdenadosPorValor = ordenarDecrescentePorPropriedadeNumerica(
       abandonosUltimoPeriodo,
       'usuarios_coorte_nao_aderiram_perc'
@@ -116,7 +120,7 @@ const TaxaAbandono = () => {
                 titulo={ item.estabelecimento }
                 indicador={ item.usuarios_coorte_nao_aderiram_perc }
                 indicadorSimbolo='%'
-                key={ uuidv1() }
+                key={ item.id }
               />
             ))
           }
