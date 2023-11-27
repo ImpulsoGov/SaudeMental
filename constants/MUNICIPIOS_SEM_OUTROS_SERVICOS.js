@@ -35,5 +35,6 @@ export const MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA = [
   '351640',
   '231130',
   '315780',
-  '280350'
+  '280350',
+  '231140'
 ];
