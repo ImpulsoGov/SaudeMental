@@ -98,7 +98,7 @@ const TaxaAbandono = () => {
 
   const getCardsAbandonoAcumulado = (abandonos) => {
     const abandonosUltimoPeriodo = abandonos
-      .filter((item) => item.periodo === 'Último período' && item.estabelecimento !== 'Todos');
+      .filter(({periodo, estabelecimento}) => periodo === 'Último período' && estabelecimento !== 'Todos');
     const abandonosOrdenadosPorValor = ordenarDecrescentePorPropriedadeNumerica(
       abandonosUltimoPeriodo,
       'usuarios_coorte_nao_aderiram_perc'
