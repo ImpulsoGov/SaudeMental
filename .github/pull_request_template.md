@@ -5,7 +5,7 @@ TEMPLATE DE PULL REQUEST (PR)
   - Um modelo que traz os tópicos necessários para descrever um PR.
 
 - QUAL O OBJETIVO?
-  - Padronizar as descrições dos PRs nesse repositório e garantir que toda pessoa que o acesse tenha toda informação necessária para entendê-lo e usá-lo.
+  - Padronizar as descrições dos PRs nesse repositório e garantir que toda pessoa que os acesse tenha informações necessárias para entendê-los e usá-los.
 
 - COMO USAR?
   - Siga os comentários de instrução presentes em cada seção abaixo para preenchê-las corretamente.
