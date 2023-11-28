@@ -29,18 +29,6 @@ export const getPerfilUsuariosPorEstabelecimento = async (municipioIdSus) => {
   }
 };
 
-export const getNovosUsuarios = async (municipioIdSus) => {
-  try {
-    const endpoint = "/usuarios/novos?municipio_id_sus=" + municipioIdSus;
-
-    const { data } = await axiosInstance.get(endpoint);
-
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-};
-
 export const getResumoNovosUsuarios = async (municipioIdSus) => {
   try {
     const endpoint = "/usuarios/novosresumo?municipio_id_sus=" + municipioIdSus;
@@ -65,18 +53,6 @@ export const getResumoPerfilDeAtendimentos = async (municipioIdSus) => {
   }
 };
 
-export const getPerfilDeAtendimentos = async (municipioIdSus) => {
-  try {
-    const endpoint = "/atendimentosindividuais/caps/perfil?municipio_id_sus=" + municipioIdSus;
-
-    const { data } = await axiosInstance.get(endpoint);
-
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-};
-
 export const getAtendimentosPorCaps = async (municipioIdSus) => {
   try {
     const endpoint = "/atendimentosindividuais/porcaps?municipio_id_sus=" + municipioIdSus;
@@ -88,18 +64,6 @@ export const getAtendimentosPorCaps = async (municipioIdSus) => {
     console.log('error', error.response.data);
   }
 };
-
-// export const getProcedimentosPorTempoServico = async (municipioIdSus) => {
-//   try {
-//     const endpoint = "/procedimentos_por_usuario_tempo?municipio_id_sus=" + municipioIdSus;
-
-//     const { data } = await axiosInstance.get(endpoint);
-
-//     return data;
-//   } catch (error) {
-//     console.log('error', error.response.data);
-//   }
-// };
 
 export const getProcedimentosPorEstabelecimento = async (municipioIdSus) => {
   try {
@@ -166,30 +130,6 @@ export const getAbandonoCoortes = async ({
     console.log('error', error.response.data);
   }
 };
-
-// export const getProcedimentosPorTipo = async (municipioIdSus) => {
-//   try {
-//     const endpoint = "/procedimentos_por_tipo?municipio_id_sus=" + municipioIdSus;
-
-//     const { data } = await axiosInstance.get(endpoint);
-
-//     return data;
-//   } catch (error) {
-//     console.log('error', error.response.data);
-//   }
-// };
-
-// export const getProcedimentosPorHora = async (municipioIdSus) => {
-//   try {
-//     const endpoint = "/procedimentos_por_hora?municipio_id_sus=" + municipioIdSus;
-
-//     const { data } = await axiosInstance.get(endpoint);
-
-//     return data;
-//   } catch (error) {
-//     console.log('error', error.response.data);
-//   }
-// };
 
 export const getUsuariosAtivosPorCondicao = async (
   municipioIdSus,

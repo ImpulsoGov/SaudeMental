@@ -22,7 +22,12 @@ const RapsHospitalar = ({ }) => {
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
       getCAPSAcolhimentoNoturno(session?.user.municipio_id_ibge)
-        .then(dados => setCAPSAcolhimentoNoturno(dados[0]));
+        .then(dados => dados.length === 0
+          ? setCAPSAcolhimentoNoturno({
+            'acolhimentos_noturnos': 0,
+          })
+          : setCAPSAcolhimentoNoturno(dados[0])
+        );
       getInternacoesRapsAdmissoes(session?.user.municipio_id_ibge)
         .then(dados => setInternacoesRapsAdmissoes(dados[0]));
       getInternacoesRapsAltas12m(session?.user.municipio_id_ibge)
