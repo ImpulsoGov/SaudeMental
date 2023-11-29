@@ -120,11 +120,11 @@ export const getAbandonoCoortes = async ({
 }) => {
   try {
     let endpoint = '/abandono/coortes?municipio_id_sus=' + municipioIdSus;
-    endpoint = addQueryParamSeExiste(endpoint, 'periodos', periodo);
-    endpoint = addQueryParamSeExiste(endpoint, 'estabelecimentos', estabelecimento);
+    endpoint = addQueryParamSeExiste(endpoint, 'periodos', periodos);
+    endpoint = addQueryParamSeExiste(endpoint, 'estabelecimentos', estabelecimentos);
 
     const { data } = await axiosInstance.get(endpoint);
-
+    console.log('dados: ', data);
     return data;
   } catch (error) {
     console.log('error', error.response.data);
