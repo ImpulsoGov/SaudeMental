@@ -115,8 +115,8 @@ export const getPerfilAbandono = async (municipioIdSus) => {
 
 export const getAbandonoCoortes = async ({
   municipioIdSus,
-  periodo,
-  estabelecimento
+  periodos,
+  estabelecimentos
 }) => {
   try {
     let endpoint = '/abandono/coortes?municipio_id_sus=' + municipioIdSus;
