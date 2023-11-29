@@ -36,8 +36,7 @@ OBS: não insira aqui o valor das variáveis de ambiente, apenas inclua o nome d
 *: o ideal é que a pessoa que criou a variável de ambiente faça sua inclusão/edição no local onde a aplicação é hospedada, portanto adicione o trecho entre * na frase acima caso você não tenha permissão para fazer a inclusão/edição.
  -->
 
-### Requisitos para mergear o PR
+### Checklist para mergear o PR
 <!-- Marque os checkboxes abaixo à medida em que as tarefas são feitas e garanta que todas elas sejam realizadas para que o PR possa ser mergeado -->
 
-- [ ] Validação da funcionalidade pela pessoa revisora do PR
-- [ ] Validação da funcionalidade com o time
+- [ ] Validar a funcionalidade com o time
