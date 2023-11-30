@@ -124,7 +124,6 @@ export const getAbandonoCoortes = async ({
     endpoint = addQueryParamSeExiste(endpoint, 'estabelecimentos', estabelecimentos);
 
     const { data } = await axiosInstance.get(endpoint);
-    console.log('dados: ', data);
     return data;
   } catch (error) {
     console.log('error', error.response.data);
