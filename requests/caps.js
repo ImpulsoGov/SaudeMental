@@ -137,18 +137,6 @@ export const getAbandonoMensal = async (municipioIdSus) => {
   }
 };
 
-export const getPerfilAbandono = async (municipioIdSus) => {
-  try {
-    const endpoint = "/abandono/resumo?municipio_id_sus=" + municipioIdSus;
-
-    const { data } = await axiosInstance.get(endpoint);
-
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-};
-
 export const getAbandonoCoortes = async ({
   municipioIdSus,
   periodo,
