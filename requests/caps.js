@@ -17,9 +17,27 @@ export const getPerfilUsuarios = async (municipioIdSus) => {
   }
 };
 
-export const getPerfilUsuariosPorEstabelecimento = async (municipioIdSus) => {
+export const obterPerfilUsuariosPorEstabelecimento = async ({
+  municipioIdSus,
+  estabelecimentos,
+  periodos,
+  estabelecimento_linha_perfil,
+  estabelecimento_linha_idade
+}) => {
   try {
-    const endpoint = "/usuarios/perfilestabelecimento?municipio_id_sus=" + municipioIdSus;
+    let endpoint = "/usuarios/perfil/por-estabelecimento?municipio_id_sus=" + municipioIdSus;
+    const parametrosOpcionais = {
+      periodos,
+      estabelecimentos,
+      estabelecimento_linha_perfil,
+      estabelecimento_linha_idade
+    };
+
+    for (const parametro in parametrosOpcionais) {
+      if (parametrosOpcionais[parametro] !== undefined) {
+        endpoint += `&${parametro}=${parametrosOpcionais[parametro]}`;
+      }
+    }
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -29,9 +47,27 @@ export const getPerfilUsuariosPorEstabelecimento = async (municipioIdSus) => {
   }
 };
 
-export const getResumoNovosUsuarios = async (municipioIdSus) => {
+export const obterResumoNovosUsuarios = async ({
+  municipioIdSus,
+  estabelecimentos,
+  periodos,
+  estabelecimento_linha_perfil,
+  estabelecimento_linha_idade
+}) => {
   try {
-    const endpoint = "/usuarios/novosresumo?municipio_id_sus=" + municipioIdSus;
+    let endpoint = "/usuarios/novos/resumo?municipio_id_sus=" + municipioIdSus;
+    const parametrosOpcionais = {
+      periodos,
+      estabelecimentos,
+      estabelecimento_linha_perfil,
+      estabelecimento_linha_idade
+    };
+
+    for (const parametro in parametrosOpcionais) {
+      if (parametrosOpcionais[parametro] !== undefined) {
+        endpoint += `&${parametro}=${parametrosOpcionais[parametro]}`;
+      }
+    }
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -65,9 +101,27 @@ export const getAtendimentosPorCaps = async (municipioIdSus) => {
   }
 };
 
-export const getProcedimentosPorEstabelecimento = async (municipioIdSus) => {
+export const obterProcedimentosPorEstabelecimento = async ({
+  municipioIdSus,
+  estabelecimentos,
+  periodos,
+  estabelecimento_linha_perfil,
+  estabelecimento_linha_idade
+}) => {
   try {
     const endpoint = "/procedimentos_por_usuario_estabelecimentos?municipio_id_sus=" + municipioIdSus;
+    const parametrosOpcionais = {
+      periodos,
+      estabelecimentos,
+      estabelecimento_linha_perfil,
+      estabelecimento_linha_idade
+    };
+
+    for (const parametro in parametrosOpcionais) {
+      if (parametrosOpcionais[parametro] !== undefined) {
+        endpoint += `&${parametro}=${parametrosOpcionais[parametro]}`;
+      }
+    }
 
     const { data } = await axiosInstance.get(endpoint);
 
