@@ -30,6 +30,7 @@ const ProcedimentosPorUsuarios = () => {
   const [loadingHistorico, setLoadingHistorico] = useState(true);
   const [estabelecimentos, setEstabelecimentos] = useState([]);
   const [periodos, setPeriodos] = useState([]);
+  const [estabelecimentosHistorico, setEstabelecimentosHistorico] = useState([]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -38,6 +39,10 @@ const ProcedimentosPorUsuarios = () => {
         periodos: 'Último período',
         estabelecimento_linha_idade: 'Todos',
       });
+
+      setEstabelecimentosHistorico(dadosFiltradosResumo.map((item) => ({
+        estabelecimento: item.estabelecimento
+      })));
 
       const resumoGeral = dadosFiltradosResumo.find((item) => (
         item.estabelecimento === 'Todos' && item.estabelecimento_linha_perfil === 'Todos'
@@ -153,7 +158,7 @@ const ProcedimentosPorUsuarios = () => {
       { estabelecimentos.length !== 0 &&
         <FiltroTexto
           width={ '50%' }
-          dados={ estabelecimentos }
+          dados={ estabelecimentosHistorico }
           valor={ filtroEstabelecimentoHistorico }
           setValor={ setFiltroEstabelecimentoHistorico }
           label={ 'Estabelecimento' }
