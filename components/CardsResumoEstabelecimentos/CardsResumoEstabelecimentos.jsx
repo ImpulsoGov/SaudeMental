@@ -9,76 +9,69 @@ const CardsResumoEstabelecimentos = ({
   indiceSimbolo,
   indiceDescricao
 }) => {
-  const dadosLinhaDePerfilGeral = useMemo(() => {
-    const dadosFiltrados = dados.filter((item) => item.estabelecimento_linha_perfil === 'Geral');
+  const nomeMes = dados.length !== 0 ? dados[0].nome_mes : '';
 
-    return dadosFiltrados.length !== 0
-      ? {
-        nomeLinhaDePerfil: dadosFiltrados[0].estabelecimento_linha_perfil,
-        nomeMes: dadosFiltrados[0].nome_mes,
-        estabelecimentos: ordenarCrescentePorPropriedadeDeTexto(dadosFiltrados, 'estabelecimento')
-      }
-      : {};
+  const agrupadosPorLinhaDePerfil = useMemo(() => {
+    const dadosAgrupados = dados.reduce((agrupados, item) => {
+      const { estabelecimento_linha_perfil: linhaDePerfil } = item;
+      agrupados[linhaDePerfil] = agrupados[linhaDePerfil] || [];
+      agrupados[linhaDePerfil].push(item);
+      return agrupados;
+    }, {});
+
+    return dadosAgrupados;
   }, [dados]);
 
-  const dadosLinhaDePerfilAD = useMemo(() => {
-    const dadosFiltrados = dados.filter((item) => item.estabelecimento_linha_perfil === 'Álcool e outras drogas');
+  const cardsPorLinhaDePerfil = useMemo(() => {
+    const cards = [];
 
-    return dadosFiltrados.length !== 0
-      ? {
-        nomeLinhaDePerfil: dadosFiltrados[0].estabelecimento_linha_perfil,
-        nomeMes: dadosFiltrados[0].nome_mes,
-        estabelecimentos: ordenarCrescentePorPropriedadeDeTexto(dadosFiltrados, 'estabelecimento')
-      }
-      : {};
-  }, [dados]);
+    for (const linhaDePerfil in agrupadosPorLinhaDePerfil) {
+      const ordenadosPorEstabelecimento = ordenarCrescentePorPropriedadeDeTexto(
+        agrupadosPorLinhaDePerfil[linhaDePerfil],
+        'estabelecimento'
+      );
+
+      cards.push(
+        <div key={ linhaDePerfil }>
+          <GraficoInfo
+            titulo={ `CAPS ${linhaDePerfil}` }
+            descricao={ `Dados de ${nomeMes}` }
+          />
+
+          <Grid12Col
+            items={
+              ordenadosPorEstabelecimento.map((item) => (
+                <CardInfoTipoA
+                  titulo={ item[propriedades.estabelecimento] }
+                  indicador={ item[propriedades.quantidade] }
+                  indice={ item[propriedades.difAnterior] }
+                  indiceSimbolo={ indiceSimbolo }
+                  indiceDescricao={ indiceDescricao }
+                  key={ `${item.id}-${item[propriedades.quantidade]}` }
+                />
+              ))
+            }
+            proporcao='3-3-3-3'
+          />
+        </div>
+      );
+    }
+
+    return cards;
+  }, [
+    agrupadosPorLinhaDePerfil,
+    indiceDescricao,
+    indiceSimbolo,
+    nomeMes,
+    propriedades.difAnterior,
+    propriedades.estabelecimento,
+    propriedades.quantidade
+  ]);
 
   return (
     <>
       { dados.length !== 0
-        ? <>
-          <GraficoInfo
-            titulo={ `CAPS ${dadosLinhaDePerfilGeral.nomeLinhaDePerfil}` }
-            descricao={ `Dados de ${dadosLinhaDePerfilGeral.nomeMes}` }
-          />
-
-          <Grid12Col
-            items={
-              dadosLinhaDePerfilGeral.estabelecimentos.map((item) => (
-                <CardInfoTipoA
-                  titulo={ item[propriedades.estabelecimento] }
-                  indicador={ item[propriedades.quantidade] }
-                  indice={ item[propriedades.difAnterior] }
-                  indiceSimbolo={ indiceSimbolo }
-                  indiceDescricao={ indiceDescricao }
-                  key={ `${item.id}-${item[propriedades.difAnterior]}` }
-                />
-              ))
-            }
-            proporcao='3-3-3-3'
-          />
-
-          <GraficoInfo
-            titulo={ `CAPS ${dadosLinhaDePerfilAD.nomeLinhaDePerfil}` }
-            descricao={ `Dados de ${dadosLinhaDePerfilAD.nomeMes}` }
-          />
-
-          <Grid12Col
-            items={
-              dadosLinhaDePerfilAD.estabelecimentos.map((item) => (
-                <CardInfoTipoA
-                  titulo={ item[propriedades.estabelecimento] }
-                  indicador={ item[propriedades.quantidade] }
-                  indice={ item[propriedades.difAnterior] }
-                  indiceSimbolo={ indiceSimbolo }
-                  indiceDescricao={ indiceDescricao }
-                  key={ `${item.id}-${item[propriedades.difAnterior]}` }
-                />
-              ))
-            }
-            proporcao='3-3-3-3'
-          />
-        </>
+        ? cardsPorLinhaDePerfil
         : <Spinner theme='ColorSM' />
       }
     </>
