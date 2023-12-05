@@ -1,7 +1,6 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { v1 as uuidv1 } from 'uuid';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesNoMesPorCID, getEvasoesNoMesPorGeneroEIdade, getPeriodos } from '../../../requests/caps';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
@@ -41,7 +40,6 @@ const TaxaAbandono = () => {
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setAbandonoCoortes(await getAbandonoCoortes(municipioIdSus));
       setAbandonoMensal(await getAbandonoMensal(municipioIdSus));
       setEstabelecimentos(
         await getEstabelecimentos(municipioIdSus, 'abandono_perfil')
@@ -49,6 +47,10 @@ const TaxaAbandono = () => {
       setPeriodos(
         await getPeriodos(municipioIdSus, 'abandono_perfil')
       );
+      setAbandonoCoortes(await getAbandonoCoortes({
+        municipioIdSus,
+        periodos: 'Último período'
+      }));
     };
 
     if (session?.user.municipio_id_ibge) {
@@ -93,10 +95,10 @@ const TaxaAbandono = () => {
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoGenero.value, filtroPeriodoGenero]);
 
   const getCardsAbandonoAcumulado = (abandonos) => {
-    const abandonosUltimoPeriodo = abandonos
-      .filter(({ periodo, estabelecimento }) => periodo === 'Último período' && estabelecimento !== 'Todos');
+    const abandonosExcetoTodos = abandonos
+      .filter(({estabelecimento}) => estabelecimento !== 'Todos');
     const abandonosOrdenadosPorValor = ordenarDecrescentePorPropriedadeNumerica(
-      abandonosUltimoPeriodo,
+      abandonosExcetoTodos,
       'usuarios_coorte_nao_aderiram_perc'
     );
 
@@ -105,7 +107,7 @@ const TaxaAbandono = () => {
         <GraficoInfo
           titulo='Taxa de não adesão acumulada'
           tooltip='Dos usuários que entraram no início do período indicado, porcentagem que deixou de frequentar nos três meses seguintes (não aderiu ao serviço)'
-          descricao={ `Conjunto de usuários com 1° procedimento em ${abandonosUltimoPeriodo[0].a_partir_do_mes}/${abandonosUltimoPeriodo[0].a_partir_do_ano} e não adesão até ${abandonosUltimoPeriodo[0].ate_mes}/${abandonosUltimoPeriodo[0].ate_ano}` }
+          descricao={ `Conjunto de usuários com 1° procedimento em ${abandonoCoortes[0].a_partir_do_mes}/${abandonoCoortes[0].a_partir_do_ano} e não adesão até ${abandonoCoortes[0].ate_mes}/${abandonoCoortes[0].ate_ano}` }
           fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
         />
 
@@ -116,7 +118,7 @@ const TaxaAbandono = () => {
                 titulo={ item.estabelecimento }
                 indicador={ item.usuarios_coorte_nao_aderiram_perc }
                 indicadorSimbolo='%'
-                key={ uuidv1() }
+                key={ item.id }
               />
             ))
           }
@@ -155,7 +157,6 @@ const TaxaAbandono = () => {
               descricao={ `Última competência disponível: ${abandonoCoortes
                 .find((item) =>
                   item.estabelecimento === 'Todos'
-                  && item.periodo === 'Último período'
                 )
                 .nome_mes
               }` }
