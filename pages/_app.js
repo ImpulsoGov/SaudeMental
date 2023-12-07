@@ -36,7 +36,7 @@ function MyApp(props) {
   let path = router.pathname;
   let width = useWindowWidth();
 
-  const nome = props.ses == null || typeof (props.ses) == undefined ? "" : props.ses.user.nome;
+  const nome = "";
   const cargo = props.ses != null ? props.ses.user.cargo : "";
   const [status, setStatus] = useState();
   const [isLoading, setLoading] = useState(true);
