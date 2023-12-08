@@ -16,9 +16,9 @@ const GraficoAtendimentos = ({
 
   const periodosUnicos = useMemo(() => {
     return dadosOrdenados
-      .filter((item) => item.ocupacao === textoTooltipA)
+      .filter((item) => item.ocupacao === textoTooltipB)
       .map((item) => item.periodo);
-  }, [dadosOrdenados, textoTooltipA]);
+  }, [dadosOrdenados, textoTooltipB]);
 
   const procedimentosA = useMemo(() => {
     return dadosOrdenados.filter((item => item.ocupacao === textoTooltipA)).map((item) => item[propriedade]);
