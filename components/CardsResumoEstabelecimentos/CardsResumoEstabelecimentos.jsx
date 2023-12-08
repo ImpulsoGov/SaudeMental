@@ -7,6 +7,7 @@ const CardsResumoEstabelecimentos = ({
   dados,
   propriedades,
   indiceSimbolo,
+  indicadorSimbolo,
   indiceDescricao
 }) => {
   const nomeMes = dados.length !== 0 ? dados[0].nome_mes : '';
@@ -47,6 +48,7 @@ const CardsResumoEstabelecimentos = ({
                   indice={ item[propriedades.difAnterior] }
                   indiceSimbolo={ indiceSimbolo }
                   indiceDescricao={ indiceDescricao }
+                  indicadorSimbolo={ indicadorSimbolo }
                   key={ `${item.id}-${item[propriedades.quantidade]}` }
                 />
               ))
@@ -62,6 +64,7 @@ const CardsResumoEstabelecimentos = ({
     agrupadosPorLinhaDePerfil,
     indiceDescricao,
     indiceSimbolo,
+    indicadorSimbolo,
     nomeMes,
     propriedades.difAnterior,
     propriedades.estabelecimento,
@@ -92,6 +95,7 @@ CardsResumoEstabelecimentos.propTypes = {
   }).isRequired,
   indiceSimbolo: PropTypes.string,
   indiceDescricao: PropTypes.string,
+  indicadorSimbolo: PropTypes.string
 };
 
 export default CardsResumoEstabelecimentos;
