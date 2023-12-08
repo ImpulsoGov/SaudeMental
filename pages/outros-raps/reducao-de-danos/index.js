@@ -1,12 +1,14 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, TituloSmallTexto } from "@impulsogov/design-system";
-import ReactEcharts from "echarts-for-react";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import Select, { components } from "react-select";
-import { v1 as uuidv1 } from 'uuid';
-import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses } from "../../../requests/outros-raps";
-import styles from "../OutrosRaps.module.css";
+import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
+import { useSession } from 'next-auth/react';
+import { useEffect, useMemo, useState } from 'react';
+import FiltroTexto from '../../../components/Filtros/FiltroTexto';
+import { GraficoHistoricoTemporal } from '../../../components/Graficos';
+import { FILTRO_ESTABELECIMENTO_MULTI_DEFAULT, FILTRO_OCUPACAO_DEFAULT } from '../../../constants/FILTROS';
+import { MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.js';
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { getEstabelecimentos } from '../../../requests/caps';
+import { getAcoesReducaoDeDanos12meses, obterAcoesReducaoDeDanos, obterOcupacoesReducaoDeDanos } from '../../../requests/outros-raps';
+import styles from '../OutrosRaps.module.css';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -18,200 +20,112 @@ export function getServerSideProps(ctx) {
 
 const ReducaoDeDanos = () => {
   const { data: session } = useSession();
-  const [acoes, setAcoes] = useState([]);
+  const [acaoUltimoPeriodo, setAcaoUltimoPeriodo] = useState(null);
   const [acoes12meses, setAcoes12meses] = useState([]);
-  const [filtroEstabelecimento, setFiltroEstabelecimento] = useState({
-    value: "Todos", label: "Todos"
-  });
-  const [filtroOcupacao, setFiltroOcupacao] = useState({
-    value: "Todas", label: "Todas"
-  });
+  const [acoesHistoricoTemporal, setAcoesHistoricoTemporal] = useState([]);
+  const [loadingHistorico, setLoadingHistorico] = useState(true);
+  const [estabelecimentos, setEstabelecimentos] = useState([]);
+  const [ocupacoes, setOcupacoes] = useState([]);
+  const [filtroEstabelecimento, setFiltroEstabelecimento] = useState(FILTRO_ESTABELECIMENTO_MULTI_DEFAULT);
+  const [filtroOcupacao, setFiltroOcupacao] = useState(FILTRO_OCUPACAO_DEFAULT);
+  const municipioSemReducaoDanos = MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS.includes(session?.user.municipio_id_ibge);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setAcoes(await getAcoesReducaoDeDanos(municipioIdSus));
+      setOcupacoes(await obterOcupacoesReducaoDeDanos(municipioIdSus));
+      setEstabelecimentos(
+        await getEstabelecimentos(municipioIdSus, 'reducao_de_danos')
+      );
+
+      const [acaoReducaoUltimoPeriodo] = await obterAcoesReducaoDeDanos({
+        municipioIdSus,
+        estabelecimentos: 'Todos',
+        periodos: 'Último período',
+        ocupacoes: 'Todas'
+      });
+
+      setAcaoUltimoPeriodo(acaoReducaoUltimoPeriodo);
       setAcoes12meses(await getAcoesReducaoDeDanos12meses(municipioIdSus));
     };
 
-    if (session?.user.municipio_id_ibge) {
+    if (session?.user.municipio_id_ibge && !municipioSemReducaoDanos) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
 
-  const getPropsCardUltimoPeriodo = (acoes) => {
-    const acaoTodosUltimoPeriodo = acoes
-      .find((acao) => acao.estabelecimento === "Todos" && acao.profissional_vinculo_ocupacao === "Todas" && acao.periodo === "Último período");
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingHistorico(true);
 
-    return {
-      key: uuidv1(),
-      indicador: acaoTodosUltimoPeriodo["quantidade_registrada"],
-      titulo: `Total de ações de redução de danos em ${acaoTodosUltimoPeriodo["nome_mes"]}`,
-      indice: acaoTodosUltimoPeriodo["dif_quantidade_registrada_anterior"],
-      indiceDescricao: "últ. mês"
-    };
-  };
+      const promises = filtroEstabelecimento.map(({ value: estabelecimento }) => {
+        return obterAcoesReducaoDeDanos({
+          municipioIdSus: session?.user.municipio_id_ibge,
+          estabelecimentos: estabelecimento,
+          ocupacoes: filtroOcupacao.value
+        });
+      });
+
+      Promise.all(promises).then((respostas) => {
+        const respostasUnificadas = [].concat(...respostas);
+        setAcoesHistoricoTemporal(respostasUnificadas);
+      });
+
+      setLoadingHistorico(false);
+    }
+  }, [
+    session?.user.municipio_id_ibge,
+    filtroEstabelecimento,
+    filtroOcupacao
+  ]);
 
   const getPropsCardUltimos12Meses = (acoes) => {
     const acaoTodosUltimos12Meses = acoes
-      .find((acao) => acao.estabelecimento === "Todos" && acao.profissional_vinculo_ocupacao === "Todas");
+      .find((acao) => acao.estabelecimento === 'Todos' && acao.profissional_vinculo_ocupacao === 'Todas');
 
     return {
-      key: uuidv1(),
-      indicador: acaoTodosUltimos12Meses["quantidade_registrada"],
-      titulo: `Total de ações de redução de danos entre ${acaoTodosUltimos12Meses["a_partir_do_mes"]} de ${acaoTodosUltimos12Meses["a_partir_do_ano"]} e ${acaoTodosUltimos12Meses["ate_mes"]} de ${acaoTodosUltimos12Meses["ate_ano"]}`,
-      indice: acaoTodosUltimos12Meses["dif_quantidade_registrada_anterior"],
-      indiceDescricao: "doze meses anteriores"
+      key: acaoTodosUltimos12Meses.id,
+      indicador: acaoTodosUltimos12Meses['quantidade_registrada'],
+      titulo: `Total de ações de redução de danos nos últimos 12 meses de ${acaoTodosUltimos12Meses['a_partir_do_mes']}/${acaoTodosUltimos12Meses['a_partir_do_ano']} a ${acaoTodosUltimos12Meses['ate_mes']}/${acaoTodosUltimos12Meses['ate_ano']}`,
+      indice: acaoTodosUltimos12Meses['dif_quantidade_registrada_anterior'],
+      indiceDescricao: 'doze meses anteriores'
     };
   };
 
-  const agregarPorEstabelecimentoEOcupacao = (acoes) => {
-    const acoesAgregadas = [];
+  const agregarQuantidadePorPeriodo = (dados) => {
+    const dadosAgregados = [];
 
-    acoes.forEach((acao) => {
-      const { estabelecimento, competencia, periodo, quantidade_registrada: quantidadeRegistrada, profissional_vinculo_ocupacao: ocupacao } = acao;
-      const acaoEncontrada = acoesAgregadas
-        .find((item) => item.estabelecimento === estabelecimento && item.ocupacao === ocupacao);
+    dados.forEach(({ periodo, competencia, quantidade_registrada: quantidade }) => {
+      const periodoEncontrado = dadosAgregados.find((item) => periodo === item.periodo);
 
-      if (!acaoEncontrada) {
-        acoesAgregadas.push({
-          ocupacao,
-          estabelecimento,
-          quantidadesPorPeriodo: [{ competencia, periodo, quantidadeRegistrada }]
-        });
+      if (periodoEncontrado) {
+        periodoEncontrado.quantidade += quantidade;
       } else {
-        acaoEncontrada.quantidadesPorPeriodo.push({ competencia, periodo, quantidadeRegistrada });
+        dadosAgregados.push({ periodo, competencia, quantidade });
       }
     });
 
-    return acoesAgregadas;
+    return dadosAgregados;
   };
 
-  const ordenarQuantidadesPorCompetenciaAsc = (acoes) => {
-    return acoes.map(({ estabelecimento, ocupacao, quantidadesPorPeriodo }) => ({
-      ocupacao,
-      estabelecimento,
-      quantidadesPorPeriodo: quantidadesPorPeriodo
-        .sort((a, b) => new Date(a.competencia) - new Date(b.competencia))
-    }));
-  };
+  const acoesAgregadas = useMemo(() => {
+    return agregarQuantidadePorPeriodo(acoesHistoricoTemporal);
+  }, [acoesHistoricoTemporal]);
 
-  const getPropsFiltroEstabelecimento = (acoes) => {
-    const optionsSemDuplicadas = [];
-
-    acoes.forEach(({ estabelecimento }) => {
-      const acaoEncontrada = optionsSemDuplicadas
-        .find((item) => item.value === estabelecimento);
-
-      if (!acaoEncontrada) {
-        optionsSemDuplicadas.push({ value: estabelecimento, label: estabelecimento });
-      }
-    });
-
-    const optionPersonalizada = ({ children, ...props }) => (
-      <components.Control { ...props }>
-        Estabelecimento: { children }
-      </components.Control>
+  if (municipioSemReducaoDanos) {
+    return (
+      <TituloSmallTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        texto='Essa página não está exibindo dados porque a coordenação da RAPS informou que não são feitas Ações de Redução de Danos no município, ou que essas ações não são registradas em BPA-c na rede. Caso queira solicitar a inclusão, entre em contato via nosso <u><a style="color:inherit" href="/duvidas" target="_blank">formulário de solicitação de suporte</a></u>, <u><a style="color:inherit" href="https://wa.me/5511942642429" target="_blank">whatsapp</a></u> ou e-mail (saudemental@impulsogov.org).'
+        botao={ {
+          label: '',
+          url: ''
+        } }
+      />
     );
-
-    return {
-      options: optionsSemDuplicadas,
-      defaultValue: filtroEstabelecimento,
-      selectedValue: filtroEstabelecimento,
-      onChange: (selected) => setFiltroEstabelecimento({
-        value: selected.value,
-        label: selected.value
-      }),
-      isMulti: false,
-      isSearchable: false,
-      components: { Control: optionPersonalizada },
-      styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
-    };
-  };
-
-  const getPropsFiltroOcupacao = (acoes) => {
-    const optionsSemDuplicadas = [];
-
-    acoes
-      .filter(({ estabelecimento }) => estabelecimento === filtroEstabelecimento.value)
-      .forEach(({ profissional_vinculo_ocupacao: ocupacao }) => {
-        const acaoEncontrada = optionsSemDuplicadas
-          .find((item) => item.value === ocupacao);
-
-        if (!acaoEncontrada) {
-          optionsSemDuplicadas.push({ value: ocupacao, label: ocupacao });
-        }
-      });
-
-    const optionPersonalizada = ({ children, ...props }) => (
-      <components.Control { ...props }>
-        CBO do profissional: { children }
-      </components.Control>
-    );
-
-    return {
-      options: optionsSemDuplicadas,
-      defaultValue: filtroOcupacao,
-      selectedValue: filtroOcupacao,
-      onChange: (selected) => setFiltroOcupacao({
-        value: selected.value,
-        label: selected.value
-      }),
-      isMulti: false,
-      isSearchable: false,
-      components: { Control: optionPersonalizada },
-      styles: { control: (css) => ({ ...css, paddingLeft: '15px' }) },
-    };
-  };
-
-  const getOpcoesGraficoDeLinha = (acoes) => {
-    const acoesAgregadas = agregarPorEstabelecimentoEOcupacao(acoes);
-    const acoesOrdenadas = ordenarQuantidadesPorCompetenciaAsc(acoesAgregadas);
-    const acaoFiltrada = acoesOrdenadas.find(({ estabelecimento, ocupacao }) =>
-      estabelecimento === filtroEstabelecimento.value && ocupacao === filtroOcupacao.value
-    );
-
-    return {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          label: {
-            backgroundColor: '#6a7985'
-          }
-        }
-      },
-      toolbox: {
-        feature: {
-          saveAsImage: {
-            title: "Salvar como imagem",
-          }
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: acaoFiltrada.quantidadesPorPeriodo.map(({ periodo }) => periodo)
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [
-        {
-          name: "Ações registradas",
-          data: acaoFiltrada.quantidadesPorPeriodo
-            .map(({ quantidadeRegistrada }) => quantidadeRegistrada),
-          type: 'line',
-          itemStyle: {
-            color: "#5367C9"
-          },
-        }
-      ]
-    };
-  };
+  }
 
   return (
     <div>
@@ -221,10 +135,10 @@ const ReducaoDeDanos = () => {
           url: ''
         } }
         texto=""
-        botao={{
+        botao={ {
           label: '',
           url: ''
-        }}
+        } }
         titulo="<strong>Ações de Redução de Danos</strong>"
       />
 
@@ -237,13 +151,21 @@ const ReducaoDeDanos = () => {
       <Grid12Col
         items={ [
           <>
-            { acoes.length !== 0 &&
-              <CardInfoTipoA { ...getPropsCardUltimoPeriodo(acoes) } />
+            { acaoUltimoPeriodo
+              ? <CardInfoTipoA
+                key={ acaoUltimoPeriodo.id }
+                indicador={ acaoUltimoPeriodo['quantidade_registrada'] }
+                titulo={ `Total de ações de redução de danos em ${acaoUltimoPeriodo['nome_mes']}` }
+                indice={ acaoUltimoPeriodo['dif_quantidade_registrada_anterior'] }
+                indiceDescricao='últ. mês'
+              />
+              : <Spinner theme="ColorSM" />
             }
           </>,
           <>
-            { acoes12meses.length !== 0 &&
-              <CardInfoTipoA { ...getPropsCardUltimos12Meses(acoes12meses) } />
+            { acoes12meses.length !== 0
+              ? <CardInfoTipoA { ...getPropsCardUltimos12Meses(acoes12meses) } />
+              : <Spinner theme="ColorSM" />
             }
           </>,
         ] }
@@ -254,23 +176,35 @@ const ReducaoDeDanos = () => {
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
       />
 
-      { acoes.length !== 0 &&
-        <>
-          <div className={ styles.Filtros }>
-            <div className={ styles.Filtro }>
-              <Select { ...getPropsFiltroEstabelecimento(acoes) } />
-            </div>
-            <div className={ styles.Filtro }>
-              <Select { ...getPropsFiltroOcupacao(acoes) } />
-            </div>
-          </div>
-
-          <ReactEcharts
-            option={ getOpcoesGraficoDeLinha(acoes) }
-            style={ { width: "100%", height: "70vh" } }
+      <div className={ styles.Filtros }>
+        { estabelecimentos.length !== 0 &&
+          <FiltroTexto
+            dados={ estabelecimentos }
+            label='Estabelecimento'
+            propriedade='estabelecimento'
+            valor={ filtroEstabelecimento }
+            setValor={ setFiltroEstabelecimento }
+            isMulti
           />
-        </>
-      }
+        }
+
+        { ocupacoes.length !== 0 &&
+          <FiltroTexto
+            dados={ ocupacoes }
+            label='CBO do profissional'
+            propriedade='profissional_vinculo_ocupacao'
+            valor={ filtroOcupacao }
+            setValor={ setFiltroOcupacao }
+          />
+        }
+      </div>
+
+      <GraficoHistoricoTemporal
+        dados={ acoesAgregadas }
+        textoTooltip='Ações registradas'
+        propriedade='quantidade'
+        loading={ loadingHistorico }
+      />
     </div>
   );
 };

@@ -1,11 +1,24 @@
 import PropTypes from 'prop-types';
-import { useMemo } from 'react';
-import Select, { components } from 'react-select';
+import { useCallback, useMemo } from 'react';
+import { components } from 'react-select';
 import Control from './Control';
 import styles from './Filtros.module.css';
 import Option from './Option';
+import { SelectMultiplo, SelectUnico } from './index';
 
-const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSearchable, width }) => {
+const FiltroTexto = ({
+  dados,
+  label,
+  propriedade,
+  valor,
+  setValor,
+  isMulti,
+  isSearchable,
+  width,
+  labelAllOption,
+  showAllOption,
+  isDefaultAllOption
+}) => {
   const options = useMemo(() => {
     const valoresUnicos = new Set();
 
@@ -14,7 +27,6 @@ const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSe
         valoresUnicos.add(dado[propriedade]);
       }
     });
-
     return [...valoresUnicos]
       .sort((a, b) => a.localeCompare(b))
       .map((valor) => ({
@@ -23,26 +35,37 @@ const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSe
       }));
   }, [dados, propriedade]);
 
+  const getComponents = useCallback(() => ({
+    Control: label ? Control : components.Control,
+    Option: Option
+  }), [label]);
+
   return (
     <div
       className={ styles.Filtro }
       style={{ width }}
     >
-      <Select
-        options={ options }
-        defaultValue={ valor }
-        selectedValue={ valor }
-        onChange={ (selected) => setValor(selected) }
-        isMulti={ isMulti }
-        isSearchable={ isSearchable }
-        controlLabel={ label }
-        components={ {
-          Control: label ? Control : components.Control,
-          Option: Option
-        } }
-        hideSelectedOptions={ false }
-        closeMenuOnSelect={ isMulti ? false : true }
-      />
+      {isMulti
+        ? <SelectMultiplo
+          valor={ valor }
+          options={ options }
+          setValor={ setValor }
+          components={ getComponents() }
+          controlLabel={ label }
+          isSearchable={ isSearchable }
+          showAllOption={ showAllOption }
+          labelAllOption={ labelAllOption }
+          isDefaultAllOption={ isDefaultAllOption }
+        />
+        : <SelectUnico
+          valor={ valor }
+          options={ options }
+          setValor={ setValor }
+          components={ getComponents() }
+          controlLabel={ label }
+          isSearchable={ isSearchable }
+        />
+      }
     </div>
   );
 };
@@ -50,7 +73,10 @@ const FiltroTexto = ({ dados, label, propriedade, valor, setValor, isMulti, isSe
 FiltroTexto.defaultProps = {
   isMulti: false,
   isSearchable: false,
-  width: '50%'
+  width: '50%',
+  labelAllOption: 'Todos',
+  showAllOption: false,
+  isDefaultAllOption: false
 };
 
 FiltroTexto.propTypes = {
@@ -64,6 +90,9 @@ FiltroTexto.propTypes = {
   isSearchable: PropTypes.bool,
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   label: PropTypes.string,
+  labelAllOption: PropTypes.string,
+  showAllOption: PropTypes.bool,
+  isDefaultAllOption: PropTypes.bool
 };
 
 export default FiltroTexto;
