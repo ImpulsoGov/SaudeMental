@@ -1,4 +1,4 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
+import {  GraficoInfo,  Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
@@ -12,7 +12,7 @@ import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 import { GraficoDonut } from '../../../components/Graficos';
-import { ordenarCrescentePorPropriedadeDeTexto } from '../../../utils/ordenacao';
+import { CardsResumoEstabelecimentos } from '../../../components/CardsResumoEstabelecimentos';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -42,6 +42,7 @@ const AtendimentoIndividual = () => {
   const [loadingGenero, setLoadingGenero] = useState(false);
   const [loadingRaca, setLoadingRaca] = useState(false);
   const [loadingHistorico, setLoadingHistorico] = useState(false);
+
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
       setAtendimentosPorCaps(await getAtendimentosPorCaps({
@@ -129,44 +130,7 @@ const AtendimentoIndividual = () => {
     }
   }, [filtroEstabelecimentoRacaECor.value, filtroPeriodoRacaECor, session?.user.municipio_id_ibge]);
 
-  const agregarPorLinhaPerfil = (atendimentos) => {
-    const atendimentosAgregados = [];
-
-    atendimentos.forEach((atendimento) => {
-      const {
-        estabelecimento,
-        nome_mes: nomeMes,
-        estabelecimento_linha_perfil: linhaPerfil,
-        perc_apenas_atendimentos_individuais: porcentagemAtendimentos,
-        dif_perc_apenas_atendimentos_individuais: difPorcentagemAtendimentosAnterior
-      } = atendimento;
-
-      const linhaPerfilEncontrada = atendimentosAgregados
-        .find((item) => item.linhaPerfil === linhaPerfil);
-
-      if (!linhaPerfilEncontrada) {
-        atendimentosAgregados.push({
-          nomeMes,
-          linhaPerfil,
-          atendimentosPorEstabelecimento: [{
-            estabelecimento,
-            porcentagemAtendimentos,
-            difPorcentagemAtendimentosAnterior
-          }]
-        });
-      } else {
-        linhaPerfilEncontrada.atendimentosPorEstabelecimento.push({
-          estabelecimento,
-          porcentagemAtendimentos,
-          difPorcentagemAtendimentosAnterior
-        });
-      }
-    });
-
-    return atendimentosAgregados;
-  };
-
-  const getCardsAtendimentosPorCaps = (atendimentos) => {
+  const filtrarPorLinhasDeEstabelecimentoExcetoTodos = (atendimentos) => {
     const atendimentosPorCapsUltimoPeriodoExcetoTodos = atendimentos
       .filter(({
         estabelecimento,
@@ -175,42 +139,7 @@ const AtendimentoIndividual = () => {
         estabelecimento !== 'Todos'
         && linhaPerfil !== 'Todos'
       );
-
-    const atendimentosAgregados = agregarPorLinhaPerfil(atendimentosPorCapsUltimoPeriodoExcetoTodos);
-
-    const cardsAtendimentosPorCaps = atendimentosAgregados.map(({
-      linhaPerfil, atendimentosPorEstabelecimento, nomeMes
-    }) => {
-      const atendimentosOrdenados = ordenarCrescentePorPropriedadeDeTexto(atendimentosPorEstabelecimento, 'estabelecimento');
-
-      return (
-        <>
-          <GraficoInfo
-            titulo={ `CAPS ${linhaPerfil}` }
-            descricao={ `Dados de ${nomeMes}` }
-          />
-
-          <Grid12Col
-            items={
-              atendimentosOrdenados.map((item) => (
-                <CardInfoTipoA
-                  titulo={ item.estabelecimento }
-                  indicador={ item.porcentagemAtendimentos }
-                  indicadorSimbolo='%'
-                  indice={ item.difPorcentagemAtendimentosAnterior }
-                  indiceSimbolo='p.p.'
-                  indiceDescricao='últ. mês'
-                  key={ item.id }
-                />
-              ))
-            }
-            proporcao='3-3-3-3'
-          />
-        </>
-      );
-    });
-
-    return cardsAtendimentosPorCaps;
+    return atendimentosPorCapsUltimoPeriodoExcetoTodos;
   };
 
   const filtrarPorLinhasDeEstabelecimento = (dados) => {
@@ -253,8 +182,17 @@ const AtendimentoIndividual = () => {
                 .nome_mes
               }` }
             />
-
-            { getCardsAtendimentosPorCaps(atendimentosPorCapsUltimoPeriodo) }
+            <CardsResumoEstabelecimentos
+              dados={ filtrarPorLinhasDeEstabelecimentoExcetoTodos(atendimentosPorCapsUltimoPeriodo) }
+              propriedades={{
+                estabelecimento: 'estabelecimento',
+                quantidade: 'perc_apenas_atendimentos_individuais',
+                difAnterior: 'dif_perc_apenas_atendimentos_individuais',
+              }}
+              indiceDescricao='últ. mês'
+              indiceSimbolo='p.p.'
+              indicadorSimbolo='%'
+            />
           </>
         )
         : <Spinner theme='ColorSM' />
