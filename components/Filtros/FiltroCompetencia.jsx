@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import { useCallback, useMemo } from 'react';
-import Select, { components } from 'react-select';
+import { components } from 'react-select';
 import Control from './Control';
 import styles from './Filtros.module.css';
 import Option from './Option';
+import { SelectMultiplo, SelectUnico } from './index';
 
 const FiltroCompetencia = ({
   dados,
@@ -12,23 +13,22 @@ const FiltroCompetencia = ({
   setValor,
   isMulti,
   isSearchable,
-  width
+  width,
+  labelAllOption,
+  showAllOption,
+  isDefaultAllOption
 }) => {
   const obterPeriodoFormatado = useCallback((competencia, nomeMes) => {
     const abreviacaoMes = nomeMes.slice(0, 3);
     const ano = new Date(competencia).getUTCFullYear();
     const abreviacaoAno = ano % 100;
-
     return `${abreviacaoMes}/${abreviacaoAno}`;
   }, []);
-
   const options = useMemo(() => {
     const competencias = [];
-
     dados.forEach(({ periodo, competencia, nome_mes: nomeMes }) => {
       const periodoEncontrado = competencias
         .find((item) => item.periodo === periodo);
-
       if (!periodoEncontrado) {
         competencias.push(
           periodo === 'Último período'
@@ -45,7 +45,6 @@ const FiltroCompetencia = ({
         );
       }
     });
-
     return competencias
       .sort((a, b) => new Date(b.competencia) - new Date(a.competencia))
       .map(({ periodo, descricaoPeriodo }) => ({
@@ -55,26 +54,37 @@ const FiltroCompetencia = ({
       }));
   }, [dados, obterPeriodoFormatado]);
 
+  const getComponents = useCallback(() => ({
+    Control: label ? Control : components.Control,
+    Option: Option
+  }), [label]);
+
   return (
     <div
       className={ styles.Filtro }
       style={{ width }}
     >
-      <Select
-        options={ options }
-        defaultValue={ valor }
-        selectedValue={ valor }
-        onChange={ (selected) => setValor(selected) }
-        isMulti={ isMulti }
-        isSearchable={ isSearchable }
-        controlLabel={ label }
-        components={ {
-          Control: label ? Control : components.Control,
-          Option: Option
-        } }
-        hideSelectedOptions={ false }
-        closeMenuOnSelect={ isMulti ? false : true }
-      />
+      {isMulti
+        ? <SelectMultiplo
+          valor={ valor }
+          options={ options }
+          setValor={ setValor }
+          components={ getComponents() }
+          controlLabel={ label }
+          isSearchable={ isSearchable }
+          showAllOption={ showAllOption }
+          labelAllOption={ labelAllOption }
+          isDefaultAllOption={ isDefaultAllOption }
+        />
+        : <SelectUnico
+          valor={ valor }
+          options={ options }
+          setValor={ setValor }
+          components={ getComponents() }
+          controlLabel={ label }
+          isSearchable={ isSearchable }
+        />
+      }
     </div>
   );
 };
@@ -82,7 +92,10 @@ const FiltroCompetencia = ({
 FiltroCompetencia.defaultProps = {
   isMulti: false,
   isSearchable: false,
-  width: '50%'
+  width: '50%',
+  labelAllOption: 'Todas',
+  showAllOption: false,
+  isDefaultAllOption: false
 };
 
 FiltroCompetencia.propTypes = {
@@ -99,7 +112,10 @@ FiltroCompetencia.propTypes = {
   isMulti: PropTypes.bool,
   isSearchable: PropTypes.bool,
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  label: PropTypes.string
+  label: PropTypes.string,
+  labelAllOption: PropTypes.string,
+  showAllOption: PropTypes.bool,
+  isDefaultAllOption: PropTypes.bool
 };
 
 export default FiltroCompetencia;
