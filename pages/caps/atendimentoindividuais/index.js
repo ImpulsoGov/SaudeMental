@@ -6,7 +6,7 @@ import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import GraficoRacaECor from '../../../components/Graficos/RacaECor';
 import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
-import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos, getAtendimentosPorCapsUltimoPeriodo } from '../../../requests/caps';
+import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
@@ -51,7 +51,7 @@ const AtendimentoIndividual = () => {
       }));
       setEstabelecimentos(await getEstabelecimentos(municipioIdSus, 'atendimentos_inidividuais_perfil'));
       setPeriodos(await getPeriodos(municipioIdSus, 'atendimentos_inidividuais_perfil'));
-      setAtendimentosPorCapsUltimoPeriodo(await getAtendimentosPorCapsUltimoPeriodo({
+      setAtendimentosPorCapsUltimoPeriodo(await getAtendimentosPorCaps({
         municipioIdSus: municipioIdSus,
         periodos: 'Último período',
         estabelecimento_linha_idade: 'Todos',
