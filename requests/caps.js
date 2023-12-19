@@ -111,28 +111,6 @@ export const getAtendimentosPorCaps = async ({
   }
 };
 
-
-export const getAtendimentosPorCapsUltimoPeriodo = async ({
-  municipioIdSus,
-  periodos,
-  estabelecimentos,
-  estabelecimento_linha_perfil,
-  estabelecimento_linha_idade
-}) => {
-  try {
-    let endpoint = '/atendimentosindividuais/porcaps?municipio_id_sus=' + municipioIdSus;
-    endpoint = addQueryParamSeExiste(endpoint, 'periodos', periodos);
-    endpoint = addQueryParamSeExiste(endpoint, 'estabelecimentos', estabelecimentos);
-    endpoint = addQueryParamSeExiste(endpoint, 'estabelecimento_linha_perfil', estabelecimento_linha_perfil);
-    endpoint = addQueryParamSeExiste(endpoint, 'estabelecimento_linha_idade', estabelecimento_linha_idade);
-    const { data } = await axiosInstance.get(endpoint);
-    return data;
-  } catch (error) {
-    console.log('error', error.response.data);
-  }
-
-};
-
 export const obterProcedimentosPorEstabelecimento = async ({
   municipioIdSus,
   estabelecimentos,
