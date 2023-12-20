@@ -203,7 +203,7 @@ const ProcedimentosPorUsuarios = () => {
                   && item.periodo === 'Último período'
                 )
                 .nome_mes
-                }` }
+              }` }
             />
 
             { getCardsProcedimentosPorEstabelecimento(procedimentosPorEstabelecimento) }
