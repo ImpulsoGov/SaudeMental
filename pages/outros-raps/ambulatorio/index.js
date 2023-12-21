@@ -354,7 +354,6 @@ const Ambulatorio = () => {
               label={ 'Competência' }
               isMulti
               showAllOption
-              isDefaultAllOption
             />
           </div>
           <TabelaAtendimentosPorProfissional
