@@ -115,14 +115,11 @@ const ProcedimentosPorUsuarios = () => {
         periodo,
         estabelecimento,
         estabelecimento_linha_perfil: linhaPerfil,
-        estabelecimento_linha_idade: linhaIdade
       }) =>
         periodo === 'Último período'
         && estabelecimento !== 'Todos'
         && linhaPerfil !== 'Todos'
-        && linhaIdade === 'Todos'
       );
-
     const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosPorEstabelecimentoUltimoPeriodo);
 
     const cardsProcedimentosPorEstabelecimento = procedimentosAgregados.map(({
@@ -166,8 +163,6 @@ const ProcedimentosPorUsuarios = () => {
     return procedimentosPorEstabelecimento
       .filter((item) =>
         item.estabelecimento === filtroEstabelecimentoHistorico.value
-        && item.estabelecimento_linha_perfil === 'Todos'
-        && item.estabelecimento_linha_idade === 'Todos'
       );
   }, [procedimentosPorEstabelecimento, filtroEstabelecimentoHistorico.value]);
 
@@ -198,12 +193,10 @@ const ProcedimentosPorUsuarios = () => {
               descricao={ `Última competência disponível: ${procedimentosPorEstabelecimento
                 .find((item) =>
                   item.estabelecimento === 'Todos'
-                  && item.estabelecimento_linha_perfil === 'Todos'
-                  && item.estabelecimento_linha_idade === 'Todos'
                   && item.periodo === 'Último período'
                 )
                 .nome_mes
-                }` }
+              }` }
             />
 
             { getCardsProcedimentosPorEstabelecimento(procedimentosPorEstabelecimento) }
