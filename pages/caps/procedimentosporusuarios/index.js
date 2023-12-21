@@ -72,72 +72,31 @@ const ProcedimentosPorUsuarios = () => {
     filtroPeriodoProcedimento
   ]);
 
-  const agregarPorLinhaPerfil = (procedimentos) => {
-    const procedimentosAgregados = [];
-
-    procedimentos.forEach((procedimento) => {
-      const {
-        estabelecimento,
-        nome_mes: nomeMes,
-        estabelecimento_linha_perfil: linhaPerfil,
-        procedimentos_por_usuario: procedimentosPorUsuario,
-        dif_procedimentos_por_usuario_anterior_perc: difPorcentagemProcedimentosAnterior
-      } = procedimento;
-
-      const linhaPerfilEncontrada = procedimentosAgregados
-        .find((item) => item.linhaPerfil === linhaPerfil);
-
-      if (!linhaPerfilEncontrada) {
-        procedimentosAgregados.push({
-          nomeMes,
-          linhaPerfil,
-          procedimentosPorEstabelecimento: [{
-            estabelecimento,
-            procedimentosPorUsuario,
-            difPorcentagemProcedimentosAnterior
-          }]
-        });
-      } else {
-        linhaPerfilEncontrada.procedimentosPorEstabelecimento.push({
-          estabelecimento,
-          procedimentosPorUsuario,
-          difPorcentagemProcedimentosAnterior
-        });
-      }
-    });
-
-    return procedimentosAgregados;
-  };
-
   const getCardsProcedimentosPorEstabelecimento = (procedimentos) => {
     const procedimentosPorEstabelecimentoUltimoPeriodo = procedimentos
       .filter(({
         periodo,
         estabelecimento,
         estabelecimento_linha_perfil: linhaPerfil,
-        estabelecimento_linha_idade: linhaIdade
       }) =>
         periodo === 'Último período'
         && estabelecimento !== 'Todos'
         && linhaPerfil !== 'Todos'
-        && linhaIdade === 'Todos'
       );
 
-    const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosPorEstabelecimentoUltimoPeriodo);
-
-    const cardsProcedimentosPorEstabelecimento = procedimentosAgregados.map(({
-      linhaPerfil, procedimentosPorEstabelecimento, nomeMes
+    const cardsProcedimentosPorEstabelecimento = procedimentosPorEstabelecimentoUltimoPeriodo.map(({
+      estabelecimento_linha_perfil, nome_mes
     }) => {
       const procedimentosOrdenados = ordenarCrescentePorPropriedadeDeTexto(
-        procedimentosPorEstabelecimento,
+        procedimentosPorEstabelecimentoUltimoPeriodo,
         'estabelecimento'
       );
 
       return (
         <>
           <GraficoInfo
-            titulo={ `CAPS ${linhaPerfil}` }
-            descricao={ `Dados de ${nomeMes}` }
+            titulo={ `CAPS ${estabelecimento_linha_perfil}` }
+            descricao={ `Dados de ${nome_mes}` }
           />
 
           <Grid12Col
@@ -145,11 +104,11 @@ const ProcedimentosPorUsuarios = () => {
               procedimentosOrdenados.map((item) => (
                 <CardInfoTipoA
                   titulo={ item.estabelecimento }
-                  indicador={ item.procedimentosPorUsuario }
-                  indice={ item.difPorcentagemProcedimentosAnterior }
+                  indicador={ item.procedimentos_por_usuario }
+                  indice={ item.dif_procedimentos_por_usuario_anterior_perc }
                   indiceSimbolo='%'
                   indiceDescricao='últ. mês'
-                  key={ uuidv1() }
+                  key={ item.id }
                 />
               ))
             }
@@ -166,8 +125,6 @@ const ProcedimentosPorUsuarios = () => {
     return procedimentosPorEstabelecimento
       .filter((item) =>
         item.estabelecimento === filtroEstabelecimentoHistorico.value
-        && item.estabelecimento_linha_perfil === 'Todos'
-        && item.estabelecimento_linha_idade === 'Todos'
       );
   }, [procedimentosPorEstabelecimento, filtroEstabelecimentoHistorico.value]);
 
@@ -198,12 +155,10 @@ const ProcedimentosPorUsuarios = () => {
               descricao={ `Última competência disponível: ${procedimentosPorEstabelecimento
                 .find((item) =>
                   item.estabelecimento === 'Todos'
-                  && item.estabelecimento_linha_perfil === 'Todos'
-                  && item.estabelecimento_linha_idade === 'Todos'
                   && item.periodo === 'Último período'
                 )
                 .nome_mes
-                }` }
+              }` }
             />
 
             { getCardsProcedimentosPorEstabelecimento(procedimentosPorEstabelecimento) }
