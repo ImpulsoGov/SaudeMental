@@ -72,6 +72,43 @@ const ProcedimentosPorUsuarios = () => {
     filtroPeriodoProcedimento
   ]);
 
+  const agregarPorLinhaPerfil = (procedimentos) => {
+    const procedimentosAgregados = [];
+
+    procedimentos.forEach((procedimento) => {
+      const {
+        estabelecimento,
+        nome_mes: nomeMes,
+        estabelecimento_linha_perfil: linhaPerfil,
+        procedimentos_por_usuario: procedimentosPorUsuario,
+        dif_procedimentos_por_usuario_anterior_perc: difPorcentagemProcedimentosAnterior
+      } = procedimento;
+
+      const linhaPerfilEncontrada = procedimentosAgregados
+        .find((item) => item.linhaPerfil === linhaPerfil);
+
+      if (!linhaPerfilEncontrada) {
+        procedimentosAgregados.push({
+          nomeMes,
+          linhaPerfil,
+          procedimentosPorEstabelecimento: [{
+            estabelecimento,
+            procedimentosPorUsuario,
+            difPorcentagemProcedimentosAnterior
+          }]
+        });
+      } else {
+        linhaPerfilEncontrada.procedimentosPorEstabelecimento.push({
+          estabelecimento,
+          procedimentosPorUsuario,
+          difPorcentagemProcedimentosAnterior
+        });
+      }
+    });
+
+    return procedimentosAgregados;
+  };
+
   const getCardsProcedimentosPorEstabelecimento = (procedimentos) => {
     const procedimentosPorEstabelecimentoUltimoPeriodo = procedimentos
       .filter(({
@@ -83,20 +120,21 @@ const ProcedimentosPorUsuarios = () => {
         && estabelecimento !== 'Todos'
         && linhaPerfil !== 'Todos'
       );
+    const procedimentosAgregados = agregarPorLinhaPerfil(procedimentosPorEstabelecimentoUltimoPeriodo);
 
-    const cardsProcedimentosPorEstabelecimento = procedimentosPorEstabelecimentoUltimoPeriodo.map(({
-      estabelecimento_linha_perfil, nome_mes
+    const cardsProcedimentosPorEstabelecimento = procedimentosAgregados.map(({
+      linhaPerfil, procedimentosPorEstabelecimento, nomeMes
     }) => {
       const procedimentosOrdenados = ordenarCrescentePorPropriedadeDeTexto(
-        procedimentosPorEstabelecimentoUltimoPeriodo,
+        procedimentosPorEstabelecimento,
         'estabelecimento'
       );
 
       return (
         <>
           <GraficoInfo
-            titulo={ `CAPS ${estabelecimento_linha_perfil}` }
-            descricao={ `Dados de ${nome_mes}` }
+            titulo={ `CAPS ${linhaPerfil}` }
+            descricao={ `Dados de ${nomeMes}` }
           />
 
           <Grid12Col
@@ -104,11 +142,11 @@ const ProcedimentosPorUsuarios = () => {
               procedimentosOrdenados.map((item) => (
                 <CardInfoTipoA
                   titulo={ item.estabelecimento }
-                  indicador={ item.procedimentos_por_usuario }
-                  indice={ item.dif_procedimentos_por_usuario_anterior_perc }
+                  indicador={ item.procedimentosPorUsuario }
+                  indice={ item.difPorcentagemProcedimentosAnterior }
                   indiceSimbolo='%'
                   indiceDescricao='últ. mês'
-                  key={ item.id }
+                  key={ uuidv1() }
                 />
               ))
             }
