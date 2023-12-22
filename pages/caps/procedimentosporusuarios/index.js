@@ -110,6 +110,7 @@ const ProcedimentosPorUsuarios = () => {
   };
 
   const getCardsProcedimentosPorEstabelecimento = (procedimentos) => {
+    console.log('procedimentos', procedimentos);
     const procedimentosPorEstabelecimentoUltimoPeriodo = procedimentos
       .filter(({
         periodo,
@@ -129,7 +130,6 @@ const ProcedimentosPorUsuarios = () => {
         procedimentosPorEstabelecimento,
         'estabelecimento'
       );
-
       return (
         <>
           <GraficoInfo
@@ -146,7 +146,7 @@ const ProcedimentosPorUsuarios = () => {
                   indice={ item.difPorcentagemProcedimentosAnterior }
                   indiceSimbolo='%'
                   indiceDescricao='últ. mês'
-                  key={ uuidv1() }
+                  key={ item.id}
                 />
               ))
             }
