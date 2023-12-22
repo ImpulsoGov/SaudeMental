@@ -30,7 +30,6 @@ const ProcedimentosPorUsuarios = () => {
   const [loadingHistorico, setLoadingHistorico] = useState(true);
   const [estabelecimentos, setEstabelecimentos] = useState([]);
   const [periodos, setPeriodos] = useState([]);
-  const [estabelecimentosHistorico, setEstabelecimentosHistorico] = useState([]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -38,10 +37,6 @@ const ProcedimentosPorUsuarios = () => {
         municipioIdSus: session?.user.municipio_id_ibge,
         periodos: 'Último período',
       });
-
-      setEstabelecimentosHistorico(dadosFiltradosResumo.map((item) => ({
-        estabelecimento: item.estabelecimento
-      })));
 
       const resumoGeral = dadosFiltradosResumo.find((item) => (item.estabelecimento === 'Todos'));
 
@@ -153,7 +148,7 @@ const ProcedimentosPorUsuarios = () => {
       { estabelecimentos.length !== 0 &&
         <FiltroTexto
           width={ '50%' }
-          dados={ estabelecimentosHistorico }
+          dados={ estabelecimentos }
           valor={ filtroEstabelecimentoHistorico }
           setValor={ setFiltroEstabelecimentoHistorico }
           label={ 'Estabelecimento' }
