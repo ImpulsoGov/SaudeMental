@@ -37,16 +37,13 @@ const ProcedimentosPorUsuarios = () => {
       const dadosFiltradosResumo = await obterProcedimentosPorEstabelecimento({
         municipioIdSus: session?.user.municipio_id_ibge,
         periodos: 'Último período',
-        estabelecimento_linha_idade: 'Todos',
       });
 
       setEstabelecimentosHistorico(dadosFiltradosResumo.map((item) => ({
         estabelecimento: item.estabelecimento
       })));
 
-      const resumoGeral = dadosFiltradosResumo.find((item) => (
-        item.estabelecimento === 'Todos' && item.estabelecimento_linha_perfil === 'Todos'
-      ));
+      const resumoGeral = dadosFiltradosResumo.find((item) => (item.estabelecimento === 'Todos'));
 
       setNomeUltimoMes(resumoGeral.nome_mes);
 
@@ -102,8 +99,6 @@ const ProcedimentosPorUsuarios = () => {
       obterProcedimentosPorEstabelecimento({
         municipioIdSus: session?.user.municipio_id_ibge,
         estabelecimentos: filtroEstabelecimentoHistorico.value,
-        estabelecimento_linha_idade: 'Todos',
-        estabelecimento_linha_perfil: 'Todos',
       }).then((dadosFiltrados) => setProcedimentosPorEstabelecimento(dadosFiltrados));
 
       setLoadingHistorico(false);
