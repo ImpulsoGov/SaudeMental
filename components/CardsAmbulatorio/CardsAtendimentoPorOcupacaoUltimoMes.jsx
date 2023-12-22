@@ -30,7 +30,7 @@ const CardsAtendimentoPorOcupacaoUltimoMes = ({
               indicador={atendimentoPsicologo.procedimentos_por_hora}
               indice={atendimentoPsicologo.dif_procedimentos_por_hora_anterior}
               indiceDescricao='ult. mês'
-              tooltip={'Indicador é calculado a partir da divisão do total de atendimentos registrados pelo total de horas de trabalho dos profissionais estabelecidas em contrato. De tal modo, valores podem apresentar subnotificação em caso de férias, licenças, feriados, números de maior número de finais de semana no mês.'}
+              tooltip={'Indicador é calculado a partir da divisão do total de atendimentos registrados pelo total de horas de trabalho dos profissionais estabelecidas em contrato. De tal modo, valores podem apresentar subnotificação em caso de férias, licenças, feriados, maior número de finais de semana no mês.'}
               key={`${atendimentoPsicologo.procedimentos_por_hora}${atendimentoPsicologo.dif_procedimentos_por_hora_anterior}`}
             />,
             <CardInfoTipoA
