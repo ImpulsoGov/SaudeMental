@@ -60,7 +60,7 @@ const ProcedimentosPorUsuarios = () => {
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
-  }, []);
+  }, [session?.user.municipio_id_ibge]);
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
