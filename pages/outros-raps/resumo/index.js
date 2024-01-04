@@ -55,7 +55,7 @@ const Resumo = () => {
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
-  }, []);
+  }, [session?.user.municipio_id_ibge, municipioSemCardsAmbulatorio, municipioSemCardsConsultorioNaRua, municipioSemCardsReducaoDanos]);
 
   const getDadosConsultorioNaRua = () => {
     return consultorioNaRua.find((item) =>
