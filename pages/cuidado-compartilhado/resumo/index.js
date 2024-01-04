@@ -113,7 +113,7 @@ const Resumo = () => {
         .then(result => setInternacoesRapsAltas12m(result[0]))
         .catch(error => console.log('error', error));
     }
-  }, []);
+  }, [session?.user.municipio_id_ibge]);
 
   const getPorcentagemAtendimentosNaoFeitos = (encaminhamentos) => {
     const { prop_atendimentos: propAtendimentos } = encaminhamentos
