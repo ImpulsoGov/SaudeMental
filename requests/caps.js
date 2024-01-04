@@ -1,13 +1,14 @@
+
 import axios from "axios";
 import { API_SAUDE_MENTAL_URL } from "../constants/API_URL";
-
+import { addQueryParamSeExiste } from '../utils/addQueryParamSeExiste';
 const axiosInstance = axios.create({
   baseURL: `${API_SAUDE_MENTAL_URL}saude-mental`,
 });
 
 export const getPerfilUsuarios = async (municipioIdSus) => {
   try {
-    const endpoint = "/usuarios/perfil?municipio_id_sus=" + municipioIdSus;
+    const endpoint = '/usuarios/perfil?municipio_id_sus=' + municipioIdSus;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -17,9 +18,27 @@ export const getPerfilUsuarios = async (municipioIdSus) => {
   }
 };
 
-export const getPerfilUsuariosPorEstabelecimento = async (municipioIdSus) => {
+export const obterPerfilUsuariosPorEstabelecimento = async ({
+  municipioIdSus,
+  estabelecimentos,
+  periodos,
+  estabelecimento_linha_perfil,
+  estabelecimento_linha_idade
+}) => {
   try {
-    const endpoint = "/usuarios/perfilestabelecimento?municipio_id_sus=" + municipioIdSus;
+    let endpoint = "/usuarios/perfil/por-estabelecimento?municipio_id_sus=" + municipioIdSus;
+    const parametrosOpcionais = {
+      periodos,
+      estabelecimentos,
+      estabelecimento_linha_perfil,
+      estabelecimento_linha_idade
+    };
+
+    for (const parametro in parametrosOpcionais) {
+      if (parametrosOpcionais[parametro] !== undefined) {
+        endpoint += `&${parametro}=${parametrosOpcionais[parametro]}`;
+      }
+    }
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -29,9 +48,27 @@ export const getPerfilUsuariosPorEstabelecimento = async (municipioIdSus) => {
   }
 };
 
-export const getResumoNovosUsuarios = async (municipioIdSus) => {
+export const obterResumoNovosUsuarios = async ({
+  municipioIdSus,
+  estabelecimentos,
+  periodos,
+  estabelecimento_linha_perfil,
+  estabelecimento_linha_idade
+}) => {
   try {
-    const endpoint = "/usuarios/novosresumo?municipio_id_sus=" + municipioIdSus;
+    let endpoint = "/usuarios/novos/resumo?municipio_id_sus=" + municipioIdSus;
+    const parametrosOpcionais = {
+      periodos,
+      estabelecimentos,
+      estabelecimento_linha_perfil,
+      estabelecimento_linha_idade
+    };
+
+    for (const parametro in parametrosOpcionais) {
+      if (parametrosOpcionais[parametro] !== undefined) {
+        endpoint += `&${parametro}=${parametrosOpcionais[parametro]}`;
+      }
+    }
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -43,7 +80,7 @@ export const getResumoNovosUsuarios = async (municipioIdSus) => {
 
 export const getResumoPerfilDeAtendimentos = async (municipioIdSus) => {
   try {
-    const endpoint = "/atendimentosindividuais/caps/perfil/resumo?municipio_id_sus=" + municipioIdSus;
+    const endpoint = '/atendimentosindividuais/caps/perfil/resumo?municipio_id_sus=' + municipioIdSus;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -53,10 +90,19 @@ export const getResumoPerfilDeAtendimentos = async (municipioIdSus) => {
   }
 };
 
-export const getAtendimentosPorCaps = async (municipioIdSus) => {
+export const getAtendimentosPorCaps = async ({
+  municipioIdSus,
+  periodos,
+  estabelecimentos,
+  estabelecimento_linha_perfil,
+  estabelecimento_linha_idade
+}) => {
   try {
-    const endpoint = "/atendimentosindividuais/porcaps?municipio_id_sus=" + municipioIdSus;
-
+    let endpoint = '/atendimentosindividuais/porcaps?municipio_id_sus=' + municipioIdSus;
+    endpoint = addQueryParamSeExiste(endpoint, 'periodos', periodos);
+    endpoint = addQueryParamSeExiste(endpoint, 'estabelecimentos', estabelecimentos);
+    endpoint = addQueryParamSeExiste(endpoint, 'estabelecimento_linha_perfil', estabelecimento_linha_perfil);
+    endpoint = addQueryParamSeExiste(endpoint, 'estabelecimento_linha_idade', estabelecimento_linha_idade);
     const { data } = await axiosInstance.get(endpoint);
 
     return data;
@@ -65,9 +111,28 @@ export const getAtendimentosPorCaps = async (municipioIdSus) => {
   }
 };
 
-export const getProcedimentosPorEstabelecimento = async (municipioIdSus) => {
+export const obterProcedimentosPorEstabelecimento = async ({
+  municipioIdSus,
+  estabelecimentos,
+  periodos,
+  estabelecimento_linha_perfil,
+  estabelecimento_linha_idade
+}) => {
   try {
     const endpoint = "/procedimentos_por_usuario_estabelecimentos?municipio_id_sus=" + municipioIdSus;
+    const parametrosOpcionais = {
+      periodos,
+      estabelecimentos,
+      estabelecimento_linha_perfil,
+      estabelecimento_linha_idade
+    };
+
+    for (const parametro in parametrosOpcionais) {
+      if (parametrosOpcionais[parametro] !== undefined) {
+        endpoint += `&${parametro}=${parametrosOpcionais[parametro]}`;
+      }
+    }
+
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -79,7 +144,7 @@ export const getProcedimentosPorEstabelecimento = async (municipioIdSus) => {
 
 export const getResumoProcedimentosPorTempoServico = async (municipioIdSus) => {
   try {
-    const endpoint = "/procedimentos_por_usuario_resumo?municipio_id_sus=" + municipioIdSus;
+    const endpoint = '/procedimentos_por_usuario_resumo?municipio_id_sus=' + municipioIdSus;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -91,7 +156,7 @@ export const getResumoProcedimentosPorTempoServico = async (municipioIdSus) => {
 
 export const getAbandonoMensal = async (municipioIdSus) => {
   try {
-    const endpoint = "/abandono/mensal?municipio_id_sus=" + municipioIdSus;
+    const endpoint = '/abandono/mensal?municipio_id_sus=' + municipioIdSus;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -101,12 +166,17 @@ export const getAbandonoMensal = async (municipioIdSus) => {
   }
 };
 
-export const getAbandonoCoortes = async (municipioIdSus) => {
+export const getAbandonoCoortes = async ({
+  municipioIdSus,
+  periodos,
+  estabelecimentos
+}) => {
   try {
-    const endpoint = "/abandono/coortes?municipio_id_sus=" + municipioIdSus;
+    let endpoint = '/abandono/coortes?municipio_id_sus=' + municipioIdSus;
+    endpoint = addQueryParamSeExiste(endpoint, 'periodos', periodos);
+    endpoint = addQueryParamSeExiste(endpoint, 'estabelecimentos', estabelecimentos);
 
     const { data } = await axiosInstance.get(endpoint);
-
     return data;
   } catch (error) {
     console.log('error', error.response.data);
@@ -119,9 +189,9 @@ export const getUsuariosAtivosPorCondicao = async (
   periodo
 ) => {
   try {
-    const endpoint = "/usuarios/perfil/condicao?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodo=" + periodo;
+    const endpoint = '/usuarios/perfil/condicao?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodo=' + periodo;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -137,9 +207,9 @@ export const getUsuariosAtivosPorGeneroEIdade = async (
   periodo
 ) => {
   try {
-    const endpoint = "/usuarios/perfil/genero-e-idade?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodo=" + periodo;
+    const endpoint = '/usuarios/perfil/genero-e-idade?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodo=' + periodo;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -155,9 +225,9 @@ export const getUsuariosAtivosPorRacaECor = async (
   periodo
 ) => {
   try {
-    const endpoint = "/usuarios/perfil/raca?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodo=" + periodo;
+    const endpoint = '/usuarios/perfil/raca?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodo=' + periodo;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -173,9 +243,9 @@ export const getUsuariosAtivosPorCID = async (
   periodo
 ) => {
   try {
-    const endpoint = "/usuarios/perfil/cid?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodo=" + periodo;
+    const endpoint = '/usuarios/perfil/cid?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodo=' + periodo;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -203,9 +273,9 @@ export const getUsuariosNovosPorCondicao = async (
   periodos
 ) => {
   try {
-    const endpoint = "/usuarios/novos/condicao?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodos=" + periodos;
+    const endpoint = '/usuarios/novos/condicao?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodos=' + periodos;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -221,9 +291,9 @@ export const getUsuariosNovosPorGeneroEIdade = async (
   periodos
 ) => {
   try {
-    const endpoint = "/usuarios/novos/genero-e-idade?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodos=" + periodos;
+    const endpoint = '/usuarios/novos/genero-e-idade?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodos=' + periodos;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -239,9 +309,9 @@ export const getUsuariosNovosPorRacaECor = async (
   periodos
 ) => {
   try {
-    const endpoint = "/usuarios/novos/raca?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodos=" + periodos;
+    const endpoint = '/usuarios/novos/raca?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodos=' + periodos;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -257,9 +327,9 @@ export const getUsuariosNovosPorCID = async (
   periodos
 ) => {
   try {
-    const endpoint = "/usuarios/novos/cid?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodos=" + periodos;
+    const endpoint = '/usuarios/novos/cid?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodos=' + periodos;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -299,9 +369,9 @@ export const getAtendimentosPorGeneroEIdade = async (
   periodos
 ) => {
   try {
-    const endpoint = "/atendimentosindividuais/genero-e-idade?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodos=" + periodos;
+    const endpoint = '/atendimentosindividuais/genero-e-idade?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodos=' + periodos;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -317,9 +387,9 @@ export const getAtendimentosPorRacaECor = async (
   periodos
 ) => {
   try {
-    const endpoint = "/atendimentosindividuais/raca?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodos=" + periodos;
+    const endpoint = '/atendimentosindividuais/raca?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodos=' + periodos;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -335,9 +405,9 @@ export const getAtendimentosPorCID = async (
   periodos
 ) => {
   try {
-    const endpoint = "/atendimentosindividuais/cid?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodos=" + periodos;
+    const endpoint = '/atendimentosindividuais/cid?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodos=' + periodos;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -353,9 +423,9 @@ export const getEvasoesNoMesPorCID = async (
   periodos
 ) => {
   try {
-    const endpoint = "/abandono/evadiram-no-mes/cid?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodos=" + periodos;
+    const endpoint = '/abandono/evadiram-no-mes/cid?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodos=' + periodos;
 
     const { data } = await axiosInstance.get(endpoint);
 
@@ -371,9 +441,9 @@ export const getEvasoesNoMesPorGeneroEIdade = async (
   periodos
 ) => {
   try {
-    const endpoint = "/abandono/evadiram-no-mes/genero-e-idade?municipio_id_sus=" + municipioIdSus
-      + "&estabelecimento=" + estabelecimento
-      + "&periodos=" + periodos;
+    const endpoint = '/abandono/evadiram-no-mes/genero-e-idade?municipio_id_sus=' + municipioIdSus
+      + '&estabelecimento=' + estabelecimento
+      + '&periodos=' + periodos;
 
     const { data } = await axiosInstance.get(endpoint);
 

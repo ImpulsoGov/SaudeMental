@@ -205,7 +205,7 @@ const Ambulatorio = () => {
       />
 
       <GraficoInfo
-        titulo='Ambulatório de Saúde Mental'
+        titulo='Atendimentos no Ambulatório de Saúde Mental'
         fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
       />
 
@@ -232,7 +232,7 @@ const Ambulatorio = () => {
       <GraficoInfo
         titulo='Total de atendimentos'
         fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
-        tooltip='Indicador é calculado a partir de divisão do total de procedimentos registradas pelo total de horas de trabalho estabelecidas em contrato. De tal modo, dados podem apresentar valores subestimados no caso de férias, licenças, feriados e números de finais de semana no mês.'
+        tooltip='Indicador é calculado a partir de divisão do total de procedimentos registradas pelo total de horas de trabalho estabelecidas em contrato. De tal modo, dados podem apresentar valores subestimados no caso de férias, licenças, feriados, maior números de finais de semana no mês.'
       />
       { atendimentosTotal.length !== 0
         ? (
@@ -261,7 +261,7 @@ const Ambulatorio = () => {
       <GraficoInfo
         titulo='Atendimentos por horas trabalhadas'
         fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
-        tooltip='Indicador é calculado a partir da divisão do total de atendimentos registrados pelo total de horas de trabalho dos profissionais estabelecidas em contrato. De tal modo, valores podem apresentar subnotificação em caso de férias, licenças, feriados, números de maior número de finais de semana no mês.'
+        tooltip='Indicador é calculado a partir da divisão do total de atendimentos registrados pelo total de horas de trabalho dos profissionais estabelecidas em contrato. De tal modo, valores podem apresentar subnotificação em caso de férias, licenças, feriados, maior número de finais de semana no mês.'
       />
       { atendimentosTotal.length !== 0
         ? (
@@ -330,7 +330,7 @@ const Ambulatorio = () => {
       <GraficoInfo
         titulo='Atendimentos por profissional'
         fonte='Fonte: BPA/SIASUS - Elaboração Impulso Gov'
-        tooltip='O indicador de atendimentos por hora é calculado a partir da divisão do total de atendimentos registrados pelo total de horas de trabalho dos profissionais estabelecidas em contrato. De tal modo, valores podem apresentar subnotificação em caso de férias, licenças, feriados, números de maior número de finais de semana no mês.'
+        tooltip='O indicador de atendimentos por hora é calculado a partir da divisão do total de atendimentos registrados pelo total de horas de trabalho dos profissionais estabelecidas em contrato. De tal modo, valores podem apresentar subnotificação em caso de férias, licenças, feriados, maior número de finais de semana no mês.'
       />
       { atendimentosPorProfissional.length !== 0
         ? (
@@ -354,7 +354,6 @@ const Ambulatorio = () => {
               label={ 'Competência' }
               isMulti
               showAllOption
-              isDefaultAllOption
             />
           </div>
           <TabelaAtendimentosPorProfissional

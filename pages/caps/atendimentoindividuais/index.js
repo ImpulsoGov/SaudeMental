@@ -1,7 +1,6 @@
-import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
+import {  GraficoInfo,  Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { v1 as uuidv1 } from 'uuid';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
@@ -13,7 +12,7 @@ import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 import { GraficoDonut } from '../../../components/Graficos';
-import { ordenarCrescentePorPropriedadeDeTexto } from '../../../utils/ordenacao';
+import { CardsResumoEstabelecimentos } from '../../../components/CardsResumoEstabelecimentos';
 
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
@@ -37,22 +36,46 @@ const AtendimentoIndividual = () => {
   const [filtroPeriodoRacaECor, setFiltroPeriodoRacaECor] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoRacaECor, setFiltroEstabelecimentoRacaECor] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [estabelecimentos, setEstabelecimentos] = useState([]);
+  const [atendimentosPorCapsUltimoPeriodo, setAtendimentosPorCapsUltimoPeriodo] = useState([]);
   const [periodos, setPeriodos] = useState([]);
   const [loadingCID, setLoadingCID] = useState(false);
   const [loadingGenero, setLoadingGenero] = useState(false);
   const [loadingRaca, setLoadingRaca] = useState(false);
+  const [loadingHistorico, setLoadingHistorico] = useState(false);
+
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
-      setAtendimentosPorCaps(await getAtendimentosPorCaps(municipioIdSus));
+      setAtendimentosPorCaps(await getAtendimentosPorCaps({
+        municipioIdSus: municipioIdSus,
+        estabelecimentos: 'Todos',
+      }));
       setEstabelecimentos(await getEstabelecimentos(municipioIdSus, 'atendimentos_inidividuais_perfil'));
       setPeriodos(await getPeriodos(municipioIdSus, 'atendimentos_inidividuais_perfil'));
+      setAtendimentosPorCapsUltimoPeriodo(await getAtendimentosPorCaps({
+        municipioIdSus: municipioIdSus,
+        periodos: 'Último período',
+        estabelecimento_linha_idade: 'Todos',
+      }));
     };
 
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
   }, []);
+  useEffect(() => {
+    if (session?.user.municipio_id_ibge) {
+      setLoadingHistorico(true);
 
+      getAtendimentosPorCaps({
+        municipioIdSus: session?.user.municipio_id_ibge,
+        estabelecimentos: filtroEstabelecimentoHistorico.value,
+      }
+      ).then(dadosHistoricosFiltrados => {
+        setAtendimentosPorCaps(dadosHistoricosFiltrados);
+        setLoadingHistorico(false);
+      });
+    }
+  }, [filtroEstabelecimentoHistorico.value, session?.user.municipio_id_ibge]);
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
       setLoadingCID(true);
@@ -107,99 +130,22 @@ const AtendimentoIndividual = () => {
     }
   }, [filtroEstabelecimentoRacaECor.value, filtroPeriodoRacaECor, session?.user.municipio_id_ibge]);
 
-  const agregarPorLinhaPerfil = (atendimentos) => {
-    const atendimentosAgregados = [];
-
-    atendimentos.forEach((atendimento) => {
-      const {
-        estabelecimento,
-        nome_mes: nomeMes,
-        estabelecimento_linha_perfil: linhaPerfil,
-        perc_apenas_atendimentos_individuais: porcentagemAtendimentos,
-        dif_perc_apenas_atendimentos_individuais: difPorcentagemAtendimentosAnterior
-      } = atendimento;
-
-      const linhaPerfilEncontrada = atendimentosAgregados
-        .find((item) => item.linhaPerfil === linhaPerfil);
-
-      if (!linhaPerfilEncontrada) {
-        atendimentosAgregados.push({
-          nomeMes,
-          linhaPerfil,
-          atendimentosPorEstabelecimento: [{
-            estabelecimento,
-            porcentagemAtendimentos,
-            difPorcentagemAtendimentosAnterior
-          }]
-        });
-      } else {
-        linhaPerfilEncontrada.atendimentosPorEstabelecimento.push({
-          estabelecimento,
-          porcentagemAtendimentos,
-          difPorcentagemAtendimentosAnterior
-        });
-      }
-    });
-
-    return atendimentosAgregados;
-  };
-
-  const getCardsAtendimentosPorCaps = (atendimentos) => {
-    const atendimentosPorCapsUltimoPeriodo = atendimentos
+  const filtrarPorLinhasDeEstabelecimentoExcetoTodos = (atendimentos) => {
+    const atendimentosPorCapsUltimoPeriodoExcetoTodos = atendimentos
       .filter(({
-        periodo,
         estabelecimento,
         estabelecimento_linha_perfil: linhaPerfil,
-        estabelecimento_linha_idade: linhaIdade
       }) =>
-        periodo === 'Último período'
-        && estabelecimento !== 'Todos'
+        estabelecimento !== 'Todos'
         && linhaPerfil !== 'Todos'
-        && linhaIdade === 'Todos'
       );
-
-    const atendimentosAgregados = agregarPorLinhaPerfil(atendimentosPorCapsUltimoPeriodo);
-
-    const cardsAtendimentosPorCaps = atendimentosAgregados.map(({
-      linhaPerfil, atendimentosPorEstabelecimento, nomeMes
-    }) => {
-      const atendimentosOrdenados = ordenarCrescentePorPropriedadeDeTexto(atendimentosPorEstabelecimento, 'estabelecimento');
-
-      return (
-        <>
-          <GraficoInfo
-            titulo={ `CAPS ${linhaPerfil}` }
-            descricao={ `Dados de ${nomeMes}` }
-          />
-
-          <Grid12Col
-            items={
-              atendimentosOrdenados.map((item) => (
-                <CardInfoTipoA
-                  titulo={ item.estabelecimento }
-                  indicador={ item.porcentagemAtendimentos }
-                  indicadorSimbolo='%'
-                  indice={ item.difPorcentagemAtendimentosAnterior }
-                  indiceSimbolo='p.p.'
-                  indiceDescricao='últ. mês'
-                  key={ uuidv1() }
-                />
-              ))
-            }
-            proporcao='3-3-3-3'
-          />
-        </>
-      );
-    });
-
-    return cardsAtendimentosPorCaps;
+    return atendimentosPorCapsUltimoPeriodoExcetoTodos;
   };
 
-  const filtrarPorEstabelecimento = (dados, filtroEstabelecimento) => {
+  const filtrarPorLinhasDeEstabelecimento = (dados) => {
     return dados
       .filter((item) =>
-        item.estabelecimento === filtroEstabelecimento.value
-        && item.estabelecimento_linha_perfil === 'Todos'
+        item.estabelecimento_linha_perfil === 'Todos'
         && item.estabelecimento_linha_idade === 'Todos'
       );
   };
@@ -224,22 +170,29 @@ const AtendimentoIndividual = () => {
         fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { atendimentosPorCaps.length !== 0
+      { atendimentosPorCapsUltimoPeriodo.length !== 0
         ? (
           <>
             <GraficoInfo
-              descricao={ `Última competência disponível: ${atendimentosPorCaps
+              descricao={ `Última competência disponível: ${atendimentosPorCapsUltimoPeriodo
                 .find((item) =>
                   item.estabelecimento === 'Todos'
                   && item.estabelecimento_linha_perfil === 'Todos'
-                  && item.estabelecimento_linha_idade === 'Todos'
-                  && item.periodo === 'Último período'
                 )
                 .nome_mes
               }` }
             />
-
-            { getCardsAtendimentosPorCaps(atendimentosPorCaps) }
+            <CardsResumoEstabelecimentos
+              dados={ filtrarPorLinhasDeEstabelecimentoExcetoTodos(atendimentosPorCapsUltimoPeriodo) }
+              propriedades={{
+                estabelecimento: 'estabelecimento',
+                quantidade: 'perc_apenas_atendimentos_individuais',
+                difAnterior: 'dif_perc_apenas_atendimentos_individuais',
+              }}
+              indiceDescricao='últ. mês'
+              indiceSimbolo='p.p.'
+              indicadorSimbolo='%'
+            />
           </>
         )
         : <Spinner theme='ColorSM' />
@@ -251,20 +204,21 @@ const AtendimentoIndividual = () => {
       />
 
       { atendimentosPorCaps.length !== 0
+      && estabelecimentos.length !== 0
         ? (
           <>
             <FiltroTexto
               width={'50%'}
-              dados = {atendimentosPorCaps}
+              dados = {estabelecimentos}
               valor = {filtroEstabelecimentoHistorico}
               setValor = {setFiltroEstabelecimentoHistorico}
               label = {'Estabelecimento'}
               propriedade = {'estabelecimento'}
             />
             <GraficoHistoricoTemporal
-              dados = {filtrarPorEstabelecimento(atendimentosPorCaps, filtroEstabelecimentoHistorico)}
+              dados = {filtrarPorLinhasDeEstabelecimento(atendimentosPorCaps)}
               textoTooltip={'Usuários que realizaram apenas atendimentos individuais entre os que frequentaram no mês (%):'}
-              loading = {false}
+              loading = {loadingHistorico}
               propriedade={'perc_apenas_atendimentos_individuais'}
             />
           </>

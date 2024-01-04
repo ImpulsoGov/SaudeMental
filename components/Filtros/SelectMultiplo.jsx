@@ -22,6 +22,8 @@ const SelectMultiplo = ({
     label: labelAllOption
   };
 
+  const hasOnlyOneOption = options.length === 1;
+
   useEffect(() => {
     if (isDefaultAllOption && showAllOption) {
       setValor(options);
@@ -35,10 +37,10 @@ const SelectMultiplo = ({
     valueRef.current.some(({ value }) => value === option.value) ||
       isSelectAllSelected();
 
-  const getOptions = () => showAllOption ? [selectAllOption, ...options] : options;
+  const getOptions = () => showAllOption && !hasOnlyOneOption ? [selectAllOption, ...options] : options;
 
   const getValue = () =>
-    isSelectAllSelected() ? [selectAllOption] : valor;
+    isSelectAllSelected() && !hasOnlyOneOption ? [selectAllOption] : valor;
 
   const handleChange = (newValue, actionMeta) => {
     const { action, option, removedValue } = actionMeta;
