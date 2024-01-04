@@ -22,7 +22,6 @@ export const agruparPorTempoDeServico = (procedimentos) => {
       });
     }
   });
-
   return procedimentosAgregados;
 };
 
@@ -31,4 +30,18 @@ export const getMediaProcedimentosPorPeriodo = (procedimentosPorPeriodo) => {
     .reduce((acc, { procedimentosPorUsuario }) => acc + procedimentosPorUsuario, 0);
 
   return somaProcedimentos / (procedimentosPorPeriodo.length);
+};
+
+const ordenacaoProcedimentos = {
+  'Até 6 meses': 1,
+  '6 meses a 1 ano': 2,
+  '1 a 2 anos': 3,
+  '2 a 5 anos': 4,
+  '5 anos ou mais': 5
+};
+
+export const ordenarPorTempoDeServico = (procedimentos) => {
+  return procedimentos.sort((a, b) => {
+    return ordenacaoProcedimentos[a.tempoServico] - ordenacaoProcedimentos[b.tempoServico];
+  });
 };
