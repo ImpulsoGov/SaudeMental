@@ -54,7 +54,7 @@ const Ambulatorio = () => {
     if (session?.user.municipio_id_ibge && !municipioSemAmbulatorio && !municipioSemDadosAmbulatorio) {
       getDados(session?.user.municipio_id_ibge);
     }
-  }, []);
+  }, [session?.user.municipio_id_ibge, municipioSemAmbulatorio, municipioSemDadosAmbulatorio]);
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
