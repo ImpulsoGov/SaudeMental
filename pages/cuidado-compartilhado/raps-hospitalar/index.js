@@ -43,7 +43,7 @@ const RapsHospitalar = ({ }) => {
           setPeriodosECompetencias(periodosECompetencias);
         });
     }
-  }, []);
+  }, [session?.user.municipio_id_ibge]);
 
   useEffect(() => {
     const filtradas = internacoesRapsAltas.filter(item => item.periodo === filtroPeriodoInternacoesRapsAltas.value);
