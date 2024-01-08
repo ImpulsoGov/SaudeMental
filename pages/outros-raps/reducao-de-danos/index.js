@@ -145,7 +145,7 @@ const ReducaoDeDanos = () => {
       <GraficoInfo
         titulo="Ações de redução de danos realizadas"
         fonte="Fonte: BPA/SIASUS - Elaboração Impulso Gov"
-        tooltip="Total de procedimentos registrados como 'ação de redução de danos', segundo informado pelos profissionais de saúde por meios dos Boletins de Produção Ambulatorial consolidados (BPA-c)."
+        tooltip="Total de procedimentos registrados por estabelecimentos do tipo CAPS como 'ação de redução de danos', segundo informado pelos profissionais de saúde por meio dos Boletins de Produção Ambulatorial consolidados (BPA-c)."
       />
 
       <Grid12Col
