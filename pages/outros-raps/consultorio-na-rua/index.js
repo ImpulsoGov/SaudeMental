@@ -37,7 +37,7 @@ const ConsultorioNaRua = () => {
     if (session?.user.municipio_id_ibge && !municipioSemConsultorioNaRua) {
       getDados(session?.user.municipio_id_ibge);
     }
-  }, []);
+  }, [session?.user.municipio_id_ibge]);
 
   const atendimentosFiltradosPorProducao = useMemo(() => {
     return atendimentos.filter(({ tipo_producao: tipoProducao }) => tipoProducao === filtroProducao.value);

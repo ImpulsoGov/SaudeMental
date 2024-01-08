@@ -61,7 +61,7 @@ const PerfilUsuario = () => {
         estabelecimento_linha_idade: 'Todos',
       }).then((dadoFiltrado) => setNomeUltimoMes(dadoFiltrado[0].nome_mes));
     }
-  }, []);
+  }, [session?.user.municipio_id_ibge]);
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {

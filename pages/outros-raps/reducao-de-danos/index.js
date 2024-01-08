@@ -51,7 +51,7 @@ const ReducaoDeDanos = () => {
     if (session?.user.municipio_id_ibge && !municipioSemReducaoDanos) {
       getDados(session?.user.municipio_id_ibge);
     }
-  }, []);
+  }, [session?.user.municipio_id_ibge, municipioSemReducaoDanos]);
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {

@@ -63,7 +63,7 @@ const ApsCaps = () => {
         .catch(error => console.log('error', error));
 
     }
-  }, []);
+  }, [session?.user.municipio_id_ibge]);
 
   return (
     <div>

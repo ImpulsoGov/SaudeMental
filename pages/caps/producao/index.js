@@ -62,7 +62,7 @@ const Producao = () => {
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
-  }, []);
+  }, [session?.user.municipio_id_ibge]);
 
   // prcedimentos por hora
   useEffect(() => {
