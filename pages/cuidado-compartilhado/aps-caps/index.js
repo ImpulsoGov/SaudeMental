@@ -124,7 +124,7 @@ const ApsCaps = () => {
       <GraficoInfo
         titulo="Atendimentos"
         fonte="Fonte: SISAB - Elaboração Impulso Gov"
-        descricao="Quantidade de atendimentos de Saúde Mental realizados pela APS que resultarem em Encaminhamentos para CAPS."
+        descricao="Quantidade de atendimentos de Saúde Mental realizados pela APS que resultaram em Encaminhamentos para CAPS."
       />
 
       { encaminhamentosApsCapsResumo
