@@ -3,7 +3,7 @@ import { Spinner } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import PropTypes from 'prop-types';
 import { useCallback, useMemo } from 'react';
-
+import { gerarGraficoSemDados } from '../../utils/gerarGraficoSemDados';
 const GraficoRacaECor = ({
   dados,
   propriedades,
@@ -18,7 +18,7 @@ const GraficoRacaECor = ({
 
     return dadosAgregados.sort((a, b) => b.racaCor.localeCompare(a.racaCor));
   }, [dados, propriedades]);
-
+  const possuiDados = dados.length > 0;
   const gerarOptions = useCallback(() => ({
     legend: {},
     tooltip: {},
@@ -44,7 +44,7 @@ const GraficoRacaECor = ({
       { loading
         ? <Spinner theme='ColorSM' height='70vh' />
         : <ReactEcharts
-          option={ gerarOptions() }
+          option={ possuiDados? gerarOptions() : gerarGraficoSemDados() }
           style={ { width: '100%', height: '70vh' } }
         />
       }

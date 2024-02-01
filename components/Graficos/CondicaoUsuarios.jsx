@@ -5,7 +5,7 @@ import React, { useCallback, useMemo } from 'react';
 import { CORES_GRAFICO_SUBST_MORADIA } from '../../constants/CORES_GRAFICO_SUBST_MORADIA';
 import { agregarQuantidadePorPropriedadeNome } from '../../helpers/graficoDonut';
 import { removerDadosZeradosPorPropriedade } from '../../utils/removerDadosZerados';
-
+import { gerarGraficoSemDados } from '../../utils/gerarGraficoSemDados';
 const GraficoCondicaoUsuarios = ({
   dados,
   propriedades,
@@ -21,7 +21,7 @@ const GraficoCondicaoUsuarios = ({
       propriedades.quantidade
     );
   }, [dados, propriedades]);
-
+  const possuiDados = dados.length > 0;
   const gerarOptions = useCallback(() => {
     return {
       title: {
@@ -76,7 +76,7 @@ const GraficoCondicaoUsuarios = ({
       {loading
         ? <Spinner theme='ColorSM' height='70vh' />
         : <ReactEcharts
-          option={ gerarOptions() }
+          option={ possuiDados? gerarOptions() : gerarGraficoSemDados() }
           style={ { width: '100%', height: '70vh' } }
         />
       }

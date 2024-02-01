@@ -2,7 +2,7 @@ import { Spinner } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import PropTypes from 'prop-types';
 import { useCallback, useMemo } from 'react';
-
+import { gerarGraficoSemDados } from '../../utils/gerarGraficoSemDados';
 const GraficoAtendimentos = ({
   dados,
   textoTooltipA,
@@ -27,7 +27,7 @@ const GraficoAtendimentos = ({
   const procedimentosB = useMemo(() => {
     return dadosOrdenados.filter((item => item.ocupacao === textoTooltipB)).map((item) => item[propriedade]);
   }, [dadosOrdenados, propriedade, textoTooltipB]);
-
+  const possuiDados = dados.length > 0;
   const gerarOptions = useCallback(() => ({
     tooltip: {
       trigger: 'axis',
@@ -91,7 +91,7 @@ const GraficoAtendimentos = ({
       { loading
         ? <Spinner theme='ColorSM' height='70vh' />
         : <ReactEcharts
-          option={ gerarOptions() }
+          option={ possuiDados? gerarOptions() : gerarGraficoSemDados()}
           style={ { width: '100%', height: '70vh' } }
         />
       }
