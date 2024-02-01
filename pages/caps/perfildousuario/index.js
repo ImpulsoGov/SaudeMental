@@ -142,7 +142,7 @@ const PerfilUsuario = () => {
       });
     }
   }, [session?.user.municipio_id_ibge, filtroPeriodoCardsETabela.value]);
-
+  const arrayVazio = [];
   const obterPeriodoExtensoPerfilPorEstabelecimento = useCallback(() => {
     const { nome_mes: mes, competencia } = perfilPorEstabelecimento[0];
     const [ano] = `${competencia}`.split('-');
@@ -334,7 +334,7 @@ const PerfilUsuario = () => {
               />
             </div>
             <GraficoGeneroPorFaixaEtaria
-              dados = {usuariosPorGeneroEIdade}
+              dados = {arrayVazio} // usuariosPorGeneroEIdade
               labels={{
                 eixoY: 'Usuários ativos'
               }}
@@ -382,7 +382,7 @@ const PerfilUsuario = () => {
             <div className={ styles.GraficosUsuariosAtivosContainer }>
               <div className={ styles.GraficoUsuariosAtivos }>
                 <GraficoCondicaoUsuarios
-                  dados={ usuariosPorCondicao }
+                  dados={ usuariosPorCondicao} // usuariosPorCondicao
                   propriedades={ {
                     nome: 'usuario_abuso_substancias' ,
                     quantidade: 'ativos_3meses'
@@ -395,7 +395,7 @@ const PerfilUsuario = () => {
 
               <div className={ styles.GraficoUsuariosAtivos }>
                 <GraficoCondicaoUsuarios
-                  dados={ usuariosPorCondicao }
+                  dados={arrayVazio }
                   propriedades={ {
                     nome: 'usuario_situacao_rua' ,
                     quantidade: 'ativos_3meses'
@@ -440,7 +440,7 @@ const PerfilUsuario = () => {
               />
             </div>
             <GraficoRacaECor
-              dados = {usuariosPorRacaECor}
+              dados = {arrayVazio} // usuariosPorRacaECor
               textoTooltip={'Usuários ativos'}
               loading = {loadingRaca}
               propriedades={{

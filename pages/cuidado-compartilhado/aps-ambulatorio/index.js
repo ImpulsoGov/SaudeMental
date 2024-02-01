@@ -40,7 +40,7 @@ const ApsAmbulatorio = () => {
         .catch(error => console.log('error', error));
     }
   }, [session?.user.municipio_id_ibge]);
-
+const arrayVazio = [];
   return (
     <div>
       <TituloSmallTexto
@@ -99,7 +99,7 @@ const ApsAmbulatorio = () => {
 
       { encaminhamentosAps.length !== 0
         ? <GraficoEncaminhamentos
-          dados={ encaminhamentosAps }
+          dados={ arrayVazio } //encaminhamentosAps
         />
         : <Spinner theme="ColorSM" />
       }

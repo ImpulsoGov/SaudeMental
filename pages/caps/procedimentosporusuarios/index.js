@@ -102,7 +102,7 @@ const ProcedimentosPorUsuarios = () => {
     session?.user.municipio_id_ibge,
     filtroEstabelecimentoHistorico.value
   ]);
-
+const arrayVazio = [];
   return (
     <div>
       <TituloSmallTexto
@@ -158,7 +158,7 @@ const ProcedimentosPorUsuarios = () => {
 
       { procedimentosPorEstabelecimento.length !== 0
         ? <GraficoHistoricoTemporal
-          dados={ procedimentosPorEstabelecimento }
+          dados={ arrayVazio } //procedimentosPorEstabelecimento
           textoTooltip={ filtroEstabelecimentoHistorico.value }
           propriedade='procedimentos_por_usuario'
           loading={ loadingHistorico }
@@ -194,7 +194,7 @@ const ProcedimentosPorUsuarios = () => {
       { loadingProcedimentosPorTempoServico
         ? <Spinner theme="ColorSM" />
         : <GraficoProcedimentosPorTempoServico
-          dados={ procedimentosPorTempoServico }
+          dados={ arrayVazio } // procedimentosPorTempoServico
           textoTooltip='Média de procedimentos'
         />
       }
