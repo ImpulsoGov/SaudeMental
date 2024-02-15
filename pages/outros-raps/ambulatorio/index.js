@@ -162,7 +162,7 @@ const Ambulatorio = () => {
           posicao: null,
           url: ''
         } }
-        texto='Essa página não está exibindo dados porque a coordenação da RAPS informou que não há ambulatórios da rede especializada que realizam atendimentos de Saúde Mental com psicólogos e psiquiatras em seu município. Caso queira solicitar a inclusão de um novo estabelecimento ambulatorial, entre em contato via nosso <u><a rel= "noopener" style="color:inherit" href="/duvidas" target="blank">formulário de solicitação de suporte</a></u>, <u><a style="color:inherit" href="https://wa.me/5511942642429" target="blank" rel= "noopener noreferrer">whatsapp</a></u> ou e-mail (saudemental@impulsogov.org).'
+        texto='Essa página não está exibindo dados porque a coordenação da RAPS informou que não há ambulatórios da rede especializada que realizam atendimentos de Saúde Mental com psicólogos e psiquiatras em seu município. Caso queira solicitar a inclusão de um novo estabelecimento ambulatorial, entre em contato via nosso <u><a style="color:inherit" href="/duvidas" target="_blank">formulário de solicitação de suporte</a></u>, <u><a style="color:inherit" href="https://wa.me/5511942642429" target="_blank">whatsapp</a></u> ou e-mail (saudemental@impulsogov.org).'
         botao={ {
           label: '',
           url: ''
