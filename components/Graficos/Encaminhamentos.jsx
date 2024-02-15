@@ -91,6 +91,7 @@ const GraficoEncaminhamentos = ({ dados }) => {
 
   return (
     <ReactEcharts
+      notMerge = { true }
       option={ possuiDados? gerarOptions() : gerarGraficoSemDados()}
       style={ { width: '100%', height: '70vh' } }
     />

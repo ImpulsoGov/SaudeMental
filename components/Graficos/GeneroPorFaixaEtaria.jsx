@@ -83,6 +83,7 @@ const GraficoGeneroPorFaixaEtaria = ({
       { loading
         ? <Spinner theme='ColorSM' height='70vh' />
         : <ReactEcharts
+          notMerge = { true }
           option={ possuiDados? gerarOptions() : gerarGraficoSemDados() }
           style={ { width: '100%', height: '70vh' } }
         />
