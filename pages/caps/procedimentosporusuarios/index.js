@@ -158,7 +158,7 @@ const arrayVazio = [];
 
       { procedimentosPorEstabelecimento.length !== 0
         ? <GraficoHistoricoTemporal
-          dados={ arrayVazio } //procedimentosPorEstabelecimento
+          dados={ procedimentosPorEstabelecimento}
           textoTooltip={ filtroEstabelecimentoHistorico.value }
           propriedade='procedimentos_por_usuario'
           loading={ loadingHistorico }
@@ -194,7 +194,7 @@ const arrayVazio = [];
       { loadingProcedimentosPorTempoServico
         ? <Spinner theme="ColorSM" />
         : <GraficoProcedimentosPorTempoServico
-          dados={ arrayVazio } // procedimentosPorTempoServico
+          dados={ procedimentosPorTempoServico }
           textoTooltip='Média de procedimentos'
         />
       }

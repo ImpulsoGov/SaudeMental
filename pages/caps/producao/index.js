@@ -258,7 +258,6 @@ const Producao = () => {
       && item.procedimentos_por_hora !== null
     );
   }, [procedimentosPorHora]);
-  const arrayVazio = [];
   return (
     <div>
       <TituloSmallTexto
@@ -320,7 +319,7 @@ const Producao = () => {
       </div>
 
       <GraficoBarrasProducao
-        dados={ arrayVazio } // procedimentosPorHoraValidos
+        dados={ procedimentosPorHoraValidos }
         textoTooltip={ 'Procedimentos por hora' }
         propriedades={ {
           agregacao: 'ocupacao',
