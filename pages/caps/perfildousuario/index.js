@@ -394,7 +394,7 @@ const PerfilUsuario = () => {
 
               <div className={ styles.GraficoUsuariosAtivos }>
                 <GraficoCondicaoUsuarios
-                  dados={arrayVazio }
+                  dados={ usuariosPorCondicao}
                   propriedades={ {
                     nome: 'usuario_situacao_rua' ,
                     quantidade: 'ativos_3meses'
