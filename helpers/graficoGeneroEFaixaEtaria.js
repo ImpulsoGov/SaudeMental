@@ -30,3 +30,20 @@ export const agregarPorFaixaEtariaEGenero = (
 
   return dadosAgregados;
 };
+
+const ordenacaoGeneroEFaixaEtaria = {
+  '0 a 4 anos': 1,
+  '5 a 11 anos': 2,
+  '12 a 17 anos': 3,
+  '18 a 29 anos': 4,
+  '30 a 39 anos': 5,
+  '40 a 49 anos': 6,
+  '50 a 59 anos': 7,
+  '60 anos ou mais': 8
+};
+
+export const ordenarPorFaixaEtaria = (faixaEtariaDados) => {
+  return faixaEtariaDados.sort((a, b) => {
+    return ordenacaoGeneroEFaixaEtaria[a.faixaEtaria] - ordenacaoGeneroEFaixaEtaria[b.faixaEtaria];
+  });
+};
