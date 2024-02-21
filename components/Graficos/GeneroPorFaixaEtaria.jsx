@@ -2,7 +2,7 @@ import { Spinner } from '@impulsogov/design-system';
 import ReactEcharts from 'echarts-for-react';
 import PropTypes from 'prop-types';
 import { useMemo, useCallback } from 'react';
-import { agregarPorFaixaEtariaEGenero } from '../../helpers/graficoGeneroEFaixaEtaria';
+import { agregarPorFaixaEtariaEGenero, ordenarPorFaixaEtaria } from '../../helpers/graficoGeneroEFaixaEtaria';
 import { gerarGraficoSemDados } from '../../utils/gerarGraficoSemDados';
 const NOME_DIMENSAO = 'faixa etaria';
 const LABELS_DIMENSAO = ['Masculino', 'Feminino'];
@@ -21,6 +21,11 @@ const GraficoGeneroPorFaixaEtaria = ({
       propriedades.quantidade
     );
   }, [dados, propriedades]);
+
+  const dadosAgregadosEOrdenados = useMemo(() => {
+    return ordenarPorFaixaEtaria(dadosAgregados);
+  }, [dadosAgregados]);
+
   const possuiDados = dados.length > 0;
   const gerarOptions = useCallback(() => ({
     legend: {
@@ -29,8 +34,7 @@ const GraficoGeneroPorFaixaEtaria = ({
     tooltip: {},
     dataset: {
       dimensions: [NOME_DIMENSAO, ...LABELS_DIMENSAO],
-      source: dadosAgregados
-        .sort((a, b) => a.faixaEtaria.localeCompare(b.faixaEtaria))
+      source: dadosAgregadosEOrdenados
         .map((item) => ({
           [NOME_DIMENSAO]: item.faixaEtaria,
           [LABELS_DIMENSAO[0]]: item[LABELS_DIMENSAO[0].toLowerCase()] || 0,
@@ -76,7 +80,7 @@ const GraficoGeneroPorFaixaEtaria = ({
         },
       }
     ]
-  }), [dadosAgregados, labels]);
+  }), [dadosAgregadosEOrdenados, labels]);
 
   return (
     <>
