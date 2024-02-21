@@ -142,7 +142,6 @@ const PerfilUsuario = () => {
       });
     }
   }, [session?.user.municipio_id_ibge, filtroPeriodoCardsETabela.value]);
-
   const obterPeriodoExtensoPerfilPorEstabelecimento = useCallback(() => {
     const { nome_mes: mes, competencia } = perfilPorEstabelecimento[0];
     const [ano] = `${competencia}`.split('-');
@@ -382,7 +381,7 @@ const PerfilUsuario = () => {
             <div className={ styles.GraficosUsuariosAtivosContainer }>
               <div className={ styles.GraficoUsuariosAtivos }>
                 <GraficoCondicaoUsuarios
-                  dados={ usuariosPorCondicao }
+                  dados={ usuariosPorCondicao}
                   propriedades={ {
                     nome: 'usuario_abuso_substancias' ,
                     quantidade: 'ativos_3meses'
@@ -395,7 +394,7 @@ const PerfilUsuario = () => {
 
               <div className={ styles.GraficoUsuariosAtivos }>
                 <GraficoCondicaoUsuarios
-                  dados={ usuariosPorCondicao }
+                  dados={ usuariosPorCondicao}
                   propriedades={ {
                     nome: 'usuario_situacao_rua' ,
                     quantidade: 'ativos_3meses'

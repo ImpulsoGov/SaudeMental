@@ -3,7 +3,7 @@ import ReactEcharts from 'echarts-for-react';
 import PropTypes from 'prop-types';
 import { useCallback, useMemo } from 'react';
 import { ordenarPorCompetencia} from '../../helpers/graficoHistoricoTemporal';
-
+import { gerarGraficoSemDados } from '../../utils/gerarGraficoSemDados';
 const GraficoHistoricoTemporal = ({
   dados,
   textoTooltip,
@@ -16,7 +16,7 @@ const GraficoHistoricoTemporal = ({
       propriedade
     );
   }, [dados, propriedade]);
-
+  const possuiDados = dados.length > 0;
   const gerarOptions = useCallback(() => ({
     tooltip: {
       trigger: 'axis',
@@ -63,7 +63,8 @@ const GraficoHistoricoTemporal = ({
       { loading
         ? <Spinner theme='ColorSM' height='70vh' />
         : <ReactEcharts
-          option={ gerarOptions() }
+          notMerge = { true }
+          option={ possuiDados? gerarOptions() : gerarGraficoSemDados() }
           style={ { width: '100%', height: '70vh' } }
         />
       }

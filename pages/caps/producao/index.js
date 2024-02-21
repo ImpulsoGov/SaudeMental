@@ -258,7 +258,6 @@ const Producao = () => {
       && item.procedimentos_por_hora !== null
     );
   }, [procedimentosPorHora]);
-
   return (
     <div>
       <TituloSmallTexto

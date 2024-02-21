@@ -3,7 +3,8 @@ import ReactEcharts from 'echarts-for-react';
 import PropTypes from 'prop-types';
 import { useMemo, useCallback } from 'react';
 import { agregarPorFaixaEtariaEGenero } from '../../helpers/graficoGeneroEFaixaEtaria';
-const NOME_DIMENSAO = 'genero';
+import { gerarGraficoSemDados } from '../../utils/gerarGraficoSemDados';
+const NOME_DIMENSAO = 'faixa etaria';
 const LABELS_DIMENSAO = ['Masculino', 'Feminino'];
 
 const GraficoGeneroPorFaixaEtaria = ({
@@ -20,7 +21,7 @@ const GraficoGeneroPorFaixaEtaria = ({
       propriedades.quantidade
     );
   }, [dados, propriedades]);
-
+  const possuiDados = dados.length > 0;
   const gerarOptions = useCallback(() => ({
     legend: {
       itemGap: 25,
@@ -32,8 +33,8 @@ const GraficoGeneroPorFaixaEtaria = ({
         .sort((a, b) => a.faixaEtaria.localeCompare(b.faixaEtaria))
         .map((item) => ({
           [NOME_DIMENSAO]: item.faixaEtaria,
-          [LABELS_DIMENSAO[0]]: item[LABELS_DIMENSAO[0].toLowerCase()],
-          [LABELS_DIMENSAO[1]]: item[LABELS_DIMENSAO[1].toLowerCase()],
+          [LABELS_DIMENSAO[0]]: item[LABELS_DIMENSAO[0].toLowerCase()] || 0,
+          [LABELS_DIMENSAO[1]]: item[LABELS_DIMENSAO[1].toLowerCase()] || 0,
         })),
     },
     xAxis: {
@@ -49,6 +50,7 @@ const GraficoGeneroPorFaixaEtaria = ({
     },
     series: [
       {
+        Name: LABELS_DIMENSAO[0],
         type: 'bar',
         itemStyle: {
           color: '#FA81E6'
@@ -61,6 +63,7 @@ const GraficoGeneroPorFaixaEtaria = ({
         },
       },
       {
+        Name: LABELS_DIMENSAO[1],
         type: 'bar',
         itemStyle: {
           color: '#5367C9'
@@ -80,7 +83,8 @@ const GraficoGeneroPorFaixaEtaria = ({
       { loading
         ? <Spinner theme='ColorSM' height='70vh' />
         : <ReactEcharts
-          option={ gerarOptions() }
+          notMerge = { true }
+          option={ possuiDados? gerarOptions() : gerarGraficoSemDados() }
           style={ { width: '100%', height: '70vh' } }
         />
       }

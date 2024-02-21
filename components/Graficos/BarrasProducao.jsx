@@ -3,7 +3,7 @@ import ReactEcharts from 'echarts-for-react';
 import PropTypes from 'prop-types';
 import { useMemo, useCallback } from 'react';
 import {agregarPorPropriedadeESomarQuantidade, getSomaQuantidadesPorPeriodo} from '../../helpers/graficoBarrasProducao';
-
+import {gerarGraficoSemDados} from '../../utils/gerarGraficoSemDados';
 const GraficoBarrasProducao = ({
   dados,
   textoTooltip,
@@ -17,7 +17,7 @@ const GraficoBarrasProducao = ({
       propriedades.quantidade
     );
   }, [dados, propriedades]);
-
+  const possuiDados = dados.length > 0;
   const gerarOptions = useCallback(() => ({
     legend: {
       show: true
@@ -53,7 +53,8 @@ const GraficoBarrasProducao = ({
       { loading
         ? <Spinner theme='ColorSM' height='70vh' />
         : <ReactEcharts
-          option={ gerarOptions() }
+          notMerge = { true }
+          option={ possuiDados? gerarOptions() : gerarGraficoSemDados() }
           style={ { width: '100%', height: '70vh' } }
         />
       }

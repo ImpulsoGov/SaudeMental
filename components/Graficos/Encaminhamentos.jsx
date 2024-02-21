@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import ReactEcharts from 'echarts-for-react';
 import { agruparPorConduta, ordenarPorCompetencia } from '../../helpers/graficoEncaminhamentos';
-
+import { gerarGraficoSemDados } from '../../utils/gerarGraficoSemDados';
 const GraficoEncaminhamentos = ({ dados }) => {
   const dadosAgrupadosEOrdenados = useMemo(() => {
     const dadosAgrupados = agruparPorConduta(dados);
@@ -11,7 +11,7 @@ const GraficoEncaminhamentos = ({ dados }) => {
 
     return ordenarPorCompetencia(ordenadosPorCondutaDescrecente);
   }, [dados]);
-
+  const possuiDados = dados.length > 0;
   const gerarOptions = useCallback(() => {
     const periodos = dadosAgrupadosEOrdenados[0].quantidadesPorPeriodo.map(({ periodo }) => periodo);
     const condutas = dadosAgrupadosEOrdenados.map(({ conduta }) => conduta);
@@ -91,7 +91,8 @@ const GraficoEncaminhamentos = ({ dados }) => {
 
   return (
     <ReactEcharts
-      option={ gerarOptions() }
+      notMerge = { true }
+      option={ possuiDados? gerarOptions() : gerarGraficoSemDados()}
       style={ { width: '100%', height: '70vh' } }
     />
   );

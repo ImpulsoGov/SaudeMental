@@ -154,7 +154,7 @@ const Ambulatorio = () => {
 
     return agregados.sort(ordenarPorNomeProfissional);
   }
-
+  const arrayVazio = [];
   if (municipioSemAmbulatorio) {
     return (
       <TituloSmallTexto
@@ -248,7 +248,7 @@ const Ambulatorio = () => {
               />
             </div>
             <GraficoAtendimentos
-              dados={ filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosTotal) }
+              dados={ arrayVazio } //filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosTotal)
               textoTooltipA={ 'Médico psiquiatra' }
               textoTooltipB={ 'Psicólogo clínico' }
               loading={ false }
