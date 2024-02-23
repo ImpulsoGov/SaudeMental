@@ -89,7 +89,7 @@ const GraficoGeneroPorFaixaEtaria = ({
         : <ReactEcharts
           notMerge = { true }
           option={ possuiDados? gerarOptions() : gerarGraficoSemDados() }
-          style={ { width: '100%', height: '70vh' } }
+          style={ { width: '118%', height: '70vh', right: '7%' } }
         />
       }
     </>
