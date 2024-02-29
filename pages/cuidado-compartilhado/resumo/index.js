@@ -255,8 +255,16 @@ const Resumo = () => {
                 indicador={ internacoesRapsAdmissoes12m["internacoes_atendimento_raps_antes"] }
                 titulo="Atendidos na RAPS nos últimos 6 meses antes da Internação"
                 tooltip="Usuários que tiveram ao menos um procedimento RAAS registrado em serviços RAPS dentro dos 6 meses anteriores a sua internação na rede hospitalar"
-                porcentagemSim={ getPorcentagemInternacoesFeitas(internacoesRapsAdmissoesVertical) }
-                porcentagemNao={ getPorcentagemInternacoesNaoFeitas(internacoesRapsAdmissoesVertical) }
+                porcentagemSim={
+                  internacoesRapsAdmissoes12m["perc_internacoes_atendimento_raps_antes"] !== null
+                    ? getPorcentagemInternacoesFeitas(internacoesRapsAdmissoesVertical)
+                    : undefined
+                }
+                porcentagemNao={
+                  internacoesRapsAdmissoes12m["perc_internacoes_atendimento_raps_antes"] !== null
+                    ? getPorcentagemInternacoesNaoFeitas(internacoesRapsAdmissoesVertical)
+                    : undefined
+                }
               />
               : <Spinner theme="ColorSM" />
             }
@@ -270,8 +278,16 @@ const Resumo = () => {
                 indicador={ internacoesRapsAltas12m["altas_atendimento_raps_1m_apos"] }
                 titulo="Atendidos na RAPS até o mês seguinte à alta"
                 tooltip="Usuários que tiveram ao menos um procedimento RAAS registrado em serviços RAPS até o mês seguinte à alta de sua internação na rede hospitalar."
-                porcentagemSim={ getPorcentagemAltasFeitas(internacoesRapsAltasVertical) }
-                porcentagemNao={ getPorcentagemAltasNaoFeitas(internacoesRapsAltasVertical) }
+                porcentagemSim={
+                  internacoesRapsAdmissoes12m["perc_internacoes_atendimento_raps_antes"] !== null
+                    ? getPorcentagemAltasFeitas(internacoesRapsAltasVertical)
+                    : undefined
+                }
+                porcentagemNao={
+                  internacoesRapsAdmissoes12m["perc_internacoes_atendimento_raps_antes"] !== null
+                    ? getPorcentagemAltasNaoFeitas(internacoesRapsAltasVertical)
+                    : undefined
+                }
               />
               : <Spinner theme="ColorSM" />
             }
