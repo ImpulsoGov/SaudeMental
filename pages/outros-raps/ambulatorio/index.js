@@ -248,7 +248,7 @@ const Ambulatorio = () => {
               />
             </div>
             <GraficoAtendimentos
-              dados={ arrayVazio } //filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosTotal)
+              dados={ filtrarPorEstabelecimento(obterAtendimentoGeralPorOcupacoes(), filtroEstabelecimentoAtendimentosTotal) }
               textoTooltipA={ 'Médico psiquiatra' }
               textoTooltipB={ 'Psicólogo clínico' }
               loading={ false }
