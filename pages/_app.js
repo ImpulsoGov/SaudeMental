@@ -47,7 +47,7 @@ function MyApp(props) {
   useEffect(() => setMode(true), [dynamicRoute]);
 
   useEffect(() => {
-    hotjar.initialize(3494073, 6);
+    hotjar.initialize(3860925, 6);
   }, []);
 
   useEffect(() => {
