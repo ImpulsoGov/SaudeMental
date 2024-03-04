@@ -55,7 +55,7 @@ function MyApp(props) {
       hotjar.identify(props.ses.user.id,
         {
           nome: props.ses.user.nome,
-          // id: props.ses.user.id,
+          id: props.ses.user.id,
           cargo: props.ses.user.cargo,
           municipio: props.ses.user.municipio,
           unidade_saude: props.ses.user.unidade_saude,
