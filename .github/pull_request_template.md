@@ -19,7 +19,7 @@ OBS: Não é necessário apagar os comentários, eles não aparecerão na descri
 ### Objetivos
 <!-- Descreva aqui as mudanças que esse PR se destina a fazer -->
 
-### Como validar
+### Checklist de Validação
 <!--
 Descreva aqui o que a pessoa revisora desse PR deve fazer para validar as alterações feitas, ex:
 - Interaja com os filtros do gráfico selecionando múltiplas competências e/ou estabelecimentos (tente selecionar estabelecimentos com nomes compostos) para observar se erros inesperados acontecem.
@@ -29,16 +29,6 @@ Descreva aqui o que a pessoa revisora desse PR deve fazer para validar as altera
 Tente pensar no caminho natural ao usar a funcionalidade e também nos casos extremos.
 -->
 
-### Mudanças de configuração
-<!--
-Descreva aqui as mudanças na configuração da aplicação (adição/mudança de variáveis de ambiente), caso tenham sido feitas.
-
-OBS: não insira aqui o valor das variáveis de ambiente, apenas inclua o nome dela, onde deve ser definida/alterada e como a pessoa pode acessar seu valor, ex: "Foi criada a variável de ambiente ENV_VAR pelo motivo X. Seu valor se encontra no Bitwarden e ela deve ser adicionada no arquivo /caminho/do/arquivo para execução local *e na Vercel para execução em produção.*".
-
-*: o ideal é que a pessoa que criou a variável de ambiente faça sua inclusão/edição no local onde a aplicação é hospedada, portanto adicione o trecho entre * na frase de exemplo acima caso você não tenha permissão para fazer a inclusão/edição.
- -->
-
-### Checklist
 <!-- Marque os checkboxes abaixo à medida em que as tarefas são feitas e garanta que todas elas sejam realizadas antes de mergear o PR -->
 
 - [ ] Validar a funcionalidade com o time
