@@ -23,7 +23,7 @@ import { rotaDinamica } from '../hooks/rotaDinamica';
 
 import TagManager from "react-gtm-module";
 import Analytics from '../components/Analytics/Analytics';
-import { hotjar } from 'react-hotjar';
+
 const tagManagerArgs = {
   gtmId: "GTM-MLMCMBM",
 };
@@ -45,25 +45,6 @@ function MyApp(props) {
   useEffect(() => rotaDinamica(router), [router.events]);
   useEffect(() => addUserDataLayer(props.ses), [props.ses]);
   useEffect(() => setMode(true), [dynamicRoute]);
-
-  useEffect(() => {
-    hotjar.initialize(3494073, 6);
-  }, []);
-
-  useEffect(() => {
-    if (hotjar.initialized() && props.ses && props.ses.user) {
-      hotjar.identify(props.ses.user.id,
-        {
-          nome: props.ses.user.nome,
-          id: props.ses.user.id,
-          cargo: props.ses.user.cargo,
-          municipio: props.ses.user.municipio,
-          unidade_saude: props.ses.user.unidade_saude,
-          municipio_id_sus: props.ses.user.municipio_id_sus,
-          is_test_user: (props.ses.user.cargo == 'Impulser') || props.ses.user.mail.includes('@impulsogov.org') || props.ses.user.municipio.includes('Impulsolândia')
-        });
-    }
-  }, [props.ses]);
 
   return (
     <>
