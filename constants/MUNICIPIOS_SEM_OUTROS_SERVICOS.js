@@ -15,7 +15,8 @@ export const MUNICIPIOS_ID_SUS_SEM_DADOS_AMBULATORIO = [
   '431440',
   '292740',
   '315780',
-  '320520'
+  '320520',
+  '261390'
 ];
 
 // Municípios sem cards de ambulatório exibidos na página de resumo
