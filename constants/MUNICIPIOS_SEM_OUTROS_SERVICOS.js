@@ -4,7 +4,8 @@ export const MUNICIPIOS_ID_SUS_SEM_AMBULATORIO = [
   '352590',
   '320500',
   '231130',
-  '150680'
+  '150680',
+  '251230'
 ];
 
 // Municípios onde tem ambulatório, mas não conseguimos mostrar os dados
@@ -14,7 +15,8 @@ export const MUNICIPIOS_ID_SUS_SEM_DADOS_AMBULATORIO = [
   '431440',
   '292740',
   '315780',
-  '320520'
+  '320520',
+  '261390'
 ];
 
 // Municípios sem cards de ambulatório exibidos na página de resumo
@@ -38,5 +40,6 @@ export const MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA = [
   '280350',
   '231140',
   '270630',
-  '230970'
+  '230970',
+  '251230',
 ];
