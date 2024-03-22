@@ -18,7 +18,7 @@ module.exports = withSentryConfig(
 
     // Suppresses source map uploading logs during build
     silent: true,
-    org: "impulsogov",
+    org: "impulsogov-7e",
     project: "javascript-nextjs",
   },
   {
