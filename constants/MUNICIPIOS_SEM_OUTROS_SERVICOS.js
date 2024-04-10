@@ -48,3 +48,6 @@ export const MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA = [
   '261390',
   '250970'
 ];
+export const MUNICIPIOS_ID_SUS_COM_OUTROS_RAPS_SEM_DADOS = [// Municípios que indicaram que possuem algum dos 3 serviços de Outros Serviços RAPS, mas não conseguimos mostrar
+  '250970'
+];

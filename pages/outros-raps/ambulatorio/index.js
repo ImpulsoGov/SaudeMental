@@ -154,7 +154,7 @@ const Ambulatorio = () => {
 
     return agregados.sort(ordenarPorNomeProfissional);
   }
-  const arrayVazio = [];
+
   if (municipioSemAmbulatorio) {
     return (
       <TituloSmallTexto
