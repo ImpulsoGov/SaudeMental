@@ -1,7 +1,7 @@
 import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { MUNICIPIOS_ID_SUS_SEM_CARDS_AMBULATORIO, MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA, MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.js';
+import { MUNICIPIOS_ID_SUS_SEM_CARDS_AMBULATORIO, MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA, MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS, MUNICIPIOS_ID_SUS_COM_OUTROS_RAPS_SEM_DADOS } from '../../../constants/MUNICIPIOS_SEM_OUTROS_SERVICOS.js';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { obterAcoesReducaoDeDanos, getAcoesReducaoDeDanos12meses, getAtendimentosAmbulatorioResumoUltimoMes, getAtendimentosConsultorioNaRua, getAtendimentosConsultorioNaRua12meses } from '../../../requests/outros-raps';
 
@@ -23,6 +23,7 @@ const Resumo = () => {
   const municipioSemCardsAmbulatorio = MUNICIPIOS_ID_SUS_SEM_CARDS_AMBULATORIO.includes(session?.user.municipio_id_ibge);
   const municipioSemCardsReducaoDanos = MUNICIPIOS_ID_SUS_SEM_REDUCAO_DE_DANOS.includes(session?.user.municipio_id_ibge);
   const municipioSemCardsConsultorioNaRua = MUNICIPIOS_ID_SUS_SEM_CONSULTORIO_NA_RUA.includes(session?.user.municipio_id_ibge);
+  const municipioSemDadosDeOutrosRaps = MUNICIPIOS_ID_SUS_COM_OUTROS_RAPS_SEM_DADOS.includes(session?.user.municipio_id_ibge);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -55,7 +56,7 @@ const Resumo = () => {
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
-  }, [session?.user.municipio_id_ibge, municipioSemCardsAmbulatorio, municipioSemCardsConsultorioNaRua, municipioSemCardsReducaoDanos]);
+  }, [session?.user.municipio_id_ibge, municipioSemCardsAmbulatorio, municipioSemCardsConsultorioNaRua, municipioSemCardsReducaoDanos, ]);
 
   const getDadosConsultorioNaRua = () => {
     return consultorioNaRua.find((item) =>
@@ -83,6 +84,22 @@ const Resumo = () => {
   };
 
   if (
+    municipioSemDadosDeOutrosRaps
+  ) {
+    return (
+      <TituloSmallTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        texto='Essa página não está exibindo dados porque, apesar da coordenação da RAPS ter informado que o município possui um ou mais serviços dessa seção, não fomos capazes de encontrar registros deles nas bases que utilizamos para a formulação dos indicadores. Para maiores detalhamentos, acesse a página específica de cada serviço, entre em contato via nosso <u><a style="color:inherit" href="/duvidas" target="_blank">formulário de solicitação de suporte</a></u>, <u><a style="color:inherit" href="https://wa.me/5511942642429" target="_blank">whatsapp</a></u> ou e-mail (saudemental@impulsogov.org).'
+        botao={ {
+          label: '',
+          url: ''
+        } }
+      />
+    );
+  }else if (
     municipioSemCardsAmbulatorio
     && municipioSemCardsReducaoDanos
     && municipioSemCardsConsultorioNaRua
