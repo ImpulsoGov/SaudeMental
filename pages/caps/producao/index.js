@@ -197,7 +197,29 @@ const Producao = () => {
 
     return procedimentosAgregados;
   };
-
+  const getTextoCardsZerados = () => {
+    return (
+      <TituloSmallTexto
+        imagem={ {
+          posicao: null,
+          url: ''
+        } }
+        texto="Alguns indicadores podem não estar disponíveis nessa página por falta de dados necessários para exibi-los. Verifique se existem problemas de registro. <br> Em caso de dúvidas, entre em contato via nosso <a href = 'https://saudemental.impulsogov.org/duvidas'>  formulário de suporte </a>, <a href='https://wa.me/5511942642429'> whatsapp </a> ou e-mail(saudemental@impulsogov.org)."
+        botao={ {
+          label: '',
+          url: ''
+        } }
+        titulo=""
+      />
+    );
+  };
+  const verificaCardsZerados = (procedimentos) => {
+    procedimentos.forEach((procedimento) => {
+      if (procedimento.procedimentos_por_hora !== null && procedimento.procedimentos_por_hora !== 0) {
+        return true;
+      }
+    });
+  };
   const getCardsProcedimentosHoraPorEstabelecimento = (procedimentos) => {
     const procedimentosFiltrados = procedimentos
       .filter(({
@@ -287,7 +309,7 @@ const Producao = () => {
                 }` }
             />
 
-            { getCardsProcedimentosHoraPorEstabelecimento(procedimentosPorHoraUltimoPeriodo) }
+            { verificaCardsZerados(procedimentosPorHoraUltimoPeriodo) ? getCardsProcedimentosHoraPorEstabelecimento(procedimentosPorHoraUltimoPeriodo) : getTextoCardsZerados() }
           </>
         )
         : <Spinner theme='ColorSM' />
