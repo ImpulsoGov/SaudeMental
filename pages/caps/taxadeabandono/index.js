@@ -2,7 +2,7 @@ import { CardInfoTipoA, GraficoInfo, Grid12Col, Spinner, TituloSmallTexto } from
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
-import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesNoMesPorCID, getEvasoesNoMesPorGeneroEIdade, getPeriodos } from '../../../requests/caps';
+import { getAbandonoCoortes, getAbandonoMensal, getEstabelecimentos, getEvasoesNoMesPorCID, getEvasoesNoMesPorGeneroEIdade, getPeriodos, getUltimaCompetencia } from '../../../requests/caps';
 import { TabelaGraficoDonut } from '../../../components/Tabelas';
 import { GraficoDonut, GraficoGeneroPorFaixaEtaria } from '../../../components/Graficos';
 import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
@@ -11,7 +11,7 @@ import { ordenarDecrescentePorPropriedadeNumerica } from '../../../utils/ordenac
 import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
-
+import { getTextoCardsZerados } from '../../../utils/getTextoCardsZerados';
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
 
@@ -37,6 +37,7 @@ const TaxaAbandono = () => {
   const [periodos, setPeriodos] = useState([]);
   const [loadingCID, setLoadingCID] = useState(false);
   const [loadingGenero, setLoadingGenero] = useState(false);
+  const [ultimaCompetencia, setUltimaCompetencia] = useState([]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -51,8 +52,12 @@ const TaxaAbandono = () => {
         municipioIdSus,
         periodos: 'Último período'
       }));
+      setUltimaCompetencia(await getUltimaCompetencia({
+        municipioIdSus: municipioIdSus,
+        entidade: 'abandono_coortes',
+        estabelecimento_linha_idade: 'Todos'
+      }));
     };
-
     if (session?.user.municipio_id_ibge) {
       getDados(session?.user.municipio_id_ibge);
     }
@@ -93,6 +98,13 @@ const TaxaAbandono = () => {
       });
     }
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoGenero.value, filtroPeriodoGenero]);
+
+  const verificaCardsZerados = (abandonoCoortes) => {
+    return abandonoCoortes.some((abandono) =>
+      abandono.usuarios_coorte_nao_aderiram_perc !== null &&
+      abandono.usuarios_coorte_nao_aderiram_perc !== undefined
+    );
+  };
 
   const getCardsAbandonoAcumulado = (abandonos) => {
     const abandonosExcetoTodos = abandonos
@@ -150,11 +162,11 @@ const TaxaAbandono = () => {
         titulo="<strong>Taxa de não adesão</strong>"
       />
 
-      { abandonoCoortes.length !== 0
+      { ultimaCompetencia.length !== 0
         ? (
           <>
             <GraficoInfo
-              descricao={ `Última competência disponível: ${abandonoCoortes
+              descricao={ `Última competência disponível: ${ultimaCompetencia
                 .find((item) =>
                   item.estabelecimento === 'Todos'
                 )
@@ -162,7 +174,7 @@ const TaxaAbandono = () => {
               }` }
             />
 
-            { getCardsAbandonoAcumulado(abandonoCoortes) }
+            {verificaCardsZerados(abandonoCoortes) ? getCardsAbandonoAcumulado(abandonoCoortes) : getTextoCardsZerados() }
           </>
         )
         : <Spinner theme='ColorSM' />
