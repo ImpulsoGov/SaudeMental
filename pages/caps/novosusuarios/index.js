@@ -6,14 +6,14 @@ import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorF
 import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import GraficoRacaECor from '../../../components/Graficos/RacaECor';
 import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
-import { getEstabelecimentos, getPeriodos, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor, obterResumoNovosUsuarios } from '../../../requests/caps';
+import { getEstabelecimentos, getPeriodos, getUltimaCompetencia, getUsuariosNovosPorCID, getUsuariosNovosPorCondicao, getUsuariosNovosPorGeneroEIdade, getUsuariosNovosPorRacaECor, obterResumoNovosUsuarios } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 import { GraficoCondicaoUsuarios, GraficoDonut } from '../../../components/Graficos';
 import { CardsResumoEstabelecimentos } from '../../../components/CardsResumoEstabelecimentos';
-
+import { getTextoCardsZerados } from '../../../utils/getTextoCardsZerados';
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
 
@@ -30,7 +30,6 @@ const NovoUsuario = () => {
   const [usuariosNovosPorRaca, setUsuariosNovosPorRaca] = useState([]);
   const [resumoNovosUsuarios, setResumoNovosUsuarios] = useState([]);
   const [novosUsuariosHistorico, setNovosUsuariosHistorico] = useState([]);
-  const [nomeUltimoMes, setNomeUltimoMes] = useState('');
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoCID, setFiltroPeriodoCID] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
@@ -47,6 +46,7 @@ const NovoUsuario = () => {
   const [loadingCondicao, setLoadingCondicao] = useState(false);
   const [loadingRaca, setLoadingRaca] = useState(false);
   const [loadingHistorico, setLoadingHistorico] = useState(true);
+  const [ultimaCompetencia, setUltimaCompetencia] = useState([]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -56,18 +56,16 @@ const NovoUsuario = () => {
       setPeriodos(
         await getPeriodos(municipioIdSus, 'usuarios_novos_perfil')
       );
-
+      setUltimaCompetencia(await getUltimaCompetencia({
+        municipioIdSus: municipioIdSus,
+        entidade: 'usuarios_novos_perfil',
+        estabelecimento_linha_idade: 'Todos'
+      }));
       const dadosFiltradosResumo = await obterResumoNovosUsuarios({
         municipioIdSus: session?.user.municipio_id_ibge,
         periodos: 'Último período',
         estabelecimento_linha_idade: 'Todos',
       });
-
-      const resumoGeral = dadosFiltradosResumo.find((item) => (
-        item.estabelecimento === 'Todos' && item.estabelecimento_linha_perfil === 'Todos'
-      ));
-
-      setNomeUltimoMes(resumoGeral.nome_mes);
 
       const resumoPorEstabelecimentoELinhaPerfil = dadosFiltradosResumo.filter((item) => (
         item.estabelecimento !== 'Todos' && item.estabelecimento_linha_perfil !== 'Todos'
@@ -169,6 +167,27 @@ const NovoUsuario = () => {
     }
   }, [session?.user.municipio_id_ibge, filtroEstabelecimentoHistorico.value]);
 
+  const verificaCardsZerados = (resumoNovosUsuarios) => {
+    return resumoNovosUsuarios.some((novoUsuario) =>
+      novoUsuario.usuarios_novos !== null &&
+      novoUsuario.usuarios_novos !== undefined
+    );
+  };
+
+  const getCardsResumoEstabelecimentos = (resumoNovosUsuarios) => {
+    return (
+      <CardsResumoEstabelecimentos
+        dados={ resumoNovosUsuarios }
+        propriedades={{
+          estabelecimento: 'estabelecimento',
+          quantidade: 'usuarios_novos',
+          difAnterior: 'dif_usuarios_novos_anterior',
+        }}
+        indiceDescricao='últ. mês'
+      />
+    );
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -189,22 +208,23 @@ const NovoUsuario = () => {
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { nomeUltimoMes &&
-        <GraficoInfo
-          descricao={ `Última competência disponível: ${nomeUltimoMes}` }
-        />
+      {ultimaCompetencia.length !== 0
+        ? (
+          <>
+            <GraficoInfo
+              descricao={ `Última competência disponível: ${ultimaCompetencia
+                .find((item) =>
+                  item.estabelecimento === 'Todos'
+                  && item.estabelecimento_linha_perfil === 'Todos'
+                )
+                .nome_mes
+              }` }
+            />
+            {verificaCardsZerados(resumoNovosUsuarios) ? getCardsResumoEstabelecimentos(resumoNovosUsuarios) : getTextoCardsZerados() }
+          </>
+        )
+        : <Spinner theme='ColorSM' />
       }
-
-      <CardsResumoEstabelecimentos
-        dados={ resumoNovosUsuarios }
-        propriedades={{
-          estabelecimento: 'estabelecimento',
-          quantidade: 'usuarios_novos',
-          difAnterior: 'dif_usuarios_novos_anterior',
-        }}
-        indiceDescricao='últ. mês'
-      />
-
       <GraficoInfo
         titulo='Histórico Temporal'
         fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
