@@ -6,14 +6,14 @@ import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import GraficoGeneroPorFaixaEtaria from '../../../components/Graficos/GeneroPorFaixaEtaria';
 import GraficoRacaECor from '../../../components/Graficos/RacaECor';
 import GraficoHistoricoTemporal from '../../../components/Graficos/HistoricoTemporal';
-import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos } from '../../../requests/caps';
+import { getAtendimentosPorCID, getAtendimentosPorCaps, getAtendimentosPorGeneroEIdade, getAtendimentosPorRacaECor, getEstabelecimentos, getPeriodos, getUltimaCompetencia } from '../../../requests/caps';
 import { concatenarPeriodos } from '../../../utils/concatenarPeriodos';
 import styles from '../Caps.module.css';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_MULTI_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 import { GraficoDonut } from '../../../components/Graficos';
 import { CardsResumoEstabelecimentos } from '../../../components/CardsResumoEstabelecimentos';
-
+import { getTextoCardsZerados } from '../../../utils/getTextoCardsZerados';
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
 
@@ -42,6 +42,7 @@ const AtendimentoIndividual = () => {
   const [loadingGenero, setLoadingGenero] = useState(false);
   const [loadingRaca, setLoadingRaca] = useState(false);
   const [loadingHistorico, setLoadingHistorico] = useState(false);
+  const [ultimaCompetencia, setUltimaCompetencia] = useState([]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -55,6 +56,11 @@ const AtendimentoIndividual = () => {
         municipioIdSus: municipioIdSus,
         periodos: 'Último período',
         estabelecimento_linha_idade: 'Todos',
+      }));
+      setUltimaCompetencia(await getUltimaCompetencia({
+        municipioIdSus: municipioIdSus,
+        entidade: 'atendimentos_inidividuais_perfil',
+        estabelecimento_linha_idade: 'Todos'
       }));
     };
 
@@ -150,6 +156,27 @@ const AtendimentoIndividual = () => {
       );
   };
 
+  const verificaCardsZerados = (atendimentos) => {
+    return atendimentos.some((atendimento) =>
+      atendimento.perc_apenas_atendimentos_individuais !== null &&
+      atendimento.perc_apenas_atendimentos_individuais !== undefined
+    );
+  };
+  const getCardsAtendimentosPorCapsUltimoPeriodo = (atendimentosPorCapsUltimoPeriodo) => {
+    return (
+      <CardsResumoEstabelecimentos
+        dados={ filtrarPorLinhasDeEstabelecimentoExcetoTodos(atendimentosPorCapsUltimoPeriodo) }
+        propriedades={{
+          estabelecimento: 'estabelecimento',
+          quantidade: 'perc_apenas_atendimentos_individuais',
+          difAnterior: 'dif_perc_apenas_atendimentos_individuais',
+        }}
+        indiceDescricao='últ. mês'
+        indiceSimbolo='p.p.'
+        indicadorSimbolo='%'
+      />
+    );
+  };
   return (
     <div>
       <TituloSmallTexto
@@ -170,11 +197,11 @@ const AtendimentoIndividual = () => {
         fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { atendimentosPorCapsUltimoPeriodo.length !== 0
+      {ultimaCompetencia.length !== 0
         ? (
           <>
             <GraficoInfo
-              descricao={ `Última competência disponível: ${atendimentosPorCapsUltimoPeriodo
+              descricao={ `Última competência disponível: ${ultimaCompetencia
                 .find((item) =>
                   item.estabelecimento === 'Todos'
                   && item.estabelecimento_linha_perfil === 'Todos'
@@ -182,17 +209,7 @@ const AtendimentoIndividual = () => {
                 .nome_mes
               }` }
             />
-            <CardsResumoEstabelecimentos
-              dados={ filtrarPorLinhasDeEstabelecimentoExcetoTodos(atendimentosPorCapsUltimoPeriodo) }
-              propriedades={{
-                estabelecimento: 'estabelecimento',
-                quantidade: 'perc_apenas_atendimentos_individuais',
-                difAnterior: 'dif_perc_apenas_atendimentos_individuais',
-              }}
-              indiceDescricao='últ. mês'
-              indiceSimbolo='p.p.'
-              indicadorSimbolo='%'
-            />
+            {verificaCardsZerados(atendimentosPorCapsUltimoPeriodo) ? getCardsAtendimentosPorCapsUltimoPeriodo(atendimentosPorCapsUltimoPeriodo) : getTextoCardsZerados() }
           </>
         )
         : <Spinner theme='ColorSM' />
