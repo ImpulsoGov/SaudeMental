@@ -185,8 +185,8 @@ const NovoUsuario = () => {
       />
 
       <GraficoInfo
-        descricao='Taxa de novos usuários que passaram por primeiro procedimento (registrado em RAAS), excluindo-se usuários que passaram apenas por acolhimento inicial.'
-        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
+        descricao='Taxa de novos usuários que passaram por primeiro procedimento (registrado em RAAS ou BPA-i), excluindo-se usuários que passaram apenas por acolhimento inicial.'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { nomeUltimoMes &&
@@ -207,7 +207,7 @@ const NovoUsuario = () => {
 
       <GraficoInfo
         titulo='Histórico Temporal'
-        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { estabelecimentos.length !== 0 &&
@@ -233,7 +233,7 @@ const NovoUsuario = () => {
 
       <GraficoInfo
         titulo='Perfil dos novos usuários'
-        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { usuariosNovosPorCID
@@ -290,7 +290,7 @@ const NovoUsuario = () => {
 
       <GraficoInfo
         titulo='Gênero e faixa etária'
-        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { usuariosNovosPorGeneroEIdade
@@ -335,7 +335,7 @@ const NovoUsuario = () => {
 
       <GraficoInfo
         titulo='Uso de substâncias e condição de moradia'
-        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { usuariosNovosPorCondicao
@@ -396,7 +396,7 @@ const NovoUsuario = () => {
 
       <GraficoInfo
         titulo='Raça/Cor*'
-        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { usuariosNovosPorRaca

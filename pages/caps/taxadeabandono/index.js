@@ -108,7 +108,7 @@ const TaxaAbandono = () => {
           titulo='Taxa de não adesão acumulada'
           tooltip='Dos usuários que entraram no início do período indicado, porcentagem que deixou de frequentar nos três meses seguintes (não aderiu ao serviço)'
           descricao={ `Conjunto de usuários com 1° procedimento em ${abandonoCoortes[0].a_partir_do_mes}/${abandonoCoortes[0].a_partir_do_ano} e não adesão até ${abandonoCoortes[0].ate_mes}/${abandonoCoortes[0].ate_ano}` }
-          fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
+          fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
         />
 
         <Grid12Col
@@ -172,7 +172,7 @@ const TaxaAbandono = () => {
         titulo='Histórico Temporal - Taxa mensal'
         descricao='Dos usuários acolhidos há menos de 3 meses, quantos não aderiram ao serviço no mês'
         tooltip='Diferente do indicador de não adesão acumulado, que mostra o percentual de usuários que iniciaram o vínculo em um determinado mês e em até 3 meses deixaram de frequentar o CAPS, a taxa de não adesão mensal mostra o percentual de usuários recentes que deixaram de frequentar o serviço em um mês específico. Ou seja, o indicador mensal mostra qual foi o mês que o usuário iniciou o período de inatividade (que precisa ser igual ou superior a 3 meses).'
-        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
         destaque='Por que esses valores são diferentes?'
       />
 
@@ -200,7 +200,7 @@ const TaxaAbandono = () => {
 
       <GraficoInfo
         titulo='CID dos usuários que não aderiram ao serviço'
-        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { evasoesNoMesPorCID
@@ -257,7 +257,7 @@ const TaxaAbandono = () => {
 
       <GraficoInfo
         titulo='Gênero e faixa etária'
-        fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
+        fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
       { evasoesNoMesPorGeneroEIdade
