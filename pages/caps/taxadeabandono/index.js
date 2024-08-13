@@ -106,8 +106,8 @@ const TaxaAbandono = () => {
       <>
         <GraficoInfo
           titulo='Taxa de não adesão acumulada'
-          tooltip='Dos usuários que entraram no início do período indicado, porcentagem que deixou de frequentar nos três meses seguintes (não aderiu ao serviço)'
-          descricao={ `Conjunto de usuários com 1° procedimento em ${abandonoCoortes[0].a_partir_do_mes}/${abandonoCoortes[0].a_partir_do_ano} e não adesão até ${abandonoCoortes[0].ate_mes}/${abandonoCoortes[0].ate_ano}` }
+          tooltip='Dos usuários que entraram no serviço e realizaram primeiro procedimento (exceto acolhimento inicial) no início do período indicado, porcentagem que deixou de frequentar nos três meses seguintes (não aderiu ao serviço).'
+          descricao={ `Conjunto de usuários com 1° procedimento (exceto acolhimento inicial) em ${abandonoCoortes[0].a_partir_do_mes}/${abandonoCoortes[0].a_partir_do_ano} e não adesão até ${abandonoCoortes[0].ate_mes}/${abandonoCoortes[0].ate_ano}` }
           fonte='Fonte: RAAS/SIASUS - Elaboração Impulso Gov'
         />
 
