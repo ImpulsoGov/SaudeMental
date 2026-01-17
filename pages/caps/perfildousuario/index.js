@@ -10,7 +10,8 @@ import { getEstabelecimentos, obterPerfilUsuariosPorEstabelecimento, getPeriodos
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
 import {FILTRO_PERIODO_DEFAULT, FILTRO_ESTABELECIMENTO_DEFAULT} from '../../../constants/FILTROS';
 import { GraficoCondicaoUsuarios, GraficoDonut } from '../../../components/Graficos';
-
+import { getUltimaCompetencia } from '../../../requests/caps';
+import { getTextoCardsZerados } from '../../../utils/getTextoCardsZerados';
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
 
@@ -29,7 +30,6 @@ const PerfilUsuario = () => {
   const [usuariosPorCID, setUsuariosPorCID] = useState([]);
   const [perfilPorEstabelecimento, setPerfilPorEstabelecimento] = useState([]);
   const [panoramaGeral, setPanoramaGeral] = useState(null);
-  const [nomeUltimoMes, setNomeUltimoMes] = useState('');
   const [filtroEstabelecimentoCID, setFiltroEstabelecimentoCID] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroCompetenciaCID, setFiltroCompetenciaCID] = useState(FILTRO_PERIODO_DEFAULT);
   const [filtroEstabelecimentoGenero, setFiltroEstabelecimentoGenero] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
@@ -44,6 +44,7 @@ const PerfilUsuario = () => {
   const [loadingCondicao, setLoadingCondicao] = useState(false);
   const [loadingRaca, setLoadingRaca] = useState(false);
   const [loadingCardsETabela, setLoadingCardsETabela] = useState(true);
+  const [ultimaCompetencia, setUltimaCompetencia] = useState([]);
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -53,13 +54,11 @@ const PerfilUsuario = () => {
       getPeriodos(session?.user.municipio_id_ibge, 'usuarios_ativos_perfil')
         .then((dados) => setCompetencias(dados));
 
-      obterPerfilUsuariosPorEstabelecimento({
+      getUltimaCompetencia({
         municipioIdSus: session?.user.municipio_id_ibge,
-        estabelecimentos: 'Todos',
-        periodos: 'Último período',
-        estabelecimento_linha_perfil: 'Todos',
-        estabelecimento_linha_idade: 'Todos',
-      }).then((dadoFiltrado) => setNomeUltimoMes(dadoFiltrado[0].nome_mes));
+        entidade: 'usuarios_ativos_perfil',
+        estabelecimento_linha_idade: 'Todos'
+      }).then((dados) => setUltimaCompetencia(dados));
     }
   }, [session?.user.municipio_id_ibge]);
 
@@ -149,6 +148,47 @@ const PerfilUsuario = () => {
     return `${mes} de ${ano}`;
   }, [perfilPorEstabelecimento]);
 
+  const verificaCardsZerados = (panorama) => {
+    if (!panorama) return false;
+    return panorama.id !== null && panorama.id !== undefined;
+  };
+
+  const getCardsPanoramaGeral = (panoramaGeral) => {
+    return (
+      <Grid12Col
+        proporcao='4-4-4'
+        items={ [
+          <CardInfoTipoA
+            key={ `${panoramaGeral.id}-${panoramaGeral.ativos_3meses}` }
+            fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
+            indicador={ panoramaGeral.ativos_3meses }
+            indice={ panoramaGeral.dif_ativos_3meses_anterior }
+            indiceDescricao='últ. mês'
+            titulo='Usuários ativos'
+            tooltip='Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) nos três meses anteriores ao mês de referência'
+          />,
+          <CardInfoTipoA
+            key={ `${panoramaGeral.id}-${panoramaGeral.ativos_mes}` }
+            fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
+            indicador={ panoramaGeral.ativos_mes }
+            indice={ panoramaGeral.dif_ativos_mes_anterior }
+            indiceDescricao='últ. mês'
+            titulo='Frequentaram no mês'
+            tooltip='Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) durante o mês de referÊncia'
+          />,
+          <CardInfoTipoA
+            key={ `${panoramaGeral.id}-${panoramaGeral.tornandose_inativos}` }
+            fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
+            indicador={ panoramaGeral.tornandose_inativos }
+            indice={ panoramaGeral.dif_tornandose_inativos_anterior }
+            indiceDescricao='últ. mês'
+            titulo='Tornaram-se inativos'
+            tooltip='Usuários que, no mês de referência, completaram três meses sem ter procedimentos registrados em BPA-i ou RAAS (exceto acolhimento inicial)'
+          />
+        ] }
+      /> );
+  };
+
   return (
     <div>
       <TituloSmallTexto
@@ -171,61 +211,42 @@ const PerfilUsuario = () => {
         Usuários inativos: Usuários que não tiveram nenhum procedimento registrado no serviço há mais de 3 meses.'
       />
 
-      { nomeUltimoMes &&
-        <GraficoInfo
-          descricao={ `Última competência disponível: ${nomeUltimoMes}` }
-        />
+      {ultimaCompetencia.length !== 0
+        ? (
+          <>
+            <GraficoInfo
+              descricao={ `Última competência disponível: ${ultimaCompetencia
+                .find((item) =>
+                  item.estabelecimento === 'Todos'
+                  && item.estabelecimento_linha_perfil === 'Todos'
+                )
+                .nome_mes
+              }` }
+            />
+          </>
+        )
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo
         titulo='Panorama geral'
       />
 
-      { competencias.length !== 0 &&
-        <FiltroCompetencia
-          width='50%'
-          dados={ competencias }
-          valor={ filtroPeriodoCardsETabela }
-          setValor={ setFiltroPeriodoCardsETabela }
-          isMulti={ false }
-          label='Competência'
-        />
-      }
-
-      { loadingCardsETabela
-        ? <Spinner theme='ColorSM' />
-        : <Grid12Col
-          proporcao='4-4-4'
-          items={ [
-            <CardInfoTipoA
-              key={ `${panoramaGeral.id}-${panoramaGeral.ativos_3meses}` }
-              fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
-              indicador={ panoramaGeral.ativos_3meses }
-              indice={ panoramaGeral.dif_ativos_3meses_anterior }
-              indiceDescricao='últ. mês'
-              titulo='Usuários ativos'
-              tooltip='Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) nos três meses anteriores ao mês de referência'
-            />,
-            <CardInfoTipoA
-              key={ `${panoramaGeral.id}-${panoramaGeral.ativos_mes}` }
-              fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
-              indicador={ panoramaGeral.ativos_mes }
-              indice={ panoramaGeral.dif_ativos_mes_anterior }
-              indiceDescricao='últ. mês'
-              titulo='Frequentaram no mês'
-              tooltip='Usuários que tiveram algum procedimento registrado em BPA-i ou RAAS (exceto acolhimento inicial) durante o mês de referÊncia'
-            />,
-            <CardInfoTipoA
-              key={ `${panoramaGeral.id}-${panoramaGeral.tornandose_inativos}` }
-              fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
-              indicador={ panoramaGeral.tornandose_inativos }
-              indice={ panoramaGeral.dif_tornandose_inativos_anterior }
-              indiceDescricao='últ. mês'
-              titulo='Tornaram-se inativos'
-              tooltip='Usuários que, no mês de referência, completaram três meses sem ter procedimentos registrados em BPA-i ou RAAS (exceto acolhimento inicial)'
+      { competencias.length !== 0 && !loadingCardsETabela
+        ?(
+          <>
+            <FiltroCompetencia
+              width='50%'
+              dados={ competencias }
+              valor={ filtroPeriodoCardsETabela }
+              setValor={ setFiltroPeriodoCardsETabela }
+              isMulti={ false }
+              label='Competência'
             />
-          ] }
-        />
+            {verificaCardsZerados(panoramaGeral) ? getCardsPanoramaGeral(panoramaGeral) : getTextoCardsZerados()}
+          </>
+        )
+        : <Spinner theme='ColorSM' />
       }
 
       <GraficoInfo

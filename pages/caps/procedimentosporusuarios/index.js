@@ -1,14 +1,14 @@
-import { GraficoInfo, Spinner, TituloSmallTexto } from "@impulsogov/design-system";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { GraficoInfo, Spinner, TituloSmallTexto } from '@impulsogov/design-system';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 import { FiltroCompetencia, FiltroTexto } from '../../../components/Filtros';
-import { GraficoHistoricoTemporal, GraficoProcedimentosPorTempoServico } from "../../../components/Graficos";
+import { GraficoHistoricoTemporal, GraficoProcedimentosPorTempoServico } from '../../../components/Graficos';
 import { FILTRO_ESTABELECIMENTO_DEFAULT, FILTRO_PERIODO_MULTI_DEFAULT } from '../../../constants/FILTROS';
-import { redirectHomeNotLooged } from "../../../helpers/RedirectHome";
-import { getEstabelecimentos, getPeriodos, obterProcedimentosPorEstabelecimento, obterProcedimentosPorTempoServico } from "../../../requests/caps";
-import styles from "../Caps.module.css";
-import { CardsResumoEstabelecimentos } from "../../../components/CardsResumoEstabelecimentos";
-
+import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
+import { getEstabelecimentos, getPeriodos, obterProcedimentosPorEstabelecimento, obterProcedimentosPorTempoServico, getUltimaCompetencia } from '../../../requests/caps';
+import styles from '../Caps.module.css';
+import { CardsResumoEstabelecimentos } from '../../../components/CardsResumoEstabelecimentos';
+import { getTextoCardsZerados } from '../../../utils/getTextoCardsZerados';
 export function getServerSideProps(ctx) {
   const redirect = redirectHomeNotLooged(ctx);
 
@@ -22,7 +22,6 @@ const ProcedimentosPorUsuarios = () => {
   const [procedimentosPorEstabelecimento, setProcedimentosPorEstabelecimento] = useState([]);
   const [procedimentosPorTempoServico, setProcedimentosPorTempoServico] = useState([]);
   const [resumoPorEstabelecimento, setResumoPorEstabelecimento] = useState([]);
-  const [nomeUltimoMes, setNomeUltimoMes] = useState('');
   const [filtroEstabelecimentoProcedimento, setFiltroEstabelecimentoProcedimento] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
   const [filtroPeriodoProcedimento, setFiltroPeriodoProcedimento] = useState(FILTRO_PERIODO_MULTI_DEFAULT);
   const [filtroEstabelecimentoHistorico, setFiltroEstabelecimentoHistorico] = useState(FILTRO_ESTABELECIMENTO_DEFAULT);
@@ -30,6 +29,7 @@ const ProcedimentosPorUsuarios = () => {
   const [loadingHistorico, setLoadingHistorico] = useState(true);
   const [estabelecimentos, setEstabelecimentos] = useState([]);
   const [periodos, setPeriodos] = useState([]);
+  const [ultimaCompetencia, setUltimaCompetencia] = useState([]);
 
   useEffect(() => {
     const getDados = async (municipioIdSus) => {
@@ -37,10 +37,11 @@ const ProcedimentosPorUsuarios = () => {
         municipioIdSus: session?.user.municipio_id_ibge,
         periodos: 'Último período',
       });
-
-      const resumoGeral = dadosFiltradosResumo.find((item) => (item.estabelecimento === 'Todos'));
-
-      setNomeUltimoMes(resumoGeral.nome_mes);
+      setUltimaCompetencia(await getUltimaCompetencia({
+        municipioIdSus: municipioIdSus,
+        entidade: 'procedimentos_usuarios_tempo_servico',
+        estabelecimento_linha_idade: 'Todos'
+      }));
 
       const resumoPorEstabelecimentoELinhaPerfil = dadosFiltradosResumo.filter((item) => (
         item.estabelecimento !== 'Todos' && item.estabelecimento_linha_perfil !== 'Todos'
@@ -49,11 +50,11 @@ const ProcedimentosPorUsuarios = () => {
       setResumoPorEstabelecimento(resumoPorEstabelecimentoELinhaPerfil);
       setEstabelecimentos(await getEstabelecimentos(
         municipioIdSus,
-        "procedimentos_usuarios_tempo_servico"
+        'procedimentos_usuarios_tempo_servico'
       ));
       setPeriodos(await getPeriodos(
         municipioIdSus,
-        "procedimentos_usuarios_tempo_servico"
+        'procedimentos_usuarios_tempo_servico'
       ));
     };
 
@@ -86,6 +87,27 @@ const ProcedimentosPorUsuarios = () => {
     filtroEstabelecimentoProcedimento.value,
     filtroPeriodoProcedimento
   ]);
+  const verificaCardsZerados = (procedimentos) => {
+    return procedimentos.some((procedimento) =>
+      procedimento.procedimentos_por_usuario !== null &&
+      procedimento.procedimentos_por_usuario !== undefined
+    );
+  };
+
+  const getCardsResumoEstabelecimentos = (resumoPorEstabelecimento) => {
+    return (
+      <CardsResumoEstabelecimentos
+        dados={ resumoPorEstabelecimento }
+        propriedades={{
+          estabelecimento: 'estabelecimento',
+          quantidade: 'procedimentos_por_usuario',
+          difAnterior: 'dif_procedimentos_por_usuario_anterior_perc',
+        }}
+        indiceSimbolo='%'
+        indiceDescricao='últ. mês'
+      />
+    );
+  };
 
   useEffect(() => {
     if (session?.user.municipio_id_ibge) {
@@ -102,7 +124,7 @@ const ProcedimentosPorUsuarios = () => {
     session?.user.municipio_id_ibge,
     filtroEstabelecimentoHistorico.value
   ]);
-const arrayVazio = [];
+
   return (
     <div>
       <TituloSmallTexto
@@ -115,7 +137,7 @@ const arrayVazio = [];
           label: '',
           url: ''
         } }
-        titulo="<strong>Procedimentos por usuários</strong>"
+        titulo='<strong>Procedimentos por usuários</strong>'
       />
 
       <GraficoInfo
@@ -123,22 +145,23 @@ const arrayVazio = [];
         fonte='Fonte: BPA-i e RAAS/SIASUS - Elaboração Impulso Gov'
       />
 
-      { nomeUltimoMes &&
-        <GraficoInfo
-          descricao={ `Última competência disponível: ${nomeUltimoMes}` }
-        />
+      {ultimaCompetencia.length !== 0
+        ? (
+          <>
+            <GraficoInfo
+              descricao={ `Última competência disponível: ${ultimaCompetencia
+                .find((item) =>
+                  item.estabelecimento === 'Todos'
+                  && item.estabelecimento_linha_perfil === 'Todos'
+                )
+                .nome_mes
+              }` }
+            />
+            {verificaCardsZerados(resumoPorEstabelecimento) ? getCardsResumoEstabelecimentos(resumoPorEstabelecimento) : getTextoCardsZerados() }
+          </>
+        )
+        : <Spinner theme='ColorSM' />
       }
-
-      <CardsResumoEstabelecimentos
-        dados={ resumoPorEstabelecimento }
-        propriedades={{
-          estabelecimento: 'estabelecimento',
-          quantidade: 'procedimentos_por_usuario',
-          difAnterior: 'dif_procedimentos_por_usuario_anterior_perc',
-        }}
-        indiceSimbolo='%'
-        indiceDescricao='últ. mês'
-      />
 
       <GraficoInfo
         titulo='Histórico Temporal'
@@ -192,7 +215,7 @@ const arrayVazio = [];
       </div>
 
       { loadingProcedimentosPorTempoServico
-        ? <Spinner theme="ColorSM" />
+        ? <Spinner theme='ColorSM' />
         : <GraficoProcedimentosPorTempoServico
           dados={ procedimentosPorTempoServico }
           textoTooltip='Média de procedimentos'

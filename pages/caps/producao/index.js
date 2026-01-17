@@ -11,7 +11,7 @@ import { redirectHomeNotLooged } from '../../../helpers/RedirectHome';
 import { getEstabelecimentos, getPeriodos, obterNomesDeProcedimentosPorTipo, obterProcedimentosPorHora, obterProcedimentosPorTipo } from '../../../requests/caps';
 import { ordenarCrescentePorPropriedadeDeTexto } from '../../../utils/ordenacao';
 import styles from '../Caps.module.css';
-
+import { getTextoCardsZerados } from '../../../utils/getTextoCardsZerados';
 const OCUPACOES_NAO_ACEITAS = ['Todas', null];
 
 export function getServerSideProps(ctx) {
@@ -197,7 +197,12 @@ const Producao = () => {
 
     return procedimentosAgregados;
   };
-
+  const verificaCardsZerados = (procedimentos) => {
+    return procedimentos.some((procedimento =>
+      procedimento.procedimentos_por_hora !== null &&
+      procedimento.procedimentos_por_hora !== undefined
+    ));
+  };
   const getCardsProcedimentosHoraPorEstabelecimento = (procedimentos) => {
     const procedimentosFiltrados = procedimentos
       .filter(({
@@ -287,7 +292,7 @@ const Producao = () => {
                 }` }
             />
 
-            { getCardsProcedimentosHoraPorEstabelecimento(procedimentosPorHoraUltimoPeriodo) }
+            { verificaCardsZerados(procedimentosPorHoraUltimoPeriodo) ? getCardsProcedimentosHoraPorEstabelecimento(procedimentosPorHoraUltimoPeriodo) : getTextoCardsZerados() }
           </>
         )
         : <Spinner theme='ColorSM' />

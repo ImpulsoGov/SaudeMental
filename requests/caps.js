@@ -363,6 +363,22 @@ export const getPeriodos = async (municipioIdSus, entidade) => {
   }
 };
 
+export const getUltimaCompetencia = async ({
+  municipioIdSus,
+  entidade,
+  estabelecimento_linha_idade
+}) => {
+  try{
+    let endpoint = '/ultima-competencia?municipio_id_sus=' + municipioIdSus;
+    endpoint = addQueryParamSeExiste(endpoint, 'entidade', entidade);
+    endpoint = addQueryParamSeExiste(endpoint, 'estabelecimento_linha_idade', estabelecimento_linha_idade);
+
+    const { data } = await axiosInstance.get(endpoint);
+    return data;
+  } catch(error) {
+    console.log('error', error.response.data);
+  }
+};
 export const getAtendimentosPorGeneroEIdade = async (
   municipioIdSus,
   estabelecimento,
