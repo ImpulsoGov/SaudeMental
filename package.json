@@ -33,5 +33,9 @@
   "devDependencies": {
     "eslint": "8.24.0",
     "eslint-config-next": "12.3.1"
+  },
+  "resolutions": {
+    "echarts-for-react": "<3.0.7",
+    "size-sensor": "<1.0.4"
   }
 }
